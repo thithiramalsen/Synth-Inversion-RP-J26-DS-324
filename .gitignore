@@ -1,0 +1,30 @@
+# Virtual environments
+venv/
+.venv/
+venv-vita/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# VS Code local settings
+.vscode/
+
+# Generated datasets and audio
+data/raw/
+data/processed/
+data/manifests/*.parquet
+generation/test_renders/
+generation/*.wav
+
+# Temporary files
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
