@@ -32,3 +32,8 @@ generation/*.wav
 *.log
 .DS_Store
 Thumbs.db
+
+# Vital factory-content-derived assets
+generation/presets/basic_shapes_source_RP.vital
+generation/presets/basic_shapes_source_RP.vitaltable
+generation/presets/base_basic_shapes_RP.vital

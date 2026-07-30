@@ -6,8 +6,18 @@ import vita
 SAMPLE_RATE = 44_100
 
 GENERATION_DIR = Path(__file__).resolve().parents[1]
-OUTPUT_PATH = GENERATION_DIR / "presets" / "base_init.vital"
 
+SOURCE_PATH = (
+    GENERATION_DIR
+    / "presets"
+    / "basic_shapes_source_RP.vital"
+)
+
+OUTPUT_PATH = (
+    GENERATION_DIR
+    / "presets"
+    / "base_basic_shapes_RP.vital"
+)
 
 def require_control(controls, name: str):
     """Return a required Vital control or fail clearly."""
@@ -37,8 +47,19 @@ def main() -> None:
     if hasattr(synth, "set_sample_rate"):
         synth.set_sample_rate(SAMPLE_RATE)
 
-    # Vita's standard initialized preset.
-    synth.load_init_preset()
+# Load the complete preset containing the embedded
+# Basic Shapes wavetable.
+    if not SOURCE_PATH.exists():
+        raise FileNotFoundError(
+            f"Basic Shapes source preset was not found: {SOURCE_PATH}"
+        )
+
+    if not synth.load_preset(str(SOURCE_PATH)):
+        raise RuntimeError(
+         f"Vita could not load the source preset: {SOURCE_PATH}"
+        )
+
+# Remove modulation assignments while preserving the wavetable.
     synth.clear_modulations()
 
     controls = synth.get_controls()
@@ -65,6 +86,10 @@ def main() -> None:
 
     # 50% displayed oscillator level.
     set_normalized(controls, "osc_1_level", 0.5)
+
+    # Neutral baseline frame. Validation Script 04 overrides
+    # this for low, middle and high frame tests.
+    set_normalized(controls, "osc_1_wave_frame", 0.5)
 
     # ── Filter ───────────────────────────────────────────────────────
     set_raw(controls, "filter_1_on", 1)
@@ -152,6 +177,13 @@ def main() -> None:
         synth.get_control_text("env_1_release"),
     )
 
+    print(
+        "Wave frame:",
+        synth.get_control_text("osc_1_wave_frame"),
+    )
 
 if __name__ == "__main__":
     main()
+
+    
+    

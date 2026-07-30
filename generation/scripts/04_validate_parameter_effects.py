@@ -16,7 +16,11 @@ NOTE_DURATION = 1.5
 RENDER_DURATION = 3.0
 
 GENERATION_DIR = Path(__file__).resolve().parents[1]
-BASE_PRESET = GENERATION_DIR / "presets" / "base_init.vital"
+BASE_PRESET = (
+    GENERATION_DIR
+    / "presets"
+    / "base_basic_shapes_RP.vital"
+)
 OUTPUT_DIR = GENERATION_DIR / "test_renders"
 SUMMARY_PATH = OUTPUT_DIR / "validation_summary.csv"
 
@@ -155,6 +159,30 @@ TEST_GROUPS: dict[str, list[tuple[str, list[ControlChange]]]] = {
                 ("distortion_on", "raw", 1),
                 ("distortion_mix", "raw", 1),
                 ("distortion_drive", "normalized", 1.00),
+            ],
+        ),
+    ],
+
+        "wave_frame_raw": [
+        (
+            "low",
+            [
+                ("filter_1_on", "raw", 0),
+                ("osc_1_wave_frame", "normalized", 0.0),
+            ],
+        ),
+        (
+            "middle",
+            [
+                ("filter_1_on", "raw", 0),
+                ("osc_1_wave_frame", "normalized", 0.5),
+            ],
+        ),
+        (
+            "high",
+            [
+                ("filter_1_on", "raw", 0),
+             ("osc_1_wave_frame", "normalized", 1.0),
             ],
         ),
     ],
