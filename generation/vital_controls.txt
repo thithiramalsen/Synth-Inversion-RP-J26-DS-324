@@ -1,0 +1,1001 @@
+VITA CONTROL INSPECTION
+TOTAL CONTROLS: 772
+
+================================================================================
+IMPORTANT CONTROLS
+================================================================================
+
+CONTROL: osc_1_on
+RAW VALUE: 1.0
+NORMALIZED VALUE: 1.0
+DISPLAY TEXT: On
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['Off', 'On']
+--------------------------------------------------------------------------------
+CONTROL: osc_1_level
+RAW VALUE: 0.7071067690849304
+NORMALIZED VALUE: 0.4999999701976776
+DISPLAY TEXT: 0.500000
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: osc_1_destination
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: FILTER 1
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['FILTER 1', 'FILTER 2', 'FILTER 1+2', 'EFFECTS', 'DIRECT OUT', 'CHORUS', 'COMPRESSOR', 'DELAY', 'DISTORTION', 'EQ', 'FX FILTER', 'FLANGER', 'PHASER', 'REVERB', 'Shelf']
+--------------------------------------------------------------------------------
+CONTROL: osc_1_wave_frame
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: 0.000000
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: osc_1_transpose
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.5
+DISPLAY TEXT: 0.000000
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: osc_1_tune
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.5
+DISPLAY TEXT: 0.000000
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: osc_1_random_phase
+RAW VALUE: 1.0
+NORMALIZED VALUE: 1.0
+DISPLAY TEXT: 100.000000%
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: osc_1_unison_voices
+RAW VALUE: 1.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: 1.000000v
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: osc_1_unison_detune
+RAW VALUE: 4.4721360206604
+NORMALIZED VALUE: 0.19999998807907104
+DISPLAY TEXT: 20.000000%
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: osc_2_on
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: Off
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['Off', 'On']
+--------------------------------------------------------------------------------
+CONTROL: osc_3_on
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: Off
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['Off', 'On']
+--------------------------------------------------------------------------------
+CONTROL: filter_1_on
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: Off
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['Off', 'On']
+--------------------------------------------------------------------------------
+CONTROL: filter_1_model
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: Analog
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['Analog', 'Dirty', 'Ladder', 'Digital', 'Diode', 'Formant', 'Comb', 'Phaser']
+--------------------------------------------------------------------------------
+CONTROL: filter_1_style
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: 12dB
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['12dB', '24dB', 'Notch Blend', 'Notch Spread', 'B/P/N', 'Sin', 'Saturated Sin', 'Triangle', 'Square', 'Pulse']
+--------------------------------------------------------------------------------
+CONTROL: filter_1_cutoff
+RAW VALUE: 60.0
+NORMALIZED VALUE: 0.40625
+DISPLAY TEXT: 0.000000 semitones
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: filter_1_resonance
+RAW VALUE: 0.5
+NORMALIZED VALUE: 0.5
+DISPLAY TEXT: 50.000000%
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: filter_1_blend
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: 0.000000
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: filter_1_drive
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: 0.000000dB
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: filter_1_mix
+RAW VALUE: 1.0
+NORMALIZED VALUE: 1.0
+DISPLAY TEXT: 100.000000%
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: filter_1_keytrack
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.5
+DISPLAY TEXT: 0.000000%
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: filter_2_on
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: Off
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['Off', 'On']
+--------------------------------------------------------------------------------
+CONTROL: env_1_attack
+RAW VALUE: 0.14949999749660492
+NORMALIZED VALUE: 0.06285685300827026
+DISPLAY TEXT: 0.000500 secs
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: env_1_decay
+RAW VALUE: 1.0
+NORMALIZED VALUE: 0.4204471707344055
+DISPLAY TEXT: 1.000000 secs
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: env_1_sustain
+RAW VALUE: 1.0
+NORMALIZED VALUE: 1.0
+DISPLAY TEXT: 1.000000
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: env_1_release
+RAW VALUE: 0.5475999712944031
+NORMALIZED VALUE: 0.23023685812950134
+DISPLAY TEXT: 0.089919 secs
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: reverb_on
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: Off
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['Off', 'On']
+--------------------------------------------------------------------------------
+CONTROL: reverb_dry_wet
+RAW VALUE: 0.25
+NORMALIZED VALUE: 0.25
+DISPLAY TEXT: 25.000000%
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: reverb_decay_time
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: 1.000000 secs
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: distortion_on
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.0
+DISPLAY TEXT: Off
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: ['Off', 'On']
+--------------------------------------------------------------------------------
+CONTROL: distortion_drive
+RAW VALUE: 0.0
+NORMALIZED VALUE: 0.5
+DISPLAY TEXT: 0.000000 dB
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+CONTROL: distortion_mix
+RAW VALUE: 1.0
+NORMALIZED VALUE: 1.0
+DISPLAY TEXT: 1.000000
+DETAILS: <vita.vita.ControlInfo object at 0x000001E810EB76F0>
+OPTIONS: []
+--------------------------------------------------------------------------------
+
+================================================================================
+ALL CONTROL NAMES
+================================================================================
+
+0000 | beats_per_minute
+0001 | bypass
+0002 | chorus_cutoff
+0003 | chorus_delay_1
+0004 | chorus_delay_2
+0005 | chorus_dry_wet
+0006 | chorus_feedback
+0007 | chorus_frequency
+0008 | chorus_mod_depth
+0009 | chorus_on
+0010 | chorus_spread
+0011 | chorus_sync
+0012 | chorus_tempo
+0013 | chorus_voices
+0014 | compressor_attack
+0015 | compressor_band_gain
+0016 | compressor_band_lower_ratio
+0017 | compressor_band_lower_threshold
+0018 | compressor_band_upper_ratio
+0019 | compressor_band_upper_threshold
+0020 | compressor_enabled_bands
+0021 | compressor_high_gain
+0022 | compressor_high_lower_ratio
+0023 | compressor_high_lower_threshold
+0024 | compressor_high_upper_ratio
+0025 | compressor_high_upper_threshold
+0026 | compressor_low_gain
+0027 | compressor_low_lower_ratio
+0028 | compressor_low_lower_threshold
+0029 | compressor_low_upper_ratio
+0030 | compressor_low_upper_threshold
+0031 | compressor_mix
+0032 | compressor_on
+0033 | compressor_release
+0034 | delay_aux_frequency
+0035 | delay_aux_sync
+0036 | delay_aux_tempo
+0037 | delay_dry_wet
+0038 | delay_feedback
+0039 | delay_filter_cutoff
+0040 | delay_filter_spread
+0041 | delay_frequency
+0042 | delay_on
+0043 | delay_style
+0044 | delay_sync
+0045 | delay_tempo
+0046 | distortion_drive
+0047 | distortion_filter_blend
+0048 | distortion_filter_cutoff
+0049 | distortion_filter_order
+0050 | distortion_filter_resonance
+0051 | distortion_mix
+0052 | distortion_on
+0053 | distortion_type
+0054 | effect_chain_order
+0055 | env_1_attack
+0056 | env_1_attack_power
+0057 | env_1_decay
+0058 | env_1_decay_power
+0059 | env_1_delay
+0060 | env_1_hold
+0061 | env_1_release
+0062 | env_1_release_power
+0063 | env_1_sustain
+0064 | env_2_attack
+0065 | env_2_attack_power
+0066 | env_2_decay
+0067 | env_2_decay_power
+0068 | env_2_delay
+0069 | env_2_hold
+0070 | env_2_release
+0071 | env_2_release_power
+0072 | env_2_sustain
+0073 | env_3_attack
+0074 | env_3_attack_power
+0075 | env_3_decay
+0076 | env_3_decay_power
+0077 | env_3_delay
+0078 | env_3_hold
+0079 | env_3_release
+0080 | env_3_release_power
+0081 | env_3_sustain
+0082 | env_4_attack
+0083 | env_4_attack_power
+0084 | env_4_decay
+0085 | env_4_decay_power
+0086 | env_4_delay
+0087 | env_4_hold
+0088 | env_4_release
+0089 | env_4_release_power
+0090 | env_4_sustain
+0091 | env_5_attack
+0092 | env_5_attack_power
+0093 | env_5_decay
+0094 | env_5_decay_power
+0095 | env_5_delay
+0096 | env_5_hold
+0097 | env_5_release
+0098 | env_5_release_power
+0099 | env_5_sustain
+0100 | env_6_attack
+0101 | env_6_attack_power
+0102 | env_6_decay
+0103 | env_6_decay_power
+0104 | env_6_delay
+0105 | env_6_hold
+0106 | env_6_release
+0107 | env_6_release_power
+0108 | env_6_sustain
+0109 | eq_band_cutoff
+0110 | eq_band_gain
+0111 | eq_band_mode
+0112 | eq_band_resonance
+0113 | eq_high_cutoff
+0114 | eq_high_gain
+0115 | eq_high_mode
+0116 | eq_high_resonance
+0117 | eq_low_cutoff
+0118 | eq_low_gain
+0119 | eq_low_mode
+0120 | eq_low_resonance
+0121 | eq_on
+0122 | filter_1_blend
+0123 | filter_1_blend_transpose
+0124 | filter_1_cutoff
+0125 | filter_1_drive
+0126 | filter_1_filter_input
+0127 | filter_1_formant_resonance
+0128 | filter_1_formant_spread
+0129 | filter_1_formant_transpose
+0130 | filter_1_formant_x
+0131 | filter_1_formant_y
+0132 | filter_1_keytrack
+0133 | filter_1_mix
+0134 | filter_1_model
+0135 | filter_1_on
+0136 | filter_1_resonance
+0137 | filter_1_style
+0138 | filter_2_blend
+0139 | filter_2_blend_transpose
+0140 | filter_2_cutoff
+0141 | filter_2_drive
+0142 | filter_2_filter_input
+0143 | filter_2_formant_resonance
+0144 | filter_2_formant_spread
+0145 | filter_2_formant_transpose
+0146 | filter_2_formant_x
+0147 | filter_2_formant_y
+0148 | filter_2_keytrack
+0149 | filter_2_mix
+0150 | filter_2_model
+0151 | filter_2_on
+0152 | filter_2_resonance
+0153 | filter_2_style
+0154 | filter_fx_blend
+0155 | filter_fx_blend_transpose
+0156 | filter_fx_cutoff
+0157 | filter_fx_drive
+0158 | filter_fx_formant_resonance
+0159 | filter_fx_formant_spread
+0160 | filter_fx_formant_transpose
+0161 | filter_fx_formant_x
+0162 | filter_fx_formant_y
+0163 | filter_fx_keytrack
+0164 | filter_fx_mix
+0165 | filter_fx_model
+0166 | filter_fx_on
+0167 | filter_fx_resonance
+0168 | filter_fx_style
+0169 | flanger_center
+0170 | flanger_dry_wet
+0171 | flanger_feedback
+0172 | flanger_frequency
+0173 | flanger_mod_depth
+0174 | flanger_on
+0175 | flanger_phase_offset
+0176 | flanger_sync
+0177 | flanger_tempo
+0178 | legato
+0179 | lfo_1_delay_time
+0180 | lfo_1_fade_time
+0181 | lfo_1_frequency
+0182 | lfo_1_keytrack_transpose
+0183 | lfo_1_keytrack_tune
+0184 | lfo_1_phase
+0185 | lfo_1_smooth_mode
+0186 | lfo_1_smooth_time
+0187 | lfo_1_stereo
+0188 | lfo_1_sync
+0189 | lfo_1_sync_type
+0190 | lfo_1_tempo
+0191 | lfo_2_delay_time
+0192 | lfo_2_fade_time
+0193 | lfo_2_frequency
+0194 | lfo_2_keytrack_transpose
+0195 | lfo_2_keytrack_tune
+0196 | lfo_2_phase
+0197 | lfo_2_smooth_mode
+0198 | lfo_2_smooth_time
+0199 | lfo_2_stereo
+0200 | lfo_2_sync
+0201 | lfo_2_sync_type
+0202 | lfo_2_tempo
+0203 | lfo_3_delay_time
+0204 | lfo_3_fade_time
+0205 | lfo_3_frequency
+0206 | lfo_3_keytrack_transpose
+0207 | lfo_3_keytrack_tune
+0208 | lfo_3_phase
+0209 | lfo_3_smooth_mode
+0210 | lfo_3_smooth_time
+0211 | lfo_3_stereo
+0212 | lfo_3_sync
+0213 | lfo_3_sync_type
+0214 | lfo_3_tempo
+0215 | lfo_4_delay_time
+0216 | lfo_4_fade_time
+0217 | lfo_4_frequency
+0218 | lfo_4_keytrack_transpose
+0219 | lfo_4_keytrack_tune
+0220 | lfo_4_phase
+0221 | lfo_4_smooth_mode
+0222 | lfo_4_smooth_time
+0223 | lfo_4_stereo
+0224 | lfo_4_sync
+0225 | lfo_4_sync_type
+0226 | lfo_4_tempo
+0227 | lfo_5_delay_time
+0228 | lfo_5_fade_time
+0229 | lfo_5_frequency
+0230 | lfo_5_keytrack_transpose
+0231 | lfo_5_keytrack_tune
+0232 | lfo_5_phase
+0233 | lfo_5_smooth_mode
+0234 | lfo_5_smooth_time
+0235 | lfo_5_stereo
+0236 | lfo_5_sync
+0237 | lfo_5_sync_type
+0238 | lfo_5_tempo
+0239 | lfo_6_delay_time
+0240 | lfo_6_fade_time
+0241 | lfo_6_frequency
+0242 | lfo_6_keytrack_transpose
+0243 | lfo_6_keytrack_tune
+0244 | lfo_6_phase
+0245 | lfo_6_smooth_mode
+0246 | lfo_6_smooth_time
+0247 | lfo_6_stereo
+0248 | lfo_6_sync
+0249 | lfo_6_sync_type
+0250 | lfo_6_tempo
+0251 | lfo_7_delay_time
+0252 | lfo_7_fade_time
+0253 | lfo_7_frequency
+0254 | lfo_7_keytrack_transpose
+0255 | lfo_7_keytrack_tune
+0256 | lfo_7_phase
+0257 | lfo_7_smooth_mode
+0258 | lfo_7_smooth_time
+0259 | lfo_7_stereo
+0260 | lfo_7_sync
+0261 | lfo_7_sync_type
+0262 | lfo_7_tempo
+0263 | lfo_8_delay_time
+0264 | lfo_8_fade_time
+0265 | lfo_8_frequency
+0266 | lfo_8_keytrack_transpose
+0267 | lfo_8_keytrack_tune
+0268 | lfo_8_phase
+0269 | lfo_8_smooth_mode
+0270 | lfo_8_smooth_time
+0271 | lfo_8_stereo
+0272 | lfo_8_sync
+0273 | lfo_8_sync_type
+0274 | lfo_8_tempo
+0275 | macro_control_1
+0276 | macro_control_2
+0277 | macro_control_3
+0278 | macro_control_4
+0279 | mod_wheel
+0280 | modulation_10_amount
+0281 | modulation_10_bipolar
+0282 | modulation_10_bypass
+0283 | modulation_10_power
+0284 | modulation_10_stereo
+0285 | modulation_11_amount
+0286 | modulation_11_bipolar
+0287 | modulation_11_bypass
+0288 | modulation_11_power
+0289 | modulation_11_stereo
+0290 | modulation_12_amount
+0291 | modulation_12_bipolar
+0292 | modulation_12_bypass
+0293 | modulation_12_power
+0294 | modulation_12_stereo
+0295 | modulation_13_amount
+0296 | modulation_13_bipolar
+0297 | modulation_13_bypass
+0298 | modulation_13_power
+0299 | modulation_13_stereo
+0300 | modulation_14_amount
+0301 | modulation_14_bipolar
+0302 | modulation_14_bypass
+0303 | modulation_14_power
+0304 | modulation_14_stereo
+0305 | modulation_15_amount
+0306 | modulation_15_bipolar
+0307 | modulation_15_bypass
+0308 | modulation_15_power
+0309 | modulation_15_stereo
+0310 | modulation_16_amount
+0311 | modulation_16_bipolar
+0312 | modulation_16_bypass
+0313 | modulation_16_power
+0314 | modulation_16_stereo
+0315 | modulation_17_amount
+0316 | modulation_17_bipolar
+0317 | modulation_17_bypass
+0318 | modulation_17_power
+0319 | modulation_17_stereo
+0320 | modulation_18_amount
+0321 | modulation_18_bipolar
+0322 | modulation_18_bypass
+0323 | modulation_18_power
+0324 | modulation_18_stereo
+0325 | modulation_19_amount
+0326 | modulation_19_bipolar
+0327 | modulation_19_bypass
+0328 | modulation_19_power
+0329 | modulation_19_stereo
+0330 | modulation_1_amount
+0331 | modulation_1_bipolar
+0332 | modulation_1_bypass
+0333 | modulation_1_power
+0334 | modulation_1_stereo
+0335 | modulation_20_amount
+0336 | modulation_20_bipolar
+0337 | modulation_20_bypass
+0338 | modulation_20_power
+0339 | modulation_20_stereo
+0340 | modulation_21_amount
+0341 | modulation_21_bipolar
+0342 | modulation_21_bypass
+0343 | modulation_21_power
+0344 | modulation_21_stereo
+0345 | modulation_22_amount
+0346 | modulation_22_bipolar
+0347 | modulation_22_bypass
+0348 | modulation_22_power
+0349 | modulation_22_stereo
+0350 | modulation_23_amount
+0351 | modulation_23_bipolar
+0352 | modulation_23_bypass
+0353 | modulation_23_power
+0354 | modulation_23_stereo
+0355 | modulation_24_amount
+0356 | modulation_24_bipolar
+0357 | modulation_24_bypass
+0358 | modulation_24_power
+0359 | modulation_24_stereo
+0360 | modulation_25_amount
+0361 | modulation_25_bipolar
+0362 | modulation_25_bypass
+0363 | modulation_25_power
+0364 | modulation_25_stereo
+0365 | modulation_26_amount
+0366 | modulation_26_bipolar
+0367 | modulation_26_bypass
+0368 | modulation_26_power
+0369 | modulation_26_stereo
+0370 | modulation_27_amount
+0371 | modulation_27_bipolar
+0372 | modulation_27_bypass
+0373 | modulation_27_power
+0374 | modulation_27_stereo
+0375 | modulation_28_amount
+0376 | modulation_28_bipolar
+0377 | modulation_28_bypass
+0378 | modulation_28_power
+0379 | modulation_28_stereo
+0380 | modulation_29_amount
+0381 | modulation_29_bipolar
+0382 | modulation_29_bypass
+0383 | modulation_29_power
+0384 | modulation_29_stereo
+0385 | modulation_2_amount
+0386 | modulation_2_bipolar
+0387 | modulation_2_bypass
+0388 | modulation_2_power
+0389 | modulation_2_stereo
+0390 | modulation_30_amount
+0391 | modulation_30_bipolar
+0392 | modulation_30_bypass
+0393 | modulation_30_power
+0394 | modulation_30_stereo
+0395 | modulation_31_amount
+0396 | modulation_31_bipolar
+0397 | modulation_31_bypass
+0398 | modulation_31_power
+0399 | modulation_31_stereo
+0400 | modulation_32_amount
+0401 | modulation_32_bipolar
+0402 | modulation_32_bypass
+0403 | modulation_32_power
+0404 | modulation_32_stereo
+0405 | modulation_33_amount
+0406 | modulation_33_bipolar
+0407 | modulation_33_bypass
+0408 | modulation_33_power
+0409 | modulation_33_stereo
+0410 | modulation_34_amount
+0411 | modulation_34_bipolar
+0412 | modulation_34_bypass
+0413 | modulation_34_power
+0414 | modulation_34_stereo
+0415 | modulation_35_amount
+0416 | modulation_35_bipolar
+0417 | modulation_35_bypass
+0418 | modulation_35_power
+0419 | modulation_35_stereo
+0420 | modulation_36_amount
+0421 | modulation_36_bipolar
+0422 | modulation_36_bypass
+0423 | modulation_36_power
+0424 | modulation_36_stereo
+0425 | modulation_37_amount
+0426 | modulation_37_bipolar
+0427 | modulation_37_bypass
+0428 | modulation_37_power
+0429 | modulation_37_stereo
+0430 | modulation_38_amount
+0431 | modulation_38_bipolar
+0432 | modulation_38_bypass
+0433 | modulation_38_power
+0434 | modulation_38_stereo
+0435 | modulation_39_amount
+0436 | modulation_39_bipolar
+0437 | modulation_39_bypass
+0438 | modulation_39_power
+0439 | modulation_39_stereo
+0440 | modulation_3_amount
+0441 | modulation_3_bipolar
+0442 | modulation_3_bypass
+0443 | modulation_3_power
+0444 | modulation_3_stereo
+0445 | modulation_40_amount
+0446 | modulation_40_bipolar
+0447 | modulation_40_bypass
+0448 | modulation_40_power
+0449 | modulation_40_stereo
+0450 | modulation_41_amount
+0451 | modulation_41_bipolar
+0452 | modulation_41_bypass
+0453 | modulation_41_power
+0454 | modulation_41_stereo
+0455 | modulation_42_amount
+0456 | modulation_42_bipolar
+0457 | modulation_42_bypass
+0458 | modulation_42_power
+0459 | modulation_42_stereo
+0460 | modulation_43_amount
+0461 | modulation_43_bipolar
+0462 | modulation_43_bypass
+0463 | modulation_43_power
+0464 | modulation_43_stereo
+0465 | modulation_44_amount
+0466 | modulation_44_bipolar
+0467 | modulation_44_bypass
+0468 | modulation_44_power
+0469 | modulation_44_stereo
+0470 | modulation_45_amount
+0471 | modulation_45_bipolar
+0472 | modulation_45_bypass
+0473 | modulation_45_power
+0474 | modulation_45_stereo
+0475 | modulation_46_amount
+0476 | modulation_46_bipolar
+0477 | modulation_46_bypass
+0478 | modulation_46_power
+0479 | modulation_46_stereo
+0480 | modulation_47_amount
+0481 | modulation_47_bipolar
+0482 | modulation_47_bypass
+0483 | modulation_47_power
+0484 | modulation_47_stereo
+0485 | modulation_48_amount
+0486 | modulation_48_bipolar
+0487 | modulation_48_bypass
+0488 | modulation_48_power
+0489 | modulation_48_stereo
+0490 | modulation_49_amount
+0491 | modulation_49_bipolar
+0492 | modulation_49_bypass
+0493 | modulation_49_power
+0494 | modulation_49_stereo
+0495 | modulation_4_amount
+0496 | modulation_4_bipolar
+0497 | modulation_4_bypass
+0498 | modulation_4_power
+0499 | modulation_4_stereo
+0500 | modulation_50_amount
+0501 | modulation_50_bipolar
+0502 | modulation_50_bypass
+0503 | modulation_50_power
+0504 | modulation_50_stereo
+0505 | modulation_51_amount
+0506 | modulation_51_bipolar
+0507 | modulation_51_bypass
+0508 | modulation_51_power
+0509 | modulation_51_stereo
+0510 | modulation_52_amount
+0511 | modulation_52_bipolar
+0512 | modulation_52_bypass
+0513 | modulation_52_power
+0514 | modulation_52_stereo
+0515 | modulation_53_amount
+0516 | modulation_53_bipolar
+0517 | modulation_53_bypass
+0518 | modulation_53_power
+0519 | modulation_53_stereo
+0520 | modulation_54_amount
+0521 | modulation_54_bipolar
+0522 | modulation_54_bypass
+0523 | modulation_54_power
+0524 | modulation_54_stereo
+0525 | modulation_55_amount
+0526 | modulation_55_bipolar
+0527 | modulation_55_bypass
+0528 | modulation_55_power
+0529 | modulation_55_stereo
+0530 | modulation_56_amount
+0531 | modulation_56_bipolar
+0532 | modulation_56_bypass
+0533 | modulation_56_power
+0534 | modulation_56_stereo
+0535 | modulation_57_amount
+0536 | modulation_57_bipolar
+0537 | modulation_57_bypass
+0538 | modulation_57_power
+0539 | modulation_57_stereo
+0540 | modulation_58_amount
+0541 | modulation_58_bipolar
+0542 | modulation_58_bypass
+0543 | modulation_58_power
+0544 | modulation_58_stereo
+0545 | modulation_59_amount
+0546 | modulation_59_bipolar
+0547 | modulation_59_bypass
+0548 | modulation_59_power
+0549 | modulation_59_stereo
+0550 | modulation_5_amount
+0551 | modulation_5_bipolar
+0552 | modulation_5_bypass
+0553 | modulation_5_power
+0554 | modulation_5_stereo
+0555 | modulation_60_amount
+0556 | modulation_60_bipolar
+0557 | modulation_60_bypass
+0558 | modulation_60_power
+0559 | modulation_60_stereo
+0560 | modulation_61_amount
+0561 | modulation_61_bipolar
+0562 | modulation_61_bypass
+0563 | modulation_61_power
+0564 | modulation_61_stereo
+0565 | modulation_62_amount
+0566 | modulation_62_bipolar
+0567 | modulation_62_bypass
+0568 | modulation_62_power
+0569 | modulation_62_stereo
+0570 | modulation_63_amount
+0571 | modulation_63_bipolar
+0572 | modulation_63_bypass
+0573 | modulation_63_power
+0574 | modulation_63_stereo
+0575 | modulation_64_amount
+0576 | modulation_64_bipolar
+0577 | modulation_64_bypass
+0578 | modulation_64_power
+0579 | modulation_64_stereo
+0580 | modulation_6_amount
+0581 | modulation_6_bipolar
+0582 | modulation_6_bypass
+0583 | modulation_6_power
+0584 | modulation_6_stereo
+0585 | modulation_7_amount
+0586 | modulation_7_bipolar
+0587 | modulation_7_bypass
+0588 | modulation_7_power
+0589 | modulation_7_stereo
+0590 | modulation_8_amount
+0591 | modulation_8_bipolar
+0592 | modulation_8_bypass
+0593 | modulation_8_power
+0594 | modulation_8_stereo
+0595 | modulation_9_amount
+0596 | modulation_9_bipolar
+0597 | modulation_9_bypass
+0598 | modulation_9_power
+0599 | modulation_9_stereo
+0600 | mpe_enabled
+0601 | osc_1_destination
+0602 | osc_1_detune_power
+0603 | osc_1_detune_range
+0604 | osc_1_distortion_amount
+0605 | osc_1_distortion_phase
+0606 | osc_1_distortion_spread
+0607 | osc_1_distortion_type
+0608 | osc_1_frame_spread
+0609 | osc_1_level
+0610 | osc_1_midi_track
+0611 | osc_1_on
+0612 | osc_1_pan
+0613 | osc_1_phase
+0614 | osc_1_random_phase
+0615 | osc_1_smooth_interpolation
+0616 | osc_1_spectral_morph_amount
+0617 | osc_1_spectral_morph_spread
+0618 | osc_1_spectral_morph_type
+0619 | osc_1_spectral_unison
+0620 | osc_1_stack_style
+0621 | osc_1_stereo_spread
+0622 | osc_1_transpose
+0623 | osc_1_transpose_quantize
+0624 | osc_1_tune
+0625 | osc_1_unison_blend
+0626 | osc_1_unison_detune
+0627 | osc_1_unison_voices
+0628 | osc_1_view_2d
+0629 | osc_1_wave_frame
+0630 | osc_2_destination
+0631 | osc_2_detune_power
+0632 | osc_2_detune_range
+0633 | osc_2_distortion_amount
+0634 | osc_2_distortion_phase
+0635 | osc_2_distortion_spread
+0636 | osc_2_distortion_type
+0637 | osc_2_frame_spread
+0638 | osc_2_level
+0639 | osc_2_midi_track
+0640 | osc_2_on
+0641 | osc_2_pan
+0642 | osc_2_phase
+0643 | osc_2_random_phase
+0644 | osc_2_smooth_interpolation
+0645 | osc_2_spectral_morph_amount
+0646 | osc_2_spectral_morph_spread
+0647 | osc_2_spectral_morph_type
+0648 | osc_2_spectral_unison
+0649 | osc_2_stack_style
+0650 | osc_2_stereo_spread
+0651 | osc_2_transpose
+0652 | osc_2_transpose_quantize
+0653 | osc_2_tune
+0654 | osc_2_unison_blend
+0655 | osc_2_unison_detune
+0656 | osc_2_unison_voices
+0657 | osc_2_view_2d
+0658 | osc_2_wave_frame
+0659 | osc_3_destination
+0660 | osc_3_detune_power
+0661 | osc_3_detune_range
+0662 | osc_3_distortion_amount
+0663 | osc_3_distortion_phase
+0664 | osc_3_distortion_spread
+0665 | osc_3_distortion_type
+0666 | osc_3_frame_spread
+0667 | osc_3_level
+0668 | osc_3_midi_track
+0669 | osc_3_on
+0670 | osc_3_pan
+0671 | osc_3_phase
+0672 | osc_3_random_phase
+0673 | osc_3_smooth_interpolation
+0674 | osc_3_spectral_morph_amount
+0675 | osc_3_spectral_morph_spread
+0676 | osc_3_spectral_morph_type
+0677 | osc_3_spectral_unison
+0678 | osc_3_stack_style
+0679 | osc_3_stereo_spread
+0680 | osc_3_transpose
+0681 | osc_3_transpose_quantize
+0682 | osc_3_tune
+0683 | osc_3_unison_blend
+0684 | osc_3_unison_detune
+0685 | osc_3_unison_voices
+0686 | osc_3_view_2d
+0687 | osc_3_wave_frame
+0688 | oversampling
+0689 | phaser_blend
+0690 | phaser_center
+0691 | phaser_dry_wet
+0692 | phaser_feedback
+0693 | phaser_frequency
+0694 | phaser_mod_depth
+0695 | phaser_on
+0696 | phaser_phase_offset
+0697 | phaser_sync
+0698 | phaser_tempo
+0699 | pitch_bend_range
+0700 | pitch_wheel
+0701 | polyphony
+0702 | portamento_force
+0703 | portamento_scale
+0704 | portamento_slope
+0705 | portamento_time
+0706 | random_1_frequency
+0707 | random_1_keytrack_transpose
+0708 | random_1_keytrack_tune
+0709 | random_1_stereo
+0710 | random_1_style
+0711 | random_1_sync
+0712 | random_1_sync_type
+0713 | random_1_tempo
+0714 | random_2_frequency
+0715 | random_2_keytrack_transpose
+0716 | random_2_keytrack_tune
+0717 | random_2_stereo
+0718 | random_2_style
+0719 | random_2_sync
+0720 | random_2_sync_type
+0721 | random_2_tempo
+0722 | random_3_frequency
+0723 | random_3_keytrack_transpose
+0724 | random_3_keytrack_tune
+0725 | random_3_stereo
+0726 | random_3_style
+0727 | random_3_sync
+0728 | random_3_sync_type
+0729 | random_3_tempo
+0730 | random_4_frequency
+0731 | random_4_keytrack_transpose
+0732 | random_4_keytrack_tune
+0733 | random_4_stereo
+0734 | random_4_style
+0735 | random_4_sync
+0736 | random_4_sync_type
+0737 | random_4_tempo
+0738 | reverb_chorus_amount
+0739 | reverb_chorus_frequency
+0740 | reverb_decay_time
+0741 | reverb_delay
+0742 | reverb_dry_wet
+0743 | reverb_high_shelf_cutoff
+0744 | reverb_high_shelf_gain
+0745 | reverb_low_shelf_cutoff
+0746 | reverb_low_shelf_gain
+0747 | reverb_on
+0748 | reverb_pre_high_cutoff
+0749 | reverb_pre_low_cutoff
+0750 | reverb_size
+0751 | sample_bounce
+0752 | sample_destination
+0753 | sample_keytrack
+0754 | sample_level
+0755 | sample_loop
+0756 | sample_on
+0757 | sample_pan
+0758 | sample_random_phase
+0759 | sample_transpose
+0760 | sample_transpose_quantize
+0761 | sample_tune
+0762 | stereo_mode
+0763 | stereo_routing
+0764 | velocity_track
+0765 | view_spectrogram
+0766 | voice_amplitude
+0767 | voice_override
+0768 | voice_priority
+0769 | voice_transpose
+0770 | voice_tune
+0771 | volume
