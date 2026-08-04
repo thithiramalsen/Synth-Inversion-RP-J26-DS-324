@@ -1,7 +1,7 @@
 {
   "dataset_name": "pilot_v1",
-  "created_utc": "2026-08-04T08:26:58.976410+00:00",
-  "sample_count": 128,
+  "created_utc": "2026-08-04T09:19:18.319533+00:00",
+  "sample_count": 1024,
   "sampling_method": "Scrambled Sobol sequence generated at the next power of two and truncated to the requested count.",
   "sampling_seed": 20260803,
   "sample_rate": 44100,
@@ -196,6 +196,8 @@
   },
   "silence_threshold_dbfs": -60.0,
   "clipping_threshold": 1.0,
+  "dc_offset_warning_threshold": 0.005,
+  "dc_to_rms_warning_threshold": 0.2,
   "base_preset": "generation\\presets\\base_basic_shapes_RP.vital",
   "base_preset_sha256": "a1152f555f47eaf1acd68f572530198420d88ba4cb93fdefa2fae7eee3608241",
   "versions": {

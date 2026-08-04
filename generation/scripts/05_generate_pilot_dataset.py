@@ -46,6 +46,8 @@ from generation.params_config import (  # noqa: E402
 
 SILENCE_THRESHOLD_DBFS = -60.0
 CLIPPING_THRESHOLD = 1.0
+DC_OFFSET_WARNING_THRESHOLD = 0.005
+DC_TO_RMS_WARNING_THRESHOLD = 0.20
 CHECKPOINT_INTERVAL = 10
 
 CONFIG_PATH = PILOT_MANIFEST_CSV.parent / "pilot_v1_config.json"
@@ -365,6 +367,12 @@ def calculate_audio_metrics(
         np.mean(audio.astype(np.float64))
     )
 
+    dc_to_rms_ratio = (
+        abs(dc_offset) / rms_value
+        if rms_value > 0
+        else 0.0
+    )
+
     stereo_difference_rms = rms(
         audio[0] - audio[1]
     )
@@ -378,6 +386,11 @@ def calculate_audio_metrics(
         "stereo_difference_rms": stereo_difference_rms,
         "is_silent": dbfs(rms_value) < SILENCE_THRESHOLD_DBFS,
         "is_clipped": peak_value >= CLIPPING_THRESHOLD,
+        "dc_to_rms_ratio": dc_to_rms_ratio,
+        "has_large_dc_offset": (
+            abs(dc_offset) >= DC_OFFSET_WARNING_THRESHOLD
+            or dc_to_rms_ratio >= DC_TO_RMS_WARNING_THRESHOLD
+),
     }
 
 
@@ -430,6 +443,14 @@ def save_dataset_config(
         },
         "silence_threshold_dbfs": SILENCE_THRESHOLD_DBFS,
         "clipping_threshold": CLIPPING_THRESHOLD,
+
+        "dc_offset_warning_threshold": (
+            DC_OFFSET_WARNING_THRESHOLD
+        ),
+        "dc_to_rms_warning_threshold": (
+            DC_TO_RMS_WARNING_THRESHOLD
+        ),
+        
         "base_preset": str(
             BASE_PRESET.relative_to(PROJECT_ROOT)
         ),
@@ -633,6 +654,21 @@ def main() -> None:
         for row in rows
     )
 
+    large_dc_count = sum(
+        bool(row["has_large_dc_offset"])
+        for row in rows
+    )
+
+    maximum_absolute_dc_offset = max(
+        abs(float(row["dc_offset"]))
+        for row in rows
+    )
+
+    maximum_dc_to_rms_ratio = max(
+        float(row["dc_to_rms_ratio"])
+        for row in rows
+    )
+
     stereo_identical_count = sum(
         float(row["stereo_difference_rms"]) < 1e-10
         for row in rows
@@ -644,6 +680,9 @@ def main() -> None:
         "samples_per_second": len(rows) / elapsed,
         "silent_samples": silent_count,
         "clipped_samples": clipped_count,
+        "large_dc_offset_samples": large_dc_count,
+        "maximum_absolute_dc_offset": maximum_absolute_dc_offset,
+        "maximum_dc_to_rms_ratio": maximum_dc_to_rms_ratio,
         "identical_stereo_channel_samples": (
             stereo_identical_count
         ),
@@ -701,6 +740,15 @@ def main() -> None:
     )
     print(f"Silent samples: {silent_count}")
     print(f"Clipped samples: {clipped_count}")
+    print(f"Large DC-offset samples: {large_dc_count}")
+    print(
+        "Maximum absolute DC offset: "
+        f"{maximum_absolute_dc_offset:.6f}"
+    )   
+    print(
+        "Maximum DC-to-RMS ratio: "
+        f"{maximum_dc_to_rms_ratio:.4f}"
+    )
     print(
         "Identical stereo-channel samples: "
         f"{stereo_identical_count}/{len(rows)}"
