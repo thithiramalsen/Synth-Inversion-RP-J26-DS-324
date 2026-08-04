@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from email.mime import audio
 import hashlib
 import json
 import math
@@ -50,6 +51,17 @@ CHECKPOINT_INTERVAL = 10
 CONFIG_PATH = PILOT_MANIFEST_CSV.parent / "pilot_v1_config.json"
 SUMMARY_PATH = PILOT_MANIFEST_CSV.parent / "pilot_v1_summary.json"
 REVIEW_LIST_PATH = PILOT_MANIFEST_CSV.parent / "pilot_v1_review_samples.txt"
+
+
+# Sample rate helper function for Vita synths that support it. Some versions of Vita do not have this method.
+def create_synth() -> vita.Synth:
+    """Create a Vita synth and set the sample rate when supported."""
+    synth = vita.Synth()
+
+    if hasattr(synth, "set_sample_rate"):
+        synth.set_sample_rate(SAMPLE_RATE)
+
+    return synth
 
 
 def parse_args() -> argparse.Namespace:
@@ -179,8 +191,7 @@ def validate_configuration() -> None:
     if not PARAMS:
         raise ValueError("PARAMS is empty.")
 
-    synth = vita.Synth()
-    synth.set_sample_rate(SAMPLE_RATE)
+    synth = create_synth()
 
     if not synth.load_preset(str(BASE_PRESET)):
         raise RuntimeError(
@@ -406,7 +417,7 @@ def save_dataset_config(
         "render_duration_seconds": RENDER_DURATION,
         "audio_format": "WAV",
         "audio_subtype": "32-bit float",
-        "channels": 2,
+        "channels": 1,
         "parameter_order": parameter_names,
         "parameters": PARAMS,
         "fixed_controls": {
@@ -524,8 +535,7 @@ def main() -> None:
     ):
         sample_id = f"pilot_v1_{sample_index:05d}"
 
-        synth = vita.Synth()
-        synth.set_sample_rate(SAMPLE_RATE)
+        synth = create_synth()
 
         if not synth.load_preset(str(BASE_PRESET)):
             raise RuntimeError(
@@ -549,11 +559,27 @@ def main() -> None:
             / f"{sample_id}.wav"
         )
 
-        # Vita returns audio shaped (channels, samples).
-        # SoundFile expects (samples, channels).
+
+        # Dataset V1 produces identical left and right channels.
+        # Store one channel to avoid duplicating the same signal.
+        mono_audio = audio[0]
+
+        sf.write(
+                file=audio_path,
+                data=mono_audio,
+                samplerate=SAMPLE_RATE,
+                subtype="FLOAT",
+                format="WAV",
+        )
+
+
+        # Dataset V1 produces identical left and right channels.
+        # Store one channel to avoid duplicating the same signal.
+        mono_audio = audio[0]
+
         sf.write(
             file=audio_path,
-            data=audio.T,
+            data=mono_audio,
             samplerate=SAMPLE_RATE,
             subtype="FLOAT",
             format="WAV",
@@ -566,7 +592,7 @@ def main() -> None:
                 audio_path.relative_to(PROJECT_ROOT)
             ),
             "sample_rate": SAMPLE_RATE,
-            "channels": 2,
+            "channels": 1,
             "midi_note": MIDI_NOTE,
             "velocity": VELOCITY,
             "note_duration_seconds": NOTE_DURATION,

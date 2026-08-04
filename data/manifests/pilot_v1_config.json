@@ -1,0 +1,209 @@
+{
+  "dataset_name": "pilot_v1",
+  "created_utc": "2026-08-04T08:26:58.976410+00:00",
+  "sample_count": 128,
+  "sampling_method": "Scrambled Sobol sequence generated at the next power of two and truncated to the requested count.",
+  "sampling_seed": 20260803,
+  "sample_rate": 44100,
+  "midi_note": 60,
+  "velocity": 0.8,
+  "note_duration_seconds": 1.5,
+  "render_duration_seconds": 3.0,
+  "audio_format": "WAV",
+  "audio_subtype": "32-bit float",
+  "channels": 1,
+  "parameter_order": [
+    "wave_frame",
+    "filter_cutoff",
+    "filter_resonance",
+    "filter_drive",
+    "amp_attack",
+    "amp_decay",
+    "amp_sustain",
+    "amp_release"
+  ],
+  "parameters": {
+    "wave_frame": {
+      "control": "osc_1_wave_frame",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 1.0,
+      "description": "Position within the fixed Basic Shapes wavetable."
+    },
+    "filter_cutoff": {
+      "control": "filter_1_cutoff",
+      "mode": "normalized",
+      "min": 0.3,
+      "max": 0.85,
+      "description": "Analog 12 dB filter cutoff. Extremely low values are excluded to reduce near-silent samples."
+    },
+    "filter_resonance": {
+      "control": "filter_1_resonance",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 0.8,
+      "description": "Analog filter resonance."
+    },
+    "filter_drive": {
+      "control": "filter_1_drive",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 0.75,
+      "description": "Internal drive of Filter 1."
+    },
+    "amp_attack": {
+      "control": "env_1_attack",
+      "mode": "normalized",
+      "min": 0.05,
+      "max": 0.45,
+      "description": "Amplitude-envelope attack. The upper extreme is restricted to fit the three-second render."
+    },
+    "amp_decay": {
+      "control": "env_1_decay",
+      "mode": "normalized",
+      "min": 0.15,
+      "max": 0.5,
+      "description": "Amplitude-envelope decay."
+    },
+    "amp_sustain": {
+      "control": "env_1_sustain",
+      "mode": "normalized",
+      "min": 0.2,
+      "max": 1.0,
+      "description": "Amplitude-envelope sustain. Very low sustain values are excluded from the first pilot."
+    },
+    "amp_release": {
+      "control": "env_1_release",
+      "mode": "normalized",
+      "min": 0.1,
+      "max": 0.45,
+      "description": "Amplitude-envelope release, restricted so most of the tail fits inside the render."
+    }
+  },
+  "fixed_controls": {
+    "osc_1_on": {
+      "mode": "raw",
+      "value": 1.0
+    },
+    "osc_2_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_3_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "sample_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_destination": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_transpose": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_tune": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_random_phase": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_level": {
+      "mode": "normalized",
+      "value": 0.5
+    },
+    "osc_1_unison_voices": {
+      "mode": "raw",
+      "value": 1.0
+    },
+    "osc_1_unison_detune": {
+      "mode": "normalized",
+      "value": 0.0
+    },
+    "filter_1_on": {
+      "mode": "raw",
+      "value": 1.0
+    },
+    "filter_2_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_1_model": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_1_style": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_1_mix": {
+      "mode": "raw",
+      "value": 1.0
+    },
+    "filter_1_keytrack": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_1_blend": {
+      "mode": "normalized",
+      "value": 0.0
+    },
+    "chorus_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "compressor_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "delay_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "distortion_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "eq_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_fx_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "flanger_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "phaser_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "reverb_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "polyphony": {
+      "mode": "raw",
+      "value": 1.0
+    }
+  },
+  "silence_threshold_dbfs": -60.0,
+  "clipping_threshold": 1.0,
+  "base_preset": "generation\\presets\\base_basic_shapes_RP.vital",
+  "base_preset_sha256": "a1152f555f47eaf1acd68f572530198420d88ba4cb93fdefa2fae7eee3608241",
+  "versions": {
+    "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+    "vita": "0.0.5",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "pandas": "3.0.5",
+    "soundfile": "0.14.0"
+  }
+}
