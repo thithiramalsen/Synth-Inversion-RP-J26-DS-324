@@ -1,0 +1,22 @@
+{
+  "study_id": "pilot_quality",
+  "study_type": "pilot_quality",
+  "short_title": "Pilot quality check",
+  "title": "Pilot Listening Evaluation",
+  "intro": "Listen carefully to each sound and record the first clear issue you notice, if any.",
+  "internal_testing_notice": "Internal development study only. Do not recruit external participants until the supervisor and ethics process permits it.",
+  "instructions": [
+    "Use headphones in a quiet environment if available.",
+    "Play every sample at least once before answering.",
+    "Report the first obvious technical problem you hear, then rate the overall quality.",
+    "Your response is saved after each trial and an interrupted session can be resumed on this browser."
+  ],
+  "questions": {
+    "issue_type": {
+      "label": "Does this sample contain an obvious problem?",
+      "options": [["none", "No obvious problem"], ["silence", "Silence or near-silence"], ["click_pop", "Click or pop"], ["clipping", "Clipping or unwanted distortion"], ["pitch", "Incorrect or unstable pitch"], ["other", "Other"]]
+    },
+    "quality_rating": {"label": "Overall sample quality", "min": 1, "max": 5, "low_label": "Very poor", "high_label": "Very good"},
+    "comment": {"label": "Optional comment", "max_length": 1000}
+  }
+}

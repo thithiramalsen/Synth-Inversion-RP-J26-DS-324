@@ -1,14 +1,27 @@
+from contextlib import contextmanager
+import os
 from pathlib import Path
 import sqlite3
+from collections.abc import Iterator
 
 
-DATABASE_PATH = Path(__file__).with_name("survey.db")
+DATABASE_PATH = Path(
+    os.environ.get("SURVEY_DATABASE_PATH", Path(__file__).with_name("survey.db"))
+)
 
 
-def get_connection() -> sqlite3.Connection:
+@contextmanager
+def get_connection() -> Iterator[sqlite3.Connection]:
     connection = sqlite3.connect(DATABASE_PATH)
     connection.row_factory = sqlite3.Row
-    return connection
+    try:
+        yield connection
+        connection.commit()
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
 
 
 def initialize_database() -> None:
@@ -24,6 +37,8 @@ def initialize_database() -> None:
                 started_at TEXT NOT NULL,
                 completed_at TEXT
             );
+
+            -- Kept for compatibility with the original pilot database.
             CREATE TABLE IF NOT EXISTS responses (
                 response_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 participant_id TEXT NOT NULL,
@@ -35,6 +50,21 @@ def initialize_database() -> None:
                 quality_rating INTEGER NOT NULL,
                 comment TEXT NOT NULL DEFAULT '',
                 play_count INTEGER NOT NULL,
+                started_at TEXT NOT NULL,
+                submitted_at TEXT NOT NULL,
+                UNIQUE(session_id, trial_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS study_responses (
+                response_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                participant_id TEXT NOT NULL,
+                session_id TEXT NOT NULL,
+                study_id TEXT NOT NULL,
+                trial_id TEXT NOT NULL,
+                sample_id TEXT NOT NULL,
+                trial_order INTEGER NOT NULL,
+                answers_json TEXT NOT NULL,
+                play_counts_json TEXT NOT NULL,
                 started_at TEXT NOT NULL,
                 submitted_at TEXT NOT NULL,
                 UNIQUE(session_id, trial_id)
