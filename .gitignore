@@ -1,3 +1,10 @@
+# Survey local/runtime files
+survey/frontend/node_modules/
+survey/frontend/dist/
+survey/backend/*.db
+survey/backend/__pycache__/
+survey/backend/.venv/
+survey/.env
 # Virtual environments
 venv/
 .venv/
