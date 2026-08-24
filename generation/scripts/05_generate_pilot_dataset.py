@@ -429,7 +429,7 @@ def save_dataset_config(
         "note_duration_seconds": NOTE_DURATION,
         "render_duration_seconds": RENDER_DURATION,
         "audio_format": "WAV",
-        "audio_subtype": "32-bit float",
+        "audio_subtype": "16-bit PCM",
         "channels": 1,
         "parameter_order": parameter_names,
         "parameters": PARAMS,
@@ -586,23 +586,10 @@ def main() -> None:
         mono_audio = audio[0]
 
         sf.write(
-                file=audio_path,
-                data=mono_audio,
-                samplerate=SAMPLE_RATE,
-                subtype="FLOAT",
-                format="WAV",
-        )
-
-
-        # Dataset V1 produces identical left and right channels.
-        # Store one channel to avoid duplicating the same signal.
-        mono_audio = audio[0]
-
-        sf.write(
             file=audio_path,
             data=mono_audio,
             samplerate=SAMPLE_RATE,
-            subtype="FLOAT",
+            subtype="PCM_16",
             format="WAV",
         )
 

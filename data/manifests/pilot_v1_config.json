@@ -1,7 +1,7 @@
 {
   "dataset_name": "pilot_v1",
-  "created_utc": "2026-08-04T09:19:18.319533+00:00",
-  "sample_count": 1024,
+  "created_utc": "2026-08-24T17:35:12.934924+00:00",
+  "sample_count": 128,
   "sampling_method": "Scrambled Sobol sequence generated at the next power of two and truncated to the requested count.",
   "sampling_seed": 20260803,
   "sample_rate": 44100,
@@ -10,7 +10,7 @@
   "note_duration_seconds": 1.5,
   "render_duration_seconds": 3.0,
   "audio_format": "WAV",
-  "audio_subtype": "32-bit float",
+  "audio_subtype": "16-bit PCM",
   "channels": 1,
   "parameter_order": [
     "wave_frame",

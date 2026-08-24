@@ -1,12 +1,12 @@
 Random samples selected for manual listening:
 
-pilot_v1_00093 | data\raw\audio\pilot_v1\pilot_v1_00093.wav | RMS -21.34 dBFS | Peak -13.22 dBFS
-pilot_v1_00227 | data\raw\audio\pilot_v1\pilot_v1_00227.wav | RMS -39.92 dBFS | Peak -11.28 dBFS
-pilot_v1_00230 | data\raw\audio\pilot_v1\pilot_v1_00230.wav | RMS -25.01 dBFS | Peak -16.65 dBFS
-pilot_v1_00243 | data\raw\audio\pilot_v1\pilot_v1_00243.wav | RMS -27.49 dBFS | Peak -12.61 dBFS
-pilot_v1_00391 | data\raw\audio\pilot_v1\pilot_v1_00391.wav | RMS -27.17 dBFS | Peak -13.61 dBFS
-pilot_v1_00556 | data\raw\audio\pilot_v1\pilot_v1_00556.wav | RMS -33.20 dBFS | Peak -15.66 dBFS
-pilot_v1_00645 | data\raw\audio\pilot_v1\pilot_v1_00645.wav | RMS -25.43 dBFS | Peak -15.23 dBFS
-pilot_v1_00661 | data\raw\audio\pilot_v1\pilot_v1_00661.wav | RMS -30.82 dBFS | Peak -14.96 dBFS
-pilot_v1_00742 | data\raw\audio\pilot_v1\pilot_v1_00742.wav | RMS -29.16 dBFS | Peak -15.11 dBFS
-pilot_v1_00960 | data\raw\audio\pilot_v1\pilot_v1_00960.wav | RMS -21.44 dBFS | Peak -14.09 dBFS
+pilot_v1_00011 | data\raw\audio\pilot_v1\pilot_v1_00011.wav | RMS -24.24 dBFS | Peak -11.74 dBFS
+pilot_v1_00026 | data\raw\audio\pilot_v1\pilot_v1_00026.wav | RMS -29.32 dBFS | Peak -19.33 dBFS
+pilot_v1_00028 | data\raw\audio\pilot_v1\pilot_v1_00028.wav | RMS -30.00 dBFS | Peak -20.20 dBFS
+pilot_v1_00030 | data\raw\audio\pilot_v1\pilot_v1_00030.wav | RMS -27.21 dBFS | Peak -16.10 dBFS
+pilot_v1_00047 | data\raw\audio\pilot_v1\pilot_v1_00047.wav | RMS -24.40 dBFS | Peak -13.22 dBFS
+pilot_v1_00066 | data\raw\audio\pilot_v1\pilot_v1_00066.wav | RMS -26.40 dBFS | Peak -14.76 dBFS
+pilot_v1_00078 | data\raw\audio\pilot_v1\pilot_v1_00078.wav | RMS -25.16 dBFS | Peak -14.68 dBFS
+pilot_v1_00079 | data\raw\audio\pilot_v1\pilot_v1_00079.wav | RMS -33.57 dBFS | Peak -13.29 dBFS
+pilot_v1_00087 | data\raw\audio\pilot_v1\pilot_v1_00087.wav | RMS -21.61 dBFS | Peak -13.93 dBFS
+pilot_v1_00120 | data\raw\audio\pilot_v1\pilot_v1_00120.wav | RMS -23.54 dBFS | Peak -14.81 dBFS
