@@ -20,6 +20,9 @@ function blankAnswers(study) {
   if (study?.study_type === 'c1_descriptors') {
     return { dark_bright: '', smooth_rough: '', thin_warm: '', short_sustained: '', comment: '' }
   }
+  if (study?.study_type === 'c4_triplets') {
+    return { choice: '', confidence: '', comment: '' }
+  }
   return { issue_type: '', quality_rating: '', comment: '' }
 }
 
@@ -120,13 +123,21 @@ function App() {
   }
 
   function validateBeforeSubmit() {
-    if (!playCounts.sample) return 'Please listen to the sample before continuing.'
+    const unplayedSources = trial.audio_sources.filter((source) => !playCounts[source.id])
+    if (unplayedSources.length) {
+      return study.study_type === 'c4_triplets'
+        ? 'Please listen to the reference and both candidates before continuing.'
+        : 'Please listen to the sample before continuing.'
+    }
     if (study.study_type === 'pilot_quality' && (!answers.issue_type || !answers.quality_rating)) {
       return 'Please answer both required questions before continuing.'
     }
     if (study.study_type === 'c1_descriptors') {
       const missing = study.questions.descriptor_scales.some((scale) => !answers[scale.id])
       if (missing) return 'Please complete all four descriptor scales before continuing.'
+    }
+    if (study.study_type === 'c4_triplets' && (!answers.choice || !answers.confidence)) {
+      return 'Please choose Candidate A or B and provide a confidence rating.'
     }
     return ''
   }
@@ -141,8 +152,11 @@ function App() {
     setIsSubmitting(true)
     setError('')
     try {
+      const numericKeys = new Set([
+        'quality_rating', 'dark_bright', 'smooth_rough', 'thin_warm', 'short_sustained', 'confidence',
+      ])
       const numericAnswers = Object.fromEntries(
-        Object.entries(answers).map(([key, value]) => [key, key === 'comment' || key === 'issue_type' ? value : Number(value)]),
+        Object.entries(answers).map(([key, value]) => [key, numericKeys.has(key) ? Number(value) : value]),
       )
       const response = await fetch(`${API}/api/session/${session.session_id}/response`, {
         method: 'POST',
@@ -241,21 +255,22 @@ function Instructions({ study, session, onBegin, onBack, error }) {
 }
 
 function Trial({ study, trial, progress, setError, answers, setAnswers, playCounts, recordPlay, error, isSubmitting, onSubmit, onExit }) {
+  const isTriplet = study.study_type === 'c4_triplets'
   return <main className="shell trial-shell">
     <header className="topline"><span>{study.title}</span><span>{progress.current} / {progress.total}</span></header>
     <div className="progress" aria-label={`Progress: ${progress.current} of ${progress.total}`}><span style={{ width: `${(progress.current / progress.total) * 100}%` }} /></div>
-    <section className="trial-heading"><p className="eyebrow">Listen and rate</p><h1>Sample {progress.current} of {progress.total}</h1><p className="sample-id">Trial {String(trial.trial_order).padStart(3, '0')}</p></section>
+    <section className="trial-heading"><p className="eyebrow">{isTriplet ? 'Listen and compare' : 'Listen and rate'}</p><h1>{isTriplet ? 'Triplet' : 'Sample'} {progress.current} of {progress.total}</h1><p className="sample-id">Trial {String(trial.trial_order).padStart(3, '0')}</p></section>
     <form onSubmit={onSubmit} className="form">
-      <div className="audio-stack">
-        {trial.audio_sources.map((source) => <div className="audio-panel" key={source.id}>
-          <div><span className="audio-kicker">{source.label}</span><strong>Listen carefully</strong><small>{playCounts[source.id] || 0} playback {(playCounts[source.id] || 0) === 1 ? 'start' : 'starts'} recorded</small></div>
-          <audio src={`${API}${source.audio_url}`} controls preload="metadata" onPlay={() => recordPlay(source.id)} onError={() => setError('This audio could not be loaded. Check that the backend is running on port 8000.')} />
-        </div>)}
-      </div>
-      <p className="field-help step-intro">Replay the audio as needed while recording your impression.</p>
-      {study.study_type === 'pilot_quality'
-        ? <PilotQuestions study={study} answers={answers} setAnswers={setAnswers} />
-        : <DescriptorQuestions study={study} answers={answers} setAnswers={setAnswers} />}
+      {isTriplet
+        ? <div className="audio-stack triplet-stack">
+          <AudioPanel source={trial.audio_sources[0]} playCount={playCounts.reference} recordPlay={recordPlay} setError={setError} emphasis />
+          <div className="candidate-audio-grid">{trial.audio_sources.slice(1).map((source) => <AudioPanel key={source.id} source={source} playCount={playCounts[source.id]} recordPlay={recordPlay} setError={setError} />)}</div>
+        </div>
+        : <div className="audio-stack">{trial.audio_sources.map((source) => <AudioPanel key={source.id} source={source} playCount={playCounts[source.id]} recordPlay={recordPlay} setError={setError} />)}</div>}
+      <p className="field-help step-intro">{isTriplet ? 'Replay any sound as needed, then compare each candidate with the reference.' : 'Replay the audio as needed while recording your impression.'}</p>
+      {study.study_type === 'pilot_quality' && <PilotQuestions study={study} answers={answers} setAnswers={setAnswers} />}
+      {study.study_type === 'c1_descriptors' && <DescriptorQuestions study={study} answers={answers} setAnswers={setAnswers} />}
+      {study.study_type === 'c4_triplets' && <TripletQuestions study={study} answers={answers} setAnswers={setAnswers} />}
       <label className="comment-label">{study.questions.comment.label}
         <textarea value={answers.comment || ''} maxLength={study.questions.comment.max_length} onChange={(event) => setAnswers({ ...answers, comment: event.target.value })} rows="3" />
       </label>
@@ -263,6 +278,13 @@ function Trial({ study, trial, progress, setError, answers, setAnswers, playCoun
       <div className="button-row"><button type="button" className="text-button" onClick={onExit}>Exit study</button><button className="primary next" disabled={isSubmitting}>{isSubmitting ? 'Saving...' : progress.current === progress.total ? 'Finish study' : 'Save and continue'}</button></div>
     </form>
   </main>
+}
+
+function AudioPanel({ source, playCount = 0, recordPlay, setError, emphasis = false }) {
+  return <div className={emphasis ? 'audio-panel reference-audio' : 'audio-panel'}>
+    <div><span className="audio-kicker">{source.label}</span><strong>{emphasis ? 'Match against this sound' : source.id.startsWith('candidate') ? 'Compare with the reference' : 'Listen carefully'}</strong><small>{playCount} playback {playCount === 1 ? 'start' : 'starts'} recorded</small></div>
+    <audio src={`${API}${source.audio_url}`} controls preload="metadata" onPlay={() => recordPlay(source.id)} onError={() => setError('This audio could not be loaded. Check that the backend is running on port 8000.')} />
+  </div>
 }
 
 function PilotQuestions({ study, answers, setAnswers }) {
@@ -279,6 +301,15 @@ function DescriptorQuestions({ study, answers, setAnswers }) {
     <p className="field-help">Choose one point on every scale. The midpoint, 4, is neutral.</p>
     {study.questions.descriptor_scales.map((scale) => <RatingScale key={scale.id} name={scale.id} label={`${scale.low_label} to ${scale.high_label}`} min={1} max={7} lowLabel={scale.low_label} highLabel={scale.high_label} value={answers[scale.id]} onChange={(value) => setAnswers({ ...answers, [scale.id]: value })} nested />)}
   </fieldset>
+}
+
+function TripletQuestions({ study, answers, setAnswers }) {
+  return <>
+    <fieldset><legend>{study.questions.choice.label} <i>Required</i></legend>
+      <div className="triplet-choice-options">{study.questions.choice.options.map(([value, label]) => <label key={value} className="triplet-choice"><input type="radio" name="choice" value={value} checked={answers.choice === value} onChange={(event) => setAnswers({ ...answers, choice: event.target.value })} /><span><strong>{label}</strong><small>Sounds closer overall</small></span></label>)}</div>
+    </fieldset>
+    <RatingScale name="confidence" label={study.questions.confidence.label} min={study.questions.confidence.min} max={study.questions.confidence.max} lowLabel={study.questions.confidence.low_label} highLabel={study.questions.confidence.high_label} value={answers.confidence} onChange={(value) => setAnswers({ ...answers, confidence: value })} />
+  </>
 }
 
 function RatingScale({ name, label, min, max, lowLabel, highLabel, value, onChange, nested = false }) {

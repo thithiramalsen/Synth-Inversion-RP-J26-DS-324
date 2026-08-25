@@ -36,12 +36,13 @@ class SurveyApiTests(unittest.TestCase):
         self.assertEqual(trial_response.status_code, 200)
         return session, trial_response.json()
 
-    def test_catalog_exposes_pilot_and_c1_studies(self) -> None:
+    def test_catalog_exposes_all_checkpoint_studies(self) -> None:
         response = self.client.get("/api/studies")
         self.assertEqual(response.status_code, 200)
         studies = {study["study_id"]: study for study in response.json()}
-        self.assertEqual(set(studies), {"pilot_quality", "c1_descriptors"})
+        self.assertEqual(set(studies), {"pilot_quality", "c1_descriptors", "c4_triplets"})
         self.assertEqual(studies["c1_descriptors"]["total_trials"], 20)
+        self.assertEqual(studies["c4_triplets"]["total_trials"], 10)
 
     def test_trial_contains_working_nested_audio_url(self) -> None:
         _, payload = self.start_trial("pilot_quality")
@@ -108,6 +109,57 @@ class SurveyApiTests(unittest.TestCase):
         self.assertIn("dark_bright", export.text)
         self.assertIn("play_count_sample", export.text)
         self.assertIn("Internal test", export.text)
+
+    def test_c4_trial_contains_three_distinct_working_audio_sources(self) -> None:
+        _, payload = self.start_trial("c4_triplets")
+        trial = payload["trial"]
+        self.assertTrue(trial["trial_id"].startswith("c4_triplet_"))
+        self.assertEqual(
+            [source["id"] for source in trial["audio_sources"]],
+            ["reference", "candidate_a", "candidate_b"],
+        )
+        urls = [source["audio_url"] for source in trial["audio_sources"]]
+        self.assertEqual(len(urls), len(set(urls)))
+        for url in urls:
+            audio_response = self.client.get(url)
+            self.assertEqual(audio_response.status_code, 200)
+            self.assertEqual(audio_response.headers["content-type"], "audio/wav")
+
+    def test_c4_rejects_invalid_choice_confidence_and_missing_playback(self) -> None:
+        session, payload = self.start_trial("c4_triplets")
+        request = {
+            "trial_id": payload["trial"]["trial_id"],
+            "answers": {"choice": "candidate_c", "confidence": 6, "comment": ""},
+            "play_counts": {"reference": 1, "candidate_a": 1, "candidate_b": 0},
+            "started_at": "2026-08-25T10:00:00Z",
+        }
+        response = self.client.post(f"/api/session/{session['session_id']}/response", json=request)
+        self.assertEqual(response.status_code, 422)
+
+    def test_c4_response_saves_triplet_metadata_and_separate_play_counts(self) -> None:
+        session, payload = self.start_trial("c4_triplets")
+        request = {
+            "trial_id": payload["trial"]["trial_id"],
+            "answers": {"choice": "candidate_a", "confidence": 4, "comment": "Internal test"},
+            "play_counts": {"reference": 1, "candidate_a": 2, "candidate_b": 1},
+            "started_at": "2026-08-25T10:00:00Z",
+        }
+        response = self.client.post(f"/api/session/{session['session_id']}/response", json=request)
+        self.assertEqual(response.status_code, 200)
+        export = self.client.get("/api/admin/export/c4_triplets")
+        self.assertEqual(export.status_code, 200)
+        for expected_column in [
+            "anchor_sample_id",
+            "candidate_a_sample_id",
+            "candidate_b_sample_id",
+            "choice",
+            "confidence",
+            "mfcc_baseline_choice",
+            "play_count_reference",
+            "play_count_candidate_a",
+            "play_count_candidate_b",
+        ]:
+            self.assertIn(expected_column, export.text)
 
 
 if __name__ == "__main__":

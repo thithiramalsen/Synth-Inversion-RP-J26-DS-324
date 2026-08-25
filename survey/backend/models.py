@@ -4,7 +4,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
-StudyId = Literal["pilot_quality", "c1_descriptors", "pilot_v1"]
+StudyId = Literal["pilot_quality", "c1_descriptors", "c4_triplets", "pilot_v1"]
 
 
 class StartSessionRequest(BaseModel):
@@ -40,7 +40,23 @@ class C1DescriptorAnswers(BaseModel):
     comment: str = Field(default="", max_length=1000)
 
 
+class C4TripletAnswers(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    choice: Literal["candidate_a", "candidate_b"]
+    confidence: int = Field(ge=1, le=5)
+    comment: str = Field(default="", max_length=1000)
+
+
 class SingleAudioPlayCounts(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     sample: int = Field(ge=1)
+
+
+class C4AudioPlayCounts(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    reference: int = Field(ge=1)
+    candidate_a: int = Field(ge=1)
+    candidate_b: int = Field(ge=1)

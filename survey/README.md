@@ -6,10 +6,11 @@ Local React/Vite + FastAPI research listening instruments. Audio remains in the 
 
 - `pilot_quality`: all 128 samples in `data/manifests/pilot_v1.csv`, randomized per session. Records the first obvious issue, a 1-5 quality rating, an optional comment and playback starts.
 - `c1_descriptors`: a randomized 20-sample internal prototype drawn from the same 128-sample pilot manifest. Records four 1-7 bipolar ratings (dark/bright, smooth/rough, thin/warm and short/sustained), an optional comment and playback starts.
+- `c4_triplets`: ten frozen development triplets from `c4_metric/development_triplets.csv`, randomized per session. Each trial displays a reference plus Candidates A and B and records an A/B choice, 1-5 confidence, an optional comment and separate playback starts for all three sounds.
 
 The current 128-sample manifest is the directly generated `pilot_v1` Sobol pilot (`sampling_seed: 20260803`), not a subset selected from a validated 1,024-sample dataset. When the planned 1,024-sample development manifest is available, document and configure the intended listening subset before collecting formal ratings.
 
-Both studies are for internal development testing only until supervisor and ethics requirements permit broader participant recruitment.
+All studies are for internal development testing only until supervisor and ethics requirements permit broader participant recruitment.
 
 ## Run locally
 
@@ -41,6 +42,7 @@ While the service is strictly local, CSV exports are available at:
 - All studies: <http://localhost:8000/api/admin/export>
 - Pilot quality: <http://localhost:8000/api/admin/export/pilot_quality>
 - C1 descriptors: <http://localhost:8000/api/admin/export/c1_descriptors>
+- C4 triplets: <http://localhost:8000/api/admin/export/c4_triplets>
 
 These routes are not authenticated. Protect or disable them before hosting the service on a network.
 
@@ -52,4 +54,4 @@ cd survey/frontend
 npm run build
 ```
 
-The API regression suite verifies the nested audio URL, WAV delivery, stable sample-ID session snapshots, strict pilot validation and C1 response/export flow.
+The API regression suite verifies WAV delivery, stable trial-ID session snapshots, strict study-specific validation, C1 response/export flow, and C4's three audio sources, response metadata and separate playback counts.

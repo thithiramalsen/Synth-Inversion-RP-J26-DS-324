@@ -16,6 +16,8 @@ from pydantic import ValidationError
 
 from database import get_connection, initialize_database
 from models import (
+    C4AudioPlayCounts,
+    C4TripletAnswers,
     C1DescriptorAnswers,
     PilotQualityAnswers,
     ResponseRequest,
@@ -26,10 +28,12 @@ from models import (
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = ROOT / "data" / "manifests" / "pilot_v1.csv"
+TRIPLET_PATH = ROOT / "c4_metric" / "development_triplets.csv"
 CONFIG_DIR = ROOT / "survey" / "config"
 STUDY_CONFIGS = {
     "pilot_quality": CONFIG_DIR / "pilot_quality.json",
     "c1_descriptors": CONFIG_DIR / "c1_descriptors.json",
+    "c4_triplets": CONFIG_DIR / "c4_triplets.json",
 }
 STUDY_ALIASES = {"pilot_v1": "pilot_quality"}
 
@@ -79,6 +83,99 @@ def manifest_by_sample_id() -> dict[str, dict[str, str]]:
     return {row["sample_id"]: row for row in load_manifest()}
 
 
+def load_triplets() -> list[dict[str, str]]:
+    if not TRIPLET_PATH.is_file():
+        raise RuntimeError(
+            f"C4 triplets are missing. Run c4_metric/select_triplets.py to create {TRIPLET_PATH}."
+        )
+    with TRIPLET_PATH.open(newline="", encoding="utf-8-sig") as triplet_file:
+        triplets = list(csv.DictReader(triplet_file))
+    required_columns = {
+        "triplet_id",
+        "anchor_sample_id",
+        "candidate_a_sample_id",
+        "candidate_b_sample_id",
+        "mfcc_baseline_choice",
+    }
+    if not triplets or not required_columns.issubset(triplets[0]):
+        raise RuntimeError("The C4 triplet manifest is empty or missing required columns")
+    triplet_ids = [row["triplet_id"] for row in triplets]
+    if len(triplet_ids) != len(set(triplet_ids)):
+        raise RuntimeError("The C4 triplet manifest contains duplicate triplet IDs")
+    samples = manifest_by_sample_id()
+    for row in triplets:
+        sample_ids = [
+            row["anchor_sample_id"],
+            row["candidate_a_sample_id"],
+            row["candidate_b_sample_id"],
+        ]
+        if len(sample_ids) != len(set(sample_ids)):
+            raise RuntimeError(f"{row['triplet_id']} reuses a sample within the same triplet")
+        missing = [sample_id for sample_id in sample_ids if sample_id not in samples]
+        if missing:
+            raise RuntimeError(
+                f"{row['triplet_id']} references samples absent from the audio manifest: {missing}"
+            )
+    return triplets
+
+
+def triplets_by_id() -> dict[str, dict[str, str]]:
+    return {row["triplet_id"]: row for row in load_triplets()}
+
+
+def study_trial_ids(study_id: str) -> list[str]:
+    if study_id == "c4_triplets":
+        return [row["triplet_id"] for row in load_triplets()]
+    return [row["sample_id"] for row in load_manifest()]
+
+
+def trial_definition(study_id: str, trial_id: str) -> dict[str, Any]:
+    if study_id == "c4_triplets":
+        triplet = triplets_by_id().get(trial_id)
+        if triplet is None:
+            raise HTTPException(
+                status_code=409,
+                detail="This session cannot continue because a saved triplet is no longer in the manifest.",
+            )
+        return {
+            "trial_id": trial_id,
+            "sample_id": triplet["anchor_sample_id"],
+            "audio_sources": [
+                {
+                    "id": "reference",
+                    "label": "Reference",
+                    "audio_url": f"/api/audio/{triplet['anchor_sample_id']}",
+                },
+                {
+                    "id": "candidate_a",
+                    "label": "Candidate A",
+                    "audio_url": f"/api/audio/{triplet['candidate_a_sample_id']}",
+                },
+                {
+                    "id": "candidate_b",
+                    "label": "Candidate B",
+                    "audio_url": f"/api/audio/{triplet['candidate_b_sample_id']}",
+                },
+            ],
+        }
+    if trial_id not in manifest_by_sample_id():
+        raise HTTPException(
+            status_code=409,
+            detail="This session cannot continue because a saved sample is no longer in the manifest.",
+        )
+    return {
+        "trial_id": trial_id,
+        "sample_id": trial_id,
+        "audio_sources": [
+            {
+                "id": "sample",
+                "label": "Audio sample",
+                "audio_url": f"/api/audio/{trial_id}",
+            }
+        ],
+    }
+
+
 def get_session(session_id: str) -> sqlite3.Row:
     with get_connection() as connection:
         session = connection.execute(
@@ -117,11 +214,15 @@ def get_stable_trial_ids(session: sqlite3.Row) -> list[str]:
 
 def validate_response(study_id: str, request: ResponseRequest) -> tuple[dict, dict]:
     try:
-        plays = SingleAudioPlayCounts.model_validate(request.play_counts)
         if study_id == "pilot_quality":
+            plays = SingleAudioPlayCounts.model_validate(request.play_counts)
             answers = PilotQualityAnswers.model_validate(request.answers)
         elif study_id == "c1_descriptors":
+            plays = SingleAudioPlayCounts.model_validate(request.play_counts)
             answers = C1DescriptorAnswers.model_validate(request.answers)
+        elif study_id == "c4_triplets":
+            plays = C4AudioPlayCounts.model_validate(request.play_counts)
+            answers = C4TripletAnswers.model_validate(request.answers)
         else:
             raise HTTPException(status_code=404, detail="Study not found")
     except ValidationError as error:
@@ -138,12 +239,12 @@ def health() -> dict[str, str]:
 
 @app.get("/api/studies")
 def studies() -> list[dict[str, Any]]:
-    manifest_count = len(load_manifest())
     result = []
     for study_id in STUDY_CONFIGS:
         config = load_study(study_id)
         trial_limit = config.get("trial_limit")
-        config["total_trials"] = min(trial_limit or manifest_count, manifest_count)
+        available_trials = len(study_trial_ids(study_id))
+        config["total_trials"] = min(trial_limit or available_trials, available_trials)
         result.append(config)
     return result
 
@@ -151,9 +252,9 @@ def studies() -> list[dict[str, Any]]:
 @app.get("/api/study/{study_id}")
 def study(study_id: str) -> dict[str, Any]:
     config = load_study(study_id)
-    manifest_count = len(load_manifest())
     trial_limit = config.get("trial_limit")
-    config["total_trials"] = min(trial_limit or manifest_count, manifest_count)
+    available_trials = len(study_trial_ids(config["study_id"]))
+    config["total_trials"] = min(trial_limit or available_trials, available_trials)
     return config
 
 
@@ -161,24 +262,24 @@ def study(study_id: str) -> dict[str, Any]:
 def start_session(request: StartSessionRequest) -> dict[str, Any]:
     study_id = canonical_study_id(request.study_id)
     config = load_study(study_id)
-    sample_ids = [row["sample_id"] for row in load_manifest()]
-    random.SystemRandom().shuffle(sample_ids)
+    trial_ids = study_trial_ids(study_id)
+    random.SystemRandom().shuffle(trial_ids)
     trial_limit = config.get("trial_limit")
     if trial_limit:
-        sample_ids = sample_ids[:trial_limit]
+        trial_ids = trial_ids[:trial_limit]
 
     participant_id = f"P_{secrets.token_hex(3).upper()}"
     session_id = f"S_{secrets.token_hex(3).upper()}"
     with get_connection() as connection:
         connection.execute(
             "INSERT INTO sessions (session_id, participant_id, study_id, trial_order, started_at) VALUES (?, ?, ?, ?, ?)",
-            (session_id, participant_id, study_id, json.dumps(sample_ids), now()),
+            (session_id, participant_id, study_id, json.dumps(trial_ids), now()),
         )
     return {
         "session_id": session_id,
         "participant_id": participant_id,
         "study_id": study_id,
-        "total_trials": len(sample_ids),
+        "total_trials": len(trial_ids),
     }
 
 
@@ -194,27 +295,13 @@ def current_trial(session_id: str) -> dict[str, Any]:
             "progress": {"current": len(order), "total": len(order)},
         }
 
-    sample_id = order[current_index]
-    if sample_id not in manifest_by_sample_id():
-        raise HTTPException(
-            status_code=409,
-            detail="This session cannot continue because a saved sample is no longer in the manifest.",
-        )
+    study_id = canonical_study_id(session["study_id"])
+    definition = trial_definition(study_id, order[current_index])
+    definition["trial_order"] = current_index + 1
     return {
         "completed": False,
-        "study_id": canonical_study_id(session["study_id"]),
-        "trial": {
-            "trial_id": sample_id,
-            "sample_id": sample_id,
-            "trial_order": current_index + 1,
-            "audio_sources": [
-                {
-                    "id": "sample",
-                    "label": "Audio sample",
-                    "audio_url": f"/api/audio/{sample_id}",
-                }
-            ],
-        },
+        "study_id": study_id,
+        "trial": definition,
         "progress": {"current": current_index + 1, "total": len(order)},
     }
 
@@ -229,7 +316,20 @@ def submit_response(session_id: str, request: ResponseRequest) -> dict[str, bool
         raise HTTPException(status_code=409, detail="This trial is no longer current")
 
     answers, play_counts = validate_response(study_id, request)
-    sample_id = order[current_index]
+    definition = trial_definition(study_id, request.trial_id)
+    sample_id = definition["sample_id"]
+    if study_id == "c4_triplets":
+        triplet = triplets_by_id()[request.trial_id]
+        answers.update(
+            {
+                "anchor_sample_id": triplet["anchor_sample_id"],
+                "candidate_a_sample_id": triplet["candidate_a_sample_id"],
+                "candidate_b_sample_id": triplet["candidate_b_sample_id"],
+                "mfcc_baseline_choice": triplet["mfcc_baseline_choice"],
+                "anchor_to_a_mfcc_distance": float(triplet["anchor_to_a_mfcc_distance"]),
+                "anchor_to_b_mfcc_distance": float(triplet["anchor_to_b_mfcc_distance"]),
+            }
+        )
     submitted_at = now()
     try:
         with get_connection() as connection:
@@ -337,10 +437,12 @@ def export_study_responses(study_id: str) -> StreamingResponse:
 
 @app.get("/api/admin/summary")
 def admin_summary() -> dict[str, Any]:
-    manifest_count = len(load_manifest())
     summary = []
     with get_connection() as connection:
         for study_id in STUDY_CONFIGS:
+            config = load_study(study_id)
+            available_trials = len(study_trial_ids(study_id))
+            trial_limit = config.get("trial_limit")
             sessions = connection.execute(
                 "SELECT COUNT(*) AS total, SUM(completed_at IS NOT NULL) AS completed FROM sessions WHERE study_id = ?",
                 (study_id,),
@@ -352,8 +454,8 @@ def admin_summary() -> dict[str, Any]:
             summary.append(
                 {
                     "study_id": study_id,
-                    "title": load_study(study_id)["title"],
-                    "total_trials": min(load_study(study_id).get("trial_limit") or manifest_count, manifest_count),
+                    "title": config["title"],
+                    "total_trials": min(trial_limit or available_trials, available_trials),
                     "participants": sessions["total"] or 0,
                     "completed_sessions": sessions["completed"] or 0,
                     "incomplete_sessions": (sessions["total"] or 0) - (sessions["completed"] or 0),

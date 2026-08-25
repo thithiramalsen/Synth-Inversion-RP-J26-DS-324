@@ -1,0 +1,11 @@
+triplet_id,anchor_sample_id,candidate_a_sample_id,candidate_b_sample_id,closer_candidate_by_rank,mfcc_baseline_choice,anchor_to_a_cosine_similarity,anchor_to_b_cosine_similarity,anchor_to_a_mfcc_distance,anchor_to_b_mfcc_distance,selection_seed
+c4_triplet_001,pilot_v1_00043,pilot_v1_00109,pilot_v1_00004,candidate_a,candidate_a,0.48234158,0.10284284,1.01750520,1.33952018,324
+c4_triplet_002,pilot_v1_00120,pilot_v1_00065,pilot_v1_00039,candidate_b,candidate_b,-0.03090664,0.33127796,1.43590156,1.15647918,324
+c4_triplet_003,pilot_v1_00023,pilot_v1_00084,pilot_v1_00094,candidate_a,candidate_a,0.34548854,0.10761947,1.14412539,1.33594950,324
+c4_triplet_004,pilot_v1_00108,pilot_v1_00055,pilot_v1_00002,candidate_a,candidate_a,0.66434171,-0.07231528,0.81933912,1.46445572,324
+c4_triplet_005,pilot_v1_00087,pilot_v1_00045,pilot_v1_00066,candidate_a,candidate_a,0.48285982,0.12297075,1.01699576,1.32440874,324
+c4_triplet_006,pilot_v1_00018,pilot_v1_00068,pilot_v1_00123,candidate_a,candidate_a,0.23355649,0.11235726,1.23809815,1.33239839,324
+c4_triplet_007,pilot_v1_00001,pilot_v1_00081,pilot_v1_00004,candidate_a,candidate_a,0.27869030,-0.06109179,1.20109092,1.45677163,324
+c4_triplet_008,pilot_v1_00067,pilot_v1_00043,pilot_v1_00005,candidate_b,candidate_b,0.28533500,0.39776017,1.19554590,1.09748789,324
+c4_triplet_009,pilot_v1_00047,pilot_v1_00064,pilot_v1_00013,candidate_a,candidate_a,0.38479389,-0.07824177,1.10923948,1.46849703,324
+c4_triplet_010,pilot_v1_00052,pilot_v1_00102,pilot_v1_00106,candidate_b,candidate_b,-0.13152074,0.25548164,1.50434088,1.22026092,324
