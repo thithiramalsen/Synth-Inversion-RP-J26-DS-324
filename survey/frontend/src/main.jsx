@@ -40,7 +40,6 @@ function App() {
   const [playCounts, setPlayCounts] = useState({})
   const [startedAt, setStartedAt] = useState('')
   const [error, setError] = useState('')
-  const [trialStep, setTrialStep] = useState('listen')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const study = studies.find((item) => item.study_id === selectedStudyId)
@@ -80,7 +79,6 @@ function App() {
     setPlayCounts(Object.fromEntries(data.trial.audio_sources.map((source) => [source.id, 0])))
     setStartedAt(new Date().toISOString())
     setAnswers(blankAnswers(activeStudy))
-    setTrialStep('listen')
     setError('')
     setScreen('trial')
   }
@@ -186,7 +184,7 @@ function App() {
     return <main className="shell narrow"><p className="eyebrow">Study complete</p><h1>Thank you for listening.</h1><p className="lede">Your responses have been saved. You may close this window now.</p><button className="primary" onClick={returnHome}>Return home</button></main>
   }
 
-  return <Trial study={study} trial={trial} progress={progress} trialStep={trialStep} setTrialStep={setTrialStep} answers={answers} setAnswers={setAnswers} playCounts={playCounts} recordPlay={recordPlay} error={error} isSubmitting={isSubmitting} onSubmit={submit} />
+  return <Trial study={study} trial={trial} progress={progress} setError={setError} answers={answers} setAnswers={setAnswers} playCounts={playCounts} recordPlay={recordPlay} error={error} isSubmitting={isSubmitting} onSubmit={submit} onExit={returnHome} />
 }
 
 function Landing({ studies, study, selectedStudyId, setSelectedStudyId, session, onStart, onResume, error }) {
@@ -227,22 +225,19 @@ function Instructions({ study, session, onBegin, onBack, error }) {
   </main>
 }
 
-function Trial({ study, trial, progress, trialStep, setTrialStep, answers, setAnswers, playCounts, recordPlay, error, isSubmitting, onSubmit }) {
+function Trial({ study, trial, progress, setError, answers, setAnswers, playCounts, recordPlay, error, isSubmitting, onSubmit, onExit }) {
   return <main className="shell trial-shell">
     <header className="topline"><span>{study.title}</span><span>{progress.current} / {progress.total}</span></header>
     <div className="progress" aria-label={`Progress: ${progress.current} of ${progress.total}`}><span style={{ width: `${(progress.current / progress.total) * 100}%` }} /></div>
-    <section className="trial-heading"><p className="eyebrow">Step {trialStep === 'listen' ? '1' : '2'} of 2 · {trialStep === 'listen' ? 'Listen' : 'Rate'}</p><h1>Sample {progress.current} of {progress.total}</h1><p className="sample-id">Trial {String(trial.trial_order).padStart(3, '0')}</p></section>
-    {trialStep === 'listen' ? <section className="form">
+    <section className="trial-heading"><p className="eyebrow">Listen and rate</p><h1>Sample {progress.current} of {progress.total}</h1><p className="sample-id">Trial {String(trial.trial_order).padStart(3, '0')}</p></section>
+    <form onSubmit={onSubmit} className="form">
       <div className="audio-stack">
         {trial.audio_sources.map((source) => <div className="audio-panel" key={source.id}>
           <div><span className="audio-kicker">{source.label}</span><strong>Listen carefully</strong><small>{playCounts[source.id] || 0} playback {(playCounts[source.id] || 0) === 1 ? 'start' : 'starts'} recorded</small></div>
           <audio src={`${API}${source.audio_url}`} controls preload="metadata" onPlay={() => recordPlay(source.id)} onError={() => setError('This audio could not be loaded. Check that the backend is running on port 8000.')} />
         </div>)}
       </div>
-      {error && <p className="error" role="alert">{error}</p>}
-      <div className="button-row"><button className="primary" onClick={() => { setError(''); setTrialStep('rate') }}>Continue to rating</button><button className="text-button" onClick={() => setScreen('landing')}>Exit study</button></div>
-    </section> : <form onSubmit={onSubmit} className="form">
-      <p className="field-help step-intro">Now record your impression of this sample.</p>
+      <p className="field-help step-intro">Replay the audio as needed while recording your impression.</p>
       {study.study_type === 'pilot_quality'
         ? <PilotQuestions study={study} answers={answers} setAnswers={setAnswers} />
         : <DescriptorQuestions study={study} answers={answers} setAnswers={setAnswers} />}
@@ -250,8 +245,8 @@ function Trial({ study, trial, progress, trialStep, setTrialStep, answers, setAn
         <textarea value={answers.comment || ''} maxLength={study.questions.comment.max_length} onChange={(event) => setAnswers({ ...answers, comment: event.target.value })} rows="3" />
       </label>
       {error && <p className="error" role="alert">{error}</p>}
-      <div className="button-row"><button type="button" className="text-button" onClick={() => setTrialStep('listen')}>Back to audio</button><button className="primary next" disabled={isSubmitting}>{isSubmitting ? 'Saving...' : progress.current === progress.total ? 'Finish study' : 'Save and continue'}</button></div>
-    </form>}
+      <div className="button-row"><button type="button" className="text-button" onClick={onExit}>Exit study</button><button className="primary next" disabled={isSubmitting}>{isSubmitting ? 'Saving...' : progress.current === progress.total ? 'Finish study' : 'Save and continue'}</button></div>
+    </form>
   </main>
 }
 
@@ -273,7 +268,7 @@ function DescriptorQuestions({ study, answers, setAnswers }) {
 
 function RatingScale({ name, label, min, max, lowLabel, highLabel, value, onChange, nested = false }) {
   const ratings = Array.from({ length: max - min + 1 }, (_, index) => min + index)
-  const content = <><div className="ratings">{ratings.map((rating) => <label key={rating}><input type="radio" name={name} value={rating} checked={value === String(rating)} onChange={(event) => onChange(event.target.value)} /><span>{rating}</span></label>)}</div><div className="scale-labels"><span>{lowLabel}</span><span>{highLabel}</span></div></>
+  const content = <><div className="ratings" role="radiogroup" aria-label={label}>{ratings.map((rating) => <button type="button" className={value === String(rating) ? 'rating-button selected' : 'rating-button'} key={rating} role="radio" aria-checked={value === String(rating)} onClick={() => onChange(String(rating))}>{rating}</button>)}</div><div className="scale-labels"><span>{lowLabel}</span><span>{highLabel}</span></div></>
   if (nested) return <div className="descriptor-scale"><h2>{label}</h2>{content}</div>
   return <fieldset><legend>{label} <i>Required</i></legend>{content}</fieldset>
 }
