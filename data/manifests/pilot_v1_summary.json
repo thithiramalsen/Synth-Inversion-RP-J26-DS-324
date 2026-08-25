@@ -1,0 +1,17 @@
+{
+  "sample_count": 1024,
+  "generation_seconds": 239.45984399993904,
+  "samples_per_second": 4.276291101234746,
+  "silent_samples": 0,
+  "clipped_samples": 0,
+  "large_dc_offset_samples": 158,
+  "maximum_absolute_dc_offset": 0.029286696482633937,
+  "maximum_dc_to_rms_ratio": 0.6238793667601732,
+  "identical_stereo_channel_samples": 1024,
+  "minimum_rms_dbfs": -51.03292539382488,
+  "maximum_rms_dbfs": -16.029203152732666,
+  "maximum_peak": 0.33628928661346436,
+  "audio_directory": "D:\\VSCode\\GitHub\\Synth-Inversion-RP\\data\\raw\\audio\\pilot_v1",
+  "csv_manifest": "D:\\VSCode\\GitHub\\Synth-Inversion-RP\\data\\manifests\\pilot_v1.csv",
+  "parquet_manifest": "D:\\VSCode\\GitHub\\Synth-Inversion-RP\\data\\manifests\\pilot_v1.parquet"
+}
