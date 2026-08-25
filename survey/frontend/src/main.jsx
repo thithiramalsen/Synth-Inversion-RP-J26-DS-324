@@ -41,6 +41,7 @@ function App() {
   const [startedAt, setStartedAt] = useState('')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(window.location.pathname === '/admin')
 
   const study = studies.find((item) => item.study_id === selectedStudyId)
 
@@ -172,6 +173,8 @@ function App() {
     return <main className="shell"><p className={error ? 'status error' : 'status'} role={error ? 'alert' : undefined}>{error || 'Connecting to the survey service...'}</p></main>
   }
 
+  if (isAdmin) return <Admin />
+
   if (screen === 'landing') {
     return <Landing studies={studies} study={study} selectedStudyId={selectedStudyId} setSelectedStudyId={setSelectedStudyId} session={session} onStart={startStudy} onResume={resumeStudy} error={error} />
   }
@@ -207,8 +210,20 @@ function Landing({ studies, study, selectedStudyId, setSelectedStudyId, session,
       <button className="primary" onClick={onResume}>Resume {study.short_title}</button>
       <button className="text-button" onClick={onStart}>Start a new session</button>
     </> : <button className="primary" onClick={onStart}>Start {study.short_title}</button>}
-    <p className="privacy">Anonymous session · no personal information collected</p>
+    <div className="landing-footer"><p className="privacy">Anonymous session · no personal information collected</p><a className="admin-link" href="/admin">Researcher access</a></div>
   </main>
+}
+
+function Admin() {
+  const [summary, setSummary] = useState(null)
+  const [error, setError] = useState('')
+  useEffect(() => {
+    fetch(`${API}/api/admin/summary`).then((response) => {
+      if (!response.ok) throw new Error('Could not load researcher summary.')
+      return response.json()
+    }).then(setSummary).catch((cause) => setError(cause.message))
+  }, [])
+  return <main className="shell admin-page"><div className="admin-header"><div><p className="eyebrow">Local researcher view</p><h1>Study results</h1></div><a className="text-button" href="/">Back to participant view</a></div>{error && <p className="error" role="alert">{error}</p>}{!summary ? <p className="status">Loading summary...</p> : <div className="admin-studies">{summary.studies.map((item) => <section className="admin-study" key={item.study_id}><div><p className="eyebrow">{item.study_id}</p><h2>{item.title}</h2></div><div className="admin-stats"><span><strong>{item.participants}</strong> participants</span><span><strong>{item.completed_sessions}</strong> completed</span><span><strong>{item.incomplete_sessions}</strong> incomplete</span><span><strong>{item.responses_collected}</strong> responses</span></div><a className="primary download" href={`${API}/api/admin/export/${item.study_id}`}>Download CSV</a></section>)}</div>}</main>
 }
 
 function Instructions({ study, session, onBegin, onBack, error }) {

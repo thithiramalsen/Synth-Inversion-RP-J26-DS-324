@@ -333,3 +333,31 @@ def export_all_responses() -> StreamingResponse:
 @app.get("/api/admin/export/{study_id}")
 def export_study_responses(study_id: str) -> StreamingResponse:
     return build_export(study_id)
+
+
+@app.get("/api/admin/summary")
+def admin_summary() -> dict[str, Any]:
+    manifest_count = len(load_manifest())
+    summary = []
+    with get_connection() as connection:
+        for study_id in STUDY_CONFIGS:
+            sessions = connection.execute(
+                "SELECT COUNT(*) AS total, SUM(completed_at IS NOT NULL) AS completed FROM sessions WHERE study_id = ?",
+                (study_id,),
+            ).fetchone()
+            responses = connection.execute(
+                "SELECT COUNT(*) AS total FROM study_responses WHERE study_id = ?",
+                (study_id,),
+            ).fetchone()
+            summary.append(
+                {
+                    "study_id": study_id,
+                    "title": load_study(study_id)["title"],
+                    "total_trials": min(load_study(study_id).get("trial_limit") or manifest_count, manifest_count),
+                    "participants": sessions["total"] or 0,
+                    "completed_sessions": sessions["completed"] or 0,
+                    "incomplete_sessions": (sessions["total"] or 0) - (sessions["completed"] or 0),
+                    "responses_collected": responses["total"] or 0,
+                }
+            )
+    return {"studies": summary}
