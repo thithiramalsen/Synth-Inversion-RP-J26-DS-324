@@ -1,7 +1,7 @@
 {
   "dataset_name": "pilot_v1",
-  "created_utc": "2026-08-24T17:35:12.934924+00:00",
-  "sample_count": 128,
+  "created_utc": "2026-08-25T15:51:21.091117+00:00",
+  "sample_count": 1024,
   "sampling_method": "Scrambled Sobol sequence generated at the next power of two and truncated to the requested count.",
   "sampling_seed": 20260803,
   "sample_rate": 44100,

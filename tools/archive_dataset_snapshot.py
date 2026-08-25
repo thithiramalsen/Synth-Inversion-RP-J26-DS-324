@@ -6,7 +6,7 @@ import json
 import re
 import shutil
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +18,7 @@ MANIFEST_DIR = REPO_ROOT / "data" / "manifests"
 CONFIG_PATH = MANIFEST_DIR / f"{DATASET_ID}_config.json"
 CSV_PATH = MANIFEST_DIR / f"{DATASET_ID}.csv"
 ARCHIVE_ROOT = REPO_ROOT / "dataset_archive"
+SRI_LANKA_TIME = timezone(timedelta(hours=5, minutes=30), name="Asia/Colombo")
 
 MANIFEST_NAMES = (
     f"{DATASET_ID}.csv",
@@ -103,15 +104,16 @@ def load_config() -> dict[str, Any]:
     return config
 
 
-def create_archive_directory(config: dict[str, Any], created_utc: datetime) -> Path:
+def create_archive_directory(config: dict[str, Any], created_at: datetime) -> Path:
     """Create a unique archive directory without overwriting an older snapshot."""
+    created_sri_lanka = created_at.astimezone(SRI_LANKA_TIME)
     dataset = filesystem_slug(config["dataset_name"], "dataset")
     subtype = subtype_slug(config["audio_subtype"])
     prefix = f"{dataset}_{config['sample_count']}_{subtype}"
-    minute_name = f"{prefix}_{created_utc:%Y%m%d_%H%M}"
+    minute_name = f"{prefix}_{created_sri_lanka:%Y%m%d_%H%M}"
 
     ARCHIVE_ROOT.mkdir(parents=True, exist_ok=True)
-    candidates = [minute_name, f"{prefix}_{created_utc:%Y%m%d_%H%M%S}"]
+    candidates = [minute_name, f"{prefix}_{created_sri_lanka:%Y%m%d_%H%M%S}"]
 
     for candidate_name in candidates:
         candidate = ARCHIVE_ROOT / candidate_name
@@ -196,19 +198,31 @@ def verify_archive(archive_dir: Path, expected_sample_count: int) -> int:
     return archived_wav_count
 
 
-def original_creation_utc(config: dict[str, Any]) -> str:
-    """Find the creation timestamp used by known config variants."""
+def format_sri_lanka_time(value: Any) -> str:
+    """Convert an ISO timestamp to Sri Lanka Standard Time when possible."""
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return f"{value} (could not convert to Asia/Colombo)"
+
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return f"{parsed.astimezone(SRI_LANKA_TIME).isoformat()} (Asia/Colombo)"
+
+
+def original_creation_sri_lanka(config: dict[str, Any]) -> str:
+    """Find and convert the creation timestamp used by known config variants."""
     for key in ("created_utc", "creation_utc", "created_at", "creation_date"):
         value = config.get(key)
         if value is not None:
-            return str(value)
+            return format_sri_lanka_time(value)
     return "not available"
 
 
 def write_archive_info(
     archive_dir: Path,
     config: dict[str, Any],
-    archive_created_utc: datetime,
+    archive_created_sri_lanka: datetime,
     wav_count: int,
     c1_archived: bool,
     c4_archived: bool,
@@ -221,8 +235,9 @@ Sample count: {config['sample_count']}
 Audio subtype: {config['audio_subtype']}
 Sample rate: {config.get('sample_rate', 'not available')}
 Channels: {config.get('channels', 'not available')}
-Original creation UTC: {original_creation_utc(config)}
-Archive created UTC: {archive_created_utc.isoformat()}
+Timezone: Asia/Colombo (UTC+05:30)
+Original creation Sri Lanka time: {original_creation_sri_lanka(config)}
+Archive created Sri Lanka time: {archive_created_sri_lanka.isoformat()} (Asia/Colombo)
 
 Source audio:
 {relative_display(SOURCE_AUDIO, trailing_slash=True)}
@@ -244,8 +259,8 @@ Do not edit files inside this archive.
 def create_snapshot() -> Path:
     """Create, verify, and document one archive snapshot."""
     config = load_config()
-    archive_created_utc = datetime.now(timezone.utc)
-    archive_dir = create_archive_directory(config, archive_created_utc)
+    archive_created_sri_lanka = datetime.now(SRI_LANKA_TIME)
+    archive_dir = create_archive_directory(config, archive_created_sri_lanka)
 
     print(f"Creating archive: {relative_display(archive_dir, trailing_slash=True)}")
     try:
@@ -257,7 +272,7 @@ def create_snapshot() -> Path:
         write_archive_info(
             archive_dir,
             config,
-            archive_created_utc,
+            archive_created_sri_lanka,
             wav_count,
             c1_archived,
             c4_archived,
