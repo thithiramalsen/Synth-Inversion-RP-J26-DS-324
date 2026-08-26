@@ -1,0 +1,86 @@
+{
+  "dataset": {
+    "dataset_config": "data/manifests/pilot_v1_config.json",
+    "manifest": "data/manifests/pilot_v1.csv",
+    "manifest_sha256": "1a8660c9777d60ef00de5d90691a9cecb5474b5a5e9674170c42838f6166d69b",
+    "name": "pilot_v1",
+    "sample_count": 1024
+  },
+  "model": {
+    "class": "ParameterCNN",
+    "output": "sigmoid mapped to each configured normalized synthesizer range",
+    "targets": [
+      "wave_frame",
+      "filter_cutoff",
+      "filter_resonance",
+      "filter_drive",
+      "amp_attack",
+      "amp_decay",
+      "amp_sustain",
+      "amp_release"
+    ],
+    "trainable_parameters": 22856
+  },
+  "preprocessing": {
+    "cache": "data/processed/c2_pilot_v1_logmel.npz",
+    "cache_reused_for_this_run": true,
+    "cache_signature": "ac6ebc877bd8e666ce9ecf840e779c98607c4b4b5547a03fd9660a0b9d559c75",
+    "center_padding": "reflect",
+    "decibel_reference": "fixed 0 dBFS",
+    "f_max_hz": 20000.0,
+    "f_min_hz": 20.0,
+    "feature_shape": [
+      64,
+      259
+    ],
+    "hop_length": 512,
+    "n_fft": 2048,
+    "n_mels": 64,
+    "sample_rate": 44100,
+    "spectrogram_examples": [
+      "c2_estimation/outputs/spectrogram_examples/pilot_v1_00000.png",
+      "c2_estimation/outputs/spectrogram_examples/pilot_v1_00341.png",
+      "c2_estimation/outputs/spectrogram_examples/pilot_v1_00682.png",
+      "c2_estimation/outputs/spectrogram_examples/pilot_v1_01023.png"
+    ],
+    "spectrum": "power",
+    "top_db": 80.0,
+    "training_split_mean_db": -74.67703492100432,
+    "training_split_std_db": 12.079114554150381,
+    "window": "Hann"
+  },
+  "scope": "Component 2 deterministic single-CNN baseline only",
+  "split": {
+    "assignment_sha256": "f5a27e90358acd023d3e1c6fba29653b6d659688f478685699c44a265be2606f",
+    "method": "NumPy default_rng seeded permutation; floor 80%, floor 10%, remainder 10%",
+    "seed": 20260826,
+    "test_count": 103,
+    "train_count": 819,
+    "validation_count": 102
+  },
+  "test_macro_average": {
+    "mae": 0.09618994547054172,
+    "r_squared": 0.5456632016361221,
+    "rmse": 0.11960178799927235
+  },
+  "training": {
+    "batch_size": 32,
+    "best_epoch": 56,
+    "best_validation_normalized_mse": 0.0339901587177141,
+    "deterministic_algorithms": true,
+    "device": "cpu",
+    "early_stopping_patience": 12,
+    "epochs_completed": 60,
+    "learning_rate": 0.001,
+    "maximum_epochs": 60,
+    "threads": 4,
+    "weight_decay": 0.0001
+  },
+  "versions": {
+    "matplotlib": "3.11.1",
+    "numpy": "2.5.1",
+    "python": "3.13.14",
+    "soundfile": "0.14.0",
+    "torch": "2.13.0"
+  }
+}
