@@ -1,0 +1,134 @@
+{
+  "candidate_database": {
+    "database_signature": "5652f30724d59e8a920cd7acb2dc79d70fd4e022c53aef34b1e9acba153db8ca",
+    "feature_settings": {
+      "f_max_hz": 20000.0,
+      "f_min_hz": 20.0,
+      "frame_padding": "reflect",
+      "hop_length": 512,
+      "n_fft": 2048,
+      "n_mels": 40,
+      "n_mfcc": 13,
+      "sample_rate": 44100,
+      "summary": "per-coefficient mean and standard deviation",
+      "window": "Hann"
+    },
+    "feature_standardization_mean": [
+      -139.62983949663848,
+      13.5790997027955,
+      0.17279518470436778,
+      -0.14477390033273166,
+      -0.4174970882551265,
+      -0.38641588630808227,
+      -0.8423045784877916,
+      -0.7854871436578356,
+      -0.7557927317476221,
+      -0.7113617047916131,
+      -1.1139530514954479,
+      -1.4498465113617616,
+      -1.7625755770239855,
+      29.504020143871422,
+      11.334773135524074,
+      3.891944497994458,
+      1.2836149838071305,
+      1.229158350958462,
+      0.8657865571236595,
+      0.8768869807262766,
+      0.7297674447064297,
+      0.7160386509797455,
+      0.7016092081485131,
+      0.8941059672649199,
+      1.173690744719224,
+      1.5024262783749534
+    ],
+    "feature_standardization_std": [
+      13.610587747648852,
+      4.249623079342122,
+      4.806690236834441,
+      1.509305534081387,
+      1.557227325651523,
+      1.096030766038506,
+      0.8035679396877231,
+      0.5534788064012207,
+      0.7234144660833685,
+      0.6989877521377622,
+      0.5137378598327913,
+      0.862879844269698,
+      1.5489600723840886,
+      10.832140485284082,
+      3.324784647702265,
+      1.4803426794806898,
+      0.6741796880480843,
+      0.6813698156964901,
+      0.4897798582737474,
+      0.4192871839116223,
+      0.34084798509621783,
+      0.4584148963167688,
+      0.3894853886350796,
+      0.38547368301499846,
+      0.6186823782674196,
+      1.0834699379551116
+    ],
+    "path": "c3_recommendation/outputs/candidate_patch_database.csv",
+    "reused_for_this_run": true
+  },
+  "dataset": {
+    "candidate_count": 1024,
+    "dataset_config": "data/manifests/pilot_v1_config.json",
+    "manifest": "data/manifests/pilot_v1.csv",
+    "manifest_sha256": "1a8660c9777d60ef00de5d90691a9cecb5474b5a5e9674170c42838f6166d69b",
+    "name": "pilot_v1"
+  },
+  "mode": "seeded_evaluation",
+  "result": {
+    "baseline": {
+      "baseline_mean_audio_similarity": 0.9183146683114829,
+      "baseline_mean_pairwise_parameter_distance": 0.3196107471670423,
+      "baseline_mean_query_parameter_distance": 0.30355745775653237,
+      "baseline_minimum_audio_similarity": 0.8989406607526271,
+      "baseline_minimum_pairwise_parameter_distance": 0.20411007594979935
+    },
+    "change": {
+      "mean_audio_similarity": -0.014092995604748193,
+      "mean_pairwise_parameter_distance": 0.06053347619703531,
+      "minimum_pairwise_parameter_distance": 0.08632021409401353
+    },
+    "evaluation_query_count": 32,
+    "mmr_lambda": 0.75,
+    "parameter_mmr": {
+      "mmr_mean_audio_similarity": 0.9042216727067347,
+      "mmr_mean_pairwise_parameter_distance": 0.3801442233640776,
+      "mmr_mean_query_parameter_distance": 0.3321465130115952,
+      "mmr_minimum_audio_similarity": 0.8607042643874481,
+      "mmr_minimum_pairwise_parameter_distance": 0.2904302900438129
+    },
+    "retrieval_pool_size": 50,
+    "top_k": 5
+  },
+  "retrieval": {
+    "evaluation_queries": 32,
+    "mmr_lambda": 0.75,
+    "parameter_distance": "Euclidean after scaling each parameter to its configured pilot range, divided by sqrt(8)",
+    "retrieval_pool_size": 50,
+    "seed": 20260826,
+    "top_k": 5
+  },
+  "scope": {
+    "baseline": "MFCC cosine-similarity top-k retrieval",
+    "component": "C3",
+    "excluded": [
+      "C2 predictions or uncertainty",
+      "timbre-description input",
+      "determinantal point processes",
+      "user-preference evaluation"
+    ],
+    "input": "isolated synthesizer audio",
+    "reranking": "parameter-space maximal marginal relevance"
+  },
+  "versions": {
+    "matplotlib": "3.11.1",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "soundfile": "0.14.0"
+  }
+}
