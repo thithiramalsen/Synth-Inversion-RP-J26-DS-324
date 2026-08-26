@@ -1,0 +1,4 @@
+matplotlib==3.11.1
+numpy==2.5.1
+soundfile==0.14.0
+torch==2.13.0

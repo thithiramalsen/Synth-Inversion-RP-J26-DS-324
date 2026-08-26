@@ -1,0 +1,25 @@
+{
+  "baseline": {
+    "baseline_mean_audio_similarity": 0.9183146683114829,
+    "baseline_mean_pairwise_parameter_distance": 0.3196107471670423,
+    "baseline_mean_query_parameter_distance": 0.30355745775653237,
+    "baseline_minimum_audio_similarity": 0.8989406607526271,
+    "baseline_minimum_pairwise_parameter_distance": 0.20411007594979935
+  },
+  "change": {
+    "mean_audio_similarity": -0.014092995604748193,
+    "mean_pairwise_parameter_distance": 0.06053347619703531,
+    "minimum_pairwise_parameter_distance": 0.08632021409401353
+  },
+  "evaluation_query_count": 32,
+  "mmr_lambda": 0.75,
+  "parameter_mmr": {
+    "mmr_mean_audio_similarity": 0.9042216727067347,
+    "mmr_mean_pairwise_parameter_distance": 0.3801442233640776,
+    "mmr_mean_query_parameter_distance": 0.3321465130115952,
+    "mmr_minimum_audio_similarity": 0.8607042643874481,
+    "mmr_minimum_pairwise_parameter_distance": 0.2904302900438129
+  },
+  "retrieval_pool_size": 50,
+  "top_k": 5
+}

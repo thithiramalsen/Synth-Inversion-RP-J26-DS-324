@@ -1,0 +1,65 @@
+{
+  "macro_average": {
+    "mae": 0.09618994547054172,
+    "r_squared": 0.5456632016361221,
+    "rmse": 0.11960178799927235
+  },
+  "per_parameter": [
+    {
+      "mae": 0.12370897829532623,
+      "parameter": "wave_frame",
+      "r_squared": 0.7101478465728642,
+      "rmse": 0.16114002466201782,
+      "test_samples": 103
+    },
+    {
+      "mae": 0.06061024218797684,
+      "parameter": "filter_cutoff",
+      "r_squared": 0.7309758440930818,
+      "rmse": 0.09005658328533173,
+      "test_samples": 103
+    },
+    {
+      "mae": 0.19919665157794952,
+      "parameter": "filter_resonance",
+      "r_squared": -0.038456156801174535,
+      "rmse": 0.2300255447626114,
+      "test_samples": 103
+    },
+    {
+      "mae": 0.18358850479125977,
+      "parameter": "filter_drive",
+      "r_squared": 0.17279118037595698,
+      "rmse": 0.21071399748325348,
+      "test_samples": 103
+    },
+    {
+      "mae": 0.018780257552862167,
+      "parameter": "amp_attack",
+      "r_squared": 0.957223196800552,
+      "rmse": 0.023819750174880028,
+      "test_samples": 103
+    },
+    {
+      "mae": 0.07430193573236465,
+      "parameter": "amp_decay",
+      "r_squared": 0.25698827181174666,
+      "rmse": 0.08941732347011566,
+      "test_samples": 103
+    },
+    {
+      "mae": 0.09174317866563797,
+      "parameter": "amp_sustain",
+      "r_squared": 0.6320891427799666,
+      "rmse": 0.12705211341381073,
+      "test_samples": 103
+    },
+    {
+      "mae": 0.017589814960956573,
+      "parameter": "amp_release",
+      "r_squared": 0.9435462874559838,
+      "rmse": 0.024588966742157936,
+      "test_samples": 103
+    }
+  ]
+}

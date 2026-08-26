@@ -1,0 +1,21 @@
+{
+  "baseline": {
+    "mean_audio_similarity": 0.903828742111757,
+    "mean_pairwise_parameter_distance": 0.3270253844127597,
+    "mean_query_parameter_distance": 0.3666689421208843,
+    "minimum_audio_similarity": 0.8831699117118383,
+    "minimum_pairwise_parameter_distance": 0.24014120531089098
+  },
+  "mmr_lambda": 0.75,
+  "parameter_mmr": {
+    "mean_audio_similarity": 0.8902277113690638,
+    "mean_pairwise_parameter_distance": 0.37423413535674743,
+    "mean_query_parameter_distance": 0.3906310522618016,
+    "minimum_audio_similarity": 0.832077414566739,
+    "minimum_pairwise_parameter_distance": 0.3146397826854957
+  },
+  "query_audio_path": "data/raw/audio/pilot_v1/pilot_v1_00045.wav",
+  "query_id": "pilot_v1_00045",
+  "retrieval_pool_size": 50,
+  "top_k": 5
+}

@@ -1,0 +1,24 @@
+{
+  "study_id": "c1_descriptors",
+  "study_type": "c1_descriptors",
+  "short_title": "C1 timbre descriptors",
+  "title": "Timbre Descriptor Evaluation",
+  "intro": "Describe the audible character of each synthesizer sound using four bipolar scales.",
+  "trial_limit": 20,
+  "internal_testing_notice": "Internal team prototype only. Do not recruit external participants until the supervisor and ethics process permits it.",
+  "instructions": [
+    "Use headphones in a quiet environment if available.",
+    "Play every sample at least once before rating it.",
+    "For each scale, choose the point that best matches the sound; 4 is the neutral midpoint.",
+    "Judge the sound you hear rather than trying to infer its synthesizer settings."
+  ],
+  "questions": {
+    "descriptor_scales": [
+      {"id": "dark_bright", "low_label": "Dark", "high_label": "Bright"},
+      {"id": "smooth_rough", "low_label": "Smooth", "high_label": "Rough"},
+      {"id": "thin_warm", "low_label": "Thin", "high_label": "Warm"},
+      {"id": "short_sustained", "low_label": "Short", "high_label": "Sustained"}
+    ],
+    "comment": {"label": "Optional comment", "max_length": 1000}
+  }
+}

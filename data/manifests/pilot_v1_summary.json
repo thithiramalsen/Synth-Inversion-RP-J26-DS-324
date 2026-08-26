@@ -1,7 +1,7 @@
 {
   "sample_count": 1024,
-  "generation_seconds": 236.0721305999905,
-  "samples_per_second": 4.337657297358425,
+  "generation_seconds": 281.3844645000063,
+  "samples_per_second": 3.6391490262959314,
   "silent_samples": 0,
   "clipped_samples": 0,
   "large_dc_offset_samples": 158,

@@ -48,7 +48,10 @@ SILENCE_THRESHOLD_DBFS = -60.0
 CLIPPING_THRESHOLD = 1.0
 DC_OFFSET_WARNING_THRESHOLD = 0.005
 DC_TO_RMS_WARNING_THRESHOLD = 0.20
-CHECKPOINT_INTERVAL = 10
+CHECKPOINT_INTERVAL = 1024
+PROGRESS_UPDATE_INTERVAL = 32
+PROGRESS_BAR_WIDTH = 8
+_LAST_PROGRESS_LINE_LENGTH = 0
 
 CONFIG_PATH = PILOT_MANIFEST_CSV.parent / "pilot_v1_config.json"
 SUMMARY_PATH = PILOT_MANIFEST_CSV.parent / "pilot_v1_summary.json"
@@ -102,6 +105,73 @@ def dbfs(value: float) -> float:
         return -120.0
 
     return float(20.0 * np.log10(value))
+
+
+def format_duration(seconds: float) -> str:
+    """Format an elapsed or estimated duration for the progress display."""
+    total_seconds = max(0, int(round(seconds)))
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    if hours:
+        return f"{hours}:{minutes:02d}:{seconds:02d}"
+    return f"{minutes:02d}:{seconds:02d}"
+
+
+def progress_bar(completed: int, total: int) -> str:
+    """Build a small dependency-free text progress bar."""
+    ratio = min(1.0, completed / total)
+    filled = int(ratio * PROGRESS_BAR_WIDTH)
+    if completed > 0 and filled == 0:
+        filled = 1
+    return f"[{'#' * filled}{'-' * (PROGRESS_BAR_WIDTH - filled)}]"
+
+
+def format_progress(
+    completed: int,
+    total: int,
+    elapsed: float,
+) -> str:
+    """Show progress within the current checkpoint block and overall."""
+    block_number = ((completed - 1) // CHECKPOINT_INTERVAL) + 1
+    total_blocks = math.ceil(total / CHECKPOINT_INTERVAL)
+    block_start = (block_number - 1) * CHECKPOINT_INTERVAL
+    block_size = min(CHECKPOINT_INTERVAL, total - block_start)
+    block_completed = completed - block_start
+
+    rate = completed / elapsed if elapsed > 0 else 0.0
+    remaining = total - completed
+    eta = remaining / rate if rate > 0 else 0.0
+    overall_percent = 100.0 * completed / total
+
+    return (
+        f"Block {block_number}/{total_blocks} "
+        f"{progress_bar(block_completed, block_size)} "
+        f"{block_completed:,}/{block_size:,} | "
+        f"Overall {progress_bar(completed, total)} "
+        f"{completed:,}/{total:,} {overall_percent:.1f}% | "
+        f"{rate:.2f}/sec | "
+        f"{format_duration(elapsed)} elapsed | "
+        f"ETA {format_duration(eta)}"
+    )
+
+
+def print_progress(line: str, *, complete_line: bool) -> None:
+    """Update one terminal line, or emit checkpoint lines in redirected logs."""
+    global _LAST_PROGRESS_LINE_LENGTH
+
+    if sys.stdout.isatty():
+        end = "\n" if complete_line else ""
+        print(
+            f"\r{line.ljust(_LAST_PROGRESS_LINE_LENGTH)}",
+            end=end,
+            flush=True,
+        )
+        _LAST_PROGRESS_LINE_LENGTH = (
+            0 if complete_line else len(line)
+        )
+    elif complete_line:
+        print(line, flush=True)
 
 
 def rms(audio: np.ndarray) -> float:
@@ -429,7 +499,7 @@ def save_dataset_config(
         "note_duration_seconds": NOTE_DURATION,
         "render_duration_seconds": RENDER_DURATION,
         "audio_format": "WAV",
-        "audio_subtype": "32-bit float",
+        "audio_subtype": "16-bit PCM",
         "channels": 1,
         "parameter_order": parameter_names,
         "parameters": PARAMS,
@@ -549,6 +619,11 @@ def main() -> None:
     print(f"Seed: {SAMPLING_SEED}")
     print(f"Preset: {BASE_PRESET}")
     print(f"Audio output: {PILOT_AUDIO_DIR}")
+    print(
+        f"Progress: {math.ceil(sample_count / CHECKPOINT_INTERVAL)} block(s), "
+        f"up to {CHECKPOINT_INTERVAL:,} samples each; "
+        f"live updates every {PROGRESS_UPDATE_INTERVAL} samples"
+    )
     print()
 
     for sample_index, unit_sample in enumerate(
@@ -586,23 +661,10 @@ def main() -> None:
         mono_audio = audio[0]
 
         sf.write(
-                file=audio_path,
-                data=mono_audio,
-                samplerate=SAMPLE_RATE,
-                subtype="FLOAT",
-                format="WAV",
-        )
-
-
-        # Dataset V1 produces identical left and right channels.
-        # Store one channel to avoid duplicating the same signal.
-        mono_audio = audio[0]
-
-        sf.write(
             file=audio_path,
             data=mono_audio,
             samplerate=SAMPLE_RATE,
-            subtype="FLOAT",
+            subtype="PCM_16",
             format="WAV",
         )
 
@@ -626,20 +688,35 @@ def main() -> None:
 
         completed = sample_index + 1
 
-        if (
+        is_checkpoint = (
             completed % CHECKPOINT_INTERVAL == 0
             or completed == sample_count
-        ):
+        )
+
+        if is_checkpoint:
             save_manifests(rows)
 
+        if (
+            is_checkpoint
+            or completed % PROGRESS_UPDATE_INTERVAL == 0
+        ):
             elapsed = time.perf_counter() - start_time
-            rate = completed / elapsed
+            progress = format_progress(
+                completed=completed,
+                total=sample_count,
+                elapsed=elapsed,
+            )
 
-            print(
-                f"[{completed:>4}/{sample_count}] "
-                f"{rate:.2f} samples/sec | "
-                f"latest RMS={metrics['rms_dbfs']:.2f} dBFS | "
-                f"peak={metrics['peak_dbfs']:.2f} dBFS"
+            if is_checkpoint:
+                progress += (
+                    " | checkpoint saved | "
+                    f"RMS={metrics['rms_dbfs']:.2f} dBFS | "
+                    f"peak={metrics['peak_dbfs']:.2f} dBFS"
+                )
+
+            print_progress(
+                progress,
+                complete_line=is_checkpoint,
             )
 
     elapsed = time.perf_counter() - start_time
