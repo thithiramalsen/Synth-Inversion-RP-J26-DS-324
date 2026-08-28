@@ -1,5 +1,6 @@
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
+import DemoApp from './DemoApp'
 import './styles.css'
 
 const API = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:8000`
@@ -319,4 +320,6 @@ function RatingScale({ name, label, min, max, lowLabel, highLabel, value, onChan
   return <fieldset><legend>{label} <i>Required</i></legend>{content}</fieldset>
 }
 
-createRoot(document.getElementById('root')).render(<StrictMode><App /></StrictMode>)
+const RootApp = window.location.pathname.startsWith('/demo') ? DemoApp : App
+
+createRoot(document.getElementById('root')).render(<StrictMode><RootApp /></StrictMode>)
