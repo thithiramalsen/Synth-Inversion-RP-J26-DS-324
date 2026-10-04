@@ -59,15 +59,17 @@ The last item is a quality warning worth remembering. It did not stop the pilot 
 
 The data-generation code is [generation/scripts/05_generate_pilot_dataset.py](generation/scripts/05_generate_pilot_dataset.py). The project also contains dataset-archive tooling under [tools](tools).
 
-## Component 1: basic timbre measurements
+## Component 1: parameter effects on perceived timbre
 
-Component 1 asks: can ordinary audio measurements tell us something about a synthesizer setting?
+The resolved C1 research question is: within a defined Vital configuration, how do selected control changes affect perceived timbre, and how do those effects depend on the other settings? The proposed method and its limits are documented in [c1_timbre/C1_RESEARCH_DESIGN.md](c1_timbre/C1_RESEARCH_DESIGN.md).
+
+The current implementation is a preliminary acoustic baseline. It does not yet implement the full perceptual study or validate a timbre predictor on Vital.
 
 The script reads the shared manifest and calculates, for every sound:
 
-- spectral centroid, which is roughly the sound's center of brightness;
+- spectral centroid, an acoustic feature often associated with brightness;
 - spectral rolloff;
-- loudness/RMS;
+- RMS signal level, which is not itself perceived loudness;
 - zero-crossing rate; and
 - 13 average MFCC values, which are compact numbers describing the sound's shape.
 
@@ -77,7 +79,7 @@ The first checkpoint comparison was filter cutoff versus spectral centroid. For 
 - R-squared: `0.2701`; and
 - slope: about `1,304.5 Hz` per normalized cutoff unit.
 
-This is useful evidence that cutoff affects an easily measured part of the sound. It is not a perfect relationship, so it should not be treated as a complete explanation of timbre.
+This is an association across jointly varying settings, not an isolated control-effect experiment or a human brightness result. The saved C1 output still has 128 rows, while the current shared manifest has 1,024. Treat the result as a historical checkpoint until a versioned analysis is run on the current corpus.
 
 The implementation and instructions are in [c1_timbre/README.md](c1_timbre/README.md). The saved measurements are in [c1_timbre/outputs](c1_timbre/outputs).
 
@@ -325,7 +327,7 @@ The current checked-out branch is `dev-survey-app-c2`. The working tree was clea
 
 - A controlled 1,024-sound pilot dataset exists.
 - The data has manifests, configuration, summaries, and archive support.
-- C1 audio descriptors and a cutoff/brightness analysis exist.
+- C1 acoustic descriptors and a historical cutoff/centroid association analysis exist; the full perceptual study remains proposed.
 - C2 has a reproducible CNN baseline with a held-out test result.
 - C3 has a reproducible MFCC retrieval plus diversity reranking prototype.
 - C4 has frozen development triplets and a baseline comparison tool.
@@ -335,7 +337,7 @@ The current checked-out branch is `dev-survey-app-c2`. The working tree was clea
 ### Still limited or incomplete
 
 - The survey work is internal development testing, not formal participant research.
-- The current listening application documentation describes a 128-sample listening subset while the C2 dataset uses 1,024 samples; the intended formal listening subset still needs to be documented before collection.
+- The survey draws from the 1,024-sound shared manifest; the C1 prototype presents 20 clips with four scales. A formal listening subset, revised instrument and balanced assignments remain to be implemented.
 - Component 2 is trained on the 1,024-sample pilot, not the planned 65,536-sample dataset.
 - Component 2 is a single small CNN and has no uncertainty estimates.
 - Component 2 performs poorly on resonance and is weak on drive.

@@ -4,11 +4,13 @@ Local React/Vite + FastAPI research listening instruments. Audio remains in the 
 
 ## Implemented studies
 
-- `pilot_quality`: all 128 samples in `data/manifests/pilot_v1.csv`, randomized per session. Records the first obvious issue, a 1-5 quality rating, an optional comment and playback starts.
-- `c1_descriptors`: a randomized 20-sample internal prototype drawn from the same 128-sample pilot manifest. Records four 1-7 bipolar ratings (dark/bright, smooth/rough, thin/warm and short/sustained), an optional comment and playback starts.
+- `pilot_quality`: samples from `data/manifests/pilot_v1.csv`, randomized per session and subject to the study configuration's trial limit. Records the first obvious issue, a 1-5 quality rating, an optional comment and playback starts.
+- `c1_descriptors`: a randomized 20-sample internal prototype drawn from the shared pilot manifest. Records four 1-7 bipolar ratings (dark/bright, smooth/rough, thin/warm and short/sustained), an optional comment and playback starts.
 - `c4_triplets`: ten frozen development triplets from `c4_metric/development_triplets.csv`, randomized per session. Each trial displays a reference plus Candidates A and B and records an A/B choice, 1-5 confidence, an optional comment and separate playback starts for all three sounds.
 
-The current 128-sample manifest is the directly generated `pilot_v1` Sobol pilot (`sampling_seed: 20260803`), not a subset selected from a validated 1,024-sample dataset. When the planned 1,024-sample development manifest is available, document and configure the intended listening subset before collecting formal ratings.
+As of 26 September 2026, the shared `pilot_v1` manifest contains 1,024 directly generated Sobol pilot sounds (`sampling_seed: 20260803`). The earlier 128-sound documentation is obsolete. The intended formal listening subset and balanced assignments still need to be frozen before collection.
+
+The proposed C1 study is specified in [C1_RESEARCH_DESIGN.md](../c1_timbre/C1_RESEARCH_DESIGN.md). The existing four-scale questionnaire has not been converted to that design. Preserve its historical response meanings and introduce any revised scales under a new study version; changing the JSON alone is insufficient because answer validation and the frontend also encode the current scales.
 
 All studies are for internal development testing only until supervisor and ethics requirements permit broader participant recruitment.
 

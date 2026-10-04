@@ -1,6 +1,14 @@
 # C1 - Timbre descriptors and parameter influence
 
-This folder contains the first reproducible C1 analysis required for the development checkpoint. It reads every row in the shared manifest, extracts simple audio features, and measures the relationship between normalized filter cutoff and spectral centroid.
+The recommended research scope is **human-validated analysis of Vital parameter effects on perceived timbre**. The resolved question, component boundaries, literature corrections, staged experiment and provisional listening budget are in [C1_RESEARCH_DESIGN.md](C1_RESEARCH_DESIGN.md). This is a research design, not a claim that the perceptual study is implemented or completed.
+
+The current implementation is an acoustic development baseline. It reads every row in the supplied manifest, extracts simple audio features, and measures the association between normalized filter cutoff and spectral centroid. It does not isolate a control intervention or measure human brightness ratings.
+
+## Current evidence
+
+As of 26 September 2026, the shared manifest contains 1,024 sounds with eight varied controls. The checked-in C1 feature table and summary still contain 128 sounds from an earlier checkpoint (`r = 0.5197`, `R² = 0.2701`). They are not results over the current full manifest. The discussed 16-control, approximately 135,000-sound study is not present in these C1 artifacts.
+
+The survey currently implements a 20-clip, four-scale internal prototype. A formal descriptor instrument, balanced assignment, perceptual predictor validation and matched control-effect study remain to be implemented.
 
 ## Run
 
@@ -28,4 +36,4 @@ python c1_timbre/feature_extraction.py --manifest data/manifests/pilot_v1.csv --
 - `outputs/cutoff_vs_centroid.png` - checkpoint-ready scatter plot with a fitted trend line.
 - `outputs/cutoff_vs_centroid_summary.csv` - sample count, Pearson correlation, R-squared, slope, intercept, and relationship direction.
 
-These are development-dataset measurements, not human-participant results. The descriptor listening screen is implemented separately in `survey/`.
+These are development-dataset measurements, not human-participant results. Running against a new manifest overwrites the selected output directory; use a separate versioned output directory to preserve the historical checkpoint. The descriptor listening screen is implemented separately in `survey/`.
