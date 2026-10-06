@@ -1,0 +1,15 @@
+{
+  "raw_audio_files_verified": 376,
+  "playback_audio_files_verified": 752,
+  "html_contexts": 36,
+  "html_audio_elements": 288,
+  "maximum_PCM16_quantization_error": 3.0518142836485906e-05,
+  "rms_matched_dbfs_range": [
+    -27.651842519603154,
+    -27.64592050789933
+  ],
+  "protected_existing_files": 1079,
+  "before_and_after_protected_sha256": "fe9201e9e4208adba7da44d773db6341d5e44cb4dc935ac1391d2d3c8b238667",
+  "existing_datasets_and_candidate_profile_unchanged": true,
+  "recorded_source_hashes_match": true
+}

@@ -2,15 +2,17 @@
 
 ## Current research configuration
 
-The proposed research domain now contains **12 controls with Oscillator 2 off**:
-the existing eight plus filter-envelope amount, attack, decay and sustain.
+The selected research architecture now contains **13 controls with Oscillator 2 off**:
+the existing eight plus Bend amount and filter-envelope amount, attack, decay and
+sustain (`restricted_bend_sustain_v4`); see the
+[selection record](../generation/decisions/2026-10-07_bend_and_sustain.md).
 The versioned configuration, provisional bounds and technical evidence are in
 [generation/README.md](../generation/README.md). The existing 1024-render
 `pilot_v1` remains the eight-control rendering/pipeline test. The saved C1 feature
-table below contains only the earlier 128 sounds; it is not twelve-control or
+table below contains only the earlier 128 sounds; it is not thirteen-control or
 human-participant evidence.
 
-The new `restricted_v2` preset and numerical characterization are separate from
+The selected combined profile and preserved A/B comparison profiles are separate from
 the descriptor survey. Technical activity does not establish perceptual coverage,
 and the current survey prototype has not been converted into the formal pilot.
 

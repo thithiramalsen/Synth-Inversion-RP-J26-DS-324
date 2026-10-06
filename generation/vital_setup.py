@@ -8,7 +8,10 @@ import json
 import math
 from pathlib import Path
 
-PROFILES = {"pilot_v1": "generation.params_config", "restricted_v2": "generation.restricted_config"}
+PROFILES = {"pilot_v1": "generation.params_config", "restricted_v2": "generation.restricted_config",
+            "restricted_bend_v3": "generation.bend_config",
+            "restricted_bend_sustain_v4": "generation.bend_sustain_config"}
+DEFAULT_PROFILE = "restricted_bend_sustain_v4"
 
 
 def load_profile(name: str):
@@ -41,6 +44,9 @@ def validate_synth(synth, profile) -> None:
         actual = controls[name].get_normalized() if mode == "normalized" else controls[name].value()
         if not math.isclose(actual, expected, abs_tol=2e-6):
             raise ValueError(f"Fixed control mismatch: {name}: {actual} != {expected}")
+    for name, expected in getattr(profile, "EXPECTED_CONTROL_TEXT", {}).items():
+        if synth.get_control_text(name) != expected:
+            raise ValueError(f"Control category mismatch: {name}: expected {expected}")
     settings = json.loads(synth.to_json())["settings"]
     actual_routes = [(i + 1, m.get("source"), m.get("destination"))
                      for i, m in enumerate(settings["modulations"])
@@ -74,9 +80,11 @@ def apply_parameters(synth, profile, values: dict[str, float]) -> None:
         set_control(controls, spec["control"], spec["mode"], value)
 
 
-def build_restricted_preset() -> Path:
+def build_restricted_preset(profile_name: str = "restricted_v2") -> Path:
     import vita
-    profile = load_profile("restricted_v2")
+    if profile_name not in ("restricted_v2", "restricted_bend_v3", "restricted_bend_sustain_v4"):
+        raise ValueError("Use the legacy builder for pilot_v1")
+    profile = load_profile(profile_name)
     synth = vita.Synth()
     set_sample_rate(synth, profile.SAMPLE_RATE)
     if not profile.SOURCE_PRESET.is_file() or not synth.load_preset(str(profile.SOURCE_PRESET)):

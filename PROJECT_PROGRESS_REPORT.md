@@ -1,8 +1,36 @@
 # Synth Inversion Project: Progress Report
 
-## Research-configuration update
+## Research-configuration selection — 7 October 2026
 
-The agreed candidate domain is now **twelve controls, one oscillator**: wavetable
+The researcher selected **thirteen controls, one oscillator**, keeping both Bend
+and filter-envelope sustain:
+wavetable position, Bend amount, cutoff/resonance/drive, amp ADSR, and filter-envelope
+amount/attack/decay/sustain. The separate profile is `restricted_bend_sustain_v4`;
+the [decision record](generation/decisions/2026-10-07_bend_and_sustain.md) supersedes
+the earlier B-only choice. The informal tonal-variation preference is not formal study evidence.
+The available listening exports contained no populated per-context ratings.
+
+The [A/B comparison](generation/characterization/architecture_ab_v1/REPORT.md)
+remains unchanged: numerical Bend activity and exact tested repeat/serialization
+results, with elevated DC flags (61/108 main B renders, 19/108 A). Final parameter
+ranges remain provisional. The new 1,024-sound dataset has not been generated.
+Historical eight-control models and survey datasets retain their original scope.
+
+The [DC-mitigation experiment](generation/characterization/dc_mitigation_v1/REPORT.md)
+processed copies of the 376 A/B clips and 18 new diagnostic renders with both Bend
+and variable filter-envelope sustain. Raw DC flags were 122/376 and 6/18 respectively.
+Both causal second-order 10 Hz and 20 Hz high-pass filters reduced those flags to
+zero with no clipping; peak levels increased, so peak QA remains necessary.
+The researcher reported virtually no audible difference and no clicks with and
+without SoundID Reference; the [informal listening follow-up](generation/characterization/dc_mitigation_v1/LISTENING_NOTE.md)
+supports selecting the versioned [10 Hz policy](generation/audio_policies/dc_highpass_10hz_v1.json).
+The listening check is complete; production integration remains pending, and
+no filtering has been enabled in the production pipeline. These sparse technical
+checks do not establish full-domain coverage or descriptor validity.
+
+## Previous research-configuration update — architecture A
+
+The previous candidate domain was **twelve controls, one oscillator**: wavetable
 position; cutoff, resonance and drive; amp ADSR; and filter-envelope amount,
 attack, decay and sustain. The eight-control `pilot_v1` dataset remains a
 generation/pipeline engineering test. Historical results below retain that scope.

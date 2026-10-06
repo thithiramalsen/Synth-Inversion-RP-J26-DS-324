@@ -26,7 +26,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from generation.restricted_config import (  # noqa: E402
+from generation.bend_sustain_config import (  # noqa: E402
     BASE_PRESET,
     FIXED_CONTROLS,
     MIDI_NOTE,
@@ -41,7 +41,7 @@ from generation.restricted_config import (  # noqa: E402
     SAMPLING_SEED,
     VELOCITY,
 )
-from generation.vital_setup import load_profile, set_sample_rate, validate_synth  # noqa: E402
+from generation.vital_setup import DEFAULT_PROFILE, PROFILES, load_profile, set_sample_rate, validate_synth  # noqa: E402
 
 
 SILENCE_THRESHOLD_DBFS = -60.0
@@ -53,7 +53,7 @@ PROGRESS_UPDATE_INTERVAL = 32
 PROGRESS_BAR_WIDTH = 8
 _LAST_PROGRESS_LINE_LENGTH = 0
 
-PROFILE = load_profile("restricted_v2")
+PROFILE = load_profile(DEFAULT_PROFILE)
 DATASET_NAME = PROFILE.DATASET_NAME
 CONFIG_PATH = PILOT_MANIFEST_CSV.parent / f"{DATASET_NAME}_config.json"
 SUMMARY_PATH = PILOT_MANIFEST_CSV.parent / f"{DATASET_NAME}_summary.json"
@@ -85,9 +85,9 @@ def create_synth() -> vita.Synth:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generate or extend a versioned Vital dataset. Defaults to the 12-control candidate."
+        description="Generate or extend a versioned Vital dataset. Defaults to the selected 13-control candidate."
     )
-    parser.add_argument("--profile", choices=("restricted_v2", "pilot_v1"), default="restricted_v2")
+    parser.add_argument("--profile", choices=tuple(PROFILES), default=DEFAULT_PROFILE)
 
     parser.add_argument(
         "--count",
@@ -662,8 +662,8 @@ def main() -> None:
     sample_count = PILOT_SAMPLE_COUNT if args.count is None else int(args.count)
     if sample_count <= 0:
         raise ValueError("Count must be positive")
-    if DATASET_NAME == "restricted_v2" and sample_count & (sample_count - 1):
-        raise ValueError("restricted_v2 requires a power-of-two total count (e.g. 1024 or 131072)")
+    if DATASET_NAME != "pilot_v1" and sample_count & (sample_count - 1):
+        raise ValueError(f"{DATASET_NAME} requires a power-of-two total count (e.g. 1024 or 131072)")
     # Validate before any output can be replaced.
     validate_configuration()
 

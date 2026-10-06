@@ -1,0 +1,42 @@
+{
+  "policy_id": "dc_highpass_10hz_v1",
+  "decision_date": "2026-10-07",
+  "decision_status": "selected_after_informal_researcher_listening",
+  "pipeline_integration_status": "pending",
+  "scope": "restricted_bend_sustain_v4",
+  "sample_rate_hz": 44100,
+  "channels": 1,
+  "filter": {
+    "family": "Butterworth",
+    "type": "highpass",
+    "order": 2,
+    "cutoff_hz": 10.0,
+    "implementation": "scipy.signal.sosfilt",
+    "dtype": "float64",
+    "initial_state": "zeros_per_independent_clip",
+    "axis": "sample_axis",
+    "padding": "none",
+    "sos": [
+      [0.9989930508651772, -1.9979861017303544, 0.9989930508651772, 1.0, -1.9979850877835377, 0.9979871156771719]
+    ]
+  },
+  "application": {
+    "stage": "after canonical mono 44100 Hz audio, before feature extraction or playback PCM encoding",
+    "passes": 1,
+    "selection": "all clips, independent of DC flag",
+    "preserve_unconditioned_render": "FLOAT WAV with SHA-256",
+    "record_processed_audio_policy_id": true,
+    "reject_accidental_repeat_processing": true,
+    "additional_gain": 1.0,
+    "normalization": "none",
+    "fade": "none",
+    "soundid_reference_processing": false,
+    "qa": "measure DC, RMS, peak and clipping before and after filtering; do not silently clip or normalize"
+  },
+  "evidence": {
+    "numerical_report": "generation/characterization/dc_mitigation_v1/REPORT.md",
+    "coefficient_source": "generation/characterization/dc_mitigation_v1/summary.json",
+    "listening_note": "generation/characterization/dc_mitigation_v1/LISTENING_NOTE.md"
+  },
+  "limits": "An engineering choice for the current rendering protocol. Not a formal perceptual equivalence result, descriptor validation, or full-domain coverage claim. Loudness normalization and final parameter bounds are separate decisions."
+}

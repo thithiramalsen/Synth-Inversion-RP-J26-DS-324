@@ -59,7 +59,7 @@ class DatasetWorkflowTests(unittest.TestCase):
         self.root = Path(self.temporary.name).resolve()
         self.assertEqual(self.root.parent, self.parent)
         for relative in (
-            "generation/params_config.py", "generation/restricted_config.py", "generation/vital_setup.py",
+            "generation/params_config.py", "generation/restricted_config.py", "generation/bend_config.py", "generation/bend_sustain_config.py", "generation/vital_setup.py",
             "generation/scripts/05_generate_pilot_dataset.py", "generation/presets/base_restricted_v2.vital",
         ):
             destination = self.root / relative
@@ -75,7 +75,7 @@ class DatasetWorkflowTests(unittest.TestCase):
         self.temporary.cleanup()
 
     def run_generator(self, *args, success=True):
-        result = subprocess.run([sys.executable, "-B", "generation/scripts/05_generate_pilot_dataset.py", *args],
+        result = subprocess.run([sys.executable, "-B", "generation/scripts/05_generate_pilot_dataset.py", "--profile", "restricted_v2", *args],
                                 cwd=self.root, capture_output=True, text=True, timeout=120)
         if success:
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

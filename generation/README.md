@@ -1,17 +1,90 @@
-# Twelve-control Vital configuration
+# Vital generation configurations
 
-The agreed research architecture uses one oscillator, one fixed Basic Shapes
+## Current selection: 13 controls, Bend plus filter-envelope sustain
+
+On 7 October 2026 the researcher chose to keep **both Bend and variable
+filter-envelope sustain**, superseding the earlier twelve-control B selection.
+The current profile is **`restricted_bend_sustain_v4`** in
+`bend_sustain_config.py`: wavetable position, Bend amount, cutoff/resonance/drive,
+amp ADSR and filter-envelope amount/attack/decay/sustain. Oscillator 2 remains off.
+See [the combined-architecture decision](decisions/2026-10-07_bend_and_sustain.md).
+
+The Bend mode/phase/spread and unused spectral morph controls are fixed. Bend .5
+is neutral; .25-.75 is the provisional interval from the main A/B comparison.
+All other ranges and note/rendering settings are inherited from architecture A
+below. The build and generator defaults now select `restricted_bend_sustain_v4` with a
+separate preset, audio directory and manifest prefix. Older versions remain
+available explicitly by `--profile`.
+
+| Variable control | Provisional normalized interval |
+|---|---|
+| Wavetable position | 0-1 |
+| Bend amount | .25-.75; neutral .5 |
+| Filter cutoff | .30-.85 |
+| Filter resonance | 0-.80 |
+| Filter drive | 0-.75 |
+| Amp attack | .05-.35 |
+| Amp decay | .15-.40 |
+| Amp sustain | .20-1 |
+| Amp release | .10-.45 |
+| Filter-envelope amount | .50-.5625; zero depth .50 |
+| Filter-envelope attack | .05-.35 |
+| Filter-envelope decay | .15-.40 |
+| Filter-envelope sustain | 0-1 |
+
+The separate Bend preset can be built and checked without generating a dataset:
+
+```powershell
+.\venv\Scripts\python.exe generation/scripts/03_create_base_preset.py --profile restricted_bend_sustain_v4
+.\venv\Scripts\python.exe -m unittest discover -s generation/tests -v
+```
+
+**The new 1,024-sound pool remains on hold.** The
+[DC-mitigation check](characterization/dc_mitigation_v1/REPORT.md) compared 376
+saved A/B WAVs plus 18 combined-control diagnostic renders. Both causal 10 Hz and
+20 Hz second-order high-pass filters reduced the engineering DC-flag count from
+128/394 to 0/394, with no clipping. The researcher subsequently reported virtually
+no audible difference and no clicks, with and without SoundID Reference. The
+[informal listening check](characterization/dc_mitigation_v1/LISTENING_NOTE.md)
+is complete, and **[dc_highpass_10hz_v1](audio_policies/dc_highpass_10hz_v1.json)**
+is the selected processing policy. Production integration remains pending;
+no correction or normalization has been enabled in generation/training/inference.
+Original WAVs are preserved. Six original/10 Hz/20 Hz listening examples are in
+`test_renders/dc_mitigation_v1/LISTEN.html`.
+
+Integration must preserve raw FLOAT renders, record pre/post-filter QA, and apply
+the fixed filter exactly once to study/model audio. Policy metadata must prevent
+re-filtering already conditioned files. SoundID Reference is not part of the
+dataset processing. The listening feedback is an informal engineering check,
+not a formal perceptual equivalence or descriptor study.
+
+The extra control increases the space to characterize. Neither the A/B comparison
+nor the 18 combined settings establish coverage of the 13-dimensional domain or
+perceptual independence. ENV2 controls remain inactive at zero modulation depth;
+at sustain 1 the filter-envelope decay stage has no level drop to control.
+The preserved B profile (`restricted_bend_v3`) still fixes sustain at zero, so
+the original A/B experiment remains reproducible. The earlier qualitative Bend
+preference is informal; available page/downloads contained no per-context ratings.
+
+## Preserved architecture A: restricted_v2
+
+For the separate Bend-versus-filter-envelope-sustain experiment, see
+[the comparison protocol](ARCHITECTURE_COMPARISON.md) and
+[measured A/B results](characterization/architecture_ab_v1/REPORT.md).
+The experiment and its original architecture-A reference are preserved.
+
+Architecture A uses one oscillator, one fixed Basic Shapes
 wavetable, one Analog 12 dB low-pass filter, an amplitude envelope and a filter
 envelope. Oscillators 2/3, the sample/noise source and effects remain off. The
 wavetable asset is fixed; its position varies. MIDI note 60, velocity 0.8,
 44.1 kHz mono PCM16, a 1.5 s held note and a 3 s recording are fixed.
 
-`restricted_config.py` defines the new `restricted_v2` candidate domain.
+`restricted_config.py` defines the preserved `restricted_v2` comparison domain.
 `params_config.py` preserves the historical eight-control `pilot_v1` engineering
 test. Existing C1 features, C2/C3 outputs and survey sessions still refer to
-`pilot_v1`; they have not become twelve-control results.
+`pilot_v1`; they have not become results for the selected thirteen-control domain.
 
-## Controls and provisional ranges
+### Architecture A controls and provisional ranges
 
 All table bounds below are **native Vital normalized values**, not Hz or seconds.
 They are initial technical bounds, not evidence of complete perceptual coverage.
@@ -52,12 +125,12 @@ At zero depth, ENV 2 attack/decay/sustain have no cutoff effect. At ENV 2 sustai
 each other, and the amplitude envelope can mask spectral transients. These are
 conditional effects to analyze, not grounds for claiming unique identifiability.
 
-## Build and characterize
+### Build and characterize architecture A
 
 Use the repository's existing Vita 0.0.5 environment:
 
 ```powershell
-.\venv\Scripts\python.exe generation/scripts/03_create_base_preset.py
+.\venv\Scripts\python.exe generation/scripts/03_create_base_preset.py --profile restricted_v2
 .\venv\Scripts\python.exe -m generation.characterize
 .\venv\Scripts\python.exe -m unittest discover -s generation/tests -v
 ```
@@ -84,7 +157,7 @@ Two high-cutoff drive cases have DC warnings; inspect their WAVs before deciding
 on preprocessing. Passing these probes does not validate all parameter
 combinations, listener agreement, the descriptors, or the final parameter bounds.
 
-## Generate a separate candidate dataset when its specification is settled
+### Architecture A generation reference
 
 ```powershell
 .\venv\Scripts\python.exe generation/scripts/05_generate_pilot_dataset.py --profile restricted_v2 --count 1024
@@ -97,13 +170,14 @@ hash and preset hash. Each row records the Sobol coordinates, actual normalized
 and raw values, display values, QA metrics and WAV hash. No per-clip normalization
 is performed. Silence/DC/clipping flags must be reviewed before stimulus selection.
 
-The generator's new default is `restricted_v2`; legacy generation requires
-`--profile pilot_v1`. Script 04 remains an engineering test for the old preset.
+The generator's current default is `restricted_bend_sustain_v4`; reproducing this older
+domain requires `--profile restricted_v2`. Legacy eight-control generation
+requires `--profile pilot_v1`. Script 04 remains an engineering test for the old preset.
 To explicitly recreate that old preset, use script 03 with `--profile pilot_v1`.
 The saved `pilot_v1_config.json`, not mutable script defaults, documents the
 historical 1024-sound run.
 
-## Extend without regenerating existing sounds
+### Extend architecture A without regenerating existing sounds
 
 If the configuration is unchanged, the first 1024 twelve-control renders can
 remain the prefix of the larger corpus:
