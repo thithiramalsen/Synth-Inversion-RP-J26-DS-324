@@ -1,5 +1,19 @@
 # C1 - Timbre descriptors and parameter influence
 
+## Current research configuration
+
+The proposed research domain now contains **12 controls with Oscillator 2 off**:
+the existing eight plus filter-envelope amount, attack, decay and sustain.
+The versioned configuration, provisional bounds and technical evidence are in
+[generation/README.md](../generation/README.md). The existing 1024-render
+`pilot_v1` remains the eight-control rendering/pipeline test. The saved C1 feature
+table below contains only the earlier 128 sounds; it is not twelve-control or
+human-participant evidence.
+
+The new `restricted_v2` preset and numerical characterization are separate from
+the descriptor survey. Technical activity does not establish perceptual coverage,
+and the current survey prototype has not been converted into the formal pilot.
+
 This folder contains the first reproducible C1 analysis required for the development checkpoint. It reads every row in the shared manifest, extracts simple audio features, and measures the relationship between normalized filter cutoff and spectral centroid.
 
 ## Run

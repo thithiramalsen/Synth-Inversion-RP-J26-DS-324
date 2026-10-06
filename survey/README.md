@@ -4,11 +4,16 @@ Local React/Vite + FastAPI research listening instruments. Audio remains in the 
 
 ## Implemented studies
 
-- `pilot_quality`: all 128 samples in `data/manifests/pilot_v1.csv`, randomized per session. Records the first obvious issue, a 1-5 quality rating, an optional comment and playback starts.
-- `c1_descriptors`: a randomized 20-sample internal prototype drawn from the same 128-sample pilot manifest. Records four 1-7 bipolar ratings (dark/bright, smooth/rough, thin/warm and short/sustained), an optional comment and playback starts.
+- `pilot_quality`: all 1024 samples in `data/manifests/pilot_v1.csv`, randomized per session. Records the first obvious issue, a 1-5 quality rating, an optional comment and playback starts.
+- `c1_descriptors`: a randomized 20-sample internal prototype drawn from the same 1024-sample pilot manifest. Records four 1-7 bipolar ratings (dark/bright, smooth/rough, thin/warm and short/sustained), an optional comment and playback starts.
 - `c4_triplets`: ten frozen development triplets from `c4_metric/development_triplets.csv`, randomized per session. Each trial displays a reference plus Candidates A and B and records an A/B choice, 1-5 confidence, an optional comment and separate playback starts for all three sounds.
 
-The current 128-sample manifest is the directly generated `pilot_v1` Sobol pilot (`sampling_seed: 20260803`), not a subset selected from a validated 1,024-sample dataset. When the planned 1,024-sample development manifest is available, document and configure the intended listening subset before collecting formal ratings.
+The current 1024-sample `pilot_v1` manifest is the eight-control engineering test
+(`sampling_seed: 20260803`). The new twelve-control `restricted_v2` configuration
+is documented in [generation/README.md](../generation/README.md). The survey still
+uses the old dataset and instrument. A formal C1 pilot needs a versioned stimulus
+subset, revised descriptor definitions/scales and balanced assignments; changing
+the generation profile does not implement those study changes.
 
 All studies are for internal development testing only until supervisor and ethics requirements permit broader participant recruitment.
 

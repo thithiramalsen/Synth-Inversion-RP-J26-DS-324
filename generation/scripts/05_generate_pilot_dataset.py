@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-from email.mime import audio
 import hashlib
 import json
 import math
@@ -27,7 +26,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from generation.params_config import (  # noqa: E402
+from generation.restricted_config import (  # noqa: E402
     BASE_PRESET,
     FIXED_CONTROLS,
     MIDI_NOTE,
@@ -42,6 +41,7 @@ from generation.params_config import (  # noqa: E402
     SAMPLING_SEED,
     VELOCITY,
 )
+from generation.vital_setup import load_profile, set_sample_rate, validate_synth  # noqa: E402
 
 
 SILENCE_THRESHOLD_DBFS = -60.0
@@ -53,9 +53,24 @@ PROGRESS_UPDATE_INTERVAL = 32
 PROGRESS_BAR_WIDTH = 8
 _LAST_PROGRESS_LINE_LENGTH = 0
 
-CONFIG_PATH = PILOT_MANIFEST_CSV.parent / "pilot_v1_config.json"
-SUMMARY_PATH = PILOT_MANIFEST_CSV.parent / "pilot_v1_summary.json"
-REVIEW_LIST_PATH = PILOT_MANIFEST_CSV.parent / "pilot_v1_review_samples.txt"
+PROFILE = load_profile("restricted_v2")
+DATASET_NAME = PROFILE.DATASET_NAME
+CONFIG_PATH = PILOT_MANIFEST_CSV.parent / f"{DATASET_NAME}_config.json"
+SUMMARY_PATH = PILOT_MANIFEST_CSV.parent / f"{DATASET_NAME}_summary.json"
+REVIEW_LIST_PATH = PILOT_MANIFEST_CSV.parent / f"{DATASET_NAME}_review_samples.txt"
+
+
+def configure_profile(name: str) -> None:
+    global PROFILE, DATASET_NAME, CONFIG_PATH, SUMMARY_PATH, REVIEW_LIST_PATH
+    PROFILE = load_profile(name)
+    fields = ("BASE_PRESET", "FIXED_CONTROLS", "MIDI_NOTE", "NOTE_DURATION", "PARAMS",
+              "PILOT_AUDIO_DIR", "PILOT_MANIFEST_CSV", "PILOT_MANIFEST_PARQUET",
+              "PILOT_SAMPLE_COUNT", "RENDER_DURATION", "SAMPLE_RATE", "SAMPLING_SEED", "VELOCITY")
+    globals().update({field: getattr(PROFILE, field) for field in fields})
+    DATASET_NAME = PROFILE.DATASET_NAME
+    CONFIG_PATH = PILOT_MANIFEST_CSV.parent / f"{DATASET_NAME}_config.json"
+    SUMMARY_PATH = PILOT_MANIFEST_CSV.parent / f"{DATASET_NAME}_summary.json"
+    REVIEW_LIST_PATH = PILOT_MANIFEST_CSV.parent / f"{DATASET_NAME}_review_samples.txt"
 
 
 # Sample rate helper function for Vita synths that support it. Some versions of Vita do not have this method.
@@ -63,29 +78,31 @@ def create_synth() -> vita.Synth:
     """Create a Vita synth and set the sample rate when supported."""
     synth = vita.Synth()
 
-    if hasattr(synth, "set_sample_rate"):
-        synth.set_sample_rate(SAMPLE_RATE)
+    set_sample_rate(synth, SAMPLE_RATE)
 
     return synth
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generate the Vital Dataset V1 pilot."
+        description="Generate or extend a versioned Vital dataset. Defaults to the 12-control candidate."
     )
+    parser.add_argument("--profile", choices=("restricted_v2", "pilot_v1"), default="restricted_v2")
 
     parser.add_argument(
         "--count",
         type=int,
-        default=PILOT_SAMPLE_COUNT,
-        help=f"Number of sounds to generate. Default: {PILOT_SAMPLE_COUNT}",
+        default=None,
+        help="Total target count, including existing rows on resume; default is the profile's count.",
     )
 
-    parser.add_argument(
+    existing = parser.add_mutually_exclusive_group()
+    existing.add_argument(
         "--overwrite",
         action="store_true",
         help="Delete and replace an existing pilot dataset.",
     )
+    existing.add_argument("--resume", action="store_true", help="Verify saved configuration/WAV hashes and render only missing Sobol rows.")
 
     return parser.parse_args()
 
@@ -217,6 +234,11 @@ def create_sobol_samples(
 
 
 def prepare_output_directories(overwrite: bool) -> None:
+    expected = (PROJECT_ROOT / "data/raw/audio" / DATASET_NAME).resolve()
+    if PILOT_AUDIO_DIR.resolve() != expected or expected.parent != (PROJECT_ROOT / "data/raw/audio").resolve():
+        raise ValueError("Audio output is outside the selected dataset directory")
+    if not overwrite and any(p.exists() for p in (PILOT_MANIFEST_CSV, PILOT_MANIFEST_PARQUET, CONFIG_PATH)):
+        raise FileExistsError("Dataset metadata already exists. Use --resume or select a new dataset version.")
     PILOT_MANIFEST_CSV.parent.mkdir(
         parents=True,
         exist_ok=True,
@@ -293,6 +315,7 @@ def validate_configuration() -> None:
             "The following controls are missing from Vita:\n"
             f"{missing_text}"
         )
+    validate_synth(synth, PROFILE)
 
 
 def set_control(
@@ -466,24 +489,23 @@ def calculate_audio_metrics(
 
 def save_manifests(rows: list[dict[str, Any]]) -> None:
     dataframe = pd.DataFrame(rows)
-
-    dataframe.to_csv(
-        PILOT_MANIFEST_CSV,
-        index=False,
-    )
-
-    dataframe.to_parquet(
-        PILOT_MANIFEST_PARQUET,
-        index=False,
-    )
+    csv_temp = PILOT_MANIFEST_CSV.with_suffix(".csv.tmp")
+    parquet_temp = PILOT_MANIFEST_PARQUET.with_suffix(".parquet.tmp")
+    dataframe.to_csv(csv_temp, index=False)
+    dataframe.to_parquet(parquet_temp, index=False)
+    parquet_temp.replace(PILOT_MANIFEST_PARQUET)
+    csv_temp.replace(PILOT_MANIFEST_CSV)
 
 
-def save_dataset_config(
+def build_dataset_config(
     sample_count: int,
     parameter_names: list[str],
-) -> None:
+) -> dict[str, Any]:
     config = {
-        "dataset_name": "pilot_v1",
+        "dataset_name": DATASET_NAME,
+        "schema_status": PROFILE.SCHEMA_STATUS,
+        "modulations": list(PROFILE.MODULATIONS),
+        "generator_sha256": sha256_file(Path(__file__)),
         "created_utc": datetime.now(
             timezone.utc
         ).isoformat(),
@@ -536,15 +558,65 @@ def save_dataset_config(
             "soundfile": version("soundfile"),
         },
     }
+    return config
 
-    CONFIG_PATH.write_text(
-        json.dumps(
-            config,
-            indent=2,
-            default=str,
-        ),
-        encoding="utf-8",
-    )
+
+def save_dataset_config(config: dict[str, Any]) -> None:
+    temporary = CONFIG_PATH.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(config, indent=2, default=str), encoding="utf-8")
+    temporary.replace(CONFIG_PATH)
+
+
+def load_resume_rows(config: dict[str, Any], samples: np.ndarray) -> list[dict[str, Any]]:
+    if not CONFIG_PATH.exists():
+        raise FileNotFoundError("Cannot resume without a saved dataset configuration")
+    previous = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    # Count and creation time may change when extending the same Sobol prefix.
+    ignored = {"sample_count", "created_utc"}
+    before = {k: v for k, v in previous.items() if k not in ignored}
+    after = {k: v for k, v in config.items() if k not in ignored}
+    if before != after:
+        changed = sorted(k for k in before.keys() | after.keys() if before.get(k) != after.get(k))
+        raise ValueError(f"Resume configuration changed ({', '.join(changed)}). Use a new dataset version.")
+    config["created_utc"] = previous["created_utc"]
+    display_types = {f"{name}_display": str for name in PARAMS}
+    rows = (pd.read_csv(PILOT_MANIFEST_CSV, dtype=display_types, float_precision="round_trip").to_dict("records")
+            if PILOT_MANIFEST_CSV.exists() else [])
+    if len(rows) > len(samples):
+        raise ValueError("Cannot shrink an existing dataset")
+    verifier = create_synth()
+    if not verifier.load_preset(str(BASE_PRESET)):
+        raise ValueError("Cannot verify saved parameter values")
+    controls = verifier.get_controls()
+    for index, row in enumerate(rows):
+        sample_id = f"{DATASET_NAME}_{index:05d}"
+        if row["sample_id"] != sample_id or row["sample_index"] != index:
+            raise ValueError("Saved manifest is not a contiguous Sobol prefix")
+        expected_path = PILOT_AUDIO_DIR / f"{sample_id}.wav"
+        if (PROJECT_ROOT / row["audio_path"]).resolve() != expected_path.resolve():
+            raise ValueError(f"Unexpected audio path for {sample_id}")
+        if not expected_path.exists() or row.get("audio_sha256") != sha256_file(expected_path):
+            raise ValueError(f"Missing or modified saved WAV: {sample_id}")
+        for dimension, name in enumerate(PARAMS):
+            if not math.isclose(float(row[f"{name}_sample_01"]), samples[index, dimension], abs_tol=1e-14, rel_tol=0):
+                raise ValueError(f"Sobol prefix mismatch for {sample_id}/{name}")
+            spec = PARAMS[name]
+            expected = spec["min"] + samples[index, dimension] * (spec["max"] - spec["min"])
+            control = controls[spec["control"]]
+            control.set_normalized(float(expected))
+            for suffix, actual in (("normalized", control.get_normalized()), ("raw", control.value())):
+                if not math.isclose(float(row[f"{name}_{suffix}"]), actual, abs_tol=2e-6, rel_tol=0):
+                    raise ValueError(f"Saved parameter value changed: {sample_id}/{name}_{suffix}")
+        for flag in ("is_silent", "is_clipped", "has_large_dc_offset"):
+            if not isinstance(row[flag], (bool, np.bool_)):
+                raise ValueError(f"Invalid boolean QA field: {sample_id}/{flag}")
+    # A crash can leave WAVs after the last manifest checkpoint. They are not
+    # overwritten silently; inspect/archive these files before resuming.
+    expected_names = {f"{row['sample_id']}.wav" for row in rows}
+    extra = {p.name for p in PILOT_AUDIO_DIR.glob("*.wav")} - expected_names
+    if extra:
+        raise ValueError(f"Found {len(extra)} uncheckpointed WAV(s); inspect/archive them before resuming")
+    return rows
 
 
 def save_review_list(
@@ -586,13 +658,13 @@ def save_review_list(
 
 def main() -> None:
     args = parse_args()
-
-    sample_count = int(args.count)
-
-    prepare_output_directories(
-        overwrite=args.overwrite
-    )
-
+    configure_profile(args.profile)
+    sample_count = PILOT_SAMPLE_COUNT if args.count is None else int(args.count)
+    if sample_count <= 0:
+        raise ValueError("Count must be positive")
+    if DATASET_NAME == "restricted_v2" and sample_count & (sample_count - 1):
+        raise ValueError("restricted_v2 requires a power-of-two total count (e.g. 1024 or 131072)")
+    # Validate before any output can be replaced.
     validate_configuration()
 
     parameter_names = list(PARAMS.keys())
@@ -603,19 +675,29 @@ def main() -> None:
         seed=SAMPLING_SEED,
     )
 
-    save_dataset_config(
+    config = build_dataset_config(
         sample_count=sample_count,
         parameter_names=parameter_names,
     )
 
-    rows: list[dict[str, Any]] = []
+    if args.resume:
+        rows = load_resume_rows(config, sobol_samples)
+    else:
+        prepare_output_directories(overwrite=args.overwrite)
+        rows = []
+    initial_count = len(rows)
+    if initial_count == sample_count:
+        print(f"Verified all {sample_count} existing WAVs; nothing to render.")
+        return
+    save_dataset_config(config)
     start_time = time.perf_counter()
 
     print("=" * 70)
-    print("VITAL PILOT DATASET GENERATION")
+    print(f"VITAL DATASET GENERATION: {DATASET_NAME}")
     print("=" * 70)
     print(f"Samples: {sample_count}")
     print(f"Parameters: {len(parameter_names)}")
+    print(f"Schema status: {PROFILE.SCHEMA_STATUS}; preserving {initial_count} existing rows")
     print(f"Seed: {SAMPLING_SEED}")
     print(f"Preset: {BASE_PRESET}")
     print(f"Audio output: {PILOT_AUDIO_DIR}")
@@ -627,9 +709,9 @@ def main() -> None:
     print()
 
     for sample_index, unit_sample in enumerate(
-        sobol_samples
+        sobol_samples[initial_count:], start=initial_count
     ):
-        sample_id = f"pilot_v1_{sample_index:05d}"
+        sample_id = f"{DATASET_NAME}_{sample_index:05d}"
 
         synth = create_synth()
 
@@ -656,8 +738,8 @@ def main() -> None:
         )
 
 
-        # Dataset V1 produces identical left and right channels.
-        # Store one channel to avoid duplicating the same signal.
+        if metrics["stereo_difference_rms"] > 1e-10:
+            raise ValueError(f"Stereo channels differ in the declared mono domain: {sample_id}")
         mono_audio = audio[0]
 
         sf.write(
@@ -680,6 +762,7 @@ def main() -> None:
             "velocity": VELOCITY,
             "note_duration_seconds": NOTE_DURATION,
             "render_duration_seconds": RENDER_DURATION,
+            "audio_sha256": sha256_file(audio_path),
             **parameter_values,
             **metrics,
         }
@@ -701,9 +784,10 @@ def main() -> None:
             or completed % PROGRESS_UPDATE_INTERVAL == 0
         ):
             elapsed = time.perf_counter() - start_time
+            # Progress is for new renders; the absolute checkpoint count is shown above.
             progress = format_progress(
-                completed=completed,
-                total=sample_count,
+                completed=completed - initial_count,
+                total=sample_count - initial_count,
                 elapsed=elapsed,
             )
 
@@ -753,8 +837,12 @@ def main() -> None:
 
     summary = {
         "sample_count": len(rows),
+        "dataset_name": DATASET_NAME,
+        "schema_status": PROFILE.SCHEMA_STATUS,
+        "preserved_samples": initial_count,
+        "new_render_count": len(rows) - initial_count,
         "generation_seconds": elapsed,
-        "samples_per_second": len(rows) / elapsed,
+        "samples_per_second": (len(rows) - initial_count) / elapsed,
         "silent_samples": silent_count,
         "clipped_samples": clipped_count,
         "large_dc_offset_samples": large_dc_count,
@@ -810,10 +898,10 @@ def main() -> None:
     print("=" * 70)
     print("PILOT GENERATION COMPLETE")
     print("=" * 70)
-    print(f"Generated: {len(rows)} WAV files")
+    print(f"Total: {len(rows)} WAV files; newly rendered: {len(rows) - initial_count}")
     print(f"Time: {elapsed:.2f} seconds")
     print(
-        f"Speed: {len(rows) / elapsed:.2f} samples/sec"
+        f"Speed: {(len(rows) - initial_count) / elapsed:.2f} samples/sec"
     )
     print(f"Silent samples: {silent_count}")
     print(f"Clipped samples: {clipped_count}")

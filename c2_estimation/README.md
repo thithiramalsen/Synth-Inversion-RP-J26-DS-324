@@ -2,7 +2,14 @@
 
 This directory contains the initial Component 2 baseline. It uses only the canonical 1,024-sample `pilot_v1` dataset, computes fixed-reference log-mel spectrograms, and trains one small convolutional neural network to estimate the eight normalized Vital parameters.
 
-The implementation deliberately does not generate the planned 65,536-sample dataset and does not include ensembles, uncertainty calibration, or any Component 3 work.
+The implementation does not generate the planned scaled dataset and does not include ensembles, uncertainty calibration, or any Component 3 work.
+
+The shared candidate research configuration now has twelve controls within the
+one-oscillator architecture; see [generation/README.md](../generation/README.md).
+The proposed scaled total is 131072. Existing defaults, checkpoints and results
+here remain the eight-control engineering baseline and must not be presented as
+twelve-control results. A new configuration/dataset needs a separate training run,
+cache and output directory after the candidate domain is settled.
 
 ## Environment
 

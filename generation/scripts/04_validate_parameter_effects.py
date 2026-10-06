@@ -258,7 +258,7 @@ def rms(audio: np.ndarray) -> float:
 def main() -> None:
     if not BASE_PRESET.exists():
         raise FileNotFoundError(
-            "Run 03_create_base_preset.py first. "
+            "Run 03_create_base_preset.py --profile pilot_v1 first (legacy engineering test). "
             f"Missing: {BASE_PRESET}"
         )
 

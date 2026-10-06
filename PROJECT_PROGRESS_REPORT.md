@@ -1,5 +1,19 @@
 # Synth Inversion Project: Progress Report
 
+## Research-configuration update
+
+The agreed candidate domain is now **twelve controls, one oscillator**: wavetable
+position; cutoff, resonance and drive; amp ADSR; and filter-envelope amount,
+attack, decay and sustain. The eight-control `pilot_v1` dataset remains a
+generation/pipeline engineering test. Historical results below retain that scope.
+
+The separate `restricted_v2` preset, provisional ranges, 108-render control sweep
+and additional routing/repeatability/invariance checks are documented in
+[generation/README.md](generation/README.md). Numerical checks passed; two drive
+cases retain DC warnings for review. No formal human validation or new full
+study corpus is implied by this configuration change. The proposed scaled total
+is 131072, and diagnostic perturbation renders are additional to that count.
+
 ## Very short version
 
 We are building a system that listens to a short synthesizer sound and tries to work out how the sound was made.
