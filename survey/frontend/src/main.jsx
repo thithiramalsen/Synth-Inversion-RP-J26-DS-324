@@ -1,6 +1,7 @@
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import DemoApp from './DemoApp'
+import PilotApp, { PilotAdmin } from './PilotApp'
 import './styles.css'
 
 const API = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:8000`
@@ -232,13 +233,23 @@ function Landing({ studies, study, selectedStudyId, setSelectedStudyId, session,
 function Admin() {
   const [summary, setSummary] = useState(null)
   const [error, setError] = useState('')
-  useEffect(() => {
-    fetch(`${API}/api/admin/summary`).then((response) => {
+  const [token, setToken] = useState('')
+  function loadSummary() {
+    setError('')
+    fetch(`${API}/api/admin/summary`, { headers: { Authorization: `Bearer ${token}` } }).then((response) => {
       if (!response.ok) throw new Error('Could not load researcher summary.')
       return response.json()
     }).then(setSummary).catch((cause) => setError(cause.message))
-  }, [])
-  return <main className="shell admin-page"><div className="admin-header"><div><p className="eyebrow">Local researcher view</p><h1>Study results</h1></div><a className="text-button" href="/">Back to participant view</a></div>{error && <p className="error" role="alert">{error}</p>}{!summary ? <p className="status">Loading summary...</p> : <div className="admin-studies">{summary.studies.map((item) => <section className="admin-study" key={item.study_id}><div><p className="eyebrow">{item.study_id}</p><h2>{item.title}</h2></div><div className="admin-stats"><span><strong>{item.participants}</strong> participants</span><span><strong>{item.completed_sessions}</strong> completed</span><span><strong>{item.incomplete_sessions}</strong> incomplete</span><span><strong>{item.responses_collected}</strong> responses</span></div><a className="primary download" href={`${API}/api/admin/export/${item.study_id}`}>Download CSV</a></section>)}</div>}</main>
+  }
+  async function downloadExport(studyId) {
+    try {
+      const response = await fetch(`${API}/api/admin/export/${studyId}`, { headers: { Authorization: `Bearer ${token}` } })
+      if (!response.ok) throw new Error('Could not export responses. Check your access token.')
+      const url = URL.createObjectURL(await response.blob()), link = document.createElement('a')
+      link.href = url; link.download = `${studyId}.csv`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000)
+    } catch (cause) { setError(cause.message) }
+  }
+  return <main className="shell admin-page"><div className="admin-header"><div><p className="eyebrow">Local researcher view</p><h1>Study results</h1></div><a className="text-button" href="/">Back to participant view</a></div><label>Researcher access token<input type="password" autoComplete="off" value={token} onChange={e => setToken(e.target.value)} /></label><button className="primary" onClick={loadSummary}>Load summary</button>{error && <p className="error" role="alert">{error}</p>}{summary && <div className="admin-studies">{summary.studies.map((item) => <section className="admin-study" key={item.study_id}><div><p className="eyebrow">{item.study_id}</p><h2>{item.title}</h2></div><div className="admin-stats"><span><strong>{item.participants}</strong> participants</span><span><strong>{item.completed_sessions}</strong> completed</span><span><strong>{item.incomplete_sessions}</strong> incomplete</span><span><strong>{item.responses_collected}</strong> responses</span></div><button className="primary download" onClick={() => downloadExport(item.study_id)}>Download CSV</button></section>)}</div>}</main>
 }
 
 function Instructions({ study, session, onBegin, onBack, error }) {
@@ -320,6 +331,6 @@ function RatingScale({ name, label, min, max, lowLabel, highLabel, value, onChan
   return <fieldset><legend>{label} <i>Required</i></legend>{content}</fieldset>
 }
 
-const RootApp = window.location.pathname.startsWith('/demo') ? DemoApp : App
+const RootApp = window.location.pathname === '/pilot/admin' ? PilotAdmin : window.location.pathname.startsWith('/pilot') ? PilotApp : window.location.pathname.startsWith('/demo') ? DemoApp : App
 
 createRoot(document.getElementById('root')).render(<StrictMode><RootApp /></StrictMode>)

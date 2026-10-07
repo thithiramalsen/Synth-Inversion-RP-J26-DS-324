@@ -1,7 +1,7 @@
 """Thirteen-control candidate: keep both Bend and variable filter-envelope sustain.
 
 Previous twelve-control profiles/presets remain available for comparison. The
-dc_highpass_10hz_v1 policy is selected; integration and final bounds are pending.
+dc_highpass_10hz_v1 policy is integrated in generation; final bounds remain provisional.
 This module does not process audio.
 """
 from copy import deepcopy
@@ -11,7 +11,8 @@ from generation import restricted_config as architecture_a
 
 PROJECT_ROOT = previous.PROJECT_ROOT
 DATASET_NAME = "restricted_bend_sustain_v4"
-SCHEMA_STATUS = "selected_13_controls_dc_policy_selected_integration_pending"
+SCHEMA_STATUS = "selected_13_controls_dc_integrated_pilot_bounds_provisional"
+AUDIO_POLICY_ID = "dc_highpass_10hz_v1"
 BASE_PRESET = PROJECT_ROOT / "generation/presets/base_restricted_bend_sustain_v4.vital"
 SOURCE_PRESET = previous.SOURCE_PRESET
 PILOT_AUDIO_DIR = PROJECT_ROOT / "data/raw/audio" / DATASET_NAME

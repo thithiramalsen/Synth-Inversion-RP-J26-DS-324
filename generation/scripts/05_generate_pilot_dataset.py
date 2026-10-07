@@ -558,6 +558,11 @@ def build_dataset_config(
             "soundfile": version("soundfile"),
         },
     }
+    if getattr(PROFILE, "AUDIO_POLICY_ID", None):
+        from generation.audio_processing import policy_definition
+        config["audio_processing"] = policy_definition()
+        config["audio_policy_id"] = PROFILE.AUDIO_POLICY_ID
+        config["audio_subtype"] = "32-bit FLOAT (DC conditioned); raw FLOAT preserved separately"
     return config
 
 
@@ -597,6 +602,12 @@ def load_resume_rows(config: dict[str, Any], samples: np.ndarray) -> list[dict[s
             raise ValueError(f"Unexpected audio path for {sample_id}")
         if not expected_path.exists() or row.get("audio_sha256") != sha256_file(expected_path):
             raise ValueError(f"Missing or modified saved WAV: {sample_id}")
+        if getattr(PROFILE, "AUDIO_POLICY_ID", None):
+            raw_path = PILOT_AUDIO_DIR / "raw_float" / f"{sample_id}.wav"
+            if (row.get("audio_policy_id") != PROFILE.AUDIO_POLICY_ID
+                    or (PROJECT_ROOT / row.get("raw_audio_path", "")).resolve() != raw_path.resolve()
+                    or not raw_path.is_file() or row.get("raw_audio_sha256") != sha256_file(raw_path)):
+                raise ValueError(f"Missing or modified raw WAV/policy: {sample_id}")
         for dimension, name in enumerate(PARAMS):
             if not math.isclose(float(row[f"{name}_sample_01"]), samples[index, dimension], abs_tol=1e-14, rel_tol=0):
                 raise ValueError(f"Sobol prefix mismatch for {sample_id}/{name}")
@@ -616,6 +627,10 @@ def load_resume_rows(config: dict[str, Any], samples: np.ndarray) -> list[dict[s
     extra = {p.name for p in PILOT_AUDIO_DIR.glob("*.wav")} - expected_names
     if extra:
         raise ValueError(f"Found {len(extra)} uncheckpointed WAV(s); inspect/archive them before resuming")
+    if getattr(PROFILE, "AUDIO_POLICY_ID", None):
+        extra_raw = {p.name for p in (PILOT_AUDIO_DIR / "raw_float").glob("*.wav")} - expected_names
+        if extra_raw:
+            raise ValueError("Found uncheckpointed raw WAV(s); inspect/archive them before resuming")
     return rows
 
 
@@ -741,12 +756,27 @@ def main() -> None:
         if metrics["stereo_difference_rms"] > 1e-10:
             raise ValueError(f"Stereo channels differ in the declared mono domain: {sample_id}")
         mono_audio = audio[0]
+        processing = {}
+        subtype = "PCM_16"
+        if getattr(PROFILE, "AUDIO_POLICY_ID", None):
+            from generation.audio_processing import audio_metrics, dc_filter
+            raw_path = PILOT_AUDIO_DIR / "raw_float" / f"{sample_id}.wav"
+            raw_path.parent.mkdir(exist_ok=True)
+            sf.write(raw_path, mono_audio, SAMPLE_RATE, subtype="FLOAT")
+            raw_metrics = audio_metrics(mono_audio, SAMPLE_RATE)
+            mono_audio = dc_filter(mono_audio, SAMPLE_RATE)
+            metrics = calculate_audio_metrics(np.stack([mono_audio, mono_audio]))
+            processing = {"audio_policy_id": PROFILE.AUDIO_POLICY_ID,
+                          "raw_audio_path": str(raw_path.relative_to(PROJECT_ROOT)),
+                          "raw_audio_sha256": sha256_file(raw_path),
+                          **{f"raw_{key}": value for key, value in raw_metrics.items()}}
+            subtype = "FLOAT"
 
         sf.write(
             file=audio_path,
             data=mono_audio,
             samplerate=SAMPLE_RATE,
-            subtype="PCM_16",
+            subtype=subtype,
             format="WAV",
         )
 
@@ -765,6 +795,7 @@ def main() -> None:
             "audio_sha256": sha256_file(audio_path),
             **parameter_values,
             **metrics,
+            **processing,
         }
 
         rows.append(row)

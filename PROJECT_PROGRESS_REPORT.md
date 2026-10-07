@@ -24,9 +24,35 @@ zero with no clipping; peak levels increased, so peak QA remains necessary.
 The researcher reported virtually no audible difference and no clicks with and
 without SoundID Reference; the [informal listening follow-up](generation/characterization/dc_mitigation_v1/LISTENING_NOTE.md)
 supports selecting the versioned [10 Hz policy](generation/audio_policies/dc_highpass_10hz_v1.json).
-The listening check is complete; production integration remains pending, and
-no filtering has been enabled in the production pipeline. These sparse technical
-checks do not establish full-domain coverage or descriptor validity.
+The listening check is complete. The v4 generator now preserves raw FLOAT audio
+and writes separately DC-conditioned FLOAT candidates with QA/hashes. Historical
+datasets and model outputs are unchanged. These sparse technical checks do not
+establish full-domain coverage or descriptor validity.
+
+## Remote C1 pilot preparation — 7 October 2026
+
+The separate `/pilot` flow now implements consent/background questions, volume and
+headphone checks, three practice sounds, three unipolar descriptor scales with an
+unclear option, hidden repeats, a break, feedback, resume and withdrawal. A frozen
+64-sound design assigns 32 unique sounds and four repeats to each of 16 listeners;
+each sound has eight primary listeners when the assignments complete. These
+counts are a pilot feasibility budget, not a power-derived requirement.
+
+Versioned preparation and feature extraction use the same DC-conditioned,
+constant-gain signal, with saved hashes and raw evidence. Researcher exports are
+authenticated, and remote mode disables historical development APIs. Sessions and
+responses preserve assignment IDs and protocol/audio snapshots. Partial and
+withdrawn sessions remain auditable and excluded from analysis.
+
+A local rehearsal uses nine existing diagnostic sounds (six study, three practice)
+and one repeat. It is labelled rehearsal and excluded from research analysis.
+No public deployment or participant recruitment has occurred. The held 1,024 pool
+and production stimulus bundle have not been generated. Remaining steps: audition
+the new gain rule, finalize contacts/retention/eligibility and the institutional
+review status, authorize the candidate render, inspect/freeze the 64+3 subset,
+and test the full remote flow before recruitment. See
+[the runbook](survey/C1_PILOT_RUNBOOK.md) and
+[the rationale/checklist](survey/C1_PILOT_READINESS.md).
 
 ## Previous research-configuration update — architecture A
 
@@ -318,7 +344,7 @@ The listener chooses which candidate sounds more like the reference and gives a 
 
 This is internal development testing. It is not yet evidence from formal research participants. The MFCC baseline checker is [c4_metric/mfcc_baseline.py](c4_metric/mfcc_baseline.py), and the instructions are in [c4_metric/README.md](c4_metric/README.md).
 
-## Listening-survey application
+## Historical listening-survey application baseline
 
 The repository contains a local React/Vite frontend and FastAPI backend. It currently supports three internal studies:
 
@@ -337,7 +363,9 @@ The backend:
 
 The frontend provides the study pages, playback controls, rating controls, progress information, and an admin/export view. A separate demo screen was also added with four example audio files so the app can be shown without running a full study session.
 
-The application instructions and important safety note are in [survey/README.md](survey/README.md). The export routes are currently unauthenticated and are intended to remain local until protected before any network hosting.
+The application instructions are in [survey/README.md](survey/README.md). The
+export routes described here now require researcher authentication and are
+disabled in remote mode; the new C1 pilot above uses separate endpoints.
 
 The documented checks are:
 
@@ -384,7 +412,8 @@ The current checked-out branch is `dev-survey-app-c2`. The working tree was clea
 - Component 3's diversity setting has not been validated with user preferences.
 - Component 4's ten triplets are a development instrument, not a participant result.
 - The generated-data summary contains DC-offset warnings for 158 sounds.
-- The local survey export endpoints need authentication or network restrictions before deployment.
+- The original local export endpoints have since been authenticated and disabled
+  in remote mode. Public hosting, persistent storage and deployment rehearsal remain outstanding.
 
 ## Sensible next steps
 

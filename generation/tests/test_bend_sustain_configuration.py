@@ -76,6 +76,7 @@ class BendSustainTests(unittest.TestCase):
                 "generation/params_config.py", "generation/restricted_config.py",
                 "generation/bend_config.py", "generation/bend_sustain_config.py",
                 "generation/vital_setup.py", "generation/scripts/05_generate_pilot_dataset.py",
+                "generation/audio_processing.py", "generation/audio_policies/dc_highpass_10hz_v1.json",
                 "generation/presets/base_restricted_bend_sustain_v4.vital",
             ):
                 destination = directory / relative
@@ -94,6 +95,21 @@ class BendSustainTests(unittest.TestCase):
             config = json.loads((directory / "data/manifests/restricted_bend_sustain_v4_config.json").read_text())
             self.assertNotIn("env_2_sustain", config["fixed_controls"])
             self.assertEqual([p.name for p in (directory / "data/raw/audio").iterdir()], [profile.DATASET_NAME])
+            self.assertEqual(config['audio_policy_id'], 'dc_highpass_10hz_v1')
+            saved = {r['sample_id']:(r['audio_sha256'], r['raw_audio_sha256']) for r in rows}
+            result = subprocess.run([sys.executable, '-B', 'generation/scripts/05_generate_pilot_dataset.py', '--count', '4', '--resume'],
+                                    cwd=directory, capture_output=True, text=True, timeout=120)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            with (directory / 'data/manifests/restricted_bend_sustain_v4.csv').open(newline='', encoding='utf-8') as handle:
+                extended = list(csv.DictReader(handle))
+            self.assertEqual(len(extended), 4)
+            self.assertEqual(saved, {r['sample_id']:(r['audio_sha256'], r['raw_audio_sha256']) for r in extended[:2]})
+            # Resume must reject modified raw evidence even when processed files match.
+            (directory / extended[0]['raw_audio_path']).write_bytes(b'tampered test fixture')
+            result = subprocess.run([sys.executable, '-B', 'generation/scripts/05_generate_pilot_dataset.py', '--count', '4', '--resume'],
+                                    cwd=directory, capture_output=True, text=True, timeout=120)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('raw', (result.stdout + result.stderr).lower())
         finally:
             self.assertEqual(directory.parent, parent)
             self.assertTrue(directory.name.startswith("combined-generator-test-"))

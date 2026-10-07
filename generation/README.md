@@ -47,14 +47,20 @@ saved A/B WAVs plus 18 combined-control diagnostic renders. Both causal 10 Hz an
 no audible difference and no clicks, with and without SoundID Reference. The
 [informal listening check](characterization/dc_mitigation_v1/LISTENING_NOTE.md)
 is complete, and **[dc_highpass_10hz_v1](audio_policies/dc_highpass_10hz_v1.json)**
-is the selected processing policy. Production integration remains pending;
-no correction or normalization has been enabled in generation/training/inference.
+is the selected processing policy. The v4 generator now applies it exactly once,
+preserving raw FLOAT WAVs and writing separate DC-conditioned FLOAT WAVs with
+pre/post QA, hashes and policy metadata. Resume verifies both raw and processed
+files and preserves the Sobol prefix. An isolated two-to-four-sample extension
+and tamper test passed; the new 1,024 pool has not been rendered.
+Historical datasets and training/inference implementations have not been converted.
 Original WAVs are preserved. Six original/10 Hz/20 Hz listening examples are in
 `test_renders/dc_mitigation_v1/LISTEN.html`.
 
-Integration must preserve raw FLOAT renders, record pre/post-filter QA, and apply
-the fixed filter exactly once to study/model audio. Policy metadata must prevent
-re-filtering already conditioned files. SoundID Reference is not part of the
+The separate [C1 preparation](../survey/C1_PILOT_RUNBOOK.md) selects study sounds
+and applies a versioned constant-gain level rule after DC filtering. The rule needs
+researcher audition before recruitment. Feature extraction reads the bundle's
+already conditioned signal without applying either policy again.
+SoundID Reference is not part of the
 dataset processing. The listening feedback is an informal engineering check,
 not a formal perceptual equivalence or descriptor study.
 

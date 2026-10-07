@@ -1,7 +1,9 @@
 import json
+import os
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -17,16 +19,20 @@ import main  # noqa: E402
 class SurveyApiTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        cls.environment = patch.dict(os.environ, {"SURVEY_ADMIN_TOKEN": "test-admin-token-not-for-deployment-12345"})
+        cls.environment.start()
         cls.temporary_directory = tempfile.TemporaryDirectory()
         database.DATABASE_PATH = Path(cls.temporary_directory.name) / "test-survey.db"
         database.initialize_database()
         cls.client_context = TestClient(main.app)
         cls.client = cls.client_context.__enter__()
+        cls.client.headers["Authorization"] = "Bearer test-admin-token-not-for-deployment-12345"
 
     @classmethod
     def tearDownClass(cls) -> None:
         cls.client_context.__exit__(None, None, None)
         cls.temporary_directory.cleanup()
+        cls.environment.stop()
 
     def start_trial(self, study_id: str) -> tuple[dict, dict]:
         session_response = self.client.post("/api/session/start", json={"study_id": study_id})

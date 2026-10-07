@@ -1,8 +1,28 @@
 # Listening Survey
 
-Local React/Vite + FastAPI research listening instruments. Audio remains in the shared research dataset and is served by the backend; WAV files are not copied into React.
+React/Vite + FastAPI research listening instruments. Audio is served by the backend;
+WAV files are not bundled into React.
 
-## Implemented studies
+## Current C1 pilot and local rehearsal
+
+The new `/pilot` instrument uses a separate versioned audio bundle and database
+tables. It implements consent/background questions, volume setup, a six-trial
+headphone screen, three practice clips, brightness/roughness/percussiveness
+ratings, hidden repeats, a break, feedback, resume and withdrawal. Researcher
+exports and invitation management require a bearer access token.
+
+**Start with [C1_PILOT_RUNBOOK.md](C1_PILOT_RUNBOOK.md).** The local rehearsal uses
+existing diagnostics, six study sounds, three practice sounds and one repeat.
+It is not the research stimulus set and its responses are excluded from analysis.
+The production design is 64 study sounds, 16 completed listeners, 32 unique sounds
+plus four repeats per listener, and eight primary listeners per sound.
+
+The new 1,024-candidate pool remains on hold. The production bundle is not yet
+built, the site is not publicly deployed, and participant contacts, retention,
+eligibility and institutional review details need finalization. The rationale and
+remaining checklist are in [C1_PILOT_READINESS.md](C1_PILOT_READINESS.md).
+
+## Preserved development instruments
 
 - `pilot_quality`: all 1024 samples in `data/manifests/pilot_v1.csv`, randomized per session. Records the first obvious issue, a 1-5 quality rating, an optional comment and playback starts.
 - `c1_descriptors`: a randomized 20-sample internal prototype drawn from the same 1024-sample pilot manifest. Records four 1-7 bipolar ratings (dark/bright, smooth/rough, thin/warm and short/sustained), an optional comment and playback starts.
@@ -10,14 +30,13 @@ Local React/Vite + FastAPI research listening instruments. Audio remains in the 
 
 The current 1024-sample `pilot_v1` manifest is the eight-control engineering test
 (`sampling_seed: 20260803`). The selected thirteen-control `restricted_bend_sustain_v4` architecture
-is documented in [generation/README.md](../generation/README.md). The survey still
-uses the old dataset and instrument. A formal C1 pilot needs a versioned stimulus
-subset, revised descriptor definitions/scales and balanced assignments; changing
-the generation profile does not implement those study changes.
+is documented in [generation/README.md](../generation/README.md). These historical
+instruments still use the old dataset. The separate `/pilot` flow must not be
+confused with `c1_descriptors` or its earlier bipolar scales.
 
 All studies are for internal development testing only until supervisor and ethics requirements permit broader participant recruitment.
 
-## Run locally
+## Run the preserved development instruments locally
 
 From the repository root, activate or recreate the root virtual environment and install the backend requirements:
 
@@ -49,12 +68,15 @@ While the service is strictly local, CSV exports are available at:
 - C1 descriptors: <http://localhost:8000/api/admin/export/c1_descriptors>
 - C4 triplets: <http://localhost:8000/api/admin/export/c4_triplets>
 
-These routes are not authenticated. Protect or disable them before hosting the service on a network.
+These routes now require `Authorization: Bearer <SURVEY_ADMIN_TOKEN>`; set an
+unguessable environment token of at least 32 characters before starting the
+backend. The `/admin` page accepts it without storing it. When `SURVEY_REMOTE_MODE=1`,
+all historical API routes above are disabled; use the new `/pilot/admin` instead.
 
 ## Tests
 
 ```powershell
-python -m pytest survey/backend/tests
+python -m pytest survey/backend/tests survey/tests -p no:cacheprovider
 cd survey/frontend
 npm run build
 ```

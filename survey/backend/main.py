@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import os
 import random
 import secrets
 import sqlite3
@@ -9,12 +10,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 
 from database import get_connection, initialize_database
+from security import require_admin
+from c1_pilot import router as c1_router, initialize_pilot_database
 from models import (
     C4AudioPlayCounts,
     C4TripletAnswers,
@@ -41,17 +45,30 @@ STUDY_ALIASES = {"pilot_v1": "pilot_quality"}
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     initialize_database()
+    initialize_pilot_database()
     yield
 
 
-app = FastAPI(title="Synth Inversion Listening Survey", lifespan=lifespan)
+REMOTE_MODE = os.environ.get("SURVEY_REMOTE_MODE") == "1"
+app = FastAPI(title="Synth Inversion Listening Survey", lifespan=lifespan,
+              docs_url=None if REMOTE_MODE else "/docs", redoc_url=None if REMOTE_MODE else "/redoc",
+              openapi_url=None if REMOTE_MODE else "/openapi.json")
+app.include_router(c1_router)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_origin_regex=r"^http://(localhost|127\.0\.0\.1):517\d$",
+    allow_origins=[s.strip() for s in os.environ.get("SURVEY_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",") if s.strip()],
+    allow_origin_regex=None if REMOTE_MODE else r"^http://(localhost|127\.0\.0\.1):517\d$",
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def restrict_remote_routes(request: Request, call_next):
+    if REMOTE_MODE and request.url.path.startswith("/api/") and not (
+            request.url.path.startswith("/api/c1-pilot/") or request.url.path == "/api/health"):
+        return JSONResponse({"detail": "Historical development endpoints are disabled"}, status_code=404)
+    return await call_next(request)
 
 
 def now() -> str:
@@ -425,17 +442,17 @@ def build_export(study_id: str | None) -> StreamingResponse:
     )
 
 
-@app.get("/api/admin/export")
+@app.get("/api/admin/export", dependencies=[Depends(require_admin)])
 def export_all_responses() -> StreamingResponse:
     return build_export(None)
 
 
-@app.get("/api/admin/export/{study_id}")
+@app.get("/api/admin/export/{study_id}", dependencies=[Depends(require_admin)])
 def export_study_responses(study_id: str) -> StreamingResponse:
     return build_export(study_id)
 
 
-@app.get("/api/admin/summary")
+@app.get("/api/admin/summary", dependencies=[Depends(require_admin)])
 def admin_summary() -> dict[str, Any]:
     summary = []
     with get_connection() as connection:
@@ -463,3 +480,21 @@ def admin_summary() -> dict[str, Any]:
                 }
             )
     return {"studies": summary}
+
+
+DIST = ROOT / "survey/frontend/dist"
+if (DIST / "assets").is_dir():
+    app.mount("/assets", StaticFiles(directory=DIST / "assets"), name="frontend-assets")
+
+
+@app.get("/pilot")
+@app.get("/pilot/admin")
+def pilot_page():
+    if not (DIST / "index.html").is_file():
+        raise HTTPException(503, "Build the survey frontend first")
+    return FileResponse(DIST / "index.html")
+
+
+@app.get("/")
+def home_page():
+    return RedirectResponse("/pilot")

@@ -14,7 +14,18 @@ human-participant evidence.
 
 The selected combined profile and preserved A/B comparison profiles are separate from
 the descriptor survey. Technical activity does not establish perceptual coverage,
-and the current survey prototype has not been converted into the formal pilot.
+and no human pilot data have yet been collected here. A separate versioned
+instrument is now implemented at `/pilot`; see the
+[rehearsal and launch runbook](../survey/C1_PILOT_RUNBOOK.md). Its production
+stimulus pool remains on hold. The old four-bipolar-scale prototype is preserved.
+
+`extract_pilot_features.py` verifies bundle/audio hashes and extracts features
+from the exact level-controlled FLOAT pilot signal. It does not filter or
+normalize again and does not overwrite the historical feature table. Example:
+
+```powershell
+.\venv\Scripts\python.exe -B -m c1_timbre.extract_pilot_features --bundle data/processed/c1_pilot_v1/bundle.json --output data/processed/c1-features.csv
+```
 
 This folder contains the first reproducible C1 analysis required for the development checkpoint. It reads every row in the shared manifest, extracts simple audio features, and measures the relationship between normalized filter cutoff and spectral centroid.
 
