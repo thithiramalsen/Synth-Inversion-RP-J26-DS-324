@@ -1,0 +1,402 @@
+{
+  "dataset_name": "restricted_bend_sustain_v4",
+  "schema_status": "selected_13_controls_dc_integrated_pilot_bounds_provisional",
+  "modulations": [
+    {
+      "source": "env_2",
+      "destination": "filter_1_cutoff",
+      "slot": 1
+    }
+  ],
+  "generator_sha256": "9191aa6ba2c5291f05f730e87d0509e6b58cf00a03a64cf78474a6318143c55e",
+  "created_utc": "2026-10-07T16:36:14.057270+00:00",
+  "sample_count": 1024,
+  "sampling_method": "Scrambled Sobol sequence generated at the next power of two and truncated to the requested count.",
+  "sampling_seed": 20260803,
+  "sample_rate": 44100,
+  "midi_note": 60,
+  "velocity": 0.8,
+  "note_duration_seconds": 1.5,
+  "render_duration_seconds": 3.0,
+  "audio_format": "WAV",
+  "audio_subtype": "32-bit FLOAT (DC conditioned); raw FLOAT preserved separately",
+  "channels": 1,
+  "parameter_order": [
+    "wave_frame",
+    "bend_amount",
+    "filter_cutoff",
+    "filter_resonance",
+    "filter_drive",
+    "amp_attack",
+    "amp_decay",
+    "amp_sustain",
+    "amp_release",
+    "filter_env_amount",
+    "filter_env_attack",
+    "filter_env_decay",
+    "filter_env_sustain"
+  ],
+  "parameters": {
+    "wave_frame": {
+      "control": "osc_1_wave_frame",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 1.0,
+      "description": "Position within the fixed Basic Shapes wavetable."
+    },
+    "bend_amount": {
+      "control": "osc_1_distortion_amount",
+      "mode": "normalized",
+      "min": 0.25,
+      "max": 0.75,
+      "description": "Oscillator 1 Bend, fixed mode/phase. Normalized .5 is neutral. Provisional .25-.75 interval from the main A/B comparison; DC policy unresolved."
+    },
+    "filter_cutoff": {
+      "control": "filter_1_cutoff",
+      "mode": "normalized",
+      "min": 0.3,
+      "max": 0.85,
+      "description": "Analog 12 dB filter cutoff. Extremely low values are excluded to reduce near-silent samples."
+    },
+    "filter_resonance": {
+      "control": "filter_1_resonance",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 0.8,
+      "description": "Analog filter resonance."
+    },
+    "filter_drive": {
+      "control": "filter_1_drive",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 0.75,
+      "description": "Internal drive of Filter 1."
+    },
+    "amp_attack": {
+      "control": "env_1_attack",
+      "mode": "normalized",
+      "min": 0.05,
+      "max": 0.35,
+      "description": "Amplitude attack; candidate maximum about 0.480 s."
+    },
+    "amp_decay": {
+      "control": "env_1_decay",
+      "mode": "normalized",
+      "min": 0.15,
+      "max": 0.4,
+      "description": "Amplitude decay; candidate maximum about 0.819 s."
+    },
+    "amp_sustain": {
+      "control": "env_1_sustain",
+      "mode": "normalized",
+      "min": 0.2,
+      "max": 1.0,
+      "description": "Amplitude-envelope sustain. Very low sustain values are excluded from the first pilot."
+    },
+    "amp_release": {
+      "control": "env_1_release",
+      "mode": "normalized",
+      "min": 0.1,
+      "max": 0.45,
+      "description": "Amplitude-envelope release, restricted so most of the tail fits inside the render."
+    },
+    "filter_env_amount": {
+      "control": "modulation_1_amount",
+      "mode": "normalized",
+      "min": 0.5,
+      "max": 0.5625,
+      "description": "ENV 2 -> cutoff, positive unipolar depth. Normalized 0.5 is ZERO; raw range 0 to 0.125. Verify nominal 0 to 16 semitones in characterization."
+    },
+    "filter_env_attack": {
+      "control": "env_2_attack",
+      "mode": "normalized",
+      "min": 0.05,
+      "max": 0.35,
+      "description": "Filter-envelope rise; candidate range about 0.0002 to 0.480 s."
+    },
+    "filter_env_decay": {
+      "control": "env_2_decay",
+      "mode": "normalized",
+      "min": 0.15,
+      "max": 0.4,
+      "description": "Filter-envelope fall toward sustain; candidate range about 0.0162 to 0.819 s."
+    },
+    "filter_env_sustain": {
+      "control": "env_2_sustain",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 1.0,
+      "description": "Held fraction of filter-envelope depth. At 1, decay is inactive; at zero depth all ENV 2 timing/level controls are inactive."
+    }
+  },
+  "fixed_controls": {
+    "osc_1_on": {
+      "mode": "raw",
+      "value": 1.0
+    },
+    "osc_2_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_3_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "sample_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_destination": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_transpose": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_tune": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_random_phase": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_level": {
+      "mode": "normalized",
+      "value": 0.5
+    },
+    "osc_1_unison_voices": {
+      "mode": "raw",
+      "value": 1.0
+    },
+    "osc_1_unison_detune": {
+      "mode": "normalized",
+      "value": 0.0
+    },
+    "filter_1_on": {
+      "mode": "raw",
+      "value": 1.0
+    },
+    "filter_2_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_1_model": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_1_style": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_1_mix": {
+      "mode": "raw",
+      "value": 1.0
+    },
+    "filter_1_keytrack": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_1_blend": {
+      "mode": "normalized",
+      "value": 0.0
+    },
+    "chorus_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "compressor_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "delay_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "distortion_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "eq_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "filter_fx_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "flanger_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "phaser_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "reverb_on": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "polyphony": {
+      "mode": "raw",
+      "value": 1.0
+    },
+    "osc_1_phase": {
+      "mode": "raw",
+      "value": 0.5
+    },
+    "env_1_delay": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "env_1_hold": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "env_1_attack_power": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "env_1_decay_power": {
+      "mode": "raw",
+      "value": -2.0
+    },
+    "env_1_release_power": {
+      "mode": "raw",
+      "value": -2.0
+    },
+    "env_2_delay": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "env_2_hold": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "env_2_attack_power": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "env_2_decay_power": {
+      "mode": "raw",
+      "value": -2.0
+    },
+    "env_2_release": {
+      "mode": "normalized",
+      "value": 0.3
+    },
+    "env_2_release_power": {
+      "mode": "raw",
+      "value": -2.0
+    },
+    "modulation_1_bipolar": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "modulation_1_bypass": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "modulation_1_power": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "modulation_1_stereo": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_distortion_type": {
+      "mode": "raw",
+      "value": 4.0
+    },
+    "osc_1_distortion_phase": {
+      "mode": "raw",
+      "value": 0.5
+    },
+    "osc_1_distortion_spread": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_spectral_morph_type": {
+      "mode": "raw",
+      "value": 0.0
+    },
+    "osc_1_spectral_morph_amount": {
+      "mode": "raw",
+      "value": 0.5
+    },
+    "osc_1_spectral_morph_spread": {
+      "mode": "raw",
+      "value": 0.0
+    }
+  },
+  "silence_threshold_dbfs": -60.0,
+  "clipping_threshold": 1.0,
+  "dc_offset_warning_threshold": 0.005,
+  "dc_to_rms_warning_threshold": 0.2,
+  "base_preset": "generation\\presets\\base_restricted_bend_sustain_v4.vital",
+  "base_preset_sha256": "ee3c0d4df877a0715c3660bfdff730f80eb93287c10a45697f56bc0f9e03c49b",
+  "versions": {
+    "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+    "vita": "0.0.5",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "pandas": "3.0.5",
+    "soundfile": "0.14.0"
+  },
+  "audio_processing": {
+    "policy": {
+      "policy_id": "dc_highpass_10hz_v1",
+      "decision_date": "2026-10-07",
+      "decision_status": "selected_after_informal_researcher_listening",
+      "pipeline_integration_status": "integrated_in_v4_generation_and_versioned_pilot_preparation",
+      "scope": "restricted_bend_sustain_v4",
+      "sample_rate_hz": 44100,
+      "channels": 1,
+      "filter": {
+        "family": "Butterworth",
+        "type": "highpass",
+        "order": 2,
+        "cutoff_hz": 10.0,
+        "implementation": "scipy.signal.sosfilt",
+        "dtype": "float64",
+        "initial_state": "zeros_per_independent_clip",
+        "axis": "sample_axis",
+        "padding": "none",
+        "sos": [
+          [
+            0.9989930508651772,
+            -1.9979861017303544,
+            0.9989930508651772,
+            1.0,
+            -1.9979850877835377,
+            0.9979871156771719
+          ]
+        ]
+      },
+      "application": {
+        "stage": "after canonical mono 44100 Hz audio, before feature extraction or playback PCM encoding",
+        "passes": 1,
+        "selection": "all clips, independent of DC flag",
+        "preserve_unconditioned_render": "FLOAT WAV with SHA-256",
+        "record_processed_audio_policy_id": true,
+        "reject_accidental_repeat_processing": true,
+        "additional_gain": 1.0,
+        "normalization": "none",
+        "fade": "none",
+        "soundid_reference_processing": false,
+        "qa": "measure DC, RMS, peak and clipping before and after filtering; do not silently clip or normalize"
+      },
+      "evidence": {
+        "numerical_report": "generation/characterization/dc_mitigation_v1/REPORT.md",
+        "coefficient_source": "generation/characterization/dc_mitigation_v1/summary.json",
+        "listening_note": "generation/characterization/dc_mitigation_v1/LISTENING_NOTE.md"
+      },
+      "limits": "An engineering choice for the current rendering protocol. Not a formal perceptual equivalence result, descriptor validation, or full-domain coverage claim. Loudness normalization and final parameter bounds are separate decisions."
+    },
+    "sha256": "32ab705f37eaf581c778b4d7fe9f1607f7d625ba76f9160b70640e20b108bcd9",
+    "implementation_sha256": "c26effb4db3f116c5ba99b63852d0768884146d119f6f4640002b1d97a3d32c7"
+  },
+  "audio_policy_id": "dc_highpass_10hz_v1"
+}

@@ -1,10 +1,14 @@
 # C1 remote pilot: shortest path to launch
 
 Repository audit: 7 October 2026. The researcher confirmed **remote online** delivery.
+Current launch status and full rehearsal: [C1_PILOT_NEXT_STEPS.md](C1_PILOT_NEXT_STEPS.md),
+updated 8 October 2026. The feature/model handoff is separate from pilot launch.
 The researcher reports that the panel requires evidence of relevant music-making
 or sound-design experience among participants.
 This is a preparation checklist and proposed protocol, not a launched study or
-an instruction to generate the held 1,024-sound pool.
+an instruction to recruit participants. Update: the researcher authorized the
+1,024-sound render; the pool and 64+3 selection are complete. See
+[C1_CANDIDATE_GENERATION_REPORT.md](C1_CANDIDATE_GENERATION_REPORT.md).
 
 ## What this pilot will decide
 
@@ -28,12 +32,12 @@ precise-looking estimate from a small pilot.
 |---|---|---|
 | Synth architecture | Selected | `restricted_bend_sustain_v4`: 13 controls, one oscillator, Bend and variable ENV2 sustain. Freeze the current provisional bounds for the pilot; do not reopen architecture solely to reach a round parameter count. |
 | DC filter | Integrated for v4; historically auditioned | V4 now retains raw FLOAT WAVs and writes separate filtered FLOAT candidates. Historical datasets/models are unchanged. |
-| New study stimuli | Not generated/selected | The 376 historical A/B settings describe other architectures; the 18 combined settings are sparse diagnostics. Neither set is a ready, representative pilot pool. |
-| Survey audio source | Separate bundle implemented | `/pilot` reads an immutable C1 bundle. The local rehearsal uses existing diagnostics; production still needs the new candidate pool and selection. The old eight-control instruments are separate. |
+| New study stimuli | Generated and selected | The authorized v4 1,024-candidate pool and 64+3 selection are complete; the historical A/B diagnostics remain separate. |
+| Survey audio source | Frozen selection and full rehearsal prepared | `/pilot` reads an immutable C1 bundle. The new full rehearsal copies the actual production audio unchanged into a separate study/database; old diagnostic instruments remain separate. |
 | Assignment | Implemented and tested | 16 connected overlapping blocks, 32 unique + four repeats, eight primary listeners per sound. Replacement invitations retain the same block. |
 | Questions | Implemented; human wording check pending | `c1_pilot_v1.json` defines brightness, roughness and percussiveness, 1–7 plus a separate unclear response. |
 | Repeat presentations | Implemented and tested | Distinct presentation IDs point to the same sound; repeats are excluded from independent listener counts. |
-| Remote entry flow | Implemented; human rehearsal pending | Consent, experience questions, volume setup, six headphone checks, practice, ratings, break, feedback, resume and withdrawal. |
+| Remote entry flow | Implemented; full human rehearsal pending | Consent, experience questions, volume setup, six headphone checks, practice, ratings, break, feedback, resume and withdrawal. Full 39-presentation local rehearsal is prepared on port 8772. |
 | Hosting | Local rehearsal; public deployment pending | Admin exports require authentication; remote mode disables historical APIs. HTTPS, persistent storage and a full deployed rehearsal remain. |
 | Institutional process | Preliminary review route identified; project status unconfirmed | SLIIT's published process calls for preliminary supervisor review, with detailed review conditional on the supervisor's recommendation. The external-organization permission-letter form supplied by the researcher is a different process. Confirm the current cohort's preliminary-review requirement/status. Technical preparation can proceed. |
 
@@ -100,6 +104,10 @@ After audio preparation is finalized and the render hold is lifted, generate a
 versioned candidate pool from the selected 13-control domain. The planned 1,024
 is a computational candidate count; only the selected pilot subset is human-rated.
 The full scaled corpus is unnecessary for this pilot.
+
+**Completed:** the hold was lifted, 1,024 v4 candidates were generated and the
+64+3 bundle was selected. The paragraphs below document the selection rationale;
+they are not instructions to generate another pool.
 
 Select **64 unique patches**, each a complete combination of all 13 controls.
 Use a reproducible selection based on parameter spread plus complementary acoustic
@@ -228,5 +236,5 @@ Audio preparation and the new versioned survey are implemented and software-test
 human audition, final protocol details, production selection and public deployment
 remain. Finalize the remote recruitment conditions alongside that work.
 Do not spend time generating 135k sounds, training a large model or testing all
-parameter interactions before this pilot. The existing 1,024-render hold remains
-in force until explicitly superseded.
+parameter interactions before this pilot. The 1,024-render hold was explicitly lifted and that pool is now prepared.
+The 131,072-sound extension has not been started.

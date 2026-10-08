@@ -39,7 +39,8 @@ The separate Bend preset can be built and checked without generating a dataset:
 .\venv\Scripts\python.exe -m unittest discover -s generation/tests -v
 ```
 
-**The new 1,024-sound pool remains on hold.** The
+**The authorized 1,024-sound pool and C1 64+3 selection are now complete.**
+See the [generation report](../survey/C1_CANDIDATE_GENERATION_REPORT.md). The
 [DC-mitigation check](characterization/dc_mitigation_v1/REPORT.md) compared 376
 saved A/B WAVs plus 18 combined-control diagnostic renders. Both causal 10 Hz and
 20 Hz second-order high-pass filters reduced the engineering DC-flag count from
@@ -51,8 +52,16 @@ is the selected processing policy. The v4 generator now applies it exactly once,
 preserving raw FLOAT WAVs and writing separate DC-conditioned FLOAT WAVs with
 pre/post QA, hashes and policy metadata. Resume verifies both raw and processed
 files and preserves the Sobol prefix. An isolated two-to-four-sample extension
-and tamper test passed; the new 1,024 pool has not been rendered.
+and tamper test passed; the full 1,024 pool has now been rendered and technically checked.
 Historical datasets and training/inference implementations have not been converted.
+
+The [8 October storage-precision audit](characterization/pcm_precision_v1/REPORT.md)
+compared all 1,024 candidates against PCM16/PCM24 without changing their audio.
+PCM16 produced no clipping and small C2 log-mel differences, but the current
+C1/C3 features are sensitive to very quiet spectral energy. The master format
+remains unchanged pending a versioned feature-floor/energy-handling decision;
+PCM16 has not been accepted as an interchangeable research master.
+
 Original WAVs are preserved. Six original/10 Hz/20 Hz listening examples are in
 `test_renders/dc_mitigation_v1/LISTEN.html`.
 

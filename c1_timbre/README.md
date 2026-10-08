@@ -1,5 +1,11 @@
 # C1 - Timbre descriptors and parameter influence
 
+For transfer to the C1 component owner, use the
+[teammate handoff](C1_TEAMMATE_HANDOFF.md): prepared stimuli/survey, data locations,
+the known feature-precision issue, ownership and post-collection analysis steps.
+The [current pilot checklist](../survey/C1_PILOT_NEXT_STEPS.md) separates those
+modelling tasks from what remains before participant recruitment.
+
 ## Current research configuration
 
 The selected research architecture now contains **13 controls with Oscillator 2 off**:
@@ -17,7 +23,9 @@ the descriptor survey. Technical activity does not establish perceptual coverage
 and no human pilot data have yet been collected here. A separate versioned
 instrument is now implemented at `/pilot`; see the
 [rehearsal and launch runbook](../survey/C1_PILOT_RUNBOOK.md). Its production
-stimulus pool remains on hold. The old four-bipolar-scale prototype is preserved.
+stimulus pool and 64+3 selection are now prepared; see the
+[generation report](../survey/C1_CANDIDATE_GENERATION_REPORT.md). Human audition and
+recruitment preparation remain. The old four-bipolar-scale prototype is preserved.
 
 `extract_pilot_features.py` verifies bundle/audio hashes and extracts features
 from the exact level-controlled FLOAT pilot signal. It does not filter or
@@ -28,6 +36,15 @@ normalize again and does not overwrite the historical feature table. Example:
 ```
 
 This folder contains the first reproducible C1 analysis required for the development checkpoint. It reads every row in the shared manifest, extracts simple audio features, and measures the relationship between normalized filter cutoff and spectral centroid.
+
+**Feature stability finding (8 October 2026):** the
+[paired precision audit](../generation/characterization/pcm_precision_v1/REPORT.md)
+found that the current unweighted frame summaries and very low spectral floor
+can substantially change centroid/MFCC values between FLOAT and PCM playback,
+including the prepared 67 study clips. This extractor remains a historical
+baseline, not a frozen perceptual feature definition. Energy handling and floors
+need an explicit, versioned revision and validation before fitting the descriptor
+model. The study sounds and this extractor were not modified by the audit.
 
 ## Run
 

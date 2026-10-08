@@ -13,7 +13,8 @@ The available listening exports contained no populated per-context ratings.
 The [A/B comparison](generation/characterization/architecture_ab_v1/REPORT.md)
 remains unchanged: numerical Bend activity and exact tested repeat/serialization
 results, with elevated DC flags (61/108 main B renders, 19/108 A). Final parameter
-ranges remain provisional. The new 1,024-sound dataset has not been generated.
+ranges remain provisional. The authorized 1,024-sound dataset and 64+3 C1 selection
+are now generated; see [generation report](survey/C1_CANDIDATE_GENERATION_REPORT.md).
 Historical eight-control models and survey datasets retain their original scope.
 
 The [DC-mitigation experiment](generation/characterization/dc_mitigation_v1/REPORT.md)
@@ -46,10 +47,10 @@ withdrawn sessions remain auditable and excluded from analysis.
 
 A local rehearsal uses nine existing diagnostic sounds (six study, three practice)
 and one repeat. It is labelled rehearsal and excluded from research analysis.
-No public deployment or participant recruitment has occurred. The held 1,024 pool
-and production stimulus bundle have not been generated. Remaining steps: audition
-the new gain rule, finalize contacts/retention/eligibility and the institutional
-review status, authorize the candidate render, inspect/freeze the 64+3 subset,
+No public deployment or participant recruitment has occurred. The authorized 1,024
+pool and production stimulus bundle are now prepared. Remaining steps: audition
+the final selection, finalize contacts/retention/eligibility and the institutional
+review status,
 and test the full remote flow before recruitment. See
 [the runbook](survey/C1_PILOT_RUNBOOK.md) and
 [the rationale/checklist](survey/C1_PILOT_READINESS.md).

@@ -22,15 +22,20 @@ function savedSession() {
   try { return JSON.parse(localStorage.getItem(KEY) || 'null') } catch { return null }
 }
 
-function Player({ session, audioId, onPlay, onEnd }) {
+function Player({ session, audioId, presentationId, onStart, onPlay, onEnd, disabled }) {
   const [source, setSource] = useState('')
   const [error, setError] = useState('')
+  const [requested, setRequested] = useState(false)
   const ref = useRef(null)
   useEffect(() => {
+    // Do not fetch presentation audio until the listener explicitly starts it.
+    // The server locks the previous answer before releasing this sound's bytes.
+    if (presentationId && !requested) return
     let active = true, url
     const controller = new AbortController()
     setSource(''); setError('')
-    fetch(`${API}/api/c1-pilot/sessions/${session.session_id}/audio/${audioId}`, {
+    fetch(`${API}/api/c1-pilot/sessions/${session.session_id}/${presentationId ? `playback/${presentationId}` : `audio/${audioId}`}`, {
+      method: presentationId ? 'POST' : 'GET',
       headers: { Authorization: `Bearer ${session.token}` }, signal: controller.signal,
     }).then(async response => {
       if (!response.ok) throw new Error('Audio could not be loaded. Reload this step or contact the researcher.')
@@ -39,11 +44,12 @@ function Player({ session, audioId, onPlay, onEnd }) {
       else URL.revokeObjectURL(url)
     }).catch(error => { if (active && error.name !== 'AbortError') setError(error.message) })
     return () => { active = false; controller.abort(); if (ref.current) ref.current.pause(); if (url) URL.revokeObjectURL(url) }
-  }, [session.session_id, session.token, audioId])
+  }, [session.session_id, session.token, audioId, presentationId, requested])
   return <div className="p-player">
     <span className="p-listen-icon" aria-hidden="true">♫</span>
     <div><strong>Listen closely</strong><p>Play the full clip. Replay whenever you need.</p>
-      {source ? <audio ref={ref} src={source} controls controlsList="nodownload noplaybackrate" onPlay={onPlay} onEnded={onEnd} /> : <p role="status">{error || 'Loading audio…'}</p>}
+      {presentationId && !requested ? <button type="button" className="p-primary" disabled={disabled} onClick={() => { onStart(); setRequested(true) }}>Start this sound</button>
+        : source ? <audio ref={ref} src={source} autoPlay={Boolean(presentationId)} controls controlsList="nodownload noplaybackrate" onPlay={onPlay} onEnded={onEnd} /> : <p role="status">{error || 'Loading audio…'}</p>}
     </div>
   </div>
 }
@@ -108,7 +114,7 @@ export default function PilotApp() {
   async function load(active = session) {
     if (!active) return
     const next = await request(`/sessions/${active.session_id}`, { session: active })
-    setStep(next); setRatings(blankRatings()); setInterval(''); setPlays(0); setCompleted(0); setStartedAt(next.server_time)
+    setStep(next); setRatings(next.phase === 'correction' ? { ...blankRatings(), ...next.saved_answers } : blankRatings()); setInterval(''); setPlays(0); setCompleted(0); setStartedAt(next.server_time)
   }
   useEffect(() => {
     request('/status').then(setStatus).catch(e => setError(e.message))
@@ -123,12 +129,24 @@ export default function PilotApp() {
     await load()
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
+  async function openPrevious() {
+    await action(async () => {
+      await request(`/sessions/${session.session_id}/previous`, { session, body: { current_index: step.current_index } })
+      await load()
+    })
+  }
+  async function cancelCorrection() {
+    await action(async () => {
+      await request(`/sessions/${session.session_id}/previous/cancel`, { session, body: { correction_token: step.correction_token } })
+      await load()
+    })
+  }
   function leaveRehearsal() {
     localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false)
   }
   const cfg = step?.config || status?.config
   const phase = step?.phase
-  const playable = ['volume', 'headphones', 'rating'].includes(phase)
+  const playable = ['volume', 'headphones', 'rating', 'correction'].includes(phase)
   const end = ['complete', 'withdrawn', 'screen_failed', 'replaced'].includes(phase)
   const progress = phase === 'rating' && !step.practice ? Math.round((step.display_number - 1) / step.display_total * 100) : 0
   return <div className="pilot-app"><header className="p-header"><a className="p-brand" href="/pilot"><span>SI</span> Listening lab</a><span className="p-header-note">{step?.rehearsal || status?.rehearsal ? 'INTERFACE REHEARSAL' : 'TIMBRE STUDY'}</span></header>
@@ -147,14 +165,23 @@ export default function PilotApp() {
             {!step.practice && <div className="p-progress"><span style={{ width: `${progress}%` }} /></div>}
             <p className="p-lede">{step.practice ? 'Try each scale. These practice responses are saved separately and are not included in the analysis.' : 'Rate each quality independently, based on the sound you hear.'}</p>
           </>}
-          {playable && <Player key={step.presentation_id || step.audio_id} session={session} audioId={step.audio_id} onPlay={() => setPlays(n => n + 1)} onEnd={() => setCompleted(n => n + 1)} />}
+          {playable && <Player key={step.presentation_id || step.audio_id} session={session} audioId={step.audio_id} presentationId={cfg.navigation_policy === 'previous_before_next_play_v1' ? step.presentation_id : undefined} disabled={busy} onStart={() => setStep(s => ({ ...s, can_correct_previous: false }))} onPlay={() => setPlays(n => n + 1)} onEnd={() => setCompleted(n => n + 1)} />}
           {phase === 'volume' && <button className="p-primary" disabled={busy || !completed} onClick={() => action(() => submit('volume', { completed_plays: completed }))}>This level is comfortable →</button>}
           {phase === 'headphones' && <section className="p-card"><fieldset><legend>Which tone was quietest?</legend><div className="p-intervals">{[1, 2, 3].map(n => <button key={n} type="button" className={interval === n ? 'selected' : ''} aria-pressed={interval === n} onClick={() => setInterval(n)}>{['First', 'Second', 'Third'][n - 1]}</button>)}</div></fieldset><button className="p-primary" disabled={busy || !completed || !interval} onClick={() => action(() => submit('headphones', { screen_number: step.screen_number, interval, completed_plays: completed }))}>Continue →</button></section>}
-          {phase === 'rating' && <form onSubmit={e => { e.preventDefault(); action(() => submit('ratings', { presentation_id: step.presentation_id, answers: ratings, play_count: plays, completed_plays: completed, started_at: startedAt })) }}>
+          {step.can_correct_previous && <div className="p-previous-row"><button type="button" className="p-secondary" disabled={busy} onClick={openPrevious}>← Correct previous sound</button><span>You can correct the previous response until you select “Start this sound” for the next clip.</span></div>}
+          {phase === 'rating' && <><form onSubmit={e => { e.preventDefault(); action(() => submit('ratings', { presentation_id: step.presentation_id, answers: ratings, play_count: plays, completed_plays: completed, started_at: startedAt })) }}>
             <p className="p-scale-help">1 means “not at all”; 7 means “very”. Use “cannot judge” if you are unsure what a term means.</p>
             <section className="p-card p-rating-card">{cfg.descriptors.map(d => <Scale key={d.id} descriptor={d} value={ratings[d.id]} onChange={value => setRatings(r => ({ ...r, [d.id]: value }))} />)}</section>
             <label className="p-comment">Anything unclear? <span>Optional</span><textarea maxLength="1000" rows="2" value={ratings.comment} onChange={e => setRatings(r => ({ ...r, comment: e.target.value }))} /></label>
             <div className="p-save-row"><span>{completed ? 'Full clip played ✓' : 'Play the full clip to continue.'}</span><button className="p-primary" disabled={busy || !completed || cfg.descriptors.some(d => ratings[d.id] === '')}>{busy ? 'Saving…' : 'Save and continue →'}</button></div>
+          </form></>}
+          {phase === 'correction' && <form onSubmit={e => { e.preventDefault(); action(() => submit('previous/save', { correction_token: step.correction_token, presentation_id: step.presentation_id, answers: ratings, play_count: plays, completed_plays: completed, started_at: startedAt })) }}>
+            <p className="p-eyebrow">CORRECT PREVIOUS RESPONSE</p><h1>Sound {String(step.display_number).padStart(2, '0')}<span> / {step.display_total}</span></h1>
+            <p className="p-lede">Update your answers below. Replaying the sound is optional.</p>
+            <p className="p-scale-help">1 means “not at all”; 7 means “very”. Use “cannot judge” if you are unsure what a term means.</p>
+            <section className="p-card p-rating-card">{cfg.descriptors.map(d => <Scale key={d.id} descriptor={d} value={ratings[d.id]} onChange={value => setRatings(r => ({ ...r, [d.id]: value }))} />)}</section>
+            <label className="p-comment">Anything unclear? <span>Optional</span><textarea maxLength="1000" rows="2" value={ratings.comment} onChange={e => setRatings(r => ({ ...r, comment: e.target.value }))} /></label>
+            <div className="p-actions"><button type="submit" className="p-primary" disabled={busy || cfg.descriptors.some(d => ratings[d.id] === '')}>{busy ? 'Saving…' : 'Save correction'}</button><button type="button" className="p-secondary" disabled={busy} onClick={cancelCorrection}>Cancel correction</button></div>
           </form>}
           {phase === 'break' && <section className="p-card"><p className="p-eyebrow">HALFWAY THROUGH</p><h1>A moment to rest.</h1><p>You have completed half the rated presentations. Take a short break, then continue with the same listening setup and volume.</p><button className="p-primary" disabled={busy} onClick={() => action(() => submit('continue', {}))}>Continue listening →</button></section>}
           {phase === 'feedback' && <form className="p-card" onSubmit={e => { e.preventDefault(); action(() => submit('feedback', feedback)) }}><p className="p-eyebrow">ONE LAST THING</p><h1>How was the experience?</h1>

@@ -1,6 +1,14 @@
 # C1 pilot: rehearse now, recruit after preparation
 
-Updated 7 October 2026. The 1,024-candidate render hold remains in force.
+Updated 7 October 2026. The researcher lifted the render hold; 1,024 candidates and the 64+3 selection are complete. See [generation report](C1_CANDIDATE_GENERATION_REPORT.md).
+
+**8 October update:** use [C1_PILOT_NEXT_STEPS.md](C1_PILOT_NEXT_STEPS.md) for the
+current checklist and full 39-presentation rehearsal at localhost:8772. Section 1
+below documents the older short diagnostic rehearsal. The C1 owner receives the
+[handoff](../c1_timbre/C1_TEAMMATE_HANDOFF.md); feature redesign is not a requirement
+for collecting ratings on the frozen sounds.
+
+Follow-up code review and current local link: [C1_REVIEW_STATUS.md](C1_REVIEW_STATUS.md).
 
 ## 1. Try the local rehearsal
 
@@ -52,6 +60,9 @@ Check these things during the rehearsal:
   Use the separate “cannot judge” choice for a confusing term.
 - Refresh restores the saved step. Pause unmounts the player; resume requires
   replaying the current clip. Unsaved ratings are intentionally not retained.
+- After saving a rating, “Correct previous sound” is available until the next
+  presentation is explicitly started with “Start this sound”. It changes only the immediately previous response;
+  the original answer remains in the correction audit trail.
 - Complete the session, inspect the two CSV exports, and verify a withdrawal
   removes it from analysis. Rehearsal rows are always excluded regardless.
 
@@ -94,15 +105,15 @@ saves the exact protocol snapshot and hash; mixed versions are rejected by the
 analysis helper. These launch checks prevent accidental opening; they are not
 an institutional review mechanism.
 
-## 3. Prepare the production audio after the render hold is lifted
+## 3. Prepared production audio
 
 The selected generator now preserves unconditioned FLOAT WAVs and writes separate
 10 Hz DC-conditioned FLOAT candidates under `restricted_bend_sustain_v4`. The
-new code has been tested on an isolated four-sound fixture only. Historical audio
-and models have not been converted. A new 1,024 pool is still needed before the
-planned production selection; this task did not generate it.
+new code passed 21 generation tests and generated the authorized 1,024 candidates.
+All 1,024 passed technical selection checks; the 64+3 bundle is now prepared.
+Historical audio and models have not been converted.
 
-After that authorized render run, prepare the bundle:
+The completed preparation used this command (do not rerun into the existing bundle):
 
 ```powershell
 .\venv\Scripts\python.exe -B -m survey.prepare_c1_pilot --manifest data/manifests/restricted_bend_sustain_v4.csv
@@ -179,6 +190,10 @@ repeat differences. Repeats do not become independent listeners. It deliberately
 does not calculate an inappropriate complete-crossed ICC on the incomplete matrix.
 Later agreement/uncertainty modeling must account for listeners and sounds.
 Feature extraction verifies hashes and reads the already processed FLOAT signal.
+Its current centroid/MFCC implementation is a development baseline with a known
+[encoding-sensitivity issue](../generation/characterization/pcm_precision_v1/REPORT.md).
+The extraction command is useful for diagnostics, but its outputs must not be
+treated as validated perceptual features without the C1 owner's follow-up.
 No pilot result validates automatic human labels across 135k sounds by itself.
 
 ## Verification commands

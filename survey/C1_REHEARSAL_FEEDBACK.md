@@ -22,19 +22,24 @@ Implemented following that feedback:
   and all completed responses are preserved. A local SQLite backup was made
   before applying the display-label migration.
 
-## Navigation proposal (not yet enabled)
+## Limited previous-sound correction
 
 The suggested back button is a correction to the immediately previous response
 only before the next sound is played, with original and revised answers retained
-in an audit trail. The researcher was asked to choose that behaviour or discuss
-alternatives. Navigation currently remains forward-only, with replay of the
-current clip. Unrestricted comparisons and earlier-answer review would change
-the response process and could make a hidden repeat a consistency-with-visible-
-answers task. This is a design judgment, not a universal ban on back buttons.
+in an audit trail. The participant can open “Correct previous sound” after
+saving a response and before selecting “Start this sound” for the next presentation.
+The form restores the latest saved answers (initially the original response);
+saving appends a revision while preserving
+the original `c1_ratings` row. Refresh does not reopen a correction that has
+already been locked. Merely loading the next page does not lock it; the explicit
+Start action records exposure before releasing audio. Replaying during correction
+is optional. Correction is also available at the break and before final feedback.
 
-If implemented, the policy must be versioned, supported server-side, robust to
-refresh, and retain revision counts/first responses for sensitivity checks. A
-simple browser-history button or silent database overwrite is insufficient.
+Unrestricted comparisons and earlier-answer review would change the response
+process and could make a hidden repeat a consistency-with-visible-answers task.
+This limited policy is versioned as `previous_before_next_play_v1`, supported
+server-side, and deliberately avoids a browser-history button or silent
+database overwrite.
 
 ## Scale references
 

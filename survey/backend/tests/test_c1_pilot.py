@@ -108,6 +108,7 @@ class C1PilotTests(unittest.TestCase):
                 self.client.post(self.base+'/continue',headers=self.headers,json={})
                 continue
             presentations.append(current["presentation_id"])
+            self.client.post(f"{self.base}/playback/{current['presentation_id']}", headers=self.headers)
             body=self.rating_body(current)
             result=self.client.post(self.base+'/ratings',headers=self.headers,json=body)
             self.assertEqual(result.status_code,200,result.text)
@@ -156,7 +157,9 @@ class C1PilotTests(unittest.TestCase):
 
     def test_replacement_preserves_data_and_closes_previous_session(self):
         self.start(); self.setup_audio()
-        self.client.post(self.base+'/ratings',headers=self.headers,json=self.rating_body(self.state()))
+        current = self.state()
+        self.client.post(f"{self.base}/playback/{current['presentation_id']}", headers=self.headers)
+        self.client.post(self.base+'/ratings',headers=self.headers,json=self.rating_body(current))
         replacement=self.client.post('/api/c1-pilot/admin/replace-invitation',headers=self.admin,
                                     json=dict(assignment_id='block_01',reason='Test participant cannot finish the session'))
         self.assertEqual(replacement.status_code,200,replacement.text)
@@ -177,6 +180,104 @@ class C1PilotTests(unittest.TestCase):
             self.assertEqual(self.client.post(self.base+'/ratings',headers=self.headers,json=body).status_code,422)
         body=self.rating_body(self.state());body['completed_plays']=0
         self.assertEqual(self.client.post(self.base+'/ratings',headers=self.headers,json=body).status_code,422)
+
+    def test_limited_previous_correction_keeps_original_and_allows_authenticated_playback(self):
+        self.start(); self.setup_audio()
+        first = self.state()
+        self.assertEqual(self.client.post(
+            f"{self.base}/playback/{first['presentation_id']}", headers=self.headers
+        ).status_code, 200)
+        self.assertEqual(self.client.post(
+            self.base + '/ratings', headers=self.headers, json=self.rating_body(first)
+        ).status_code, 200)
+        current = self.state()
+        self.assertTrue(current['can_correct_previous'])
+        self.assertEqual(self.client.post(
+            self.base + '/previous', headers=self.headers,
+            json={'current_index': current['current_index']}
+        ).status_code, 200)
+        correction = self.state()
+        self.assertEqual(correction['phase'], 'correction')
+        self.assertEqual(correction['saved_answers']['brightness'], 4)
+        self.assertEqual(self.client.post(
+            f"{self.base}/playback/{correction['presentation_id']}", headers=self.headers
+        ).status_code, 200)
+        revised = self.rating_body(correction)
+        revised['answers']['brightness'] = 7
+        revised['correction_token'] = correction['correction_token']
+        self.assertEqual(self.client.post(
+            self.base + '/previous/save', headers=self.headers, json=revised
+        ).status_code, 200)
+        self.assertEqual(self.state()['phase'], 'rating')
+        with database.get_connection() as db:
+            original = db.execute(
+                'SELECT answers_json FROM c1_ratings WHERE presentation_id=?',
+                (first['presentation_id'],)
+            ).fetchone()
+            audit = db.execute(
+                'SELECT answers_json FROM c1_rating_corrections WHERE presentation_id=?',
+                (first['presentation_id'],)
+            ).fetchone()
+        self.assertEqual(json.loads(original['answers_json'])['brightness'], 4)
+        self.assertEqual(json.loads(audit['answers_json'])['brightness'], 7)
+        exported = list(csv.DictReader(io.StringIO(self.client.get(
+            '/api/c1-pilot/admin/export', headers=self.admin).text)))
+        self.assertEqual(exported[0]['brightness_first'], '4')
+        self.assertEqual(exported[0]['brightness'], '7')
+        self.assertEqual(exported[0]['revision_count'], '1')
+
+    def test_previous_locks_only_on_explicit_start_and_stays_locked_after_reload(self):
+        self.start(); self.setup_audio()
+        first = self.state()
+        self.client.post(f"{self.base}/playback/{first['presentation_id']}", headers=self.headers)
+        self.client.post(self.base+'/ratings', headers=self.headers, json=self.rating_body(first))
+        current = self.state()
+        path = f"{self.base}/playback/{current['presentation_id']}"
+        # A read/prefetch must not release the next sound or mutate exposure state.
+        self.assertEqual(self.client.get(path, headers=self.headers).status_code, 405)
+        self.assertEqual(self.client.get(self.base+'/audio/'+current['audio_id'], headers=self.headers).status_code, 403)
+        self.assertTrue(self.state()['can_correct_previous'])
+        self.assertEqual(self.client.post(path, headers=self.headers).status_code, 200)
+        for _ in range(2):
+            self.assertFalse(self.state()['can_correct_previous'])
+        self.assertEqual(self.client.post(self.base+'/previous', headers=self.headers,
+            json={'current_index':current['current_index']}).status_code, 409)
+        self.assertEqual(self.client.post(f"{self.base}/playback/{first['presentation_id']}", headers=self.headers).status_code, 409)
+
+    def test_correction_survives_reload_blocks_next_sound_and_can_save_without_replay(self):
+        self.start(); self.setup_audio()
+        first = self.state()
+        self.client.post(f"{self.base}/playback/{first['presentation_id']}", headers=self.headers)
+        self.client.post(self.base+'/ratings', headers=self.headers, json=self.rating_body(first))
+        current = self.state()
+        self.client.post(self.base+'/previous', headers=self.headers, json={'current_index':current['current_index']})
+        draft = self.state()
+        self.assertEqual(draft['phase'], 'correction')
+        self.assertEqual(self.state()['correction_token'], draft['correction_token'])
+        self.assertEqual(self.client.post(f"{self.base}/playback/{current['presentation_id']}", headers=self.headers).status_code, 409)
+        self.assertEqual(self.client.post(self.base+'/ratings', headers=self.headers, json=self.rating_body(current)).status_code, 409)
+        revised = self.rating_body(draft)
+        revised.update(correction_token=draft['correction_token'], play_count=0, completed_plays=0)
+        revised['answers']['brightness'] = 6
+        self.assertEqual(self.client.post(self.base+'/previous/save', headers=self.headers, json=revised).status_code, 200)
+        self.assertEqual(self.client.post(self.base+'/previous/save', headers=self.headers, json=revised).status_code, 409)
+        self.client.post(self.base+'/previous', headers=self.headers, json={'current_index':current['current_index']})
+        reopened = self.state()
+        self.assertEqual(reopened['saved_answers']['brightness'], 6)
+        self.assertEqual(self.client.post(self.base+'/previous/cancel', headers=self.headers,
+            json={'correction_token':reopened['correction_token']}).status_code, 200)
+        self.assertEqual(self.state()['phase'], 'rating')
+        self.assertTrue(self.state()['can_correct_previous'])
+
+    def test_old_protocol_retains_its_original_audio_route(self):
+        cfg = json.loads(self.config_path.read_text())
+        cfg.pop('navigation_policy')
+        self.config_path.write_text(json.dumps(cfg))
+        self.start(); self.setup_audio()
+        current = self.state()
+        self.assertEqual(self.client.get(self.base+'/audio/'+current['audio_id'], headers=self.headers).status_code, 200)
+        self.assertEqual(self.client.post(self.base+'/ratings', headers=self.headers, json=self.rating_body(current)).status_code, 200)
+        self.assertFalse(self.state()['can_correct_previous'])
 
     def test_session_audit_includes_failed_screens_and_remote_routes_are_closed(self):
         self.start(); self.setup_audio(pass_screen=False)
@@ -209,6 +310,7 @@ class C1PilotTests(unittest.TestCase):
         current=self.state()
         self.assertEqual(current['participant_label'],'Listener 001')
         original_id=current['participant_id']
+        self.client.post(f"{self.base}/playback/{current['presentation_id']}", headers=self.headers)
         self.client.post(self.base+'/ratings',headers=self.headers,json=self.rating_body(current))
         with database.get_connection() as db:
             original_rating=tuple(db.execute('SELECT * FROM c1_ratings').fetchone())

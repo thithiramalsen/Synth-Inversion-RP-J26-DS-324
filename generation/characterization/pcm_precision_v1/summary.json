@@ -1,0 +1,4685 @@
+{
+  "candidate_count": 1024,
+  "selected_count": 67,
+  "manifest_sha256": "cdcdea96dcc5f7d197fcfa9972e753581a8fd296b67b05f319c5eb6756220c34",
+  "bundle_sha256": "3e077a3afd28e9abd171e78ce130dd33ddb70a336acff6d3834c09e35e6aec14",
+  "sample_rate": 44100,
+  "largest_observed_study_gain_db": 14.160454847087413,
+  "encoder_probe_input": [
+    -2.0,
+    -1.0,
+    -0.1,
+    -1e-10,
+    0.0,
+    1e-10,
+    0.1,
+    0.999969482421875,
+    1.0,
+    2.0
+  ],
+  "encoder_probe_output": {
+    "pcm16_current": [
+      -1.0,
+      -1.0,
+      -0.100006103515625,
+      0.0,
+      0.0,
+      0.0,
+      0.0999755859375,
+      0.999969482421875,
+      0.999969482421875,
+      0.999969482421875
+    ],
+    "pcm16_nearest": [
+      -1.0,
+      -1.0,
+      -0.100006103515625,
+      0.0,
+      0.0,
+      0.0,
+      0.100006103515625,
+      0.999969482421875,
+      0.999969482421875,
+      0.999969482421875
+    ],
+    "pcm24_current": [
+      -1.0,
+      -1.0,
+      -0.10000002384185791,
+      0.0,
+      0.0,
+      0.0,
+      0.09999990463256836,
+      0.999969482421875,
+      0.9999998807907104,
+      0.9999998807907104
+    ]
+  },
+  "method": {
+    "reference": "Existing DC-conditioned FLOAT masters; no new filtering, gain or rendering",
+    "pcm16_current": "Direct soundfile PCM_16 export, matching current code; no added dither",
+    "pcm16_nearest": "Diagnostic explicit round-to-nearest/ties-to-even integer export; no dither",
+    "pcm24_current": "Diagnostic direct soundfile PCM_24 export; no added dither",
+    "gain_stress": "Apply +max observed gain to reference and encoded arrays without clipping; separately count lost headroom. Not a proposed gain policy.",
+    "c1_held": "First 1.5 seconds only as a tail-sensitivity diagnostic; not a replacement feature definition",
+    "engineering_review_thresholds": "Advisory only, not hearing thresholds: feature p95 >0.05 corpus SD or max >0.10 SD; C3 top1 agreement <99% or mean top5 overlap <98%. No automatic dataset acceptance.",
+    "limitations": "No trained 13-control C1/C2 performance or human equivalence tested; no extrapolation guarantee for the full 131072 pool; future descriptors/dither policies need separate validation."
+  },
+  "versions": {
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "soundfile": "0.14.0",
+    "torch": "2.13.0"
+  },
+  "python": "3.13.14",
+  "libsndfile": "1.2.2",
+  "implementation_sha256": {
+    "generation\\audit_pcm_precision.py": "b54540a9fcce6c841c0cb88ed79cb3f790145aaecaba530d66f9d605fa3151f0",
+    "c1_timbre\\feature_extraction.py": "4e960007862029c699e5b0c2e6cb22ad496d44cd4f4bfd91f2171d7eff50496c",
+    "c2_estimation\\pipeline.py": "67fa012411ca5f22673834e4dc122f04235baeef74e76a57e06302f7e370b00f",
+    "c3_recommendation\\pipeline.py": "2de923b1b41b1a95a397a477acaf69633852a390d21abca4c2f53ba62b423b3a"
+  },
+  "methods": {
+    "pcm16_current": {
+      "waveform": {
+        "reference_rms_dbfs": {
+          "min": -52.7196371911903,
+          "median": -29.408883265039577,
+          "p95": -20.906901605256206,
+          "max": -16.515378846026067
+        },
+        "reference_peak": {
+          "min": 0.02562439627945423,
+          "median": 0.2032037004828453,
+          "p95": 0.293141758441925,
+          "max": 0.37848034501075745
+        },
+        "error_rms_dbfs": {
+          "min": -97.35761577598508,
+          "median": -96.72745942327562,
+          "p95": -95.25115710955707,
+          "max": -94.89565361409987
+        },
+        "error_peak": {
+          "min": 3.0517215777237094e-05,
+          "median": 3.0517344854333328e-05,
+          "p95": 3.0517345273864403e-05,
+          "max": 3.0517345293717968e-05
+        },
+        "held_snr_db": {
+          "min": 45.42840401086953,
+          "median": 68.61271616544028,
+          "p95": 77.09017920143368,
+          "max": 81.49674336970598
+        },
+        "error_mean": {
+          "min": -1.5288316090854866e-05,
+          "median": -9.855701965713153e-06,
+          "p95": -9.280308473381271e-06,
+          "max": -8.677559498883711e-06
+        },
+        "held_level_change_db": {
+          "min": -0.00019991090708580217,
+          "median": 2.6301571846335615e-07,
+          "p95": 2.6756874079915668e-05,
+          "max": 0.0003502791491827254
+        },
+        "stress_error_rms_dbfs": {
+          "min": -83.19716092889766,
+          "median": -82.5670045761882,
+          "p95": -81.09070226246966,
+          "max": -80.73519876701246
+        }
+      },
+      "clips_outside_pcm_range": 0,
+      "clips_with_encoded_rail_samples": 0,
+      "clips_losing_headroom_at_global_stress_gain": 580,
+      "c2": {
+        "rmse_db": {
+          "min": 0.0020853534801216363,
+          "median": 0.005530796480536969,
+          "p95": 0.007499757732011882,
+          "max": 0.014446135332734655
+        },
+        "max_bin_error_db": {
+          "min": 0.0550537109375,
+          "median": 0.17852783203125,
+          "p95": 0.24981689453125,
+          "max": 0.4412841796875
+        },
+        "fraction_bins_over_0p1db": {
+          "min": 0.0,
+          "median": 0.00018098455598455598,
+          "p95": 0.0007239382239382239,
+          "max": 0.005972490347490348
+        },
+        "fraction_bins_over_1db": {
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "active_bins_rmse_db": {
+          "min": 0.0005823809473213114,
+          "median": 0.0012266308207480002,
+          "p95": 0.001839662684162195,
+          "max": 0.0032553629298957215
+        }
+      },
+      "c3_retrieval": {
+        "queries": 1024,
+        "self_matches_excluded": true,
+        "scaler": "FLOAT corpus mean/std reused in both arms; descriptive audit, not learned-model evaluation",
+        "top1_agreement_fraction": 0.736328125,
+        "top5_overlap_fraction": {
+          "min": 0.0,
+          "median": 0.8,
+          "p95": 1.0,
+          "max": 1.0
+        },
+        "mean_top5_overlap_fraction": 0.8150390625000001,
+        "float_similarity_loss_of_changed_top1": {
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.044307829487085074,
+          "max": 0.267721093243524
+        },
+        "engineering_review": true
+      },
+      "actual_study_gain": {
+        "error_rms_dbfs": {
+          "min": -111.10035813505039,
+          "median": -96.61062651917844,
+          "p95": -85.38009909646239,
+          "max": -82.73778511999872
+        },
+        "held_snr_db": {
+          "min": 52.94686900137074,
+          "median": 67.66174509567624,
+          "p95": 77.32308930606195,
+          "max": 81.49674336970602
+        },
+        "early_pcm_peak": {
+          "min": 0.053361739156300825,
+          "median": 0.17611787447627858,
+          "p95": 0.46738690314962705,
+          "max": 0.8899474499783342
+        },
+        "final_vs_current_playback_error_rms_dbfs": {
+          "min": -102.27508825191327,
+          "median": -95.13003108514309,
+          "p95": -85.16898300442014,
+          "max": -82.7008717735784
+        },
+        "final_vs_current_playback_held_snr_db": {
+          "min": 52.883140027001176,
+          "median": 65.58281947501379,
+          "p95": 70.46935364102019,
+          "max": 72.56722712232735
+        }
+      },
+      "actual_study_c1": [
+        {
+          "feature": "spectral_centroid_hz",
+          "reference_corpus_std": 584.0507657280945,
+          "absolute_error": {
+            "min": 140.43901075169902,
+            "median": 236.74253257119494,
+            "p95": 698.2597054393129,
+            "max": 923.9479347844867
+          },
+          "error_in_corpus_std": {
+            "min": 0.24045685579510148,
+            "median": 0.40534581317784063,
+            "p95": 1.1955462545603246,
+            "max": 1.5819651115989322
+          },
+          "spearman": 0.9363476733977174,
+          "engineering_review": true
+        },
+        {
+          "feature": "spectral_rolloff_85_hz",
+          "reference_corpus_std": 389.1740553933013,
+          "absolute_error": {
+            "min": 0.336456298828125,
+            "median": 4.794502258300781,
+            "p95": 34.79799270629881,
+            "max": 61.99207305908203
+          },
+          "error_in_corpus_std": {
+            "min": 0.000864539385823396,
+            "median": 0.012319686247983394,
+            "p95": 0.08941498597878468,
+            "max": 0.1592913818379607
+          },
+          "spearman": 0.9959493167701614,
+          "engineering_review": true
+        },
+        {
+          "feature": "rms",
+          "reference_corpus_std": 0.0003453321929297435,
+          "absolute_error": {
+            "min": 2.6480538248274677e-10,
+            "median": 2.2997423215764812e-08,
+            "p95": 1.6625732579093847e-07,
+            "max": 3.76696233587992e-07
+          },
+          "error_in_corpus_std": {
+            "min": 7.668134854042421e-07,
+            "median": 6.659507479061922e-05,
+            "p95": 0.00048144172247724056,
+            "max": 0.001090822811485257
+          },
+          "spearman": 0.9998802777556072,
+          "engineering_review": false
+        },
+        {
+          "feature": "zero_crossing_rate",
+          "reference_corpus_std": 0.010904613891928035,
+          "absolute_error": {
+            "min": 7.558636119696371e-06,
+            "median": 9.826226955608145e-05,
+            "p95": 0.00012093817791517725,
+            "max": 0.00012849681403487648
+          },
+          "error_in_corpus_std": {
+            "min": 0.0006931594455894976,
+            "median": 0.009011072792666094,
+            "p95": 0.0110905511294352,
+            "max": 0.01178371057502496
+          },
+          "spearman": 0.9997904189115837,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_01",
+          "reference_corpus_std": 176.49094590626547,
+          "absolute_error": {
+            "min": 22.111884769439257,
+            "median": 56.54167828960806,
+            "p95": 108.06989480916769,
+            "max": 178.51529241721926
+          },
+          "error_in_corpus_std": {
+            "min": 0.12528622732399486,
+            "median": 0.3203658861890706,
+            "p95": 0.6123254326404014,
+            "max": 1.0114699737176824
+          },
+          "spearman": 0.9857131455024344,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02",
+          "reference_corpus_std": 37.069724658135094,
+          "absolute_error": {
+            "min": 0.026912047997633692,
+            "median": 6.164907203764983,
+            "p95": 54.43766521977618,
+            "max": 85.4513953813701
+          },
+          "error_in_corpus_std": {
+            "min": 0.0007259845668081524,
+            "median": 0.16630571876697417,
+            "p95": 1.4685208946603174,
+            "max": 2.3051532259659626
+          },
+          "spearman": 0.8790406257482641,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03",
+          "reference_corpus_std": 15.442612660610777,
+          "absolute_error": {
+            "min": 0.114409456440141,
+            "median": 3.8504029767703614,
+            "p95": 26.05119445881117,
+            "max": 32.87459982371876
+          },
+          "error_in_corpus_std": {
+            "min": 0.007408685237049515,
+            "median": 0.24933624001277466,
+            "p95": 1.686968068898052,
+            "max": 2.1288237001224197
+          },
+          "spearman": 0.9101684092904462,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04",
+          "reference_corpus_std": 8.182361611521298,
+          "absolute_error": {
+            "min": 0.07593706485170681,
+            "median": 2.0153443718265414,
+            "p95": 12.250275381371276,
+            "max": 14.126036381271408
+          },
+          "error_in_corpus_std": {
+            "min": 0.009280580406612986,
+            "median": 0.2463035083891679,
+            "p95": 1.4971564400334119,
+            "max": 1.726400891569132
+          },
+          "spearman": 0.8260036714821615,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05",
+          "reference_corpus_std": 6.985713130957763,
+          "absolute_error": {
+            "min": 0.16495192014242122,
+            "median": 1.8261447248944354,
+            "p95": 8.868129928323256,
+            "max": 9.666332322371442
+          },
+          "error_in_corpus_std": {
+            "min": 0.023612753207889855,
+            "median": 0.2614113535240553,
+            "p95": 1.2694666617533157,
+            "max": 1.3837287820386288
+          },
+          "spearman": 0.8494692313831911,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06",
+          "reference_corpus_std": 5.029547840924466,
+          "absolute_error": {
+            "min": 0.013005538469190725,
+            "median": 1.1323604191022651,
+            "p95": 3.9104031364971172,
+            "max": 5.163424937711346
+          },
+          "error_in_corpus_std": {
+            "min": 0.0025858265753766476,
+            "median": 0.22514159421816524,
+            "p95": 0.7774860206476052,
+            "max": 1.0266181177754286
+          },
+          "spearman": 0.9582967515364358,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07",
+          "reference_corpus_std": 4.387670674002933,
+          "absolute_error": {
+            "min": 0.1598513910679813,
+            "median": 0.9656628032157535,
+            "p95": 5.3225263448094715,
+            "max": 6.942333594892519
+          },
+          "error_in_corpus_std": {
+            "min": 0.03643194828069141,
+            "median": 0.22008552486341593,
+            "p95": 1.2130642293519391,
+            "max": 1.5822367061470752
+          },
+          "spearman": 0.8754489584164739,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08",
+          "reference_corpus_std": 3.2216625839633224,
+          "absolute_error": {
+            "min": 0.09091862104917503,
+            "median": 0.7661575861191086,
+            "p95": 2.1143363195846048,
+            "max": 2.5351887837529103
+          },
+          "error_in_corpus_std": {
+            "min": 0.028221025225219586,
+            "median": 0.2378143477634376,
+            "p95": 0.6562873250939663,
+            "max": 0.7869193988136693
+          },
+          "spearman": 0.9520711948279992,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09",
+          "reference_corpus_std": 3.721787050964259,
+          "absolute_error": {
+            "min": 0.008646804743323688,
+            "median": 0.6903601446540177,
+            "p95": 3.412235376856109,
+            "max": 5.667757286508049
+          },
+          "error_in_corpus_std": {
+            "min": 0.002323293790031171,
+            "median": 0.18549157574051847,
+            "p95": 0.9168271397935166,
+            "max": 1.5228591020648585
+          },
+          "spearman": 0.9283661904381836,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10",
+          "reference_corpus_std": 2.7887861669088814,
+          "absolute_error": {
+            "min": 0.05740075308147974,
+            "median": 0.5628050673985596,
+            "p95": 1.6307106365282085,
+            "max": 2.685904192415739
+          },
+          "error_in_corpus_std": {
+            "min": 0.020582701450037422,
+            "median": 0.2018100469934482,
+            "p95": 0.5847384987339149,
+            "max": 0.9631086901843114
+          },
+          "spearman": 0.9464442493415278,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11",
+          "reference_corpus_std": 3.166318725616353,
+          "absolute_error": {
+            "min": 0.01248686876994931,
+            "median": 0.564262964790128,
+            "p95": 3.328914518870012,
+            "max": 4.257903867139938
+          },
+          "error_in_corpus_std": {
+            "min": 0.003943655030343993,
+            "median": 0.17820788546177993,
+            "p95": 1.0513516822985054,
+            "max": 1.3447489770036016
+          },
+          "spearman": 0.9400191555591029,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12",
+          "reference_corpus_std": 3.328283094637123,
+          "absolute_error": {
+            "min": 0.008520889091984785,
+            "median": 0.45462641232848267,
+            "p95": 2.0066616105536497,
+            "max": 2.8041803705758817
+          },
+          "error_in_corpus_std": {
+            "min": 0.0025601455314046245,
+            "median": 0.13659487471514192,
+            "p95": 0.602911937925891,
+            "max": 0.8425306053725627
+          },
+          "spearman": 0.9622874930162025,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13",
+          "reference_corpus_std": 3.8822273021457256,
+          "absolute_error": {
+            "min": 0.00022983904562767776,
+            "median": 0.38685805757811664,
+            "p95": 2.0629889486005206,
+            "max": 3.713540423237488
+          },
+          "error_in_corpus_std": {
+            "min": 5.9202882196167294e-05,
+            "median": 0.09964848203614929,
+            "p95": 0.5313931380216446,
+            "max": 0.9565489432277693
+          },
+          "spearman": 0.9731822172559663,
+          "engineering_review": true
+        }
+      ],
+      "c1_full": [
+        {
+          "feature": "spectral_centroid_hz",
+          "reference_corpus_std": 439.231298936028,
+          "absolute_error": {
+            "min": 119.88048360737366,
+            "median": 236.07672347976813,
+            "p95": 658.9764168184882,
+            "max": 1435.6629035211895
+          },
+          "error_in_corpus_std": {
+            "min": 0.27293247065445053,
+            "median": 0.5374770059684467,
+            "p95": 1.5002947613586735,
+            "max": 3.2685806020628942
+          },
+          "spearman": 0.8725328570917673,
+          "engineering_review": true
+        },
+        {
+          "feature": "spectral_rolloff_85_hz",
+          "reference_corpus_std": 276.9758919099457,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 3.9533615112304688,
+            "p95": 34.364805221557596,
+            "max": 174.20024871826172
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.014273305463407774,
+            "p95": 0.12407146695904771,
+            "max": 0.6289365024407979
+          },
+          "spearman": 0.9806845280854319,
+          "engineering_review": true
+        },
+        {
+          "feature": "rms",
+          "reference_corpus_std": 0.025682342394814726,
+          "absolute_error": {
+            "min": 1.1765602381252904e-11,
+            "median": 2.228964797110211e-08,
+            "p95": 6.929954468708199e-08,
+            "max": 2.978283154420752e-07
+          },
+          "error_in_corpus_std": {
+            "min": 4.5812029916820916e-10,
+            "median": 8.678977808349132e-07,
+            "p95": 2.6983342726975552e-06,
+            "max": 1.1596618052339605e-05
+          },
+          "spearman": 1.0,
+          "engineering_review": false
+        },
+        {
+          "feature": "zero_crossing_rate",
+          "reference_corpus_std": 0.006899166050420535,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 0.00010582090567577956,
+            "p95": 0.0001209381779151775,
+            "max": 0.00013605545015457458
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.015338216952950321,
+            "p95": 0.01752939080337192,
+            "max": 0.019720564653793394
+          },
+          "spearman": 0.9995648758774697,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_01",
+          "reference_corpus_std": 157.08141428117412,
+          "absolute_error": {
+            "min": 18.33814354426113,
+            "median": 64.02702907398782,
+            "p95": 156.5417354700797,
+            "max": 328.0819290729519
+          },
+          "error_in_corpus_std": {
+            "min": 0.11674292358633874,
+            "median": 0.4076041036871497,
+            "p95": 0.9965643369486831,
+            "max": 2.0886107409606627
+          },
+          "spearman": 0.9621895451863244,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02",
+          "reference_corpus_std": 39.820548329091366,
+          "absolute_error": {
+            "min": 0.005765621540462007,
+            "median": 12.558756824721677,
+            "p95": 84.07688856915168,
+            "max": 172.23559421936153
+          },
+          "error_in_corpus_std": {
+            "min": 0.0001447901091871672,
+            "median": 0.3153838244750319,
+            "p95": 2.111394546210413,
+            "max": 4.325294388111999
+          },
+          "spearman": 0.7650468045919462,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03",
+          "reference_corpus_std": 13.977824074098725,
+          "absolute_error": {
+            "min": 0.006016228598994644,
+            "median": 7.298237382542666,
+            "p95": 31.769879935308452,
+            "max": 47.72020101233937
+          },
+          "error_in_corpus_std": {
+            "min": 0.00043041238515391486,
+            "median": 0.5221297208960078,
+            "p95": 2.2728773639510083,
+            "max": 3.413993534284507
+          },
+          "spearman": 0.8887438085616192,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04",
+          "reference_corpus_std": 6.837567271985422,
+          "absolute_error": {
+            "min": 0.018401728248413463,
+            "median": 4.925460528121824,
+            "p95": 14.224704297832677,
+            "max": 18.70974984170374
+          },
+          "error_in_corpus_std": {
+            "min": 0.002691268329279656,
+            "median": 0.7203527705390487,
+            "p95": 2.0803750415902313,
+            "max": 2.7363167479697785
+          },
+          "spearman": 0.7175978560188827,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05",
+          "reference_corpus_std": 5.718879511779641,
+          "absolute_error": {
+            "min": 0.0051204466680729865,
+            "median": 2.4012058522014863,
+            "p95": 8.06864967192563,
+            "max": 11.446920749737556
+          },
+          "error_in_corpus_std": {
+            "min": 0.0008953583752771826,
+            "median": 0.4198734817293366,
+            "p95": 1.4108794660398032,
+            "max": 2.001602014198656
+          },
+          "spearman": 0.8350953526214147,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06",
+          "reference_corpus_std": 4.279114725267981,
+          "absolute_error": {
+            "min": 0.0008791595179413747,
+            "median": 1.9914487221990436,
+            "p95": 4.979472727280143,
+            "max": 6.435382246174757
+          },
+          "error_in_corpus_std": {
+            "min": 0.00020545359832256359,
+            "median": 0.46538801832996624,
+            "p95": 1.163668900456578,
+            "max": 1.503905050307278
+          },
+          "spearman": 0.8981933293398181,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07",
+          "reference_corpus_std": 3.675028702119779,
+          "absolute_error": {
+            "min": 0.00028586029365484933,
+            "median": 1.0567728183895544,
+            "p95": 3.9339903904558575,
+            "max": 7.155373710478463
+          },
+          "error_in_corpus_std": {
+            "min": 7.77845064148651e-05,
+            "median": 0.2875549836604001,
+            "p95": 1.070465215193206,
+            "max": 1.9470252589731338
+          },
+          "spearman": 0.8925310801266002,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08",
+          "reference_corpus_std": 2.880338093746071,
+          "absolute_error": {
+            "min": 0.0019174054633985804,
+            "median": 1.1994971428166812,
+            "p95": 2.706411989294037,
+            "max": 4.83930389928591
+          },
+          "error_in_corpus_std": {
+            "min": 0.0006656876383927788,
+            "median": 0.416443175688676,
+            "p95": 0.9396160801991715,
+            "max": 1.680116618876527
+          },
+          "spearman": 0.9072171831414062,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09",
+          "reference_corpus_std": 3.274541698921923,
+          "absolute_error": {
+            "min": 0.00010388410172890161,
+            "median": 0.6609573895384568,
+            "p95": 2.7344630363779636,
+            "max": 6.416288478259656
+          },
+          "error_in_corpus_std": {
+            "min": 3.172477594745651e-05,
+            "median": 0.20184729660216688,
+            "p95": 0.8350674041739126,
+            "max": 1.9594462578907117
+          },
+          "spearman": 0.9335188380659465,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10",
+          "reference_corpus_std": 2.695346162217921,
+          "absolute_error": {
+            "min": 0.0010590905776730608,
+            "median": 0.7636323203432962,
+            "p95": 1.7655107264523286,
+            "max": 4.336880423633957
+          },
+          "error_in_corpus_std": {
+            "min": 0.0003929330460476239,
+            "median": 0.28331511961154765,
+            "p95": 0.6550218859456411,
+            "max": 1.6090253951148397
+          },
+          "spearman": 0.9556909153494026,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11",
+          "reference_corpus_std": 2.849823290039161,
+          "absolute_error": {
+            "min": 0.001153892516613908,
+            "median": 0.45890798451235826,
+            "p95": 2.391777196683598,
+            "max": 5.776208229742936
+          },
+          "error_in_corpus_std": {
+            "min": 0.0004048996724277777,
+            "median": 0.1610303298861917,
+            "p95": 0.8392721068156936,
+            "max": 2.026865402473275
+          },
+          "spearman": 0.9497293983799442,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12",
+          "reference_corpus_std": 2.957737395564228,
+          "absolute_error": {
+            "min": 0.0027719213894261685,
+            "median": 0.5712847051544605,
+            "p95": 1.365203845926364,
+            "max": 3.755820542443921
+          },
+          "error_in_corpus_std": {
+            "min": 0.0009371763002297868,
+            "median": 0.19314923157519884,
+            "p95": 0.4615703368303707,
+            "max": 1.2698289402151093
+          },
+          "spearman": 0.9692347538623846,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13",
+          "reference_corpus_std": 3.2814623008764454,
+          "absolute_error": {
+            "min": 0.0015189819137422234,
+            "median": 0.3410242089926414,
+            "p95": 1.6883966763381357,
+            "max": 4.079903523458729
+          },
+          "error_in_corpus_std": {
+            "min": 0.0004628978712741934,
+            "median": 0.10392446346299858,
+            "p95": 0.5145256966344492,
+            "max": 1.2433187248163806
+          },
+          "spearman": 0.9772417253772977,
+          "engineering_review": true
+        }
+      ],
+      "c1_held": [
+        {
+          "feature": "spectral_centroid_hz",
+          "reference_corpus_std": 701.1397909573503,
+          "absolute_error": {
+            "min": 0.13389476046222626,
+            "median": 20.66187799698639,
+            "p95": 152.37728093909533,
+            "max": 940.3707914850145
+          },
+          "error_in_corpus_std": {
+            "min": 0.00019096728240085143,
+            "median": 0.029468985020482504,
+            "p95": 0.21732796070671773,
+            "max": 1.3412030006184834
+          },
+          "spearman": 0.9606253799799727,
+          "engineering_review": true
+        },
+        {
+          "feature": "spectral_rolloff_85_hz",
+          "reference_corpus_std": 432.5734339196279,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 0.0,
+            "p95": 0.0,
+            "max": 4.917030634842604
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.0,
+            "p95": 0.0,
+            "max": 0.011366926975354172
+          },
+          "spearman": 0.9995755036738178,
+          "engineering_review": false
+        },
+        {
+          "feature": "rms",
+          "reference_corpus_std": 0.03584494585778088,
+          "absolute_error": {
+            "min": 1.10676606768223e-11,
+            "median": 3.062709951623388e-08,
+            "p95": 9.880207347554361e-08,
+            "max": 4.3215812194769e-07
+          },
+          "error_in_corpus_std": {
+            "min": 3.087648875446645e-10,
+            "median": 8.544328575010427e-07,
+            "p95": 2.756373907427638e-06,
+            "max": 1.2056319562103097e-05
+          },
+          "spearman": 1.0,
+          "engineering_review": false
+        },
+        {
+          "feature": "zero_crossing_rate",
+          "reference_corpus_std": 0.011279206666855363,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 1.5117386506217911e-05,
+            "p95": 1.511738650622138e-05,
+            "max": 1.511738650622485e-05
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.001340288102942672,
+            "p95": 0.0013402881029429795,
+            "max": 0.0013402881029432872
+          },
+          "spearman": 0.9516799285180173,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_01",
+          "reference_corpus_std": 174.42601106917985,
+          "absolute_error": {
+            "min": 0.002433863065903097,
+            "median": 10.37446364944438,
+            "p95": 153.5656694988902,
+            "max": 278.8187413770884
+          },
+          "error_in_corpus_std": {
+            "min": 1.395355572820955e-05,
+            "median": 0.05947773262629803,
+            "p95": 0.8804057867148259,
+            "max": 1.598492906350446
+          },
+          "spearman": 0.9953220777304913,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02",
+          "reference_corpus_std": 59.21495154488661,
+          "absolute_error": {
+            "min": 0.0004988207462730543,
+            "median": 9.382613325281952,
+            "p95": 122.3028932802413,
+            "max": 184.71361234548982
+          },
+          "error_in_corpus_std": {
+            "min": 8.42389858066394e-06,
+            "median": 0.15845007182298654,
+            "p95": 2.065405612762045,
+            "max": 3.1193745418413736
+          },
+          "spearman": 0.7394847024533295,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03",
+          "reference_corpus_std": 20.268131612970567,
+          "absolute_error": {
+            "min": 0.0023510660879253464,
+            "median": 8.917458098517047,
+            "p95": 56.632151489168095,
+            "max": 66.66179500579446
+          },
+          "error_in_corpus_std": {
+            "min": 0.00011599816563361886,
+            "median": 0.4399743532753818,
+            "p95": 2.794147609191881,
+            "max": 3.2889955659817365
+          },
+          "spearman": 0.9269658934446747,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04",
+          "reference_corpus_std": 10.691077205546096,
+          "absolute_error": {
+            "min": 5.252631530616725e-05,
+            "median": 5.727148854705623,
+            "p95": 24.094646552763834,
+            "max": 31.710753754106136
+          },
+          "error_in_corpus_std": {
+            "min": 4.913098492911335e-06,
+            "median": 0.5356942751975088,
+            "p95": 2.2537155133688973,
+            "max": 2.9660952909081875
+          },
+          "spearman": 0.6381510956834274,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05",
+          "reference_corpus_std": 7.522672106850293,
+          "absolute_error": {
+            "min": 0.002272025312819892,
+            "median": 4.13606425832363,
+            "p95": 13.189111429548442,
+            "max": 19.405687285292963
+          },
+          "error_in_corpus_std": {
+            "min": 0.00030202370654317646,
+            "median": 0.5498131780271599,
+            "p95": 1.7532482131632692,
+            "max": 2.5796268944942797
+          },
+          "spearman": 0.8529518408912096,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06",
+          "reference_corpus_std": 6.152064572639232,
+          "absolute_error": {
+            "min": 0.0003622595188215172,
+            "median": 2.1636661015941545,
+            "p95": 7.328858182937359,
+            "max": 10.110504443647091
+          },
+          "error_in_corpus_std": {
+            "min": 5.888421919897178e-05,
+            "median": 0.35169756039571975,
+            "p95": 1.1912843398185078,
+            "max": 1.6434327572913772
+          },
+          "spearman": 0.8577568105822185,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07",
+          "reference_corpus_std": 4.38403213089975,
+          "absolute_error": {
+            "min": 0.0018070227167683584,
+            "median": 2.5220182525046715,
+            "p95": 5.682995378716205,
+            "max": 7.871136442168503
+          },
+          "error_in_corpus_std": {
+            "min": 0.000412182817738039,
+            "median": 0.5752736698093198,
+            "p95": 1.296294189693784,
+            "max": 1.795410299730874
+          },
+          "spearman": 0.8979982543273012,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08",
+          "reference_corpus_std": 3.7257956455314956,
+          "absolute_error": {
+            "min": 0.0002986030058860223,
+            "median": 1.2638175969037038,
+            "p95": 3.664216068455895,
+            "max": 10.671438332524579
+          },
+          "error_in_corpus_std": {
+            "min": 8.014476216486793e-05,
+            "median": 0.33920743839492473,
+            "p95": 0.983472100207789,
+            "max": 2.8642038769150657
+          },
+          "spearman": 0.8941825736714112,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09",
+          "reference_corpus_std": 4.067886290890479,
+          "absolute_error": {
+            "min": 0.0018928393460235782,
+            "median": 1.6475530076021565,
+            "p95": 3.5611863032036664,
+            "max": 5.539801204831095
+          },
+          "error_in_corpus_std": {
+            "min": 0.0004653127473750567,
+            "median": 0.4050145185453302,
+            "p95": 0.8754389991624142,
+            "max": 1.3618377724167916
+          },
+          "spearman": 0.9279225042021312,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10",
+          "reference_corpus_std": 3.2429866478118297,
+          "absolute_error": {
+            "min": 6.098972250967449e-05,
+            "median": 0.7085227982976035,
+            "p95": 2.125778488369397,
+            "max": 6.518936902741524
+          },
+          "error_in_corpus_std": {
+            "min": 1.8806652364981722e-05,
+            "median": 0.21847848148732638,
+            "p95": 0.6555002284094333,
+            "max": 2.0101645830518935
+          },
+          "spearman": 0.9489184875903011,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11",
+          "reference_corpus_std": 3.279484118757596,
+          "absolute_error": {
+            "min": 0.0016492590814287666,
+            "median": 1.1153891385158072,
+            "p95": 2.7779620467546557,
+            "max": 7.664228372587635
+          },
+          "error_in_corpus_std": {
+            "min": 0.0005029019875399105,
+            "median": 0.34011115715918233,
+            "p95": 0.8470728767569281,
+            "max": 2.3370225605761314
+          },
+          "spearman": 0.9388564390959158,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12",
+          "reference_corpus_std": 3.852768776974901,
+          "absolute_error": {
+            "min": 0.00036049191389153634,
+            "median": 0.5508928859430853,
+            "p95": 1.6269059590314858,
+            "max": 4.418299351546368
+          },
+          "error_in_corpus_std": {
+            "min": 9.356697345709536e-05,
+            "median": 0.14298623089850535,
+            "p95": 0.4222692959811858,
+            "max": 1.1467854956547658
+          },
+          "spearman": 0.9702901258851296,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13",
+          "reference_corpus_std": 4.405450562115766,
+          "absolute_error": {
+            "min": 0.00027563070435299153,
+            "median": 0.8110116048915446,
+            "p95": 2.2588727231128636,
+            "max": 4.732050093125666
+          },
+          "error_in_corpus_std": {
+            "min": 6.256583758384452e-05,
+            "median": 0.1840927717736202,
+            "p95": 0.5127449942436797,
+            "max": 1.074135329952051
+          },
+          "spearman": 0.9701312048494385,
+          "engineering_review": true
+        }
+      ],
+      "c3": [
+        {
+          "feature": "mfcc_01_mean",
+          "reference_corpus_std": 14.139624394763075,
+          "absolute_error": {
+            "min": 0.09127230290134491,
+            "median": 1.2066530087046345,
+            "p95": 4.396342882118872,
+            "max": 6.822233898306791
+          },
+          "error_in_corpus_std": {
+            "min": 0.0064550726633975965,
+            "median": 0.08533840610020343,
+            "p95": 0.31092359735858016,
+            "max": 0.48249046140387986
+          },
+          "spearman": 0.9972619313711465,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02_mean",
+          "reference_corpus_std": 5.606863270857227,
+          "absolute_error": {
+            "min": 0.00023491214484216982,
+            "median": 1.018933367643701,
+            "p95": 3.8005143714785796,
+            "max": 5.300247625481202
+          },
+          "error_in_corpus_std": {
+            "min": 4.189724869218264e-05,
+            "median": 0.18172966209820154,
+            "p95": 0.6778325398503116,
+            "max": 0.9453142281942704
+          },
+          "spearman": 0.9673305401080036,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03_mean",
+          "reference_corpus_std": 4.2240724853333536,
+          "absolute_error": {
+            "min": 0.09848711262470111,
+            "median": 0.7937360150126469,
+            "p95": 1.9586360607369344,
+            "max": 2.553549243827389
+          },
+          "error_in_corpus_std": {
+            "min": 0.023315677694136148,
+            "median": 0.18790776383895486,
+            "p95": 0.4636842922411081,
+            "max": 0.604523064576594
+          },
+          "spearman": 0.9938198269079465,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04_mean",
+          "reference_corpus_std": 1.468201900708848,
+          "absolute_error": {
+            "min": 0.00017794676370075369,
+            "median": 0.2509317240509728,
+            "p95": 0.9699829692137417,
+            "max": 1.184972334372433
+          },
+          "error_in_corpus_std": {
+            "min": 0.00012120047223398974,
+            "median": 0.17091091077448065,
+            "p95": 0.6606604777894878,
+            "max": 0.8070908597791137
+          },
+          "spearman": 0.9421740218868463,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05_mean",
+          "reference_corpus_std": 1.2937010170149927,
+          "absolute_error": {
+            "min": 0.0005939363917044638,
+            "median": 0.24568580110565885,
+            "p95": 0.8094855497320103,
+            "max": 1.0090733383354515
+          },
+          "error_in_corpus_std": {
+            "min": 0.00045909865099656223,
+            "median": 0.1899092586883323,
+            "p95": 0.625713004075523,
+            "max": 0.779989599655511
+          },
+          "spearman": 0.9692561109720333,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06_mean",
+          "reference_corpus_std": 0.8603774569013444,
+          "absolute_error": {
+            "min": 0.000183573842133411,
+            "median": 0.11075424122893907,
+            "p95": 0.42840618253428253,
+            "max": 0.6326343712448139
+          },
+          "error_in_corpus_std": {
+            "min": 0.00021336430965375767,
+            "median": 0.12872750249387202,
+            "p95": 0.4979281815183658,
+            "max": 0.7352986368602116
+          },
+          "spearman": 0.9470953660324726,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07_mean",
+          "reference_corpus_std": 0.748856810630147,
+          "absolute_error": {
+            "min": 0.0019052915613690935,
+            "median": 0.14679979674561155,
+            "p95": 0.4402969970185048,
+            "max": 0.5794554350799689
+          },
+          "error_in_corpus_std": {
+            "min": 0.002544266853586911,
+            "median": 0.19603186438550604,
+            "p95": 0.5879588604502433,
+            "max": 0.7737866930693593
+          },
+          "spearman": 0.9671401030863314,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08_mean",
+          "reference_corpus_std": 0.6115176619003465,
+          "absolute_error": {
+            "min": 2.066656289656521e-06,
+            "median": 0.07456471828967048,
+            "p95": 0.2554206421359272,
+            "max": 0.3636876860631886
+          },
+          "error_in_corpus_std": {
+            "min": 3.379552903237822e-06,
+            "median": 0.12193387523420643,
+            "p95": 0.41768318079674815,
+            "max": 0.5947296516882213
+          },
+          "spearman": 0.9685768632429724,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09_mean",
+          "reference_corpus_std": 0.6066321666573595,
+          "absolute_error": {
+            "min": 0.00032688072678777047,
+            "median": 0.10630120889155847,
+            "p95": 0.28657466129121123,
+            "max": 0.5133000161182246
+          },
+          "error_in_corpus_std": {
+            "min": 0.000538845027933378,
+            "median": 0.17523173800244582,
+            "p95": 0.4724026799803307,
+            "max": 0.8461470464822035
+          },
+          "spearman": 0.977613468725413,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10_mean",
+          "reference_corpus_std": 0.5394333233392067,
+          "absolute_error": {
+            "min": 0.00014278736107309342,
+            "median": 0.0525734859512611,
+            "p95": 0.1721236828040477,
+            "max": 0.41458089605314186
+          },
+          "error_in_corpus_std": {
+            "min": 0.0002646988142838662,
+            "median": 0.09746058257176267,
+            "p95": 0.31908240621577766,
+            "max": 0.7685489162716129
+          },
+          "spearman": 0.9862279499856949,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11_mean",
+          "reference_corpus_std": 0.5575525958466948,
+          "absolute_error": {
+            "min": 0.00032930181877421916,
+            "median": 0.08186640589936223,
+            "p95": 0.20909629784849132,
+            "max": 0.35929303448665006
+          },
+          "error_in_corpus_std": {
+            "min": 0.0005906201876329606,
+            "median": 0.14683171867407518,
+            "p95": 0.3750252431897647,
+            "max": 0.6444110155043411
+          },
+          "spearman": 0.9888705765860811,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12_mean",
+          "reference_corpus_std": 0.606105197789695,
+          "absolute_error": {
+            "min": 7.913572536821789e-06,
+            "median": 0.039663322665998035,
+            "p95": 0.1263309293629734,
+            "max": 0.20965815697356072
+          },
+          "error_in_corpus_std": {
+            "min": 1.3056434040956076e-05,
+            "median": 0.06543966758681441,
+            "p95": 0.20843069787830368,
+            "max": 0.3459105081727206
+          },
+          "spearman": 0.9935070698626707,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13_mean",
+          "reference_corpus_std": 0.6740049512794992,
+          "absolute_error": {
+            "min": 3.041322067032226e-05,
+            "median": 0.06253790397569292,
+            "p95": 0.16149389860181543,
+            "max": 0.30212838053456714
+          },
+          "error_in_corpus_std": {
+            "min": 4.512314132498172e-05,
+            "median": 0.0927855260662016,
+            "p95": 0.23960343065023934,
+            "max": 0.4482583992313719
+          },
+          "spearman": 0.9946416118303409,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_01_std",
+          "reference_corpus_std": 11.0510871530755,
+          "absolute_error": {
+            "min": 0.0028443006126153136,
+            "median": 0.4618962592969993,
+            "p95": 2.671987535016035,
+            "max": 3.352323365844846
+          },
+          "error_in_corpus_std": {
+            "min": 0.0002573774483195302,
+            "median": 0.041796454312502125,
+            "p95": 0.24178503870295015,
+            "max": 0.30334783532241894
+          },
+          "spearman": 0.9976825021457693,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02_std",
+          "reference_corpus_std": 4.3186934758877715,
+          "absolute_error": {
+            "min": 0.02556965881577078,
+            "median": 0.8564929216280994,
+            "p95": 3.120804914478603,
+            "max": 3.379973656802642
+          },
+          "error_in_corpus_std": {
+            "min": 0.005920693135211351,
+            "median": 0.19832223018607142,
+            "p95": 0.7226270935649295,
+            "max": 0.7826380074607723
+          },
+          "spearman": 0.965613757063157,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03_std",
+          "reference_corpus_std": 1.3378037601328328,
+          "absolute_error": {
+            "min": 0.001080849624078617,
+            "median": 0.21469476611522365,
+            "p95": 1.1475036042086884,
+            "max": 1.455601426189694
+          },
+          "error_in_corpus_std": {
+            "min": 0.0008079283795489539,
+            "median": 0.1604830039451423,
+            "p95": 0.8577518156285873,
+            "max": 1.0880530235953028
+          },
+          "spearman": 0.9241423740254632,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04_std",
+          "reference_corpus_std": 0.7609867681019322,
+          "absolute_error": {
+            "min": 0.0012226654478985077,
+            "median": 0.22922046294594753,
+            "p95": 0.8779622661669576,
+            "max": 1.2134169041850367
+          },
+          "error_in_corpus_std": {
+            "min": 0.0016066842409732081,
+            "median": 0.30121478132618995,
+            "p95": 1.15371554798093,
+            "max": 1.5945308841723547
+          },
+          "spearman": 0.893662034636292,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05_std",
+          "reference_corpus_std": 0.8258620870120242,
+          "absolute_error": {
+            "min": 0.0006094269713554645,
+            "median": 0.13214359105830675,
+            "p95": 0.516266857206589,
+            "max": 0.6658318952877842
+          },
+          "error_in_corpus_std": {
+            "min": 0.0007379282581676274,
+            "median": 0.1600068499770989,
+            "p95": 0.6251247821224567,
+            "max": 0.8062264944220523
+          },
+          "spearman": 0.9493837283634933,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06_std",
+          "reference_corpus_std": 0.5672179676730503,
+          "absolute_error": {
+            "min": 0.0003978998596256833,
+            "median": 0.15264269881991271,
+            "p95": 0.5153549197004987,
+            "max": 0.685059404016717
+          },
+          "error_in_corpus_std": {
+            "min": 0.0007014937507322343,
+            "median": 0.2691076579363533,
+            "p95": 0.9085659289226784,
+            "max": 1.2077533559578486
+          },
+          "spearman": 0.9195212587618911,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07_std",
+          "reference_corpus_std": 0.5236198263784813,
+          "absolute_error": {
+            "min": 8.787974156887479e-05,
+            "median": 0.08634779445870466,
+            "p95": 0.29730681635188044,
+            "max": 0.4456879731734731
+          },
+          "error_in_corpus_std": {
+            "min": 0.00016783119572969307,
+            "median": 0.16490550989238328,
+            "p95": 0.5677913657474498,
+            "max": 0.8511671077391983
+          },
+          "spearman": 0.9529643355267863,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08_std",
+          "reference_corpus_std": 0.4232679541263804,
+          "absolute_error": {
+            "min": 6.654613565437728e-05,
+            "median": 0.09166868688752339,
+            "p95": 0.29153023317787863,
+            "max": 0.424642067090663
+          },
+          "error_in_corpus_std": {
+            "min": 0.0001572198769257825,
+            "median": 0.21657365267995865,
+            "p95": 0.6887604656478028,
+            "max": 1.003246437512896
+          },
+          "spearman": 0.9567472484979616,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09_std",
+          "reference_corpus_std": 0.4203164075868081,
+          "absolute_error": {
+            "min": 3.7898019198179256e-05,
+            "median": 0.058329087275391434,
+            "p95": 0.19044794122164557,
+            "max": 0.26313611907213996
+          },
+          "error_in_corpus_std": {
+            "min": 9.01654527734613e-05,
+            "median": 0.1387742334644519,
+            "p95": 0.4531061309623329,
+            "max": 0.6260429388966795
+          },
+          "spearman": 0.9660179551713038,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10_std",
+          "reference_corpus_std": 0.35948535862931336,
+          "absolute_error": {
+            "min": 0.000763722496818442,
+            "median": 0.06664428061280786,
+            "p95": 0.18778789000853985,
+            "max": 0.2914011635511746
+          },
+          "error_in_corpus_std": {
+            "min": 0.002124488462424311,
+            "median": 0.18538802488901562,
+            "p95": 0.5223798007366944,
+            "max": 0.810606486623717
+          },
+          "spearman": 0.9764309486982332,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11_std",
+          "reference_corpus_std": 0.3912486046316088,
+          "absolute_error": {
+            "min": 5.0940290059808824e-05,
+            "median": 0.041163593290985734,
+            "p95": 0.12481496201441056,
+            "max": 0.19708234402882074
+          },
+          "error_in_corpus_std": {
+            "min": 0.00013019928878154873,
+            "median": 0.10521083731338665,
+            "p95": 0.319017015107143,
+            "max": 0.5037266374774402
+          },
+          "spearman": 0.9838703865960946,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12_std",
+          "reference_corpus_std": 0.4057640528265912,
+          "absolute_error": {
+            "min": 0.00043469688544939267,
+            "median": 0.051978234063076945,
+            "p95": 0.13787272390394242,
+            "max": 0.2878404198182414
+          },
+          "error_in_corpus_std": {
+            "min": 0.001071304573239676,
+            "median": 0.12809965225108433,
+            "p95": 0.3397854564580273,
+            "max": 0.7093788072479991
+          },
+          "spearman": 0.9891268395501035,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13_std",
+          "reference_corpus_std": 0.449489326750556,
+          "absolute_error": {
+            "min": 7.301710869667133e-05,
+            "median": 0.033837843697871794,
+            "p95": 0.09840477935560674,
+            "max": 0.2046161139097169
+          },
+          "error_in_corpus_std": {
+            "min": 0.00016244458845002154,
+            "median": 0.07528063890302361,
+            "p95": 0.21892573082211683,
+            "max": 0.4552190713602163
+          },
+          "spearman": 0.9906669989628781,
+          "engineering_review": true
+        }
+      ]
+    },
+    "pcm16_nearest": {
+      "waveform": {
+        "reference_rms_dbfs": {
+          "min": -52.7196371911903,
+          "median": -29.408883265039577,
+          "p95": -20.906901605256206,
+          "max": -16.515378846026067
+        },
+        "reference_peak": {
+          "min": 0.02562439627945423,
+          "median": 0.2032037004828453,
+          "p95": 0.293141758441925,
+          "max": 0.37848034501075745
+        },
+        "error_rms_dbfs": {
+          "min": -104.01572722244171,
+          "median": -103.49737154326425,
+          "p95": -101.76457554710277,
+          "max": -101.41016143093579
+        },
+        "error_peak": {
+          "min": 1.5257857739925385e-05,
+          "median": 1.52587890625e-05,
+          "p95": 1.52587890625e-05,
+          "max": 1.52587890625e-05
+        },
+        "held_snr_db": {
+          "min": 51.31936815162379,
+          "median": 74.6335714537143,
+          "p95": 83.09797729483309,
+          "max": 87.50420073271813
+        },
+        "error_mean": {
+          "min": -2.1106327519496486e-07,
+          "median": 8.076358595700998e-09,
+          "p95": 1.1438075194118023e-07,
+          "max": 3.7622121350831694e-07
+        },
+        "held_level_change_db": {
+          "min": -0.0002067072649738539,
+          "median": 4.160579684317501e-07,
+          "p95": 2.4212361846694e-05,
+          "max": 0.0002659379019617428
+        },
+        "stress_error_rms_dbfs": {
+          "min": -89.8552723753543,
+          "median": -89.33691669617684,
+          "p95": -87.60412070001534,
+          "max": -87.24970658384836
+        }
+      },
+      "clips_outside_pcm_range": 0,
+      "clips_with_encoded_rail_samples": 0,
+      "clips_losing_headroom_at_global_stress_gain": 580,
+      "c2": {
+        "rmse_db": {
+          "min": 0.0014921462531921215,
+          "median": 0.004855513084854393,
+          "p95": 0.006892272310940457,
+          "max": 0.015592523695886307
+        },
+        "max_bin_error_db": {
+          "min": 0.0366363525390625,
+          "median": 0.08826446533203125,
+          "p95": 0.1598651885986327,
+          "max": 0.44716644287109375
+        },
+        "fraction_bins_over_0p1db": {
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.00018098455598455598,
+          "max": 0.0068774131274131275
+        },
+        "fraction_bins_over_1db": {
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "active_bins_rmse_db": {
+          "min": 0.000504765991061188,
+          "median": 0.0011510983912152496,
+          "p95": 0.001677245329254373,
+          "max": 0.0036757978439955962
+        }
+      },
+      "c3_retrieval": {
+        "queries": 1024,
+        "self_matches_excluded": true,
+        "scaler": "FLOAT corpus mean/std reused in both arms; descriptive audit, not learned-model evaluation",
+        "top1_agreement_fraction": 0.7685546875,
+        "top5_overlap_fraction": {
+          "min": 0.0,
+          "median": 0.8,
+          "p95": 1.0,
+          "max": 1.0
+        },
+        "mean_top5_overlap_fraction": 0.8279296875000001,
+        "float_similarity_loss_of_changed_top1": {
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.04018434723284634,
+          "max": 0.267721093243524
+        },
+        "engineering_review": true
+      },
+      "actual_study_gain": {
+        "error_rms_dbfs": {
+          "min": -117.79551219954791,
+          "median": -103.25095989343839,
+          "p95": -92.0211199352095,
+          "max": -89.50718814825802
+        },
+        "held_snr_db": {
+          "min": 58.920716389367755,
+          "median": 73.75227084855064,
+          "p95": 83.35078558390873,
+          "max": 87.50420073271818
+        },
+        "early_pcm_peak": {
+          "min": 0.05336888549876182,
+          "median": 0.17611787447627858,
+          "p95": 0.4675065627315426,
+          "max": 0.8900433701604832
+        },
+        "final_vs_current_playback_error_rms_dbfs": {
+          "min": -102.88067308956349,
+          "median": -97.1629706706618,
+          "p95": -90.92631478900385,
+          "max": -89.05363282195162
+        },
+        "final_vs_current_playback_held_snr_db": {
+          "min": 58.62239403758737,
+          "median": 68.74324082405735,
+          "p95": 73.42496685944012,
+          "max": 75.50657248042042
+        }
+      },
+      "actual_study_c1": [
+        {
+          "feature": "spectral_centroid_hz",
+          "reference_corpus_std": 584.0507657280945,
+          "absolute_error": {
+            "min": 35.15828459050795,
+            "median": 126.90806869229391,
+            "p95": 615.2924309538365,
+            "max": 757.7877357394282
+          },
+          "error_in_corpus_std": {
+            "min": 0.060197309298411106,
+            "median": 0.2172894483480159,
+            "p95": 1.053491352223116,
+            "max": 1.2974689533961115
+          },
+          "spearman": 0.9321973022587597,
+          "engineering_review": true
+        },
+        {
+          "feature": "spectral_rolloff_85_hz",
+          "reference_corpus_std": 389.1740553933013,
+          "absolute_error": {
+            "min": 0.08411407470703125,
+            "median": 8.831977844238281,
+            "p95": 67.375373840332,
+            "max": 272.52960205078125
+          },
+          "error_in_corpus_std": {
+            "min": 0.000216134846455849,
+            "median": 0.022694158877864145,
+            "p95": 0.173124012011135,
+            "max": 0.7002769025169508
+          },
+          "spearman": 0.9937942733695527,
+          "engineering_review": true
+        },
+        {
+          "feature": "rms",
+          "reference_corpus_std": 0.0003453321929297435,
+          "absolute_error": {
+            "min": 1.86362886928082e-10,
+            "median": 1.9615539345596567e-08,
+            "p95": 1.510183467633152e-07,
+            "max": 3.9082782191807164e-07
+          },
+          "error_in_corpus_std": {
+            "min": 5.39662651625407e-07,
+            "median": 5.680194244035416e-05,
+            "p95": 0.00043731325910306696,
+            "max": 0.0011317445344505835
+          },
+          "spearman": 0.9999201851704048,
+          "engineering_review": false
+        },
+        {
+          "feature": "zero_crossing_rate",
+          "reference_corpus_std": 0.010904613891928035,
+          "absolute_error": {
+            "min": 2.2675908359096053e-05,
+            "median": 0.0001511727223939708,
+            "p95": 0.0006273667979349812,
+            "max": 0.0020861835690367952
+          },
+          "error_in_corpus_std": {
+            "min": 0.002079478336769129,
+            "median": 0.01386318891179393,
+            "p95": 0.05753223398394503,
+            "max": 0.19131200698275608
+          },
+          "spearman": 0.9976746538784297,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_01",
+          "reference_corpus_std": 176.49094590626547,
+          "absolute_error": {
+            "min": 0.011277432164035872,
+            "median": 16.697003647951078,
+            "p95": 66.47719661171297,
+            "max": 137.06558445962753
+          },
+          "error_in_corpus_std": {
+            "min": 6.389807763864175e-05,
+            "median": 0.09460544030864267,
+            "p95": 0.37666066250797414,
+            "max": 0.7766153881481445
+          },
+          "spearman": 0.9871498124351507,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02",
+          "reference_corpus_std": 37.069724658135094,
+          "absolute_error": {
+            "min": 2.487297475140508,
+            "median": 9.469307835092245,
+            "p95": 58.74849501730585,
+            "max": 88.99232641543426
+          },
+          "error_in_corpus_std": {
+            "min": 0.06709781359529632,
+            "median": 0.2554458637721273,
+            "p95": 1.584810665822231,
+            "max": 2.4006740604668764
+          },
+          "spearman": 0.8753292361720808,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03",
+          "reference_corpus_std": 15.442612660610777,
+          "absolute_error": {
+            "min": 0.1603188628046901,
+            "median": 4.256483200988278,
+            "p95": 23.903588666482882,
+            "max": 31.402909421862663
+          },
+          "error_in_corpus_std": {
+            "min": 0.010381589328702963,
+            "median": 0.2756323230100319,
+            "p95": 1.547897962075639,
+            "max": 2.0335230904263732
+          },
+          "spearman": 0.9103679463644346,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04",
+          "reference_corpus_std": 8.182361611521298,
+          "absolute_error": {
+            "min": 1.209948560609993,
+            "median": 3.5024782871005753,
+            "p95": 13.774443837999183,
+            "max": 15.967202618750079
+          },
+          "error_in_corpus_std": {
+            "min": 0.14787278026264528,
+            "median": 0.428052248652621,
+            "p95": 1.683431323617361,
+            "max": 1.951417375182639
+          },
+          "spearman": 0.8131933913321097,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05",
+          "reference_corpus_std": 6.985713130957763,
+          "absolute_error": {
+            "min": 0.016068222884580763,
+            "median": 1.9711453455525598,
+            "p95": 7.026729754752936,
+            "max": 8.364073281173912
+          },
+          "error_in_corpus_std": {
+            "min": 0.0023001549853762402,
+            "median": 0.2821680920187328,
+            "p95": 1.0058715013093515,
+            "max": 1.197311301563162
+          },
+          "spearman": 0.8713784021071116,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06",
+          "reference_corpus_std": 5.029547840924466,
+          "absolute_error": {
+            "min": 0.012673570388223254,
+            "median": 2.0767189523243847,
+            "p95": 4.910235646866271,
+            "max": 6.504175676649323
+          },
+          "error_in_corpus_std": {
+            "min": 0.002519823011742893,
+            "median": 0.41290370784954483,
+            "p95": 0.9762777494455118,
+            "max": 1.2931929235717958
+          },
+          "spearman": 0.9604118445207119,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07",
+          "reference_corpus_std": 4.387670674002933,
+          "absolute_error": {
+            "min": 0.005041481131433656,
+            "median": 1.1627939400036045,
+            "p95": 3.8402284536524824,
+            "max": 4.3354500359196955
+          },
+          "error_in_corpus_std": {
+            "min": 0.0011490108319442858,
+            "median": 0.26501395077191864,
+            "p95": 0.8752316978587156,
+            "max": 0.9880983232418407
+          },
+          "spearman": 0.9025061856492937,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08",
+          "reference_corpus_std": 3.2216625839633224,
+          "absolute_error": {
+            "min": 0.2814477650067264,
+            "median": 1.551854858307511,
+            "p95": 2.8054281286884355,
+            "max": 3.4090530785826303
+          },
+          "error_in_corpus_std": {
+            "min": 0.08736103104270047,
+            "median": 0.4816937894217349,
+            "p95": 0.8708013504124225,
+            "max": 1.0581657730241814
+          },
+          "spearman": 0.9666374012291485,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09",
+          "reference_corpus_std": 3.721787050964259,
+          "absolute_error": {
+            "min": 0.02290687465994523,
+            "median": 0.846553697599858,
+            "p95": 1.4759611381190016,
+            "max": 3.005925303765755
+          },
+          "error_in_corpus_std": {
+            "min": 0.006154805298172663,
+            "median": 0.22745892927445396,
+            "p95": 0.39657323697136365,
+            "max": 0.8076564463802316
+          },
+          "spearman": 0.9631255487269536,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10",
+          "reference_corpus_std": 2.7887861669088814,
+          "absolute_error": {
+            "min": 0.015298145454758938,
+            "median": 1.1404896498730857,
+            "p95": 1.9417322408071527,
+            "max": 2.1380913755233584
+          },
+          "error_in_corpus_std": {
+            "min": 0.005485592849062198,
+            "median": 0.40895557479662054,
+            "p95": 0.6962642972943989,
+            "max": 0.7666745485521539
+          },
+          "spearman": 0.9760954585361963,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11",
+          "reference_corpus_std": 3.166318725616353,
+          "absolute_error": {
+            "min": 0.0035731420703761785,
+            "median": 0.7079450591882601,
+            "p95": 1.4515968006576638,
+            "max": 2.022169804836329
+          },
+          "error_in_corpus_std": {
+            "min": 0.0011284846473188302,
+            "median": 0.22358616441888746,
+            "p95": 0.45844936231904354,
+            "max": 0.6386501107663111
+          },
+          "spearman": 0.9697900869981644,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12",
+          "reference_corpus_std": 3.328283094637123,
+          "absolute_error": {
+            "min": 0.10437198449146834,
+            "median": 0.8495954833644328,
+            "p95": 1.5137024249311084,
+            "max": 1.7081567444721761
+          },
+          "error_in_corpus_std": {
+            "min": 0.031359106639589455,
+            "median": 0.255265390354982,
+            "p95": 0.454799781716328,
+            "max": 0.5132245953550455
+          },
+          "spearman": 0.9881474978050925,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13",
+          "reference_corpus_std": 3.8822273021457256,
+          "absolute_error": {
+            "min": 0.01844524962373395,
+            "median": 0.5780156648376433,
+            "p95": 1.0070332904588866,
+            "max": 1.7618581059539036
+          },
+          "error_in_corpus_std": {
+            "min": 0.004751202901885516,
+            "median": 0.1488876409988079,
+            "p95": 0.2593957571475257,
+            "max": 0.45382662292342235
+          },
+          "spearman": 0.991180461329715,
+          "engineering_review": true
+        }
+      ],
+      "c1_full": [
+        {
+          "feature": "spectral_centroid_hz",
+          "reference_corpus_std": 439.231298936028,
+          "absolute_error": {
+            "min": 31.450637984836476,
+            "median": 110.17728458236301,
+            "p95": 520.2082182486386,
+            "max": 1171.77605354713
+          },
+          "error_in_corpus_std": {
+            "min": 0.07160381799070543,
+            "median": 0.2508411510046096,
+            "p95": 1.1843605396718424,
+            "max": 2.6677881480340355
+          },
+          "spearman": 0.8765509888419999,
+          "engineering_review": true
+        },
+        {
+          "feature": "spectral_rolloff_85_hz",
+          "reference_corpus_std": 276.9758919099457,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 7.822608947753906,
+            "p95": 29.23384666442869,
+            "max": 272.52960205078125
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.028242923576530275,
+            "p95": 0.10554653859164613,
+            "max": 0.9839470149242806
+          },
+          "spearman": 0.9932105172382338,
+          "engineering_review": true
+        },
+        {
+          "feature": "rms",
+          "reference_corpus_std": 0.025682342394814726,
+          "absolute_error": {
+            "min": 7.830271153697055e-12,
+            "median": 2.128428052555753e-08,
+            "p95": 6.841845935686566e-08,
+            "max": 1.4221626143916255e-07
+          },
+          "error_in_corpus_std": {
+            "min": 3.048892905998321e-10,
+            "median": 8.287515289047323e-07,
+            "p95": 2.664027225596033e-06,
+            "max": 5.53751130846523e-06
+          },
+          "spearman": 0.9999999888241183,
+          "engineering_review": false
+        },
+        {
+          "feature": "zero_crossing_rate",
+          "reference_corpus_std": 0.006899166050420535,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 0.0001511727223939708,
+            "p95": 0.00040060771434402364,
+            "max": 0.0029629853589218345
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.021911738504214743,
+            "p95": 0.058066107036169226,
+            "max": 0.42947007468261
+          },
+          "spearman": 0.9989509864290355,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_01",
+          "reference_corpus_std": 157.08141428117412,
+          "absolute_error": {
+            "min": 0.04345835970264034,
+            "median": 26.052293636373747,
+            "p95": 117.4906666515224,
+            "max": 272.4226879952996
+          },
+          "error_in_corpus_std": {
+            "min": 0.00027666137271243507,
+            "median": 0.16585217134434765,
+            "p95": 0.7479603312026165,
+            "max": 1.7342770259737146
+          },
+          "spearman": 0.9652678858808381,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02",
+          "reference_corpus_std": 39.820548329091366,
+          "absolute_error": {
+            "min": 1.7401056554617007,
+            "median": 15.775447042543998,
+            "p95": 86.71931373115193,
+            "max": 176.4668802518925
+          },
+          "error_in_corpus_std": {
+            "min": 0.04369868644401479,
+            "median": 0.3961634810291917,
+            "p95": 2.1777528780988216,
+            "max": 4.431553247170445
+          },
+          "spearman": 0.7621104646484514,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03",
+          "reference_corpus_std": 13.977824074098725,
+          "absolute_error": {
+            "min": 0.0007473552386372262,
+            "median": 5.5079707193553915,
+            "p95": 29.98934295481972,
+            "max": 46.292439188689336
+          },
+          "error_in_corpus_std": {
+            "min": 5.346720882129966e-05,
+            "median": 0.39405065410444,
+            "p95": 2.1454943770819637,
+            "max": 3.311848750083387
+          },
+          "spearman": 0.8891310528574493,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04",
+          "reference_corpus_std": 6.837567271985422,
+          "absolute_error": {
+            "min": 0.15814574525237468,
+            "median": 6.213886787286144,
+            "p95": 15.539765380326235,
+            "max": 19.0310695358089
+          },
+          "error_in_corpus_std": {
+            "min": 0.02312894907817908,
+            "median": 0.9087862013066266,
+            "p95": 2.2727038378101336,
+            "max": 2.783310025157947
+          },
+          "spearman": 0.7164701536907231,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05",
+          "reference_corpus_std": 5.718879511779641,
+          "absolute_error": {
+            "min": 0.003374488655506269,
+            "median": 2.103647188309962,
+            "p95": 6.615032649668015,
+            "max": 11.484065786882962
+          },
+          "error_in_corpus_std": {
+            "min": 0.0005900611559581839,
+            "median": 0.3678425439768243,
+            "p95": 1.156700825055414,
+            "max": 2.008097174145442
+          },
+          "spearman": 0.8454960526786351,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06",
+          "reference_corpus_std": 4.279114725267981,
+          "absolute_error": {
+            "min": 0.05333981366880636,
+            "median": 3.0906787807731853,
+            "p95": 5.792053416310252,
+            "max": 7.460863820950507
+          },
+          "error_in_corpus_std": {
+            "min": 0.012465151577693664,
+            "median": 0.7222706048339544,
+            "p95": 1.3535634794057838,
+            "max": 1.7435531178667496
+          },
+          "spearman": 0.9080073067913595,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07",
+          "reference_corpus_std": 3.675028702119779,
+          "absolute_error": {
+            "min": 0.000394107313232972,
+            "median": 0.9050755586791799,
+            "p95": 2.701522933979475,
+            "max": 4.853280659243719
+          },
+          "error_in_corpus_std": {
+            "min": 0.00010723924768414692,
+            "median": 0.24627714013692648,
+            "p95": 0.7351025401301546,
+            "max": 1.3206102734501957
+          },
+          "spearman": 0.9116449891817465,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08",
+          "reference_corpus_std": 2.880338093746071,
+          "absolute_error": {
+            "min": 0.03252722277134534,
+            "median": 1.9027534953249718,
+            "p95": 3.266802869393602,
+            "max": 3.9940990776785537
+          },
+          "error_in_corpus_std": {
+            "min": 0.0112928488645031,
+            "median": 0.6606007466471808,
+            "p95": 1.1341734071033682,
+            "max": 1.386677170416464
+          },
+          "spearman": 0.9297586233102066,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09",
+          "reference_corpus_std": 3.274541698921923,
+          "absolute_error": {
+            "min": 0.0013298634630665163,
+            "median": 0.5710483563000373,
+            "p95": 1.6243656389918801,
+            "max": 4.295209153589042
+          },
+          "error_in_corpus_std": {
+            "min": 0.00040612201197631623,
+            "median": 0.17439031437225044,
+            "p95": 0.4960589262084126,
+            "max": 1.3116978033912816
+          },
+          "spearman": 0.9590326492203705,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10",
+          "reference_corpus_std": 2.695346162217921,
+          "absolute_error": {
+            "min": 0.020810318684207907,
+            "median": 1.3260199929777476,
+            "p95": 2.164919158760428,
+            "max": 3.7135444356017233
+          },
+          "error_in_corpus_std": {
+            "min": 0.0077208334038562625,
+            "median": 0.491966490822316,
+            "p95": 0.8032063521588558,
+            "max": 1.3777615979930224
+          },
+          "spearman": 0.9755692435269294,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11",
+          "reference_corpus_std": 2.849823290039161,
+          "absolute_error": {
+            "min": 0.001010260208865077,
+            "median": 0.4827583998143403,
+            "p95": 1.264461213477593,
+            "max": 3.340081064042998
+          },
+          "error_in_corpus_std": {
+            "min": 0.00035449924646071456,
+            "median": 0.1693994155713797,
+            "p95": 0.4436981120538942,
+            "max": 1.1720309380997094
+          },
+          "spearman": 0.9744393395501034,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12",
+          "reference_corpus_std": 2.957737395564228,
+          "absolute_error": {
+            "min": 0.0075367412496483155,
+            "median": 1.0236555784329258,
+            "p95": 1.60472081381672,
+            "max": 3.2193931100951283
+          },
+          "error_in_corpus_std": {
+            "min": 0.0025481441526726822,
+            "median": 0.34609413938104194,
+            "p95": 0.5425501318079653,
+            "max": 1.0884648227808562
+          },
+          "spearman": 0.986638417763393,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13",
+          "reference_corpus_std": 3.2814623008764454,
+          "absolute_error": {
+            "min": 0.00029711217197192497,
+            "median": 0.4524841245404838,
+            "p95": 0.934067221991172,
+            "max": 1.9718671388025104
+          },
+          "error_in_corpus_std": {
+            "min": 9.054261324061816e-05,
+            "median": 0.13789100195349796,
+            "p95": 0.2846496885677133,
+            "max": 0.600911105477532
+          },
+          "spearman": 0.9889128772977611,
+          "engineering_review": true
+        }
+      ],
+      "c1_held": [
+        {
+          "feature": "spectral_centroid_hz",
+          "reference_corpus_std": 701.1397909573503,
+          "absolute_error": {
+            "min": 0.18339262058361783,
+            "median": 20.871640650141757,
+            "p95": 153.7071185643373,
+            "max": 971.8601100671251
+          },
+          "error_in_corpus_std": {
+            "min": 0.0002615635611455026,
+            "median": 0.029768158817007374,
+            "p95": 0.21922464043077985,
+            "max": 1.3861146130932434
+          },
+          "spearman": 0.960293746870753,
+          "engineering_review": true
+        },
+        {
+          "feature": "spectral_rolloff_85_hz",
+          "reference_corpus_std": 432.5734339196279,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 0.0,
+            "p95": 0.0,
+            "max": 1.695527805118104
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.0,
+            "p95": 0.0,
+            "max": 0.003919629991501357
+          },
+          "spearman": 0.9999984805567079,
+          "engineering_review": false
+        },
+        {
+          "feature": "rms",
+          "reference_corpus_std": 0.03584494585778088,
+          "absolute_error": {
+            "min": 8.543759449919364e-12,
+            "median": 3.02282664524367e-08,
+            "p95": 9.66006229938254e-08,
+            "max": 2.0613938348304495e-07
+          },
+          "error_in_corpus_std": {
+            "min": 2.3835325303092254e-10,
+            "median": 8.433062382733392e-07,
+            "p95": 2.6949579831170606e-06,
+            "max": 5.750863296067671e-06
+          },
+          "spearman": 1.0,
+          "engineering_review": false
+        },
+        {
+          "feature": "zero_crossing_rate",
+          "reference_corpus_std": 0.011279206666855363,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 1.5117386506219646e-05,
+            "p95": 4.535215951866067e-05,
+            "max": 0.002902538209194394
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.0013402881029428257,
+            "p95": 0.004020864308828631,
+            "max": 0.2573353157650422
+          },
+          "spearman": 0.7301889666616219,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_01",
+          "reference_corpus_std": 174.42601106917985,
+          "absolute_error": {
+            "min": 3.7719404501146414e-05,
+            "median": 10.098160376454942,
+            "p95": 151.42114102517485,
+            "max": 276.87814524276166
+          },
+          "error_in_corpus_std": {
+            "min": 2.1624873646962184e-07,
+            "median": 0.05789366112632059,
+            "p95": 0.868111012210897,
+            "max": 1.5873672942789927
+          },
+          "spearman": 0.9951856649202487,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02",
+          "reference_corpus_std": 59.21495154488661,
+          "absolute_error": {
+            "min": 4.03901619066005e-05,
+            "median": 9.67121101600057,
+            "p95": 122.3981102964951,
+            "max": 186.7885438838363
+          },
+          "error_in_corpus_std": {
+            "min": 6.820939788489671e-07,
+            "median": 0.1633238019061709,
+            "p95": 2.067013602193255,
+            "max": 3.1544152112029558
+          },
+          "spearman": 0.7364055012159358,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03",
+          "reference_corpus_std": 20.268131612970567,
+          "absolute_error": {
+            "min": 5.096371555168844e-05,
+            "median": 8.401220669957508,
+            "p95": 56.45529430289788,
+            "max": 65.20095471720958
+          },
+          "error_in_corpus_std": {
+            "min": 2.5144752621931007e-06,
+            "median": 0.4145039528251907,
+            "p95": 2.785421734027491,
+            "max": 3.2169198405779205
+          },
+          "spearman": 0.9279045333845934,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04",
+          "reference_corpus_std": 10.691077205546096,
+          "absolute_error": {
+            "min": 6.269471963804563e-06,
+            "median": 5.939609454112059,
+            "p95": 24.443432639523092,
+            "max": 31.952638107425734
+          },
+          "error_in_corpus_std": {
+            "min": 5.86420979221085e-07,
+            "median": 0.5555669779496898,
+            "p95": 2.286339549287216,
+            "max": 2.988720172261969
+          },
+          "spearman": 0.6363159153494027,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05",
+          "reference_corpus_std": 7.522672106850293,
+          "absolute_error": {
+            "min": 1.3407698180145644e-05,
+            "median": 3.5860776113964308,
+            "p95": 12.763976830710584,
+            "max": 19.14785617330087
+          },
+          "error_in_corpus_std": {
+            "min": 1.7823052752673255e-06,
+            "median": 0.47670263444433236,
+            "p95": 1.6967344381642604,
+            "max": 2.545353021018217
+          },
+          "spearman": 0.8588925260174521,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06",
+          "reference_corpus_std": 6.152064572639232,
+          "absolute_error": {
+            "min": 5.294998376825788e-05,
+            "median": 2.687228193824005,
+            "p95": 7.523296685327446,
+            "max": 10.749139990425437
+          },
+          "error_in_corpus_std": {
+            "min": 8.606864109285895e-06,
+            "median": 0.43680103843110113,
+            "p95": 1.2228897464416495,
+            "max": 1.7472410868753385
+          },
+          "spearman": 0.8596464845146984,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07",
+          "reference_corpus_std": 4.38403213089975,
+          "absolute_error": {
+            "min": 9.979859978059835e-05,
+            "median": 2.1833125457922486,
+            "p95": 5.238103636090996,
+            "max": 6.4909969727076025
+          },
+          "error_in_corpus_std": {
+            "min": 2.2764112305927908e-05,
+            "median": 0.4980147226576462,
+            "p95": 1.1948141527457194,
+            "max": 1.4805997718304662
+          },
+          "spearman": 0.9074381079679564,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08",
+          "reference_corpus_std": 3.7257956455314956,
+          "absolute_error": {
+            "min": 3.174597340560581e-06,
+            "median": 1.646945843968254,
+            "p95": 3.7950740282077926,
+            "max": 10.506019207082474
+          },
+          "error_in_corpus_std": {
+            "min": 8.520589003232128e-07,
+            "median": 0.4420386947264555,
+            "p95": 1.018594251877283,
+            "max": 2.819805541316467
+          },
+          "spearman": 0.9032421120627995,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09",
+          "reference_corpus_std": 4.067886290890479,
+          "absolute_error": {
+            "min": 6.708095234841949e-07,
+            "median": 1.2792487520917577,
+            "p95": 2.9034388884173987,
+            "max": 5.233666572623216
+          },
+          "error_in_corpus_std": {
+            "min": 1.6490370563857416e-07,
+            "median": 0.314475051811668,
+            "p95": 0.7137463244533864,
+            "max": 1.2865813344742096
+          },
+          "spearman": 0.9408201867713324,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10",
+          "reference_corpus_std": 3.2429866478118297,
+          "absolute_error": {
+            "min": 2.332952512240638e-05,
+            "median": 0.968123688611632,
+            "p95": 2.216941519868485,
+            "max": 5.015410046351498
+          },
+          "error_in_corpus_std": {
+            "min": 7.193839400525354e-06,
+            "median": 0.2985284226393171,
+            "p95": 0.6836110538303765,
+            "max": 1.5465404551497588
+          },
+          "spearman": 0.9604320484049782,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11",
+          "reference_corpus_std": 3.279484118757596,
+          "absolute_error": {
+            "min": 2.024291098479125e-05,
+            "median": 0.8155817354136374,
+            "p95": 1.8187689742898057,
+            "max": 4.680689715997941
+          },
+          "error_in_corpus_std": {
+            "min": 6.172590032989732e-06,
+            "median": 0.2486920826201816,
+            "p95": 0.5545899624538602,
+            "max": 1.4272640288836587
+          },
+          "spearman": 0.963807242865317,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12",
+          "reference_corpus_std": 3.852768776974901,
+          "absolute_error": {
+            "min": 1.8916541219660132e-05,
+            "median": 0.6600414089434139,
+            "p95": 1.5306408025684992,
+            "max": 4.344344019874317
+          },
+          "error_in_corpus_std": {
+            "min": 4.9098563434977105e-06,
+            "median": 0.1713161228070536,
+            "p95": 0.39728332821735557,
+            "max": 1.1275901231958665
+          },
+          "spearman": 0.9827442935948788,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13",
+          "reference_corpus_std": 4.405450562115766,
+          "absolute_error": {
+            "min": 0.0002042071537111667,
+            "median": 0.5663138669651748,
+            "p95": 1.2943337370206542,
+            "max": 2.425661140252707
+          },
+          "error_in_corpus_std": {
+            "min": 4.635329595279671e-05,
+            "median": 0.12854845582314206,
+            "p95": 0.29380280604012415,
+            "max": 0.550604553620903
+          },
+          "spearman": 0.9817865428975037,
+          "engineering_review": true
+        }
+      ],
+      "c3": [
+        {
+          "feature": "mfcc_01_mean",
+          "reference_corpus_std": 14.139624394763075,
+          "absolute_error": {
+            "min": 0.028399244980107596,
+            "median": 1.0906724182559628,
+            "p95": 4.178541422700598,
+            "max": 6.4354310075693775
+          },
+          "error_in_corpus_std": {
+            "min": 0.00200848651896481,
+            "median": 0.077135883373247,
+            "p95": 0.2955199732355135,
+            "max": 0.45513450908589076
+          },
+          "spearman": 0.9974634548673198,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02_mean",
+          "reference_corpus_std": 5.606863270857227,
+          "absolute_error": {
+            "min": 0.00038960219077921465,
+            "median": 1.1845409828311677,
+            "p95": 4.068721886287175,
+            "max": 5.475280458727763
+          },
+          "error_in_corpus_std": {
+            "min": 6.948665804002186e-05,
+            "median": 0.21126625095141022,
+            "p95": 0.7256681124070131,
+            "max": 0.9765318314763637
+          },
+          "spearman": 0.9660731416744153,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03_mean",
+          "reference_corpus_std": 4.2240724853333536,
+          "absolute_error": {
+            "min": 0.0016845428289578024,
+            "median": 0.6702655665293917,
+            "p95": 1.835320646803097,
+            "max": 2.3213065007491434
+          },
+          "error_in_corpus_std": {
+            "min": 0.00039879590958886264,
+            "median": 0.1586775721431532,
+            "p95": 0.4344908031705469,
+            "max": 0.5495422980569311
+          },
+          "spearman": 0.9940474349116658,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04_mean",
+          "reference_corpus_std": 1.468201900708848,
+          "absolute_error": {
+            "min": 3.428093177649735e-05,
+            "median": 0.2967527873447364,
+            "p95": 1.0599300837782253,
+            "max": 1.3328106257166792
+          },
+          "error_in_corpus_std": {
+            "min": 2.3348922079413272e-05,
+            "median": 0.2021198768380998,
+            "p95": 0.7219239283551472,
+            "max": 0.9077842938857374
+          },
+          "spearman": 0.942484800801087,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05_mean",
+          "reference_corpus_std": 1.2937010170149927,
+          "absolute_error": {
+            "min": 4.0828666470371644e-05,
+            "median": 0.19818795057634697,
+            "p95": 0.7192692348558216,
+            "max": 0.9008156470363133
+          },
+          "error_in_corpus_std": {
+            "min": 3.1559584427457e-05,
+            "median": 0.15319455420513917,
+            "p95": 0.5559779465238575,
+            "max": 0.6963089888533911
+          },
+          "spearman": 0.9695595138044488,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06_mean",
+          "reference_corpus_std": 0.8603774569013444,
+          "absolute_error": {
+            "min": 8.31735578072923e-05,
+            "median": 0.143566029252158,
+            "p95": 0.49395058825781346,
+            "max": 0.6475731511098279
+          },
+          "error_in_corpus_std": {
+            "min": 9.667101007834686e-05,
+            "median": 0.1668640061412256,
+            "p95": 0.5741091706851317,
+            "max": 0.7526616904190718
+          },
+          "spearman": 0.9474694674915957,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07_mean",
+          "reference_corpus_std": 0.748856810630147,
+          "absolute_error": {
+            "min": 9.086018201343027e-05,
+            "median": 0.11405470007433416,
+            "p95": 0.376101653581026,
+            "max": 0.4970745012813236
+          },
+          "error_in_corpus_std": {
+            "min": 0.0001213318497256817,
+            "median": 0.15230508483772695,
+            "p95": 0.5022344034830164,
+            "max": 0.6637777666240974
+          },
+          "spearman": 0.968457873632072,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08_mean",
+          "reference_corpus_std": 0.6115176619003465,
+          "absolute_error": {
+            "min": 5.713722685651845e-06,
+            "median": 0.07809957205633122,
+            "p95": 0.27536168931354776,
+            "max": 0.3919466589241778
+          },
+          "error_in_corpus_std": {
+            "min": 9.343512120150274e-06,
+            "median": 0.12771433586011194,
+            "p95": 0.4502922915714917,
+            "max": 0.6409408645797213
+          },
+          "spearman": 0.9705431031399756,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09_mean",
+          "reference_corpus_std": 0.6066321666573595,
+          "absolute_error": {
+            "min": 7.436035744934344e-05,
+            "median": 0.07157695611710024,
+            "p95": 0.2244278771812292,
+            "max": 0.3773637846370228
+          },
+          "error_in_corpus_std": {
+            "min": 0.0001225789886136123,
+            "median": 0.11799070351231249,
+            "p95": 0.36995710006256805,
+            "max": 0.6220635920385787
+          },
+          "spearman": 0.9784675966490235,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10_mean",
+          "reference_corpus_std": 0.5394333233392067,
+          "absolute_error": {
+            "min": 3.050460455344961e-06,
+            "median": 0.05092290243979869,
+            "p95": 0.17332676744531564,
+            "max": 0.2732445845550877
+          },
+          "error_in_corpus_std": {
+            "min": 5.654935139086261e-06,
+            "median": 0.09440073543209218,
+            "p95": 0.32131268118993134,
+            "max": 0.506540053668998
+          },
+          "spearman": 0.9878677647342822,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11_mean",
+          "reference_corpus_std": 0.5575525958466948,
+          "absolute_error": {
+            "min": 3.6828511527975394e-05,
+            "median": 0.046837497567347786,
+            "p95": 0.15322146995407387,
+            "max": 0.29136961351974344
+          },
+          "error_in_corpus_std": {
+            "min": 6.605387868753067e-05,
+            "median": 0.08400552327484144,
+            "p95": 0.27481079111719137,
+            "max": 0.5225867760103815
+          },
+          "spearman": 0.9903346617731205,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12_mean",
+          "reference_corpus_std": 0.606105197789695,
+          "absolute_error": {
+            "min": 6.46642500221617e-05,
+            "median": 0.03396533225980902,
+            "p95": 0.11935857179506511,
+            "max": 0.20764513065668028
+          },
+          "error_in_corpus_std": {
+            "min": 0.00010668816281063927,
+            "median": 0.05603867510734373,
+            "p95": 0.19692715428003948,
+            "max": 0.34258925911526095
+          },
+          "spearman": 0.9943933060939846,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13_mean",
+          "reference_corpus_std": 0.6740049512794992,
+          "absolute_error": {
+            "min": 6.548262765804225e-06,
+            "median": 0.033143540310794584,
+            "p95": 0.11002459378821916,
+            "max": 0.22149358133554298
+          },
+          "error_in_corpus_std": {
+            "min": 9.715452020602092e-06,
+            "median": 0.04917403091457481,
+            "p95": 0.16324003789490515,
+            "max": 0.3286230774938226
+          },
+          "spearman": 0.9955599340175952,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_01_std",
+          "reference_corpus_std": 11.0510871530755,
+          "absolute_error": {
+            "min": 0.0013620501557625175,
+            "median": 0.4163190812011788,
+            "p95": 2.758660882563134,
+            "max": 3.4528376399490686
+          },
+          "error_in_corpus_std": {
+            "min": 0.00012325033156429874,
+            "median": 0.03767222857212902,
+            "p95": 0.2496280089326237,
+            "max": 0.31244325486910574
+          },
+          "spearman": 0.9981180709534367,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02_std",
+          "reference_corpus_std": 4.3186934758877715,
+          "absolute_error": {
+            "min": 0.0002381031590896754,
+            "median": 0.7137717850492118,
+            "p95": 3.0191891317824378,
+            "max": 3.251529512673203
+          },
+          "error_in_corpus_std": {
+            "min": 5.513314626728162e-05,
+            "median": 0.16527493535587992,
+            "p95": 0.6990978055375413,
+            "max": 0.7528965718051576
+          },
+          "spearman": 0.9653545660181674,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03_std",
+          "reference_corpus_std": 1.3378037601328328,
+          "absolute_error": {
+            "min": 7.386666715358814e-05,
+            "median": 0.19990361964938996,
+            "p95": 1.2285640358349126,
+            "max": 1.5211277455250167
+          },
+          "error_in_corpus_std": {
+            "min": 5.5214874823086006e-05,
+            "median": 0.14942671384743395,
+            "p95": 0.9183439847058932,
+            "max": 1.1370335402361116
+          },
+          "spearman": 0.9051464599277589,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04_std",
+          "reference_corpus_std": 0.7609867681019322,
+          "absolute_error": {
+            "min": 6.2804668512495e-05,
+            "median": 0.16855619364709878,
+            "p95": 0.7624605492795906,
+            "max": 1.1323873747956026
+          },
+          "error_in_corpus_std": {
+            "min": 8.253056576679199e-05,
+            "median": 0.2214968784115851,
+            "p95": 1.0019366712266684,
+            "max": 1.4880513331657854
+          },
+          "spearman": 0.9064339885380158,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05_std",
+          "reference_corpus_std": 0.8258620870120242,
+          "absolute_error": {
+            "min": 3.4861802694408084e-05,
+            "median": 0.12284564339946585,
+            "p95": 0.6160127792112038,
+            "max": 0.7630229315369663
+          },
+          "error_in_corpus_std": {
+            "min": 4.221262029419267e-05,
+            "median": 0.14874837497859042,
+            "p95": 0.7459027226203627,
+            "max": 0.9239108363692896
+          },
+          "spearman": 0.949040494689221,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06_std",
+          "reference_corpus_std": 0.5672179676730503,
+          "absolute_error": {
+            "min": 0.00019157394067681466,
+            "median": 0.10874967867920637,
+            "p95": 0.42757419877409847,
+            "max": 0.6119274752389228
+          },
+          "error_in_corpus_std": {
+            "min": 0.000337743075140454,
+            "median": 0.1917246717788931,
+            "p95": 0.7538093345811573,
+            "max": 1.0788224458919882
+          },
+          "spearman": 0.9224255351012086,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07_std",
+          "reference_corpus_std": 0.5236198263784813,
+          "absolute_error": {
+            "min": 5.639759377240594e-05,
+            "median": 0.0836907630082816,
+            "p95": 0.33749175828008904,
+            "max": 0.5029808673329255
+          },
+          "error_in_corpus_std": {
+            "min": 0.00010770713966747472,
+            "median": 0.1598311576303616,
+            "p95": 0.6445358660581815,
+            "max": 0.9605840764504635
+          },
+          "spearman": 0.954175141710178,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08_std",
+          "reference_corpus_std": 0.4232679541263804,
+          "absolute_error": {
+            "min": 0.0001241834828895616,
+            "median": 0.06544617490279225,
+            "p95": 0.2431203874957737,
+            "max": 0.3680016027088553
+          },
+          "error_in_corpus_std": {
+            "min": 0.0002933921211821356,
+            "median": 0.15462114309568348,
+            "p95": 0.574388836021312,
+            "max": 0.8694293983781641
+          },
+          "spearman": 0.96025717938631,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09_std",
+          "reference_corpus_std": 0.4203164075868081,
+          "absolute_error": {
+            "min": 1.6372158500033152e-06,
+            "median": 0.058225313000602796,
+            "p95": 0.20288234289078885,
+            "max": 0.30751663974079
+          },
+          "error_in_corpus_std": {
+            "min": 3.895198522948882e-06,
+            "median": 0.13852733785696314,
+            "p95": 0.48268956250271405,
+            "max": 0.7316313001111633
+          },
+          "spearman": 0.9673503437701164,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10_std",
+          "reference_corpus_std": 0.35948535862931336,
+          "absolute_error": {
+            "min": 2.0026292879338214e-05,
+            "median": 0.04760247482005214,
+            "p95": 0.15115816266704302,
+            "max": 0.22357108568602868
+          },
+          "error_in_corpus_std": {
+            "min": 5.570822955264921e-05,
+            "median": 0.13241839668117855,
+            "p95": 0.4204848933024589,
+            "max": 0.6219198649382716
+          },
+          "spearman": 0.9785264153136398,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11_std",
+          "reference_corpus_std": 0.3912486046316088,
+          "absolute_error": {
+            "min": 9.723309913811651e-05,
+            "median": 0.038135865569428634,
+            "p95": 0.13664658222368298,
+            "max": 0.23512078960886562
+          },
+          "error_in_corpus_std": {
+            "min": 0.00024851998955924476,
+            "median": 0.09747220850879848,
+            "p95": 0.3492576857937843,
+            "max": 0.6009498483202266
+          },
+          "spearman": 0.9844925367462984,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12_std",
+          "reference_corpus_std": 0.4057640528265912,
+          "absolute_error": {
+            "min": 7.219178361750345e-05,
+            "median": 0.033444270656617425,
+            "p95": 0.10727125252068208,
+            "max": 0.19795896486040687
+          },
+          "error_in_corpus_std": {
+            "min": 0.0001779156707318171,
+            "median": 0.08242295103186553,
+            "p95": 0.26436854564474177,
+            "max": 0.48786718163278825
+          },
+          "spearman": 0.9901765789285456,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13_std",
+          "reference_corpus_std": 0.449489326750556,
+          "absolute_error": {
+            "min": 6.734203493952151e-06,
+            "median": 0.031098633187078506,
+            "p95": 0.10253157908788259,
+            "max": 0.19777813508225173
+          },
+          "error_in_corpus_std": {
+            "min": 1.4981898552819911e-05,
+            "median": 0.06918658872702596,
+            "p95": 0.22810681585946194,
+            "max": 0.4400062989526972
+          },
+          "spearman": 0.9911656667977969,
+          "engineering_review": true
+        }
+      ]
+    },
+    "pcm24_current": {
+      "waveform": {
+        "reference_rms_dbfs": {
+          "min": -52.7196371911903,
+          "median": -29.408883265039577,
+          "p95": -20.906901605256206,
+          "max": -16.515378846026067
+        },
+        "reference_peak": {
+          "min": 0.02562439627945423,
+          "median": 0.2032037004828453,
+          "p95": 0.293141758441925,
+          "max": 0.37848034501075745
+        },
+        "error_rms_dbfs": {
+          "min": -145.95614126417598,
+          "median": -145.1803379805255,
+          "p95": -143.68983992658116,
+          "max": -143.33191693227081
+        },
+        "error_peak": {
+          "min": 1.1896190699189901e-07,
+          "median": 1.1897604094979197e-07,
+          "p95": 1.189764384151859e-07,
+          "max": 1.1897645826874914e-07
+        },
+        "held_snr_db": {
+          "min": 93.54535192251089,
+          "median": 116.96669872733592,
+          "p95": 125.81451110253468,
+          "max": 130.72763428914908
+        },
+        "error_mean": {
+          "min": -5.789619347555159e-08,
+          "median": -3.761112025172246e-08,
+          "p95": -3.530948867799581e-08,
+          "max": -3.317503458470282e-08
+        },
+        "held_level_change_db": {
+          "min": -3.4367986645679005e-07,
+          "median": 2.7102267184147202e-08,
+          "p95": 2.5598833587898446e-07,
+          "max": 5.564362786442987e-07
+        },
+        "stress_error_rms_dbfs": {
+          "min": -131.79568641708858,
+          "median": -131.0198831334381,
+          "p95": -129.52938507949375,
+          "max": -129.1714620851834
+        }
+      },
+      "clips_outside_pcm_range": 0,
+      "clips_with_encoded_rail_samples": 0,
+      "clips_losing_headroom_at_global_stress_gain": 580,
+      "c2": {
+        "rmse_db": {
+          "min": 7.439058555797439e-06,
+          "median": 2.156416052872244e-05,
+          "p95": 2.8384052285818268e-05,
+          "max": 3.849118986971711e-05
+        },
+        "max_bin_error_db": {
+          "min": 0.00020599365234375,
+          "median": 0.00066375732421875,
+          "p95": 0.00093841552734375,
+          "max": 0.00107574462890625
+        },
+        "fraction_bins_over_0p1db": {
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "fraction_bins_over_1db": {
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "active_bins_rmse_db": {
+          "min": 3.1222181264066015e-06,
+          "median": 5.283190625106e-06,
+          "p95": 7.24096227941161e-06,
+          "max": 1.1032748753568984e-05
+        }
+      },
+      "c3_retrieval": {
+        "queries": 1024,
+        "self_matches_excluded": true,
+        "scaler": "FLOAT corpus mean/std reused in both arms; descriptive audit, not learned-model evaluation",
+        "top1_agreement_fraction": 1.0,
+        "top5_overlap_fraction": {
+          "min": 1.0,
+          "median": 1.0,
+          "p95": 1.0,
+          "max": 1.0
+        },
+        "mean_top5_overlap_fraction": 1.0,
+        "float_similarity_loss_of_changed_top1": {
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "engineering_review": false
+      },
+      "actual_study_gain": {
+        "error_rms_dbfs": {
+          "min": -160.1933524125592,
+          "median": -145.06739739502447,
+          "p95": -133.79872589312643,
+          "max": -131.1369582261181
+        },
+        "held_snr_db": {
+          "min": 101.13866135424202,
+          "median": 116.01779527681012,
+          "p95": 125.95107383757569,
+          "max": 130.72763428914482
+        },
+        "early_pcm_peak": {
+          "min": 0.053366903505344905,
+          "median": 0.1761242495194098,
+          "p95": 0.467491393969245,
+          "max": 0.889999906327947
+        },
+        "final_vs_current_playback_error_rms_dbfs": {
+          "min": -122.65968988934455,
+          "median": -116.48669031049756,
+          "p95": -110.32808939397637,
+          "max": -107.87533680316962
+        },
+        "final_vs_current_playback_held_snr_db": {
+          "min": 82.26734395439799,
+          "median": 89.84623731728135,
+          "p95": 94.55231757389438,
+          "max": 97.30591846179485
+        }
+      },
+      "actual_study_c1": [
+        {
+          "feature": "spectral_centroid_hz",
+          "reference_corpus_std": 584.0507657280945,
+          "absolute_error": {
+            "min": 48.926774272928924,
+            "median": 131.2896458568286,
+            "p95": 177.99318276211636,
+            "max": 198.50107379577543
+          },
+          "error_in_corpus_std": {
+            "min": 0.08377144101837689,
+            "median": 0.22479149683702435,
+            "p95": 0.3047563554517816,
+            "max": 0.3398695549150052
+          },
+          "spearman": 0.9968473142309843,
+          "engineering_review": true
+        },
+        {
+          "feature": "spectral_rolloff_85_hz",
+          "reference_corpus_std": 389.1740553933013,
+          "absolute_error": {
+            "min": 0.08411407470703125,
+            "median": 3.5327911376953125,
+            "p95": 12.953567504882784,
+            "max": 72.84278869628906
+          },
+          "error_in_corpus_std": {
+            "min": 0.000216134846455849,
+            "median": 0.009077663551145658,
+            "p95": 0.033284766354200676,
+            "max": 0.18717277703076524
+          },
+          "spearman": 0.9984335871352678,
+          "engineering_review": true
+        },
+        {
+          "feature": "rms",
+          "reference_corpus_std": 0.0003453321929297435,
+          "absolute_error": {
+            "min": 2.175655489100592e-13,
+            "median": 3.6804299538562013e-10,
+            "p95": 8.745767825224515e-10,
+            "max": 1.0679827022741506e-09
+          },
+          "error_in_corpus_std": {
+            "min": 6.30018148798314e-10,
+            "median": 1.0657650891543062e-06,
+            "p95": 2.532566613910742e-06,
+            "max": 3.092624215580815e-06
+          },
+          "spearman": 1.0,
+          "engineering_review": false
+        },
+        {
+          "feature": "zero_crossing_rate",
+          "reference_corpus_std": 0.010904613891928035,
+          "absolute_error": {
+            "min": 7.558636119696371e-06,
+            "median": 9.826226955608145e-05,
+            "p95": 0.00012093817791517725,
+            "max": 0.00012849681403487648
+          },
+          "error_in_corpus_std": {
+            "min": 0.0006931594455894976,
+            "median": 0.009011072792666094,
+            "p95": 0.0110905511294352,
+            "max": 0.01178371057502496
+          },
+          "spearman": 0.9997904189115837,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_01",
+          "reference_corpus_std": 176.49094590626547,
+          "absolute_error": {
+            "min": 5.177582332328825,
+            "median": 20.232150079977373,
+            "p95": 34.9840714413971,
+            "max": 49.73180341955299
+          },
+          "error_in_corpus_std": {
+            "min": 0.029336248982872157,
+            "median": 0.11463562607184784,
+            "p95": 0.19822020479156577,
+            "max": 0.28178104641110374
+          },
+          "spearman": 0.9982839811637004,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02",
+          "reference_corpus_std": 37.069724658135094,
+          "absolute_error": {
+            "min": 0.04622597934582018,
+            "median": 2.194097877375089,
+            "p95": 7.798309877441114,
+            "max": 20.701738527007493
+          },
+          "error_in_corpus_std": {
+            "min": 0.0012470008820439325,
+            "median": 0.05918840502888888,
+            "p95": 0.2103687024751004,
+            "max": 0.5584540677850548
+          },
+          "spearman": 0.9953308324686727,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03",
+          "reference_corpus_std": 15.442612660610777,
+          "absolute_error": {
+            "min": 0.02449196526070807,
+            "median": 1.2522028992240628,
+            "p95": 4.306865850692365,
+            "max": 8.984795695124234
+          },
+          "error_in_corpus_std": {
+            "min": 0.001585998807260078,
+            "median": 0.08108750292092973,
+            "p95": 0.2788948959186044,
+            "max": 0.5818183679528275
+          },
+          "spearman": 0.9897038869822014,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04",
+          "reference_corpus_std": 8.182361611521298,
+          "absolute_error": {
+            "min": 0.26027757642989435,
+            "median": 1.0952009687425688,
+            "p95": 3.0556706036332955,
+            "max": 7.952791057743526
+          },
+          "error_in_corpus_std": {
+            "min": 0.03180959101873554,
+            "median": 0.1338490060376279,
+            "p95": 0.3734460475727096,
+            "max": 0.971943240267636
+          },
+          "spearman": 0.9917391651368825,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05",
+          "reference_corpus_std": 6.985713130957763,
+          "absolute_error": {
+            "min": 0.0031957524083381372,
+            "median": 0.5915443748012006,
+            "p95": 1.3988812818412204,
+            "max": 2.342856710326484
+          },
+          "error_in_corpus_std": {
+            "min": 0.0004574697455261793,
+            "median": 0.08467916785470662,
+            "p95": 0.2002488873529551,
+            "max": 0.3353783166308278
+          },
+          "spearman": 0.9927368505068244,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06",
+          "reference_corpus_std": 5.029547840924466,
+          "absolute_error": {
+            "min": 0.23567013663477,
+            "median": 0.6912018254859169,
+            "p95": 1.4096300068751761,
+            "max": 2.2171511841318976
+          },
+          "error_in_corpus_std": {
+            "min": 0.046857121969726044,
+            "median": 0.1374282236390596,
+            "p95": 0.28026972830545266,
+            "max": 0.4408251505416379
+          },
+          "spearman": 0.9940138877803497,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07",
+          "reference_corpus_std": 4.387670674002933,
+          "absolute_error": {
+            "min": 0.017852025364112123,
+            "median": 0.4037689589663245,
+            "p95": 0.7589225806063343,
+            "max": 0.8512051766727655
+          },
+          "error_in_corpus_std": {
+            "min": 0.004068679417962212,
+            "median": 0.09202353343396222,
+            "p95": 0.17296707911625434,
+            "max": 0.19399933128896366
+          },
+          "spearman": 0.9952909250538751,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08",
+          "reference_corpus_std": 3.2216625839633224,
+          "absolute_error": {
+            "min": 0.1892345028078033,
+            "median": 0.5214227491699397,
+            "p95": 0.9234629059525514,
+            "max": 1.592405148557871
+          },
+          "error_in_corpus_std": {
+            "min": 0.05873815083856642,
+            "median": 0.1618489632543952,
+            "p95": 0.2866417205046029,
+            "max": 0.4942805483369018
+          },
+          "spearman": 0.996168888179424,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09",
+          "reference_corpus_std": 3.721787050964259,
+          "absolute_error": {
+            "min": 0.0072369846567124085,
+            "median": 0.3209407542435887,
+            "p95": 0.5664278433534424,
+            "max": 1.0474881986374118
+          },
+          "error_in_corpus_std": {
+            "min": 0.0019444918684526603,
+            "median": 0.08623297084136981,
+            "p95": 0.15219243755676176,
+            "max": 0.28144764444973375
+          },
+          "spearman": 0.9966876845717936,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10",
+          "reference_corpus_std": 2.7887861669088814,
+          "absolute_error": {
+            "min": 0.05035358093152276,
+            "median": 0.4118364960579166,
+            "p95": 0.6915429128110595,
+            "max": 1.1445907531737882
+          },
+          "error_in_corpus_std": {
+            "min": 0.018055733899216508,
+            "median": 0.1476758960384547,
+            "p95": 0.24797272771098566,
+            "max": 0.41042614408922723
+          },
+          "spearman": 0.9947322212467077,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11",
+          "reference_corpus_std": 3.166318725616353,
+          "absolute_error": {
+            "min": 0.0029776322017252,
+            "median": 0.2854172230656946,
+            "p95": 0.4295431830168813,
+            "max": 0.8364203861020814
+          },
+          "error_in_corpus_std": {
+            "min": 0.0009404082342170327,
+            "median": 0.0901416590681772,
+            "p95": 0.13566012149748657,
+            "max": 0.26416177857750706
+          },
+          "spearman": 0.9969271290605795,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12",
+          "reference_corpus_std": 3.328283094637123,
+          "absolute_error": {
+            "min": 0.0892301372950488,
+            "median": 0.3291193228571597,
+            "p95": 0.5586417649108778,
+            "max": 0.8310937581266806
+          },
+          "error_in_corpus_std": {
+            "min": 0.02680965974283429,
+            "median": 0.09888561564593804,
+            "p95": 0.16784682943918433,
+            "max": 0.24970645059184587
+          },
+          "spearman": 0.997725277356533,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13",
+          "reference_corpus_std": 3.8822273021457256,
+          "absolute_error": {
+            "min": 0.01003771969904399,
+            "median": 0.24333000580454112,
+            "p95": 0.4090747502501478,
+            "max": 0.4228421320767224
+          },
+          "error_in_corpus_std": {
+            "min": 0.002585556928492078,
+            "median": 0.06267793894243427,
+            "p95": 0.1053711486764441,
+            "max": 0.10891740724274838
+          },
+          "spearman": 0.9992417591188445,
+          "engineering_review": true
+        }
+      ],
+      "c1_full": [
+        {
+          "feature": "spectral_centroid_hz",
+          "reference_corpus_std": 439.231298936028,
+          "absolute_error": {
+            "min": 40.853670013788815,
+            "median": 135.03278098268814,
+            "p95": 175.3130325815293,
+            "max": 260.30915364001726
+          },
+          "error_in_corpus_std": {
+            "min": 0.09301174600432781,
+            "median": 0.30742977859224696,
+            "p95": 0.3991360201474687,
+            "max": 0.5926470956659445
+          },
+          "spearman": 0.984541934142765,
+          "engineering_review": true
+        },
+        {
+          "feature": "spectral_rolloff_85_hz",
+          "reference_corpus_std": 276.9758919099457,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 4.458045959472656,
+            "p95": 17.56722450256347,
+            "max": 94.88067626953125
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.016095429565119404,
+            "p95": 0.063425103107079,
+            "max": 0.34255933112178655
+          },
+          "spearman": 0.9844532975217041,
+          "engineering_review": true
+        },
+        {
+          "feature": "rms",
+          "reference_corpus_std": 0.025682342394814726,
+          "absolute_error": {
+            "min": 7.601558271730369e-15,
+            "median": 2.0779534776887987e-10,
+            "p95": 1.1846840057561085e-09,
+            "max": 2.947255980934038e-09
+          },
+          "error_in_corpus_std": {
+            "min": 2.959838380343814e-13,
+            "median": 8.090981133046253e-09,
+            "p95": 4.612834715556539e-08,
+            "max": 1.1475806745451264e-07
+          },
+          "spearman": 1.0,
+          "engineering_review": false
+        },
+        {
+          "feature": "zero_crossing_rate",
+          "reference_corpus_std": 0.006899166050420535,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 0.00010582090567577956,
+            "p95": 0.0001209381779151775,
+            "max": 0.00013605545015457458
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.015338216952950321,
+            "p95": 0.01752939080337192,
+            "max": 0.019720564653793394
+          },
+          "spearman": 0.9995648758774697,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_01",
+          "reference_corpus_std": 157.08141428117412,
+          "absolute_error": {
+            "min": 4.173306785349496,
+            "median": 25.41694365733906,
+            "p95": 38.578787673913766,
+            "max": 94.65766742428809
+          },
+          "error_in_corpus_std": {
+            "min": 0.026567794824404366,
+            "median": 0.1618074536293835,
+            "p95": 0.24559740469905705,
+            "max": 0.6026025921491377
+          },
+          "spearman": 0.997987246083971,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02",
+          "reference_corpus_std": 39.820548329091366,
+          "absolute_error": {
+            "min": 0.014596294719154912,
+            "median": 3.1957376142636633,
+            "p95": 15.54373714498589,
+            "max": 65.64359809492703
+          },
+          "error_in_corpus_std": {
+            "min": 0.00036655182642202387,
+            "median": 0.08025348088762957,
+            "p95": 0.39034462852010077,
+            "max": 1.6484855394864146
+          },
+          "spearman": 0.9963127861025676,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03",
+          "reference_corpus_std": 13.977824074098725,
+          "absolute_error": {
+            "min": 0.0011370308500051607,
+            "median": 1.677508618649414,
+            "p95": 8.61944786996502,
+            "max": 26.777181513506832
+          },
+          "error_in_corpus_std": {
+            "min": 8.134533987390131e-05,
+            "median": 0.1200121427882242,
+            "p95": 0.6166516207581323,
+            "max": 1.9156902656348103
+          },
+          "spearman": 0.9863798637436519,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04",
+          "reference_corpus_std": 6.837567271985422,
+          "absolute_error": {
+            "min": 0.09568731018097809,
+            "median": 1.3116000881389385,
+            "p95": 5.875356583958356,
+            "max": 11.878223857730788
+          },
+          "error_in_corpus_std": {
+            "min": 0.013994350091884858,
+            "median": 0.19182262286658125,
+            "p95": 0.8592758725798001,
+            "max": 1.737200291454202
+          },
+          "spearman": 0.9622112375724196,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05",
+          "reference_corpus_std": 5.718879511779641,
+          "absolute_error": {
+            "min": 0.00038259143417640473,
+            "median": 0.7088137476056535,
+            "p95": 2.6366196186182984,
+            "max": 6.59675287876916
+          },
+          "error_in_corpus_std": {
+            "min": 6.689971932235153e-05,
+            "median": 0.12394276643626645,
+            "p95": 0.46103779825880903,
+            "max": 1.1535044347728067
+          },
+          "spearman": 0.9765288605965237,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06",
+          "reference_corpus_std": 4.279114725267981,
+          "absolute_error": {
+            "min": 0.04369636899810336,
+            "median": 0.8034699622667678,
+            "p95": 2.5473515676095815,
+            "max": 4.478568803730347
+          },
+          "error_in_corpus_std": {
+            "min": 0.010211544163580907,
+            "median": 0.18776546408590394,
+            "p95": 0.5952987314332997,
+            "max": 1.0466110612282955
+          },
+          "spearman": 0.9815642322616407,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07",
+          "reference_corpus_std": 3.675028702119779,
+          "absolute_error": {
+            "min": 0.0011656902716019601,
+            "median": 0.4875738025463039,
+            "p95": 1.0736575905324002,
+            "max": 2.6212455839172213
+          },
+          "error_in_corpus_std": {
+            "min": 0.00031719215442578254,
+            "median": 0.13267210736750662,
+            "p95": 0.2921494435983882,
+            "max": 0.7132585338463536
+          },
+          "spearman": 0.985627671035691,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08",
+          "reference_corpus_std": 2.880338093746071,
+          "absolute_error": {
+            "min": 0.03776593957751517,
+            "median": 0.5929134296245615,
+            "p95": 1.4229392164614363,
+            "max": 2.28532896579891
+          },
+          "error_in_corpus_std": {
+            "min": 0.013111634241658784,
+            "median": 0.20584855330418458,
+            "p95": 0.4940181222305085,
+            "max": 0.7934238590813094
+          },
+          "spearman": 0.9894372049567269,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09",
+          "reference_corpus_std": 3.274541698921923,
+          "absolute_error": {
+            "min": 0.0007910029025062215,
+            "median": 0.37828468186815734,
+            "p95": 0.6378303638570396,
+            "max": 1.7301379764514113
+          },
+          "error_in_corpus_std": {
+            "min": 0.00024156140774345407,
+            "median": 0.11552293928420576,
+            "p95": 0.1947846210256026,
+            "max": 0.5283603433790519
+          },
+          "spearman": 0.993690946641871,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10",
+          "reference_corpus_std": 2.695346162217921,
+          "absolute_error": {
+            "min": 0.011121322460132532,
+            "median": 0.4576125536262907,
+            "p95": 0.9589102474640382,
+            "max": 1.4788445226162805
+          },
+          "error_in_corpus_std": {
+            "min": 0.00412612027947502,
+            "median": 0.16977876906531916,
+            "p95": 0.35576515584735846,
+            "max": 0.5486658980378917
+          },
+          "spearman": 0.9962378965202774,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11",
+          "reference_corpus_std": 2.849823290039161,
+          "absolute_error": {
+            "min": 0.0005407412129194711,
+            "median": 0.3033606886521203,
+            "p95": 0.47372657767521703,
+            "max": 1.1090914575989164
+          },
+          "error_in_corpus_std": {
+            "min": 0.00018974552380475508,
+            "median": 0.10644894710224354,
+            "p95": 0.16623015866668256,
+            "max": 0.3891790278630489
+          },
+          "spearman": 0.9968255243723624,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12",
+          "reference_corpus_std": 2.957737395564228,
+          "absolute_error": {
+            "min": 0.0038046897319059525,
+            "median": 0.3589493479863455,
+            "p95": 0.6894401546843951,
+            "max": 1.0059898945997325
+          },
+          "error_in_corpus_std": {
+            "min": 0.0012863514312027545,
+            "median": 0.12135943796926268,
+            "p95": 0.2330971490972664,
+            "max": 0.34012143745703516
+          },
+          "spearman": 0.998300796616837,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13",
+          "reference_corpus_std": 3.2814623008764454,
+          "absolute_error": {
+            "min": 0.0009469007181390765,
+            "median": 0.2577725444778318,
+            "p95": 0.40028809941334204,
+            "max": 0.8483633547253202
+          },
+          "error_in_corpus_std": {
+            "min": 0.00028856059625800634,
+            "median": 0.0785541690998502,
+            "p95": 0.12198467107375548,
+            "max": 0.2585321045738453
+          },
+          "spearman": 0.9984153046992347,
+          "engineering_review": true
+        }
+      ],
+      "c1_held": [
+        {
+          "feature": "spectral_centroid_hz",
+          "reference_corpus_std": 701.1397909573503,
+          "absolute_error": {
+            "min": 9.495590802544029e-07,
+            "median": 0.02166905931997576,
+            "p95": 0.38955790168093885,
+            "max": 3.559968156391051
+          },
+          "error_in_corpus_std": {
+            "min": 1.3543077892610487e-09,
+            "median": 3.090547648192722e-05,
+            "p95": 0.0005556066089888133,
+            "max": 0.005077401400268838
+          },
+          "spearman": 0.9999989382912523,
+          "engineering_review": false
+        },
+        {
+          "feature": "spectral_rolloff_85_hz",
+          "reference_corpus_std": 432.5734339196279,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 0.0,
+            "p95": 0.0,
+            "max": 0.0
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.0,
+            "p95": 0.0,
+            "max": 0.0
+          },
+          "spearman": 1.0,
+          "engineering_review": false
+        },
+        {
+          "feature": "rms",
+          "reference_corpus_std": 0.03584494585778088,
+          "absolute_error": {
+            "min": 8.998218836708816e-13,
+            "median": 2.8795125311953385e-10,
+            "p95": 1.645527126364898e-09,
+            "max": 4.1042443332806045e-09
+          },
+          "error_in_corpus_std": {
+            "min": 2.5103173184890078e-11,
+            "median": 8.033245586756218e-09,
+            "p95": 4.5906810206764555e-08,
+            "max": 1.1449994511261605e-07
+          },
+          "spearman": 1.0,
+          "engineering_review": false
+        },
+        {
+          "feature": "zero_crossing_rate",
+          "reference_corpus_std": 0.011279206666855363,
+          "absolute_error": {
+            "min": 0.0,
+            "median": 1.5117386506217911e-05,
+            "p95": 1.511738650622138e-05,
+            "max": 1.511738650622485e-05
+          },
+          "error_in_corpus_std": {
+            "min": 0.0,
+            "median": 0.001340288102942672,
+            "p95": 0.0013402881029429795,
+            "max": 0.0013402881029432872
+          },
+          "spearman": 0.9516799285180173,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_01",
+          "reference_corpus_std": 174.42601106917985,
+          "absolute_error": {
+            "min": 1.6811213043865791e-07,
+            "median": 0.0026428444348921554,
+            "p95": 12.844678917090906,
+            "max": 62.039353060724125
+          },
+          "error_in_corpus_std": {
+            "min": 9.638019548127042e-10,
+            "median": 1.515166470122375e-05,
+            "p95": 0.07363969879467416,
+            "max": 0.35567718759628364
+          },
+          "spearman": 0.9999829567806308,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_02",
+          "reference_corpus_std": 59.21495154488661,
+          "absolute_error": {
+            "min": 6.926814108965118e-07,
+            "median": 0.002246651941174349,
+            "p95": 12.463195318679176,
+            "max": 55.18966661047054
+          },
+          "error_in_corpus_std": {
+            "min": 1.1697745127283262e-08,
+            "median": 3.794061943074163e-05,
+            "p95": 0.21047379071536892,
+            "max": 0.9320224904454276
+          },
+          "spearman": 0.9988826800658034,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_03",
+          "reference_corpus_std": 20.268131612970567,
+          "absolute_error": {
+            "min": 5.257236743716476e-07,
+            "median": 0.002472437901037239,
+            "p95": 11.034171449655155,
+            "max": 39.14503194534249
+          },
+          "error_in_corpus_std": {
+            "min": 2.5938437958198935e-08,
+            "median": 0.00012198647355610249,
+            "p95": 0.544409897288897,
+            "max": 1.9313586813444448
+          },
+          "spearman": 0.9975545606537443,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_04",
+          "reference_corpus_std": 10.691077205546096,
+          "absolute_error": {
+            "min": 1.6135036773334832e-07,
+            "median": 0.002063390201384796,
+            "p95": 8.69453135177544,
+            "max": 21.4397855409097
+          },
+          "error_in_corpus_std": {
+            "min": 1.5092058978832024e-08,
+            "median": 0.00019300115055893461,
+            "p95": 0.8132511986037357,
+            "max": 2.0053905821377485
+          },
+          "spearman": 0.9514235949681709,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_05",
+          "reference_corpus_std": 7.522672106850293,
+          "absolute_error": {
+            "min": 3.83873313580807e-07,
+            "median": 0.0022226221242025446,
+            "p95": 5.869572029543313,
+            "max": 12.248768610621035
+          },
+          "error_in_corpus_std": {
+            "min": 5.10288509359918e-08,
+            "median": 0.00029545646714796743,
+            "p95": 0.7802509462293812,
+            "max": 1.6282470426255937
+          },
+          "spearman": 0.9771284801695157,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_06",
+          "reference_corpus_std": 6.152064572639232,
+          "absolute_error": {
+            "min": 2.896115240957897e-07,
+            "median": 0.0018540144337446662,
+            "p95": 3.7402839301201802,
+            "max": 7.455850285968058
+          },
+          "error_in_corpus_std": {
+            "min": 4.7075501350199016e-08,
+            "median": 0.0003013645926263896,
+            "p95": 0.6079721508052378,
+            "max": 1.2119265326191955
+          },
+          "spearman": 0.966007215149131,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_07",
+          "reference_corpus_std": 4.38403213089975,
+          "absolute_error": {
+            "min": 3.6320840024473e-07,
+            "median": 0.001893815376371677,
+            "p95": 2.6734154763683287,
+            "max": 5.057066949297969
+          },
+          "error_in_corpus_std": {
+            "min": 8.284802423886147e-08,
+            "median": 0.0004319802683524134,
+            "p95": 0.6098074549968352,
+            "max": 1.1535195907106843
+          },
+          "spearman": 0.9807109872326727,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_08",
+          "reference_corpus_std": 3.7257956455314956,
+          "absolute_error": {
+            "min": 1.2288206541199997e-07,
+            "median": 0.001566751902393193,
+            "p95": 1.85871686974242,
+            "max": 3.676564495458294
+          },
+          "error_in_corpus_std": {
+            "min": 3.298142923092887e-08,
+            "median": 0.0004205147172449635,
+            "p95": 0.49887783619363496,
+            "max": 0.9867864062452683
+          },
+          "spearman": 0.9785974939203202,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_09",
+          "reference_corpus_std": 4.067886290890479,
+          "absolute_error": {
+            "min": 2.0681208923178929e-07,
+            "median": 0.0016627861353311069,
+            "p95": 1.3886018464518923,
+            "max": 2.7450078277601193
+          },
+          "error_in_corpus_std": {
+            "min": 5.0840184420818e-08,
+            "median": 0.00040875924655384485,
+            "p95": 0.34135709485328825,
+            "max": 0.6747995473490053
+          },
+          "spearman": 0.98790486866104,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_10",
+          "reference_corpus_std": 3.2429866478118297,
+          "absolute_error": {
+            "min": 1.9494866521085896e-07,
+            "median": 0.0013993488491035322,
+            "p95": 1.1302187625642395,
+            "max": 2.052901783007652
+          },
+          "error_in_corpus_std": {
+            "min": 6.01139278024467e-08,
+            "median": 0.00043150003409595525,
+            "p95": 0.348511691630566,
+            "max": 0.6330281329998152
+          },
+          "spearman": 0.9913418433946068,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_11",
+          "reference_corpus_std": 3.279484118757596,
+          "absolute_error": {
+            "min": 1.115853116573362e-07,
+            "median": 0.0013996448865043476,
+            "p95": 0.8896556581331371,
+            "max": 1.593228647215172
+          },
+          "error_in_corpus_std": {
+            "min": 3.402526361359827e-08,
+            "median": 0.00042678812758958895,
+            "p95": 0.2712791481576607,
+            "max": 0.4858168509194528
+          },
+          "spearman": 0.992839880909806,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_12",
+          "reference_corpus_std": 3.852768776974901,
+          "absolute_error": {
+            "min": 8.926295489430913e-07,
+            "median": 0.0012611117159178065,
+            "p95": 0.7294597117910225,
+            "max": 1.4060581615669072
+          },
+          "error_in_corpus_std": {
+            "min": 2.316852114971618e-07,
+            "median": 0.00032732608389439877,
+            "p95": 0.1893338931083677,
+            "max": 0.3649474554429164
+          },
+          "spearman": 0.9970603743473283,
+          "engineering_review": true
+        },
+        {
+          "feature": "mfcc_13",
+          "reference_corpus_std": 4.405450562115766,
+          "absolute_error": {
+            "min": 1.100257886577083e-06,
+            "median": 0.0011986128685812503,
+            "p95": 0.6102216121228639,
+            "max": 1.1066065652339105
+          },
+          "error_in_corpus_std": {
+            "min": 2.4974923020102446e-07,
+            "median": 0.0002720749788656358,
+            "p95": 0.13851514243977764,
+            "max": 0.2511903265355112
+          },
+          "spearman": 0.9950050850261067,
+          "engineering_review": true
+        }
+      ],
+      "c3": [
+        {
+          "feature": "mfcc_01_mean",
+          "reference_corpus_std": 14.139624394763075,
+          "absolute_error": {
+            "min": 2.1780792280878813e-08,
+            "median": 3.437944685913408e-05,
+            "p95": 0.0001432465815888406,
+            "max": 0.00028094491162278246
+          },
+          "error_in_corpus_std": {
+            "min": 1.5404081234962517e-09,
+            "median": 2.4314257507340342e-06,
+            "p95": 1.0130861866592097e-05,
+            "max": 1.9869333426341698e-05
+          },
+          "spearman": 1.0,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_02_mean",
+          "reference_corpus_std": 5.606863270857227,
+          "absolute_error": {
+            "min": 7.87288065851044e-08,
+            "median": 4.288044087608078e-05,
+            "p95": 0.00016671218295627438,
+            "max": 0.0002963660421357872
+          },
+          "error_in_corpus_std": {
+            "min": 1.4041506414881352e-08,
+            "median": 7.647848503629524e-06,
+            "p95": 2.9733591654141754e-05,
+            "max": 5.285772593674754e-05
+          },
+          "spearman": 0.9999999664723552,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_03_mean",
+          "reference_corpus_std": 4.2240724853333536,
+          "absolute_error": {
+            "min": 2.433425807524259e-07,
+            "median": 3.8562350231474696e-05,
+            "p95": 0.00017174048966741572,
+            "max": 0.000301678176917064
+          },
+          "error_in_corpus_std": {
+            "min": 5.760852390610003e-08,
+            "median": 9.129187618197667e-06,
+            "p95": 4.0657562166304156e-05,
+            "max": 7.141879737256836e-05
+          },
+          "spearman": 0.9999999664723552,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_04_mean",
+          "reference_corpus_std": 1.468201900708848,
+          "absolute_error": {
+            "min": 8.660128031356962e-09,
+            "median": 4.093695375007034e-05,
+            "p95": 0.0001828519664890337,
+            "max": 0.0003201407805804857
+          },
+          "error_in_corpus_std": {
+            "min": 5.898458534330905e-09,
+            "median": 2.7882373487124605e-05,
+            "p95": 0.00012454143152978672,
+            "max": 0.00021804956145740016
+          },
+          "spearman": 0.9999999441205921,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_05_mean",
+          "reference_corpus_std": 1.2937010170149927,
+          "absolute_error": {
+            "min": 5.784920498186352e-08,
+            "median": 3.93493609990303e-05,
+            "p95": 0.0001698508276331223,
+            "max": 0.00033245806671811096
+          },
+          "error_in_corpus_std": {
+            "min": 4.471605434410283e-08,
+            "median": 3.0416116615431465e-05,
+            "p95": 0.0001312906346978267,
+            "max": 0.00025698214838325203
+          },
+          "spearman": 0.9999998770653028,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_06_mean",
+          "reference_corpus_std": 0.8603774569013444,
+          "absolute_error": {
+            "min": 2.0186380396414183e-07,
+            "median": 3.9779537970296985e-05,
+            "p95": 0.00017239789780294486,
+            "max": 0.00028399956269997695
+          },
+          "error_in_corpus_std": {
+            "min": 2.3462237689392256e-07,
+            "median": 4.623498401918069e-05,
+            "p95": 0.00020037472672033638,
+            "max": 0.00033008717327718396
+          },
+          "spearman": 0.9999998211858951,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_07_mean",
+          "reference_corpus_std": 0.748856810630147,
+          "absolute_error": {
+            "min": 1.0482885759444116e-07,
+            "median": 3.972859260326089e-05,
+            "p95": 0.00016312358352636998,
+            "max": 0.00035268835077162386
+          },
+          "error_in_corpus_std": {
+            "min": 1.3998518288994384e-07,
+            "median": 5.305232193832908e-05,
+            "p95": 0.00021783013950170925,
+            "max": 0.0004709690100499242
+          },
+          "spearman": 0.9999998323617766,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_08_mean",
+          "reference_corpus_std": 0.6115176619003465,
+          "absolute_error": {
+            "min": 2.0003934064760642e-09,
+            "median": 4.163157374759141e-05,
+            "p95": 0.00016304478129192107,
+            "max": 0.00032556547346840325
+          },
+          "error_in_corpus_std": {
+            "min": 3.271194817594737e-09,
+            "median": 6.807910276576071e-05,
+            "p95": 0.0002666231761569153,
+            "max": 0.000532389322095259
+          },
+          "spearman": 0.9999996535476718,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_09_mean",
+          "reference_corpus_std": 0.6066321666573595,
+          "absolute_error": {
+            "min": 5.267674074715956e-09,
+            "median": 3.8119461131802534e-05,
+            "p95": 0.00016475592013411378,
+            "max": 0.0003598116238621163
+          },
+          "error_in_corpus_std": {
+            "min": 8.68347305706139e-09,
+            "median": 6.283785006299101e-05,
+            "p95": 0.0002715911374135422,
+            "max": 0.0005931298134827502
+          },
+          "spearman": 0.9999998435376583,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_10_mean",
+          "reference_corpus_std": 0.5394333233392067,
+          "absolute_error": {
+            "min": 3.608612253458432e-08,
+            "median": 3.8021051873005085e-05,
+            "p95": 0.0001593633984890208,
+            "max": 0.00036418394875736837
+          },
+          "error_in_corpus_std": {
+            "min": 6.689635395752633e-08,
+            "median": 7.04833206032707e-05,
+            "p95": 0.00029542742651219163,
+            "max": 0.0006751231950280574
+          },
+          "spearman": 0.9999997429547242,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_11_mean",
+          "reference_corpus_std": 0.5575525958466948,
+          "absolute_error": {
+            "min": 8.118342886831442e-09,
+            "median": 3.5205162514428956e-05,
+            "p95": 0.0001590957457247909,
+            "max": 0.0003174935358698505
+          },
+          "error_in_corpus_std": {
+            "min": 1.4560676333150226e-08,
+            "median": 6.314231657547335e-05,
+            "p95": 0.00028534661466904197,
+            "max": 0.0005694414091781017
+          },
+          "spearman": 0.9999996423717903,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_12_mean",
+          "reference_corpus_std": 0.606105197789695,
+          "absolute_error": {
+            "min": 6.280212216935865e-08,
+            "median": 3.5178727364693074e-05,
+            "p95": 0.0001570356423906903,
+            "max": 0.0003165556333828423
+          },
+          "error_in_corpus_std": {
+            "min": 1.0361587790103327e-07,
+            "median": 5.8040629733882126e-05,
+            "p95": 0.00025908974706595104,
+            "max": 0.0005222783677441421
+          },
+          "spearman": 0.999999720602961,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_13_mean",
+          "reference_corpus_std": 0.6740049512794992,
+          "absolute_error": {
+            "min": 1.9911816151463313e-07,
+            "median": 3.6903208550598254e-05,
+            "p95": 0.00015130921572645831,
+            "max": 0.0002686565614791192
+          },
+          "error_in_corpus_std": {
+            "min": 2.9542536911136427e-07,
+            "median": 5.4752132726240284e-05,
+            "p95": 0.00022449273620204127,
+            "max": 0.0003985973114427635
+          },
+          "spearman": 0.9999997541306056,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_01_std",
+          "reference_corpus_std": 11.0510871530755,
+          "absolute_error": {
+            "min": 3.2885669298821085e-08,
+            "median": 2.3264635629516306e-05,
+            "p95": 9.517530949096901e-05,
+            "max": 0.00018714266083819098
+          },
+          "error_in_corpus_std": {
+            "min": 2.9757858971973682e-09,
+            "median": 2.1051897706771585e-06,
+            "p95": 8.61230285967674e-06,
+            "max": 1.6934321324767535e-05
+          },
+          "spearman": 1.0,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_02_std",
+          "reference_corpus_std": 4.3186934758877715,
+          "absolute_error": {
+            "min": 1.716311288646466e-07,
+            "median": 2.8894693849146336e-05,
+            "p95": 0.00012065618891572421,
+            "max": 0.00023238750369447558
+          },
+          "error_in_corpus_std": {
+            "min": 3.974144722770937e-08,
+            "median": 6.690610021403893e-06,
+            "p95": 2.7938122858076088e-05,
+            "max": 5.3809677624019124e-05
+          },
+          "spearman": 0.9999999441205921,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_03_std",
+          "reference_corpus_std": 1.3378037601328328,
+          "absolute_error": {
+            "min": 2.590917613787269e-08,
+            "median": 3.605907606862857e-05,
+            "p95": 0.00022147280812110365,
+            "max": 0.00045885693689173834
+          },
+          "error_in_corpus_std": {
+            "min": 1.936694821017705e-08,
+            "median": 2.695393535524837e-05,
+            "p95": 0.00016554954823801157,
+            "max": 0.0003429927098173036
+          },
+          "spearman": 0.999999921768829,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_04_std",
+          "reference_corpus_std": 0.7609867681019322,
+          "absolute_error": {
+            "min": 1.1107254227482599e-08,
+            "median": 4.0245287147994135e-05,
+            "p95": 0.00023244955479249083,
+            "max": 0.0004949637324274114
+          },
+          "error_in_corpus_std": {
+            "min": 1.4595857238341378e-08,
+            "median": 5.2885659560644794e-05,
+            "p95": 0.00030545807698111624,
+            "max": 0.000650423572622635
+          },
+          "spearman": 0.9999994859094484,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_05_std",
+          "reference_corpus_std": 0.8258620870120242,
+          "absolute_error": {
+            "min": 1.698041121045435e-07,
+            "median": 2.9613714385368084e-05,
+            "p95": 0.0001470847614716053,
+            "max": 0.0003554182806804196
+          },
+          "error_in_corpus_std": {
+            "min": 2.0560831496563325e-07,
+            "median": 3.585794147847463e-05,
+            "p95": 0.00017809845467511309,
+            "max": 0.0004303603304594425
+          },
+          "spearman": 0.999999921768829,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_06_std",
+          "reference_corpus_std": 0.5672179676730503,
+          "absolute_error": {
+            "min": 1.4830860384229538e-07,
+            "median": 3.062039001466843e-05,
+            "p95": 0.00013963223792895483,
+            "max": 0.00033483810905216016
+          },
+          "error_in_corpus_std": {
+            "min": 2.61466688812266e-07,
+            "median": 5.3983462724718034e-05,
+            "p95": 0.00024617033642601415,
+            "max": 0.000590316471154461
+          },
+          "spearman": 0.9999997541306056,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_07_std",
+          "reference_corpus_std": 0.5236198263784813,
+          "absolute_error": {
+            "min": 4.9050206341050284e-08,
+            "median": 2.6271687723067316e-05,
+            "p95": 0.0001037082208721339,
+            "max": 0.00021743399565521404
+          },
+          "error_in_corpus_std": {
+            "min": 9.367522746473692e-08,
+            "median": 5.017321040872447e-05,
+            "p95": 0.00019806014907688358,
+            "max": 0.00041525164766784264
+          },
+          "spearman": 0.9999998658894214,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_08_std",
+          "reference_corpus_std": 0.4232679541263804,
+          "absolute_error": {
+            "min": 6.612640568448569e-08,
+            "median": 2.9814551114726306e-05,
+            "p95": 0.00011823897641521913,
+            "max": 0.0002700655763157034
+          },
+          "error_in_corpus_std": {
+            "min": 1.5622823565977193e-07,
+            "median": 7.043895202570475e-05,
+            "p95": 0.00027934781091392297,
+            "max": 0.0006380487199252192
+          },
+          "spearman": 0.9999998211858951,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_09_std",
+          "reference_corpus_std": 0.4203164075868081,
+          "absolute_error": {
+            "min": 3.598676845406601e-08,
+            "median": 2.6357817058397792e-05,
+            "p95": 0.00010107358190684087,
+            "max": 0.00022693037115717463
+          },
+          "error_in_corpus_std": {
+            "min": 8.561828138158905e-08,
+            "median": 6.270946501881229e-05,
+            "p95": 0.0002404702269110589,
+            "max": 0.0005399036703327043
+          },
+          "spearman": 0.9999997653064873,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_10_std",
+          "reference_corpus_std": 0.35948535862931336,
+          "absolute_error": {
+            "min": 2.7395901769367015e-08,
+            "median": 2.800860455071108e-05,
+            "p95": 0.00010901388465548436,
+            "max": 0.00023999481507630538
+          },
+          "error_in_corpus_std": {
+            "min": 7.620867195767088e-08,
+            "median": 7.791306065288854e-05,
+            "p95": 0.00030324985994184826,
+            "max": 0.0006676066474345016
+          },
+          "spearman": 0.9999997094270796,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_11_std",
+          "reference_corpus_std": 0.3912486046316088,
+          "absolute_error": {
+            "min": 6.259763818405872e-09,
+            "median": 2.6528530590264054e-05,
+            "p95": 9.26867671871112e-05,
+            "max": 0.00020397723160736625
+          },
+          "error_in_corpus_std": {
+            "min": 1.599945340201259e-08,
+            "median": 6.780479285093614e-05,
+            "p95": 0.00023689993035089045,
+            "max": 0.0005213494161836737
+          },
+          "spearman": 0.9999997876582504,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_12_std",
+          "reference_corpus_std": 0.4057640528265912,
+          "absolute_error": {
+            "min": 1.4114961421896055e-08,
+            "median": 2.773028693181523e-05,
+            "p95": 0.00010607033722748169,
+            "max": 0.0002854809101837108
+          },
+          "error_in_corpus_std": {
+            "min": 3.4786130815605484e-08,
+            "median": 6.834091570863263e-05,
+            "p95": 0.0002614089062069091,
+            "max": 0.0007035638277837168
+          },
+          "spearman": 0.9999997876582504,
+          "engineering_review": false
+        },
+        {
+          "feature": "mfcc_13_std",
+          "reference_corpus_std": 0.449489326750556,
+          "absolute_error": {
+            "min": 1.287548225814561e-07,
+            "median": 2.5806354362445383e-05,
+            "p95": 9.7042231971886e-05,
+            "max": 0.00018507534385492352
+          },
+          "error_in_corpus_std": {
+            "min": 2.864468963306632e-07,
+            "median": 5.7412607656347344e-05,
+            "p95": 0.00021589440771246517,
+            "max": 0.0004117458031603742
+          },
+          "spearman": 0.9999998323617766,
+          "engineering_review": false
+        }
+      ]
+    }
+  },
+  "verified_input_files_unchanged": 1093,
+  "elapsed_seconds": 156.5692184000509
+}
