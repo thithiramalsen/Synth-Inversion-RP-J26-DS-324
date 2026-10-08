@@ -35,7 +35,7 @@ precise-looking estimate from a small pilot.
 | New study stimuli | Generated and selected | The authorized v4 1,024-candidate pool and 64+3 selection are complete; the historical A/B diagnostics remain separate. |
 | Survey audio source | Frozen selection and full rehearsal prepared | `/pilot` reads an immutable C1 bundle. The new full rehearsal copies the actual production audio unchanged into a separate study/database; old diagnostic instruments remain separate. |
 | Assignment | Implemented and tested | 16 connected overlapping blocks, 32 unique + four repeats, eight primary listeners per sound. Replacement invitations retain the same block. |
-| Questions | Implemented; human wording check pending | `c1_pilot_v1.json` defines brightness, roughness and percussiveness, 1–7 plus a separate unclear response. |
+| Questions | Four descriptors implemented; human wording check pending | `c1_pilot_v1.json` v3 defines brightness, roughness, percussiveness and sustainedness, 1–7 plus a separate unclear response. |
 | Repeat presentations | Implemented and tested | Distinct presentation IDs point to the same sound; repeats are excluded from independent listener counts. |
 | Remote entry flow | Implemented; full human rehearsal pending | Consent, experience questions, volume setup, six headphone checks, practice, ratings, break, feedback, resume and withdrawal. Full 39-presentation local rehearsal is prepared on port 8772. |
 | Hosting | Local rehearsal; public deployment pending | Admin exports require authentication; remote mode disables historical APIs. HTTPS, persistent storage and a full deployed rehearsal remain. |
@@ -45,8 +45,9 @@ precise-looking estimate from a small pilot.
 
 ### 1. Freeze the pilot instrument
 
-For the shortest pilot, use **brightness, roughness and percussiveness** as the
-three candidate primary traits. Use seven discrete points, 1 = not at all and
+The current pilot uses **brightness, roughness, percussiveness and sustainedness**
+as four candidate traits. The researcher added sustainedness on 8 October before
+formal collection. Use seven discrete points, 1 = not at all and
 7 = very, with no preselected answer. Four is the middle degree of the trait,
 not an uncertainty or “neutral” response. Offer a separate “cannot judge / unclear”
 response so confusion is observable rather than coded as 4.
@@ -57,15 +58,17 @@ Working definitions to check during the rehearsal:
 - Roughness: how much rapid fluttering, beating or grating texture it has.
 - Percussiveness: how strongly it resembles a struck/plucked event with a distinct
   onset followed by a fall in sound level.
+- Sustainedness: how strongly the sound has a continuing, held quality after it begins.
 
 These are candidate instructions, not validated wording. Ask rehearsal listeners
 to explain them in their own words and revise before the pilot version is frozen.
 Keep the survey language consistent and recruit listeners who can understand it.
 If translations are needed, version and check them too.
 
-Warmth and sustainedness can be explicitly exploratory additions if desired, but
-they add 72 judgments per participant with the proposed repeat trials. Do not
-silently retain the old thin/warm pairing or promise all five traits will work.
+Sustainedness adds 36 study/repeat judgments per participant relative to the
+earlier three-trait protocol. Check its overlap with percussiveness, clarity and
+repeatability in the pilot. Warmth is not included. Do not silently retain the
+old thin/warm pairing or promise that every candidate trait will work.
 Timbre-semantic research supports studying verbal dimensions, while their mapping
 to perception and acoustics must be checked for this domain; it does not validate
 our exact questionnaire. See [Zacharakis et al. (2014)](https://doi.org/10.1525/mp.2014.31.4.339).
@@ -132,12 +135,12 @@ Retain the earlier **planning budget**:
 | Independent listeners per sound | 8 | `16 × 32 / 64 = 8`; enables preliminary disagreement/uncertainty estimates. No guarantee of sufficient reliability. |
 | Hidden repeats per person | 4 | A small preliminary within-listener consistency check; four is a pragmatic burden allocation. |
 | Rated presentations per person | 36 | 32 unique + 4 repeats; practice and headphone checks are additional. |
-| Primary trait judgments per person | 108 | 36 × 3. With all five traits this becomes 180. |
+| Study/repeat trait judgments per person | 144 | 36 × 4. Three practice clips add 12 judgments. |
 
-There are 512 unique participant–sound evaluations and 1,536 primary trait ratings,
-plus 64 repeat evaluations / 192 repeat ratings. Repeated presentations do not
+There are 512 unique participant–sound evaluations and 2,048 primary trait ratings,
+plus 64 repeat evaluations / 256 repeat ratings. Repeated presentations do not
 increase the count of independent listeners per sound. These judgments also do
-not turn 16 people into 1,536 independent experimental units.
+not turn 16 people into 2,048 independent experimental units.
 
 Create connected, overlapping assignments with 32 distinct sounds per person and
 eight different listeners per sound. Balance actual completed assignments, not

@@ -5,6 +5,12 @@ documents retain background explanations. The C1 model is owned by the C1
 teammate. Its feature work is documented in
 [C1_TEAMMATE_HANDOFF.md](../c1_timbre/C1_TEAMMATE_HANDOFF.md).
 
+**Current questionnaire:** protocol `c1_pilot_2026-10-08_v3` includes brightness,
+roughness, percussiveness and sustainedness (four ratings per presentation).
+The researcher requested the fourth descriptor before formal collection. There
+are still 39 presentations: 144 study/repeat judgments plus 12 practice judgments.
+The rehearsal should check the added wording and actual completion time.
+
 ## Ready
 
 - Selected 13-control Vital configuration and 1,024 generated candidates.
@@ -12,7 +18,8 @@ teammate. Its feature work is documented in
 - Sixteen connected assignments, each 3 practice + 32 unique + 4 repeats.
 - Survey entry, volume/headphone setup, ratings, break, correction, resume,
   completion, withdrawal and authenticated exports.
-- The 23 existing survey backend/preparation tests passed again on 8 October.
+- Survey checks cover saving, correction, exports, required answers and separation
+  of the old three-descriptor and current four-descriptor protocol snapshots.
 - A **full-length local rehearsal using the actual study sounds**, with its own
   study ID, copied audio and separate database. All 141 copied audio assets are
   hash-identical to their source assets; production audio/bundle is unchanged.
@@ -57,7 +64,7 @@ responses are preserved.
 
 | Task | Who / what is needed | Current evidence |
 |---|---|---|
-| Agree the pilot questions | C1 owner and survey preparer confirm brightness, roughness, percussiveness and the current instructions | Wording implemented; owner sign-off not recorded |
+| Agree the pilot questions | C1 owner and survey preparer review brightness, roughness, percussiveness, sustainedness and the current instructions | Fourth descriptor added at the researcher's request; owner review not recorded |
 | Complete participant information | Research contact name/email, supervisor contact and actual retention/deletion/withdrawal arrangements | Four required config fields are blank |
 | Record applicable permission | Researcher/supervisor provides the actual institutional outcome; do not infer it from receipt of a blank form | `pending_supervisor_confirmation` |
 | Agree eligible participants | Supervisor confirms practical-experience requirement and acceptable evidence | `supervisor_confirmed: false`; current form records self-report |

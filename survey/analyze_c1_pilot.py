@@ -6,7 +6,19 @@ import json
 from pathlib import Path
 from statistics import mean, median
 
-TRAITS = ("brightness", "roughness", "percussiveness")
+BASE_TRAITS = ("brightness", "roughness", "percussiveness")
+TRAITS = (*BASE_TRAITS, "sustainedness")
+
+
+def exported_traits(row):
+    """New exports declare their snapshot; old three-trait exports stay valid."""
+    if row.get("descriptor_ids"):
+        ids = tuple(json.loads(row["descriptor_ids"]))
+    else:
+        ids = TRAITS if row.get("sustainedness", "") != "" else BASE_TRAITS
+    if ids not in (BASE_TRAITS, TRAITS):
+        raise ValueError("Unsupported descriptor set in export")
+    return ids
 
 
 def summarize(rows):
@@ -20,9 +32,17 @@ def summarize(rows):
     versions = {(r["bundle_hash"], r["protocol_hash"]) for r in included}
     if len(versions) > 1:
         raise ValueError("Mixed audio/protocol versions: analyze separately")
+    descriptor_sets = {exported_traits(r) for r in included}
+    if len(descriptor_sets) > 1:
+        raise ValueError("Mixed descriptor sets: analyze separately")
+    active_traits = next(iter(descriptor_sets), ())
+    for row in included:
+        for trait in active_traits:
+            if row.get(trait) not in ("unclear", *map(str, range(1, 8))):
+                raise ValueError(f"Missing or invalid {trait} answer in included export")
     counts = Counter(r["sample_id"] for r in primary)
     traits = {}
-    for trait in TRAITS:
+    for trait in active_traits:
         values = [int(r[trait]) for r in primary if r[trait] != "unclear"]
         differences = []
         for r in included:
@@ -47,7 +67,7 @@ def summarize(rows):
     return dict(completed_participants=len({r["participant_id"] for r in primary}),
                 unique_sounds=len(counts), independent_evaluations=len(primary),
                 listeners_per_sound=dict(counts), coverage_complete=len(counts)==64 and set(counts.values())=={8},
-                traits=traits,
+                descriptor_ids=list(active_traits), traits=traits,
                 limitation="Descriptive only. Repeats are not independent listeners. Agreement estimates and uncertainty require a model that respects the assignment design.")
 
 

@@ -8,6 +8,12 @@ below documents the older short diagnostic rehearsal. The C1 owner receives the
 [handoff](../c1_timbre/C1_TEAMMATE_HANDOFF.md); feature redesign is not a requirement
 for collecting ratings on the frozen sounds.
 
+Protocol v3 now includes sustainedness alongside brightness, roughness and
+percussiveness. New sessions have four descriptors; existing sessions retain
+their original three-descriptor snapshot. No audio was regenerated. Do not pool
+protocol versions in analysis. New exports include descriptor IDs and blank
+sustainedness fields for older sessions that were never asked that question.
+
 Follow-up code review and current local link: [C1_REVIEW_STATUS.md](C1_REVIEW_STATUS.md).
 
 ## 1. Try the local rehearsal
@@ -56,7 +62,7 @@ Check these things during the rehearsal:
 - The final level-controlled synth clips are comfortable and audible; note any
   sudden level changes, clicks or distracting tails. RMS matching does not imply
   equal perceived loudness. The earlier DC audition did not test this gain rule.
-- Brightness, roughness and percussiveness are understandable without coaching.
+- Brightness, roughness, percussiveness and sustainedness are understandable without coaching.
   Use the separate “cannot judge” choice for a confusing term.
 - Refresh restores the saved step. Pause unmounts the player; resume requires
   replaying the current clip. Unsaved ratings are intentionally not retained.

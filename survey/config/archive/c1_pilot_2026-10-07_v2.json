@@ -1,5 +1,5 @@
 {
-  "protocol_version": "c1_pilot_2026-10-08_v3",
+  "protocol_version": "c1_pilot_2026-10-07_v2",
   "title": "How would you describe this sound?",
   "description": "A listening study about the character of short synthesizer sounds.",
   "target_participants": 16,
@@ -7,11 +7,10 @@
   "descriptors": [
     {"id": "brightness", "label": "Brightness", "definition": "How much high-frequency or treble character does this sound have?"},
     {"id": "roughness", "label": "Roughness", "definition": "How much rapid fluttering, beating or grating texture does this sound have?"},
-    {"id": "percussiveness", "label": "Percussiveness", "definition": "How much does this sound resemble a struck or plucked event, with a distinct onset followed by a fall in sound level?"},
-    {"id": "sustainedness", "label": "Sustainedness", "definition": "How strongly does this sound have a continuing, held quality after it begins?"}
+    {"id": "percussiveness", "label": "Percussiveness", "definition": "How much does this sound resemble a struck or plucked event, with a distinct onset followed by a fall in sound level?"}
   ],
   "scale": {"minimum": 1, "maximum": 7, "low_label": "Not at all", "high_label": "Very", "unclear_label": "I cannot judge / the term is unclear"},
-  "information_version": "c1_information_2026-10-08_v3",
+  "information_version": "c1_information_2026-10-07_v2",
   "experience_question": {
     "label": "Give one example of making music or shaping a sound yourself.",
     "help": "One short sentence is enough. Say what you did and which tool you used. Personal practice counts; it does not need to be released or professional work.",
@@ -19,7 +18,7 @@
   },
   "resume_instructions": "You may close this tab and return to the same study link using the same browser profile on the same device while the study is open. Avoid private/incognito mode and do not clear this site's data. Your invitation starts one session; it cannot restore a session in a different browser. Each saved response is kept; an unfinished answer may need to be entered again.",
   "information": [
-    "You will listen to short synthesizer sounds and rate four aspects of their character: brightness, roughness, percussiveness and sustainedness. Some sounds may be presented more than once.",
+    "You will listen to short synthesizer sounds and rate three aspects of their character. Some sounds may be presented more than once.",
     "There are 3 practice sounds followed by the number of study presentations shown below. Allow about 15–20 minutes for the full pilot; this estimate will be checked in a rehearsal.",
     "Participation is voluntary. You may stop or withdraw using the study controls. Use a comfortable volume and stop if listening becomes uncomfortable.",
     "We store a participant code, your experience answers, sound ratings, playback counts and response times. Do not enter your name, email address or identifying links in free-text answers.",

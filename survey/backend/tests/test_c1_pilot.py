@@ -96,8 +96,11 @@ class C1PilotTests(unittest.TestCase):
             self.assertEqual(result.status_code,200,result.text)
 
     def rating_body(self,current):
+        answers = dict(brightness=4,roughness="unclear",percussiveness=2,comment="=test")
+        if any(d['id']=='sustainedness' for d in current['config']['descriptors']):
+            answers['sustainedness'] = 5
         return dict(presentation_id=current["presentation_id"],play_count=1,completed_plays=1,
-                    started_at=current['server_time'],answers=dict(brightness=4,roughness="unclear",percussiveness=2,comment="=test"))
+                    started_at=current['server_time'],answers=answers)
 
     def test_complete_balanced_session_repeats_exports_and_withdrawal(self):
         self.start(); self.setup_audio()
@@ -123,6 +126,8 @@ class C1PilotTests(unittest.TestCase):
         self.assertEqual(sum(r['kind']=='repeat' for r in rows),4)
         self.assertEqual(sum(r['analysis_include']=='True' for r in rows),36)
         self.assertTrue(all(r['roughness']=='unclear' for r in rows))
+        self.assertTrue(all(r['sustainedness']=='5' and r['sustainedness_first']=='5' for r in rows))
+        self.assertTrue(all('sustainedness' in json.loads(r['descriptor_ids']) for r in rows))
         self.assertTrue(all(r['comment']=="'=test" for r in rows))
         self.assertTrue(all(r['bundle_hash'] and r['protocol_hash'] for r in rows))
         self.assertEqual(self.client.post('/api/c1-pilot/admin/replace-invitation',headers=self.admin,
@@ -138,7 +143,7 @@ class C1PilotTests(unittest.TestCase):
         self.assertEqual(self.client.get(self.base).status_code,401)
         self.assertEqual(self.client.post('/api/c1-pilot/sessions',json=self.entry(invitation)).status_code,409)
         body=dict(presentation_id='practice_0',play_count=1,completed_plays=1,
-                  started_at='2026-01-01T00:00:00Z',answers=dict(brightness=4,roughness=4,percussiveness=4))
+                  started_at='2026-01-01T00:00:00Z',answers=dict(brightness=4,roughness=4,percussiveness=4,sustainedness=4))
         self.assertEqual(self.client.post(self.base+'/ratings',headers=self.headers,json=body).status_code,409)
         self.setup_audio(pass_screen=False)
         self.assertEqual(self.state()['phase'],'screen_failed')
@@ -278,6 +283,62 @@ class C1PilotTests(unittest.TestCase):
         self.assertEqual(self.client.get(self.base+'/audio/'+current['audio_id'], headers=self.headers).status_code, 200)
         self.assertEqual(self.client.post(self.base+'/ratings', headers=self.headers, json=self.rating_body(current)).status_code, 200)
         self.assertFalse(self.state()['can_correct_previous'])
+
+    def test_sustainedness_is_required_and_corrections_preserve_first_answer(self):
+        self.start(); self.setup_audio()
+        current = self.state()
+        self.client.post(f"{self.base}/playback/{current['presentation_id']}", headers=self.headers)
+        for invalid in (None, 0, 8, True, 3.5, '5'):
+            body = self.rating_body(current)
+            body['answers']['sustainedness'] = invalid
+            self.assertEqual(self.client.post(self.base+'/ratings', headers=self.headers, json=body).status_code, 422)
+        body = self.rating_body(current)
+        del body['answers']['sustainedness']
+        self.assertEqual(self.client.post(self.base+'/ratings', headers=self.headers, json=body).status_code, 422)
+        body['answers']['sustainedness'] = 'unclear'
+        self.assertEqual(self.client.post(self.base+'/ratings', headers=self.headers, json=body).status_code, 200)
+        self.client.post(self.base+'/previous', headers=self.headers, json={'current_index': self.state()['current_index']})
+        correction = self.state()
+        self.assertEqual(correction['saved_answers']['sustainedness'], 'unclear')
+        revised = self.rating_body(correction)
+        revised.update(correction_token=correction['correction_token'], play_count=0, completed_plays=0)
+        del revised['answers']['sustainedness']
+        self.assertEqual(self.client.post(self.base+'/previous/save', headers=self.headers, json=revised).status_code, 422)
+        revised['answers']['sustainedness'] = 7
+        self.assertEqual(self.client.post(self.base+'/previous/save', headers=self.headers, json=revised).status_code, 200)
+        rows = list(csv.DictReader(io.StringIO(self.client.get('/api/c1-pilot/admin/export', headers=self.admin).text)))
+        self.assertEqual(rows[0]['sustainedness_first'], 'unclear')
+        self.assertEqual(rows[0]['sustainedness'], '7')
+        self.assertEqual(json.loads(json.loads(rows[0]['corrections_json'])[0]['answers_json']), revised['answers'])
+
+    def test_three_descriptor_session_uses_its_snapshot_after_protocol_upgrade(self):
+        four = json.loads(self.config_path.read_text())
+        old = dict(four, protocol_version='three-descriptor-fixture',
+                   descriptors=[d for d in four['descriptors'] if d['id']!='sustainedness'])
+        self.config_path.write_text(json.dumps(old))
+        self.start(); self.setup_audio()
+        self.config_path.write_text(json.dumps(four))
+        current = self.state()
+        self.assertEqual(len(current['config']['descriptors']), 3)
+        self.assertEqual(len(self.client.get('/api/c1-pilot/status').json()['config']['descriptors']), 4)
+        self.client.post(f"{self.base}/playback/{current['presentation_id']}", headers=self.headers)
+        body = self.rating_body(current)
+        body['answers']['sustainedness'] = 5
+        self.assertEqual(self.client.post(self.base+'/ratings', headers=self.headers, json=body).status_code, 422)
+        del body['answers']['sustainedness']
+        self.assertEqual(self.client.post(self.base+'/ratings', headers=self.headers, json=body).status_code, 200)
+        self.client.post(self.base+'/previous', headers=self.headers, json={'current_index': self.state()['current_index']})
+        correction = self.state()
+        revised = self.rating_body(correction)
+        revised.update(correction_token=correction['correction_token'])
+        self.assertEqual(self.client.post(self.base+'/previous/save', headers=self.headers, json=revised).status_code, 200)
+        rows = list(csv.DictReader(io.StringIO(self.client.get('/api/c1-pilot/admin/export', headers=self.admin).text)))
+        self.assertEqual(rows[0]['sustainedness'], '')
+        self.assertEqual(rows[0]['sustainedness_first'], '')
+        self.assertNotIn('sustainedness', json.loads(rows[0]['descriptor_ids']))
+        with database.get_connection() as db:
+            answers = json.loads(db.execute('SELECT answers_json FROM c1_ratings').fetchone()[0])
+        self.assertNotIn('sustainedness', answers)
 
     def test_session_audit_includes_failed_screens_and_remote_routes_are_closed(self):
         self.start(); self.setup_audio(pass_screen=False)

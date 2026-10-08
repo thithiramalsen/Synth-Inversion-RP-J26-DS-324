@@ -23,7 +23,7 @@ definitions or completed validation.
   configuration, including Bend and filter-envelope sustain. The older
   eight-control `pilot_v1` is a separate generation/model development dataset.
 - A fixed selection of **64 study sounds plus 3 practice sounds**.
-- A C1 survey for **brightness, roughness and percussiveness**, each rated 1–7,
+- A C1 survey for **brightness, roughness, percussiveness and sustainedness**, each rated 1–7,
   with a separate cannot-judge/unclear response. These remain candidate
   descriptors/instructions, not perceptually validated dimensions.
 - Sixteen overlapping assignments: each participant hears 3 practice clips,
@@ -34,6 +34,16 @@ definitions or completed validation.
   completion feedback, withdrawal and researcher exports. Previous-answer
   correction is allowed until the next presentation is explicitly started;
   original and corrected answers are retained in an audit trail.
+
+The researcher added sustainedness on 8 October, before formal collection.
+Protocol `c1_pilot_2026-10-08_v3` asks: “How strongly does this sound have a
+continuing, held quality after it begins?” Investigate its clarity, repeatability
+and overlap with percussiveness; independence is not assumed. There are now 144
+study/repeat trait judgments per participant, plus 12 practice judgments. Audio,
+39 presentations, assignments and participant target are unchanged. Earlier
+three-descriptor sessions retain their original snapshot and must be analysed
+separately; exports leave sustainedness blank for them and declare descriptor
+IDs for each row. A blank legacy field is not “unclear.”
 
 The local short rehearsal on port 8771, when running, is not the full pilot.
 See the [launch checklist](../survey/C1_PILOT_NEXT_STEPS.md) for the full rehearsal

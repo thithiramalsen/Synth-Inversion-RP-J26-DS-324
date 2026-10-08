@@ -385,7 +385,22 @@ class Answers(StrictBody):
     brightness: Rating
     roughness: Rating
     percussiveness: Rating
+    sustainedness: Rating = None
     comment: str = Field(default="", max_length=1000)
+
+
+def checked_answers(row, answers: Answers):
+    """Require the descriptors in this session's frozen questionnaire only."""
+    expected = {d["id"] for d in json.loads(row["protocol_snapshot"])["descriptors"]}
+    supplied = answers.model_fields_set - {"comment"}
+    if supplied != expected:
+        raise HTTPException(422, "Answer each descriptor shown in this session")
+    values = answers.model_dump(include=expected | {"comment"})
+    if any(values[name] != "unclear" and
+           (type(values[name]) is not int or not 1 <= values[name] <= 7)
+           for name in expected):
+        raise HTTPException(422, "Select a rating from 1 to 7 or unclear")
+    return values
 
 
 class RatingBody(Played):
@@ -439,10 +454,11 @@ def save_correction(session_id: str, body: CorrectionBody, authorization: str = 
         trial = json.loads(row["trial_order"])[correction["correction_index"]]
         if trial["presentation_id"] != body.presentation_id:
             raise HTTPException(409, "This presentation is not the active correction")
+        values = checked_answers(row, body.answers)
         db.execute('''INSERT INTO c1_rating_corrections
                       (session_id,presentation_id,answers_json,play_count,completed_plays,started_at,submitted_at)
                       VALUES (?,?,?,?,?,?,?)''',
-                   (session_id, body.presentation_id, json.dumps(body.answers.model_dump()), body.play_count,
+                   (session_id, body.presentation_id, json.dumps(values), body.play_count,
                     body.completed_plays, body.started_at.isoformat(), now()))
         db.execute("UPDATE c1_navigation SET correction_index=NULL,correction_token=NULL WHERE session_id=?", (session_id,))
     return {"saved": True}
@@ -450,11 +466,8 @@ def save_correction(session_id: str, body: CorrectionBody, authorization: str = 
 
 @router.post("/sessions/{session_id}/ratings")
 def rating(session_id: str, body: RatingBody, authorization: str = Header(default="")):
-    context(session_id, authorization)
-    values = body.answers.model_dump()
-    for name in ("brightness", "roughness", "percussiveness"):
-        if values[name] != "unclear" and (type(values[name]) is not int or not 1 <= values[name] <= 7):
-            raise HTTPException(422, "Select a rating from 1 to 7 or unclear")
+    row, _ = context(session_id, authorization)
+    values = checked_answers(row, body.answers)
     if body.completed_plays > body.play_count:
         raise HTTPException(422, "Invalid playback counts")
     if body.started_at.tzinfo is None or body.started_at > datetime.now(timezone.utc):
@@ -581,23 +594,24 @@ def export():
     with get_connection() as db:
         rows = db.execute('''SELECT r.*,s.participant_id,s.study_id,s.bundle_hash,s.protocol_hash,s.assignment_id,
                             s.entry_json,s.screen_answers,s.phase,s.started_at AS session_started_at,s.completed_at,
-                            s.withdrawn_at,s.feedback_json,l.listener_number FROM c1_ratings r JOIN c1_sessions s USING(session_id)
+                            s.withdrawn_at,s.feedback_json,s.protocol_snapshot,l.listener_number FROM c1_ratings r JOIN c1_sessions s USING(session_id)
                             JOIN c1_listener_labels l USING(session_id)
                             ORDER BY s.started_at,r.trial_order''').fetchall()
         corrections = db.execute("SELECT * FROM c1_rating_corrections ORDER BY correction_id").fetchall()
     correction_map = {}
     for item in corrections:
         correction_map.setdefault((item["session_id"],item["presentation_id"]), []).append(dict(item))
-    columns = ["participant_id", "participant_label", "session_id", "study_id", "bundle_hash", "protocol_hash", "assignment_id",
+    columns = ["participant_id", "participant_label", "session_id", "study_id", "bundle_hash", "protocol_hash", "descriptor_ids", "assignment_id",
                "presentation_id", "sample_id", "kind", "repeat_of", "trial_order", "phase", "analysis_include",
-               "brightness", "roughness", "percussiveness", "comment", "play_count", "completed_plays",
+               "brightness", "roughness", "percussiveness", "sustainedness", "comment", "play_count", "completed_plays",
                "started_at", "submitted_at", "completed_at", "withdrawn_at", "entry_json", "screen_answers", "feedback_json",
-               "brightness_first", "roughness_first", "percussiveness_first", "comment_first", "revision_count", "corrections_json"]
+               "brightness_first", "roughness_first", "percussiveness_first", "sustainedness_first", "comment_first", "revision_count", "corrections_json"]
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=columns)
     writer.writeheader()
     for item in rows:
         row = dict(item)
+        row["descriptor_ids"] = json.dumps([d["id"] for d in json.loads(row["protocol_snapshot"])["descriptors"]])
         row["participant_label"] = listener_label(row["listener_number"])
         first_answers = json.loads(row["answers_json"])
         row.update({k+"_first":v for k,v in first_answers.items()})

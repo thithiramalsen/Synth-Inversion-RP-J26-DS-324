@@ -106,3 +106,26 @@ def test_analysis_excludes_repeats_from_independent_counts():
         summarize([base,dict(repeat,protocol_hash='different')])
     with pytest.raises(ValueError, match='Repeat does not match'):
         summarize([base,dict(repeat,sample_id='different')])
+
+
+def test_analysis_four_traits_missing_values_and_legacy_exports():
+    traits = ['brightness', 'roughness', 'percussiveness', 'sustainedness']
+    primary = dict(analysis_include='True', bundle_hash='b', protocol_hash='p',
+                   session_id='session', participant_id='person', sample_id='sound',
+                   presentation_id='primary', kind='primary', repeat_of='',
+                   brightness='4', roughness='3', percussiveness='2', sustainedness='6',
+                   descriptor_ids=json.dumps(traits))
+    repeat = dict(primary, presentation_id='repeat', kind='repeat', repeat_of='primary', sustainedness='4')
+    summary = summarize([primary, repeat])
+    assert summary['descriptor_ids'] == traits
+    assert summary['traits']['sustainedness']['primary_rating_count'] == 1
+    assert summary['traits']['sustainedness']['repeat_median_absolute_difference'] == 2
+    unclear = summarize([dict(primary, sustainedness='unclear'), repeat])
+    assert unclear['traits']['sustainedness']['unclear'] == 1
+    assert unclear['traits']['sustainedness']['repeat_pairs'] == 0
+    with pytest.raises(ValueError, match='Missing or invalid sustainedness'):
+        summarize([dict(primary, sustainedness='')])
+    legacy = dict(primary, descriptor_ids=json.dumps(traits[:3]), sustainedness='')
+    assert 'sustainedness' not in summarize([legacy])['traits']
+    with pytest.raises(ValueError, match='Mixed descriptor sets'):
+        summarize([primary, dict(repeat, descriptor_ids=json.dumps(traits[:3]), sustainedness='')])
