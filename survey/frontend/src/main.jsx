@@ -1,3 +1,4 @@
+import C4App, { C4Admin } from './C4App.jsx'
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import DemoApp from './DemoApp'
@@ -331,6 +332,6 @@ function RatingScale({ name, label, min, max, lowLabel, highLabel, value, onChan
   return <fieldset><legend>{label} <i>Required</i></legend>{content}</fieldset>
 }
 
-const RootApp = window.location.pathname === '/pilot/admin' ? PilotAdmin : window.location.pathname.startsWith('/pilot') ? PilotApp : window.location.pathname.startsWith('/demo') ? DemoApp : App
+const RootApp = window.location.pathname === '/c4/admin' ? C4Admin : window.location.pathname === '/c4' ? C4App : window.location.pathname === '/pilot/admin' ? PilotAdmin : window.location.pathname.startsWith('/pilot') ? PilotApp : window.location.pathname.startsWith('/demo') ? DemoApp : App
 
 createRoot(document.getElementById('root')).render(<StrictMode><RootApp /></StrictMode>)

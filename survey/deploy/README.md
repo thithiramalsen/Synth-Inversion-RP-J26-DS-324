@@ -207,6 +207,18 @@ container build still needs verification on Render or a working Docker engine.
 
 ## Free-plan limits
 
+### C4 review on the same service
+
+The C4 supervisor/interface review is available at `/c4`, with researcher tools
+at `/c4/admin`. It uses the same researcher login and persistent database, but
+separate invitations, sessions and exports. No additional Render service or
+hosting secrets are needed. See [the C4 protocol](../C4_REVIEW_PROTOCOL.md) for
+the 10 unique + 2 repeated + 2 practice design and its limits. All C4 review
+responses are excluded from research analysis.
+
+The Docker package includes `study/c4_bundle.json` and reuses the verified C1
+playback files. Existing C1 sessions and the C1 manifest are unchanged.
+
 This gives a stable deployment, not a promise of free hosting forever. Render
 free services sleep after 15 idle minutes, so the first visit after inactivity
 can take around a minute. The disk is ephemeral; the Neon database is what

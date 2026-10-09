@@ -22,3 +22,5 @@
 !survey/deploy/study/bundle.json
 !survey/deploy/study/audio/
 !survey/deploy/study/audio/*.wav
+
+!survey/deploy/study/c4_bundle.json

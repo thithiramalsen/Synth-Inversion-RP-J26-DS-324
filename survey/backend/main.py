@@ -20,6 +20,7 @@ from database import get_connection, initialize_database
 from security import (SESSION_COOKIE, SESSION_SECONDS, initialize_researcher_database,
                       issue_researcher_invite, login, logout, require_admin, signup)
 from c1_pilot import router as c1_router, initialize_pilot_database
+from c4_pilot import router as c4_router, initialize_pilot_database as initialize_c4_database
 from models import (
     C4AudioPlayCounts,
     C4TripletAnswers,
@@ -48,6 +49,7 @@ async def lifespan(_app: FastAPI):
     initialize_database()
     initialize_researcher_database()
     initialize_pilot_database()
+    initialize_c4_database()
     yield
 
 
@@ -56,6 +58,7 @@ app = FastAPI(title="Synth Inversion Listening Survey", lifespan=lifespan,
               docs_url=None if REMOTE_MODE else "/docs", redoc_url=None if REMOTE_MODE else "/redoc",
               openapi_url=None if REMOTE_MODE else "/openapi.json")
 app.include_router(c1_router)
+app.include_router(c4_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[s.strip() for s in os.environ.get("SURVEY_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",") if s.strip()],
@@ -70,6 +73,7 @@ app.add_middleware(
 async def restrict_remote_routes(request: Request, call_next):
     if REMOTE_MODE and request.url.path.startswith("/api/") and not (
             request.url.path.startswith("/api/c1-pilot/") or
+            request.url.path.startswith("/api/c4-pilot/") or
             request.url.path.startswith("/api/researcher/") or request.url.path == "/api/health"):
         return JSONResponse({"detail": "Historical development endpoints are disabled"}, status_code=404)
     return await call_next(request)
@@ -547,6 +551,8 @@ if (DIST / "assets").is_dir():
 
 @app.get("/pilot")
 @app.get("/pilot/admin")
+@app.get("/c4")
+@app.get("/c4/admin")
 def pilot_page():
     if not (DIST / "index.html").is_file():
         raise HTTPException(503, "Build the survey frontend first")

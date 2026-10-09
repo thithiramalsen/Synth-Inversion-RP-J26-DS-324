@@ -34,6 +34,7 @@ def main():
     os.environ.setdefault('SURVEY_C1_BUNDLE', str(ROOT/'survey/deploy/study/bundle.json'))
     os.environ.setdefault('SURVEY_C1_CONFIG', str(ROOT/'survey/config/c1_review_20_v1.json'))
     validate_assets(os.environ['SURVEY_C1_BUNDLE'])
+    validate_assets(ROOT/'survey/deploy/study/c4_bundle.json')
     sys.path.insert(0, str(ROOT/'survey/backend'))
     import uvicorn
     # Render's ingress supplies the public HTTPS scheme. This entry point runs

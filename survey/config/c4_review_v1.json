@@ -1,0 +1,47 @@
+{
+  "protocol_version": "c4_review_2026-10-09_v1",
+  "title": "Which sound is closer?",
+  "description": "Compare overall timbre using a reference and two candidates.",
+  "information_version": "c4_review_info_v1",
+  "experience_question": {
+    "label": "Give one example of making music, performing, singing or shaping a sound yourself.",
+    "help": "One short sentence is enough. Say what you did and which instrument, vocal activity or music tool you used. Personal practice counts; it does not need to be released or professional work.",
+    "placeholder": "For example: I practised a song on piano and varied the touch to shape its tone."
+  },
+  "resume_instructions": "You may close this tab and return to the same study link using the same browser profile on the same device while the study is open. Avoid private/incognito mode and do not clear this site's data. Your invitation starts one session; it cannot restore a session in a different browser. Each saved response is kept; an unfinished answer may need to be entered again.",
+  "information": [
+    "This is a supervisor and interface review of C4, not an open research study. Contact details, retention and the main sampling plan must be confirmed before recruitment.",
+    "In each comparison, listen to a reference, Sound A and Sound B. Choose which candidate has a more similar overall sound character (timbre) to the reference. Consider both tone and how the sound changes over time. Do not choose solely because one is louder. There is no correct answer supplied by the researcher.",
+    "There are 2 practice comparisons followed by 12 review comparisons: 10 different comparisons and 2 repeated comparisons to check consistency. A break follows comparison 6. Allow approximately 10-15 minutes; the review will check this provisional estimate.",
+    "Play all three clips fully at least once. Replay in any order. Select I cannot decide if you cannot choose; this does not mean the sounds are identical. If you choose A or B, rate your confidence from 1 (not confident) to 5 (very confident).",
+    "Participation is voluntary. Pause or stop at any time. Set a comfortable volume and stop if listening is uncomfortable. Your experience answers, choices, confidence, playback counts, times and feedback are saved under a participant code. Please do not enter names or identifying links. Hosting providers may keep technical access logs.",
+    "You may withdraw through this browser while you retain its session access; responses are marked as excluded. Withdrawal does not immediately erase the audit record. The retention and deletion policy must be settled before recruitment."
+  ],
+  "eligibility": {
+    "minimum_age": 18,
+    "activities": [
+      "Music production",
+      "Sound design",
+      "Synthesizer patch creation",
+      "Instrument performance",
+      "Singing"
+    ],
+    "rule": "Adult volunteer with practical experience in music production, sound design, synth patch creation, instrumental performance or singing, supported by a brief example. Personal practice counts; passive music listening alone does not qualify. Pending supervisor confirmation.",
+    "supervisor_confirmed": false
+  },
+  "researcher_name": "",
+  "researcher_email": "",
+  "supervisor_contact": "",
+  "retention_statement": "",
+  "institutional_review_status": "pending_supervisor_confirmation",
+  "level_policy_listening_checked": false,
+  "rehearsal_completed": false,
+  "assignment_capacity": 16,
+  "break_after_rated": 6,
+  "experience_tools_label": "Which instruments, vocal activities or music tools have you used?",
+  "experience_tools_placeholder": "For example: piano, bass guitar, singing, a DAW or a synthesizer",
+  "review_notice": "Supervisor review / rehearsal only. These responses are excluded from research analysis.",
+  "unique_comparisons": 10,
+  "repeat_comparisons": 2,
+  "practice_comparisons": 2
+}
