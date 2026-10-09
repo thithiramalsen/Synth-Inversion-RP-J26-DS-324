@@ -1,0 +1,14 @@
+.pilot-app .site-header { display: block; padding-bottom: 12px; }
+.site-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.site-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.site-nav a { color: #365b50; padding: 8px 12px; border-radius: 7px; text-decoration: none; font-size: 13px; }
+.site-nav a:hover { background: #e8eeea; }
+.site-nav a[aria-current="page"] { background: #315b4d; color: white; }
+.site-nav a:focus-visible, .site-action:focus-visible, .site-preview:focus-visible { outline: 3px solid #b16c35; outline-offset: 3px; }
+.site-study-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; margin: 26px 0; }
+.site-study-grid .p-card { margin: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.site-study-grid h2 { margin-top: 0; }
+.site-study-grid p:not(.p-eyebrow) { flex: 1; }
+.site-action { display: inline-block; text-decoration: none; }
+.site-preview { display: block; margin-top: 14px; color: #365b50; font-size: 14px; }
+@media (max-width: 600px) { .site-study-grid { grid-template-columns: 1fr; } .site-nav a { padding: 8px; font-size: 12px; } }

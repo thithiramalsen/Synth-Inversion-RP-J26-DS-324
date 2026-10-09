@@ -1,3 +1,4 @@
+import { SiteHeader } from './SiteNavigation'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
 import './c4.css'
@@ -126,7 +127,7 @@ export default function C4App() {
   const playable = ['volume', 'headphones', 'rating'].includes(phase)
   const allPlayed = ROLES.every(([role]) => counts.completed[role] > 0)
   function pause() { setCounts({ plays: zeroCounts(), completed: zeroCounts() }); setPaused(v => !v) }
-  return <div className="pilot-app"><header className="p-header"><a className="p-brand" href="/c4"><span>SI</span> Listening lab</a><span className="p-header-note">C4 SIMILARITY REVIEW</span></header>
+  return <div className="pilot-app"><SiteHeader current="c4" note="C4 SIMILARITY REVIEW" />
     <ErrorNotice message={error} onDismiss={() => setError('')}>
       {session && <button onClick={() => act(() => load())}>Reload saved step</button>}
       {!step && <button onClick={reset}>Return to review entry</button>}
@@ -245,7 +246,7 @@ export function C4Admin() {
     setReplacement({ assignment_id: '', reason: '' })
     setData(await request('/admin/summary'))
   }
-  if (!authenticated) return <div className="pilot-app"><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
+  if (!authenticated) return <div className="pilot-app"><SiteHeader current="c4-admin" researcher /><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
     <p>For the research team. Study participants should <a href="/c4">open the listening study</a>.</p>
     <form className="p-card" onSubmit={signIn}>
       {signingUp && <><p>You need a researcher account invitation from a signed-in team member. A participant study code cannot be used here.</p><label>Researcher account invitation<input required minLength="20" maxLength="128" autoComplete="off" value={signupFields.invitation} onChange={e => setSignupFields(f => ({ ...f, invitation: e.target.value }))} /></label></>}
@@ -256,8 +257,9 @@ export function C4Admin() {
       <div className="p-actions"><button className="p-primary" disabled={busy}>{busy ? 'Please wait…' : signingUp ? 'Create account' : 'Sign in'}</button><button type="button" className="p-secondary" disabled={busy} onClick={() => { setSigningUp(!signingUp); setError(''); setCredentials({ username: '', password: '' }); setSignupFields({ invitation: '', confirm: '' }) }}>{signingUp ? 'Back to sign in' : 'Create an account'}</button></div>
     </form></main></div>
   return <div className="pilot-app">
+    <SiteHeader current="c4-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
-    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C4 review sessions</h1><p><a href="/pilot/admin">C1 researcher view</a> - <a href="/c4">Open C4 review</a></p><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C4 review sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
     <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
       <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
       {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}

@@ -1,3 +1,4 @@
+import { SiteHeader } from './SiteNavigation'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
 
@@ -180,7 +181,7 @@ export default function PilotApp() {
   const playable = ['volume', 'headphones', 'rating', 'correction'].includes(phase)
   const end = ['complete', 'withdrawn', 'screen_failed', 'replaced'].includes(phase)
   const progress = phase === 'rating' && !step.practice ? Math.round((step.display_number - 1) / step.display_total * 100) : 0
-  return <div className="pilot-app"><header className="p-header"><a className="p-brand" href="/pilot"><span>SI</span> Listening lab</a><span className="p-header-note">{step?.rehearsal || status?.rehearsal ? 'INTERFACE REHEARSAL' : 'TIMBRE STUDY'}</span></header>
+  return <div className="pilot-app"><SiteHeader current="c1" note={step?.rehearsal || status?.rehearsal ? 'C1 INTERFACE REVIEW' : 'C1 TIMBRE STUDY'} />
     <ErrorNotice message={error} onDismiss={() => setError('')}>
       {session && <button type="button" onClick={() => action(() => load())}>Reload current step</button>}
       {status?.rehearsal && !step && <button type="button" onClick={leaveRehearsal}>Return to rehearsal entry</button>}
@@ -271,7 +272,7 @@ export function PilotAdmin() {
     setReplacement({ assignment_id: '', reason: '' })
     setData(await request('/admin/summary'))
   }
-  if (!authenticated) return <div className="pilot-app"><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
+  if (!authenticated) return <div className="pilot-app"><SiteHeader current="c1-admin" researcher /><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
     <p>For the research team. Study participants should <a href="/pilot">open the listening study</a>.</p>
     <form className="p-card" onSubmit={signIn}>
       {signingUp && <><p>You need a researcher account invitation from a signed-in team member. A participant study code cannot be used here.</p><label>Researcher account invitation<input required minLength="20" maxLength="128" autoComplete="off" value={signupFields.invitation} onChange={e => setSignupFields(f => ({ ...f, invitation: e.target.value }))} /></label></>}
@@ -282,8 +283,9 @@ export function PilotAdmin() {
       <div className="p-actions"><button className="p-primary" disabled={busy}>{busy ? 'Please wait…' : signingUp ? 'Create account' : 'Sign in'}</button><button type="button" className="p-secondary" disabled={busy} onClick={() => { setSigningUp(!signingUp); setError(''); setCredentials({ username: '', password: '' }); setSignupFields({ invitation: '', confirm: '' }) }}>{signingUp ? 'Back to sign in' : 'Create an account'}</button></div>
     </form></main></div>
   return <div className="pilot-app">
+    <SiteHeader current="c1-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
-    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>Pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
     <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
       <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
       {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}

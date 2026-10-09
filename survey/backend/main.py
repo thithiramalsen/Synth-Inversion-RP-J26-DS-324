@@ -549,6 +549,8 @@ if (DIST / "assets").is_dir():
     app.mount("/assets", StaticFiles(directory=DIST / "assets"), name="frontend-assets")
 
 
+@app.get("/")
+@app.get("/researcher")
 @app.get("/pilot")
 @app.get("/pilot/admin")
 @app.get("/c4")
@@ -559,6 +561,6 @@ def pilot_page():
     return FileResponse(DIST / "index.html")
 
 
-@app.get("/")
-def home_page():
-    return RedirectResponse("/pilot")
+@app.get("/admin")
+def researcher_shortcut():
+    return RedirectResponse("/researcher")

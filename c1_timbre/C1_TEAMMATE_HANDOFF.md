@@ -1,6 +1,6 @@
 # C1 handoff: listening pilot and descriptor modelling
 
-Prepared 8 October 2026. This note is for the C1 component owner. The survey is
+Updated 9 October 2026. This note is for the C1 component owner. The survey is
 being prepared by the C2 teammate to share the audio/survey workload; ownership
 of C1's feature design, descriptor model and scientific analysis remains with C1.
 
@@ -26,30 +26,29 @@ definitions or completed validation.
 - A C1 survey for **brightness, roughness, percussiveness and sustainedness**, each rated 1–7,
   with a separate cannot-judge/unclear response. These remain candidate
   descriptors/instructions, not perceptually validated dimensions.
-- Sixteen overlapping assignments: each participant hears 3 practice clips,
-  32 distinct study clips and 4 hidden repeats, for **39 presentations**.
-  Sixteen eligible completed assignments would give each study sound eight
-  independent primary listeners. This is a feasibility budget, not a power result.
+- Current 20-sound review: each participant hears **3 practice clips and 20
+  distinct study clips**, for 23 presentations. There are no hidden repeats.
+  The first 16 completed assignments give each of 64 sounds five independent
+  listeners. Capacity is 26 assignments. This is a coverage/workload budget,
+  not a statistical power result. See `survey/C1_20_SOUND_REVIEW.md`.
 - Consent/background questions, volume/headphone setup, practice, break, resume,
   completion feedback, withdrawal and researcher exports. Previous-answer
   correction is allowed until the next presentation is explicitly started;
   original and corrected answers are retained in an audit trail.
 
-The researcher added sustainedness on 8 October, before formal collection.
-Protocol `c1_pilot_2026-10-08_v3` asks: “How strongly does this sound have a
-continuing, held quality after it begins?” Investigate its clarity, repeatability
-and overlap with percussiveness; independence is not assumed. There are now 144
-study/repeat trait judgments per participant, plus 12 practice judgments. Audio,
-39 presentations, assignments and participant target are unchanged. Earlier
-three-descriptor sessions retain their original snapshot and must be analysed
-separately; exports leave sustainedness blank for them and declare descriptor
-IDs for each row. A blank legacy field is not “unclear.”
+The current review protocol is `c1_pilot_2026-10-09_20unique_v1` in
+`survey/config/c1_review_20_v1.json`, packaged with
+`survey/deploy/study/bundle.json`. It gives 80 study trait judgments and 12
+practice judgments per person, with a break after study sound 10. Earlier
+36-presentation and three-descriptor versions are historical, separate records.
+Do not pool versions silently. Current C1 has no repeated items, so it cannot
+estimate within-listener test-retest consistency from this session design.
+Sustainedness remains a candidate descriptor; independence from percussiveness
+is not assumed.
 
-The local short rehearsal on port 8771, when running, is not the full pilot.
-See the [launch checklist](../survey/C1_PILOT_NEXT_STEPS.md) for the full rehearsal
-and remaining participant-facing work. No formal pilot response collection is
-confirmed in this handoff. Researcher/automated rehearsal responses are excluded
-from research analysis.
+The hosted `/pilot` is the supervisor review. Review responses remain excluded
+from research analysis; working hosting is not confirmation of ethics clearance.
+The end-to-end explanation is in [C1 explained](C1_EXPLAINED.md).
 
 ## Audio and data locations
 
@@ -70,8 +69,8 @@ Paths below are relative to the repository root and are intentionally portable.
 
 Sounds 001–064 are study items; 065–067 are practice. Use the bundle's source IDs
 to join ratings to the original parameter manifest, not file order or guessed
-candidate numbering. Hidden repeats reuse a sound ID but have distinct
-presentation IDs. Local audio/databases are Git-ignored: a code checkout alone
+candidate numbering. Historical hidden repeats reuse a sound ID but have distinct
+presentation IDs; current 20-unique sessions contain no repeats. Local audio/databases are Git-ignored: a code checkout alone
 does not transfer these files or collected responses.
 
 ## Audio processing that must be preserved
@@ -154,7 +153,8 @@ Before analysis:
 1. Account for completed, partial, replaced, withdrawn and rehearsal sessions.
 2. Keep practice separate; never count hidden repeats as independent listeners.
 3. Keep unclear responses distinct from rating 4 or zero.
-4. Check per-sound coverage, participant/sound dependence, repeat differences,
+4. Check per-sound coverage, participant/sound dependence, repeat differences
+   only in historical designs that actually include repeats,
    descriptor understanding and rating distributions.
 5. Treat the 64 labelled sounds as 64 distinct audio examples, not hundreds of
    independent examples because each sound has multiple ratings.
@@ -173,3 +173,12 @@ Suggested research-log wording:
 
 Update that paragraph with the actual fix and validation once completed; it is
 not currently a claim that the issue has been resolved.
+
+## Analysis compatibility before formal collection
+
+The legacy `analyze_c1_pilot.py` coverage flag expects eight listeners per sound;
+it is not the current five-listener target. The backend research-export inclusion
+rule currently recognizes the historical `c1_pilot_v1` study ID only. A future
+approved 20-sound production version must explicitly update and test these rules.
+Do not remove the exclusion of review responses to work around this. No trained
+or validated human-descriptor model is present in the current C1 implementation.
