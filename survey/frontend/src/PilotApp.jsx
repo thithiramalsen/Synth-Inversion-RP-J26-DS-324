@@ -8,7 +8,7 @@ const allRated = (descriptors, ratings) => descriptors.every(d => ratings[d.id] 
 
 async function request(path, { session, body, token, ...options } = {}) {
   const response = await fetch(`${API}/api/c1-pilot${path}`, {
-    ...options, method: body !== undefined ? 'POST' : options.method || 'GET',
+    ...options, credentials: 'include', method: body !== undefined ? 'POST' : options.method || 'GET',
     headers: { 'Content-Type': 'application/json', ...(session || token ? { Authorization: `Bearer ${token || session.token}` } : {}) },
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
   })
@@ -20,7 +20,12 @@ async function request(path, { session, body, token, ...options } = {}) {
 }
 
 function savedSession() {
-  try { return JSON.parse(localStorage.getItem(KEY) || 'null') } catch { return null }
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || 'null')
+    return saved && typeof saved.session_id === 'string' && typeof saved.token === 'string' ? saved : null
+  } catch {
+    return null
+  }
 }
 
 function ErrorNotice({ message, onDismiss, children }) {
@@ -117,7 +122,7 @@ function Entry({ status, busy, onSubmit }) {
       <fieldset className="p-activities"><legend>Which have you done? Select at least one.</legend>{cfg.eligibility.activities.map(activity => <label className="p-check" key={activity}><input type="checkbox" checked={values.activities.includes(activity)} onChange={e => change('activities', e.target.checked ? [...values.activities, activity] : values.activities.filter(a => a !== activity))} />{activity}</label>)}</fieldset>
       <div className="p-columns"><label>Approximately how many months?<input type="number" min="0" max="1200" required value={values.experience_months} onChange={e => change('experience_months', e.target.value)} /></label>
         <label>How often have you done this recently?<select required value={values.recent_frequency} onChange={e => change('recent_frequency', e.target.value)}><option value="">Choose frequency</option>{['Less than monthly', 'Monthly', 'Weekly', 'Daily'].map(f => <option key={f}>{f}</option>)}</select></label></div>
-      <label>Which tools have you used?<input required minLength="2" maxLength="250" value={values.tools} onChange={e => change('tools', e.target.value)} placeholder="For example, a DAW or synthesizer" /></label>
+      <label>{cfg.experience_tools_label || 'Which tools have you used?'}<input required minLength="2" maxLength="250" value={values.tools} onChange={e => change('tools', e.target.value)} placeholder={cfg.experience_tools_placeholder || 'For example, a DAW or synthesizer'} /></label>
       <label>{cfg.experience_question.label}<textarea required minLength="20" maxLength="700" value={values.example} onChange={e => change('example', e.target.value)} rows="2" aria-describedby="experience-help" placeholder={cfg.experience_question.placeholder} /></label>
       <p id="experience-help" className="p-muted">{cfg.experience_question.help}</p>
     </section>
@@ -181,7 +186,7 @@ export default function PilotApp() {
       {status?.rehearsal && !step && <button type="button" onClick={leaveRehearsal}>Return to rehearsal entry</button>}
     </ErrorNotice>
     <main className="p-main">
-      {(step?.rehearsal || status?.rehearsal) && <div className="p-rehearsal">Rehearsal only · These responses are excluded from the research pilot.</div>}
+      {(step?.rehearsal || status?.rehearsal) && <div className="p-rehearsal">{cfg?.review_notice || 'Rehearsal only · These responses are excluded from the research pilot.'}</div>}
       {!status ? <p role="status">Loading the study…</p> : !session ? <>
         {!status.ready && <div className="p-notice"><strong>The study is not open yet.</strong><p>You can read the information below. The researcher is completing preparation.</p></div>}
         <Entry status={status} busy={busy} onSubmit={values => action(async () => { const active = await request('/sessions', { body: values }); localStorage.setItem(KEY, JSON.stringify(active)); setSession(active); await load(active); window.scrollTo(0, 0) })} />
@@ -226,34 +231,66 @@ export default function PilotApp() {
 }
 
 export function PilotAdmin() {
-  const [token, setToken] = useState(''), [data, setData] = useState(null), [error, setError] = useState('')
+  const [authenticated, setAuthenticated] = useState(false), [credentials, setCredentials] = useState({ username: '', password: '' })
+  const [data, setData] = useState(null), [error, setError] = useState('')
+  const [signingUp, setSigningUp] = useState(false), [signupFields, setSignupFields] = useState({ invitation: '', confirm: '' })
+  const [accountInvite, setAccountInvite] = useState(null)
   const [replacement, setReplacement] = useState({ assignment_id: '', reason: '' })
   const [busy, setBusy] = useState(false), [issued, setIssued] = useState(null)
   async function act(fn) { setError(''); setBusy(true); try { await fn() } catch (e) { setError(e.message) } finally { setBusy(false) } }
+  useEffect(() => { fetch(`${API}/api/researcher/session`, { credentials: 'include' }).then(r => setAuthenticated(r.ok)).catch(() => {}) }, [])
+  async function researcherRequest(path, body) {
+    const response = await fetch(`${API}/api/researcher${path}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    const result = await response.json().catch(() => ({}))
+    if (!response.ok) throw new Error(typeof result.detail === 'string' ? result.detail : 'Check the form fields and try again.')
+    return result
+  }
+  async function signIn(event) {
+    event.preventDefault()
+    await act(async () => {
+      if (signingUp && credentials.password !== signupFields.confirm) throw new Error('The passwords do not match.')
+      await researcherRequest(signingUp ? '/signup' : '/login', { ...credentials, ...(signingUp ? { invitation: signupFields.invitation.trim() } : {}) })
+      setAuthenticated(true); setCredentials({ username: '', password: '' }); setSignupFields({ invitation: '', confirm: '' })
+    })
+  }
   function download(content, name, type) { const url = URL.createObjectURL(new Blob([content], { type })); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000) }
   async function exportFile(endpoint, name) {
-    const r = await fetch(`${API}/api/c1-pilot/admin/${endpoint}`, { headers: { Authorization: `Bearer ${token}` } })
-    if (!r.ok) throw new Error('Export failed. Check your access token.')
+    const r = await fetch(`${API}/api/c1-pilot/admin/${endpoint}`, { credentials: 'include' })
+    if (!r.ok) throw new Error('Export failed. Please sign in again.')
     download(await r.text(), name, 'text/csv')
   }
   async function createMissing() {
-    const result = await request('/admin/invitations', { token, body: {} })
+    const result = await request('/admin/invitations', { body: {} })
     setIssued(result.invitations)
     if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-invitations.json', 'application/json')
   }
   async function replaceInvitation() {
-    const result = await request('/admin/replace-invitation', { token, body: replacement })
+    const result = await request('/admin/replace-invitation', { body: replacement })
     setIssued([result])
     download(JSON.stringify(result, null, 2), 'private-replacement-invitation.json', 'application/json')
     setReplacement({ assignment_id: '', reason: '' })
-    setData(await request('/admin/summary', { token }))
+    setData(await request('/admin/summary'))
   }
+  if (!authenticated) return <div className="pilot-app"><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
+    <p>For the research team. Study participants should <a href="/pilot">open the listening study</a>.</p>
+    <form className="p-card" onSubmit={signIn}>
+      {signingUp && <><p>You need a researcher account invitation from a signed-in team member. A participant study code cannot be used here.</p><label>Researcher account invitation<input required minLength="20" maxLength="128" autoComplete="off" value={signupFields.invitation} onChange={e => setSignupFields(f => ({ ...f, invitation: e.target.value }))} /></label></>}
+      <label>Username<input required minLength={signingUp ? 3 : 1} maxLength="64" pattern={signingUp ? '[a-zA-Z0-9][a-zA-Z0-9_.-]*' : undefined} autoComplete="username" value={credentials.username} onChange={e => setCredentials(c => ({ ...c, username: e.target.value }))} /></label>
+      {signingUp && <p className="p-muted">3–64 characters: letters, numbers, dots, underscores or hyphens. Start with a letter or number. Usernames are not case-sensitive.</p>}
+      <label>Password<input required minLength={signingUp ? 12 : 1} maxLength="128" type="password" autoComplete={signingUp ? 'new-password' : 'current-password'} value={credentials.password} onChange={e => setCredentials(c => ({ ...c, password: e.target.value }))} /></label>
+      {signingUp && <><p className="p-muted">Use at least 12 characters.</p><label>Confirm password<input required type="password" autoComplete="new-password" value={signupFields.confirm} onChange={e => setSignupFields(f => ({ ...f, confirm: e.target.value }))} /></label></>}
+      <div className="p-actions"><button className="p-primary" disabled={busy}>{busy ? 'Please wait…' : signingUp ? 'Create account' : 'Sign in'}</button><button type="button" className="p-secondary" disabled={busy} onClick={() => { setSigningUp(!signingUp); setError(''); setCredentials({ username: '', password: '' }); setSignupFields({ invitation: '', confirm: '' }) }}>{signingUp ? 'Back to sign in' : 'Create an account'}</button></div>
+    </form></main></div>
   return <div className="pilot-app">
     <ErrorNotice message={error} onDismiss={() => setError('')} />
-    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>Pilot sessions</h1><section className="p-card"><label>Researcher access token<input type="password" autoComplete="off" disabled={busy} value={token} onChange={e => { setToken(e.target.value); setData(null); setIssued(null) }} /></label><p>The token stays in memory for this page. Do not share invitation files or response exports publicly.</p><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary', { token })))}>{busy ? 'Working…' : 'Load sessions'}</button></section>
+    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>Pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
+      <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
+      {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}
+    </section>
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
       <h2 role="status">{issued.length ? 'New invitation ready' : 'All assignments already have invitations'}</h2>
-      {issued.length ? <><p>The code is shown here and downloaded as JSON. Copy only the invitation code to the participant; keep your researcher token private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<button type="button" className="p-secondary" onClick={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')}>Download these invitations again</button></> : <p>Use “Generate a replacement invitation” below to replace a lost or used code. Creating missing invitations does not reissue existing codes.</p>}
+      {issued.length ? <><p>The code is shown here and downloaded as JSON. Copy only the invitation code to the participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<button type="button" className="p-secondary" onClick={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')}>Download these invitations again</button></> : <p>Use “Generate a replacement invitation” below to replace a lost or used code. Creating missing invitations does not reissue existing codes.</p>}
     </section>}
     {data && <><section className="p-card"><h2>{data.completed} completed sessions</h2><p>Create missing invitations fills assignments without a code. To start an assignment again, use the replacement form below.</p><div className="p-actions"><button className="p-secondary" disabled={busy} onClick={() => act(createMissing)}>Create missing invitations</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('export', 'c1-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('sessions', 'c1-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th><th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td><td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section>
       <form className="p-card" onSubmit={e => { e.preventDefault(); act(replaceInvitation) }}><h2>Generate a replacement invitation</h2><p>This retires the previous code and closes its session, preserving responses in the audit log. Completed research assignments cannot be replaced; rehearsal assignments can.</p><label>Assignment ID<input required disabled={busy} value={replacement.assignment_id} onChange={e => setReplacement(r => ({ ...r, assignment_id: e.target.value }))} placeholder="For example, block_01 or rehearsal" /></label><label>Reason<textarea required disabled={busy} minLength="10" maxLength="500" value={replacement.reason} onChange={e => setReplacement(r => ({ ...r, reason: e.target.value }))} placeholder="For example: Repeat the full interface rehearsal." /></label><button className="p-secondary" disabled={busy}>{busy ? 'Working…' : 'Generate replacement code'}</button></form></>}

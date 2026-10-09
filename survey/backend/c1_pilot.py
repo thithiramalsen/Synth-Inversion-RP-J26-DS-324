@@ -183,7 +183,7 @@ class Entry(StrictBody):
     headphones: Literal[True]
     quiet_environment: Literal[True]
     understands_language: Literal[True]
-    activities: list[Literal["Music production", "Sound design", "Synthesizer patch creation"]] = Field(min_length=1, max_length=3)
+    activities: list[Literal["Music production", "Sound design", "Synthesizer patch creation", "Instrument performance", "Singing"]] = Field(min_length=1, max_length=5)
     experience_months: int = Field(ge=0, le=1200)
     recent_frequency: Literal["Less than monthly", "Monthly", "Weekly", "Daily"]
     tools: str = Field(min_length=2, max_length=250)
@@ -219,6 +219,8 @@ def start(entry: Entry):
         raise HTTPException(403, "Study not open: " + "; ".join(issues))
     if not entry.tools.strip() or len(entry.example.strip()) < 20:
         raise HTTPException(422, "Please describe your relevant experience")
+    if not set(entry.activities).issubset(cfg['eligibility']['activities']):
+        raise HTTPException(422, "Select experience categories offered by this study")
     token, sid = secrets.token_urlsafe(32), "S_" + secrets.token_hex(12)
     with get_connection() as db:
         db.execute("BEGIN IMMEDIATE")
@@ -321,7 +323,7 @@ def presentation_playback(session_id: str, presentation_id: str, authorization: 
         bundle, _ = load_bundle()
         asset = bundle["samples"][trial["sample_id"]]
         path = checked_asset(asset["playback_path"], asset["playback_sha256"])
-        db.execute("INSERT OR IGNORE INTO c1_exposures VALUES (?,?,?)", (session_id, presentation_id, now()))
+        db.execute("INSERT INTO c1_exposures VALUES (?,?,?) ON CONFLICT DO NOTHING", (session_id, presentation_id, now()))
     return FileResponse(path, media_type="audio/wav", headers={"Cache-Control": "private, no-store"})
 
 
@@ -487,7 +489,9 @@ def rating(session_id: str, body: RatingBody, authorization: str = Header(defaul
                     row["current_index"] + 1, json.dumps(values), body.play_count, body.completed_plays,
                     body.started_at.isoformat(), now()))
         index = row["current_index"] + 1
-        phase = "feedback" if index == len(trials) else "break" if index == 21 and not row["break_done"] else "rating"
+        practice_count = sum(t['kind'] == 'practice' for t in trials)
+        break_after = json.loads(row['protocol_snapshot']).get('break_after_rated', 18)
+        phase = "feedback" if index == len(trials) else "break" if index == practice_count + break_after and not row["break_done"] else "rating"
         db.execute("UPDATE c1_sessions SET current_index=?, phase=? WHERE session_id=?", (index, phase, session_id))
     return {"saved": True}
 

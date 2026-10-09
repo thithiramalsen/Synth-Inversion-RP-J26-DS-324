@@ -1,5 +1,16 @@
 # C1 pilot: current status and remaining steps
 
+**9 October update:** The current proposed design is **20 unique sounds**, no
+hidden repeats, plus 3 practice clips, with a break after study sound 10. See
+[20-sound supervisor review](C1_20_SOUND_REVIEW.md) for current recruitment maths,
+draft musician eligibility, separate bundles and temporary review-link access.
+The 36-presentation details below describe the preserved earlier rehearsal.
+
+**Persistent hosting preparation:** [Render + Neon setup](deploy/README.md) is
+prepared on `c1-pilot-deployment`. The frontend and local backend checks pass;
+account connection, PostgreSQL integration and remote deployment checks remain.
+The Cloudflare URL is still only the temporary supervisor preview.
+
 Updated 8 October 2026. This is the current launch checklist; older planning
 documents retain background explanations. The C1 model is owned by the C1
 teammate. Its feature work is documented in

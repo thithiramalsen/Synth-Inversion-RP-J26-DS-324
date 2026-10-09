@@ -19,7 +19,8 @@ import main  # noqa: E402
 class SurveyApiTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.environment = patch.dict(os.environ, {"SURVEY_ADMIN_TOKEN": "test-admin-token-not-for-deployment-12345"})
+        cls.environment = patch.dict(os.environ, {"SURVEY_ADMIN_TOKEN": "test-admin-token-not-for-deployment-12345",
+                                                 "SURVEY_DATABASE_URL": ""})
         cls.environment.start()
         cls.temporary_directory = tempfile.TemporaryDirectory()
         database.DATABASE_PATH = Path(cls.temporary_directory.name) / "test-survey.db"

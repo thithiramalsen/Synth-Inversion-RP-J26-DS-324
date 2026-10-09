@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: synth-listening-pilot
+    runtime: docker
+    plan: free
+    branch: c1-pilot-deployment
+    region: singapore
+    dockerfilePath: ./survey/deploy/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: SURVEY_DATABASE_URL
+        sync: false
+      - key: SURVEY_ADMIN_TOKEN
+        generateValue: true
+      - key: SURVEY_RESEARCHER_USERNAME
+        value: researcher
+      - key: SURVEY_RESEARCHER_PASSWORD_HASH
+        sync: false
+      - key: SURVEY_REMOTE_MODE
+        value: "1"
+      - key: SURVEY_C1_OPEN
+        value: "0"
+      - key: SURVEY_C1_BUNDLE
+        value: /app/survey/deploy/study/bundle.json
+      - key: SURVEY_C1_CONFIG
+        value: /app/survey/config/c1_review_20_v1.json
+      - key: SURVEY_ALLOWED_ORIGINS
+        value: ""

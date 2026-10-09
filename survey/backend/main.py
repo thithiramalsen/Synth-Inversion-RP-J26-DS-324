@@ -14,10 +14,11 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from database import get_connection, initialize_database
-from security import require_admin
+from security import (SESSION_COOKIE, SESSION_SECONDS, initialize_researcher_database,
+                      issue_researcher_invite, login, logout, require_admin, signup)
 from c1_pilot import router as c1_router, initialize_pilot_database
 from models import (
     C4AudioPlayCounts,
@@ -45,6 +46,7 @@ STUDY_ALIASES = {"pilot_v1": "pilot_quality"}
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     initialize_database()
+    initialize_researcher_database()
     initialize_pilot_database()
     yield
 
@@ -60,15 +62,71 @@ app.add_middleware(
     allow_origin_regex=None if REMOTE_MODE else r"^http://(localhost|127\.0\.0\.1):517\d$",
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=True,
 )
 
 
 @app.middleware("http")
 async def restrict_remote_routes(request: Request, call_next):
     if REMOTE_MODE and request.url.path.startswith("/api/") and not (
-            request.url.path.startswith("/api/c1-pilot/") or request.url.path == "/api/health"):
+            request.url.path.startswith("/api/c1-pilot/") or
+            request.url.path.startswith("/api/researcher/") or request.url.path == "/api/health"):
         return JSONResponse({"detail": "Historical development endpoints are disabled"}, status_code=404)
     return await call_next(request)
+
+
+class ResearcherLogin(BaseModel):
+    username: str = Field(min_length=1, max_length=64)
+    password: str = Field(min_length=1, max_length=128)
+
+
+class ResearcherSignup(BaseModel):
+    username: str = Field(min_length=3, max_length=64, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]*$")
+    password: str = Field(min_length=12, max_length=128)
+    invitation: str = Field(min_length=20, max_length=128)
+
+
+def researcher_cookie(request: Request, session: str):
+    response = JSONResponse({"authenticated": True})
+    response.set_cookie(
+        SESSION_COOKIE,
+        session,
+        httponly=True,
+        samesite="strict",
+        secure=request.url.scheme == "https",
+        max_age=SESSION_SECONDS,
+    )
+    return response
+
+
+@app.post("/api/researcher/login")
+def researcher_login(request: Request, body: ResearcherLogin):
+    return researcher_cookie(request, login(body.username, body.password))
+
+
+@app.post("/api/researcher/signup", status_code=201)
+def researcher_signup(request: Request, body: ResearcherSignup):
+    response = researcher_cookie(request, signup(body.username, body.password, body.invitation))
+    response.status_code = 201
+    return response
+
+
+@app.post("/api/researcher/invitations", status_code=201)
+def researcher_invitation(_: None = Depends(require_admin)):
+    return issue_researcher_invite()
+
+
+@app.get("/api/researcher/session")
+def researcher_session(_: None = Depends(require_admin)):
+    return {"authenticated": True}
+
+
+@app.post("/api/researcher/logout")
+def researcher_logout(request: Request):
+    logout(request.cookies.get(SESSION_COOKIE))
+    response = JSONResponse({"authenticated": False})
+    response.delete_cookie(SESSION_COOKIE)
+    return response
 
 
 def now() -> str:
@@ -461,7 +519,7 @@ def admin_summary() -> dict[str, Any]:
             available_trials = len(study_trial_ids(study_id))
             trial_limit = config.get("trial_limit")
             sessions = connection.execute(
-                "SELECT COUNT(*) AS total, SUM(completed_at IS NOT NULL) AS completed FROM sessions WHERE study_id = ?",
+                "SELECT COUNT(*) AS total, SUM(CASE WHEN completed_at IS NOT NULL THEN 1 ELSE 0 END) AS completed FROM sessions WHERE study_id = ?",
                 (study_id,),
             ).fetchone()
             responses = connection.execute(

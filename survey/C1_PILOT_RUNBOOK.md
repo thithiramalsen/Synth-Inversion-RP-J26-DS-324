@@ -30,8 +30,10 @@ From the repository root, if the service is not already running:
 ```
 
 Open <http://127.0.0.1:8770/pilot>. Find the participant `invitation` value in
-`data/processed/c1_rehearsal_v1/rehearsal_private_access.json`. The `admin_token`
-in that same private file is for <http://127.0.0.1:8770/pilot/admin>, not participants.
+`data/processed/c1_rehearsal_v1/rehearsal_private_access.json`. The
+`researcher_username` and `researcher_password` in that same private file are
+for <http://127.0.0.1:8770/pilot/admin>, not participants. The admin token is
+retained only for scripts and legacy local deployments.
 Do not share the whole file. The server binds only to this computer.
 
 Invitation codes are generated with Python's `secrets.token_urlsafe(18)` (18
@@ -158,8 +160,9 @@ raw datasets, private-access files or development databases to a public file hos
 FastAPI serves the built `/pilot` and `/pilot/admin` routes from the same origin.
 
 `SURVEY_REMOTE_MODE=1` disables historical APIs and API docs; researcher endpoints
-require the secret admin token. Participant media requires each session's bearer
-token. Do not put tokens in URL queries. Keep the backend behind HTTPS; use one
+use the generated username/password and an HttpOnly browser session cookie.
+Participant media requires each session's bearer token. Do not put tokens in URL
+queries. Keep the backend behind HTTPS; use one
 application instance for this small SQLite pilot. Do not use ephemeral storage.
 The `.env.example` file documents settings; Python does not auto-load that file.
 
@@ -178,6 +181,48 @@ cannot be replaced unless withdrawn. Separate contact/recruitment records from
 the rating database and follow the agreed retention plan.
 
 ## 5. Export and inspect
+
+### Researcher login, sign-up and invitations
+
+For the local full rehearsal, open `http://127.0.0.1:8772/pilot/admin`.
+The existing initial login is in
+`data/processed/c1_full_rehearsal_v1/full_flow_private_access.json`, under
+`researcher_username` and `researcher_password`. Restarting `survey.run_rehearsal`
+adds these fields to an older access file if needed; it preserves existing codes
+and responses. Keep this file private.
+
+To replace a **participant study invitation**:
+
+1. Sign in and select **Load sessions**.
+2. Find the assignment ID (for example, `block_01`).
+3. Enter it under **Generate a replacement invitation**, with a reason.
+4. Select **Generate replacement code**. Copy the displayed code or save the JSON download.
+
+The old code is retired and its session is closed, with responses retained for
+audit. Rehearsals can be repeated this way. Completed production assignments
+cannot be replaced unless withdrawn. **Create missing invitations** only fills
+assignments without a current code; it does not regenerate existing codes.
+
+For a **researcher account**, a signed-in team member selects **Create researcher
+account invitation** and shares that code privately. The recipient opens the
+same admin page, selects **Create an account**, and enters the code, a username
+and a password of at least 12 characters. Account invitations expire after 72
+hours and can be used once. Every researcher account has dashboard, export and
+invitation-management access, so issue these only to authorized team members.
+Participant codes cannot create researcher accounts. Participants do not need
+a username/password account.
+
+Accounts, hashed account invitations and hashed session tokens are stored in the
+same persistent SQLite database. Passwords use salted PBKDF2-SHA256 hashes.
+Researcher sessions expire after eight hours on the server as well as in the
+browser; sign-out revokes the session. No email verification or password-reset
+workflow is included. Production hosting must configure the initial researcher
+credentials from `.env.example`; the local rehearsal helper generates them.
+
+The participant audio player stays visible while scrolling the rating scales.
+Request and audio failures appear in a floating dismissible alert; failed audio
+can be retried without clearing the current ratings. Reload the page to receive
+an updated frontend after a build (save any current answers first).
 
 Download both response and session-audit CSVs. The latter includes people who
 failed the headphone screen or stopped before rating anything. Keep those counts

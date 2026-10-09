@@ -43,3 +43,34 @@ def assignments(sample_ids: list[str], seed: int = 20261007) -> list[dict]:
     if len(visited) != 16:
         raise RuntimeError("Disconnected assignment design")
     return result
+
+
+def short_assignments(sample_ids: list[str], count: int = 26, seed: int = 20261009) -> list[dict]:
+    """20 unique sounds; no hidden repeats; every completed prefix has exposure difference <= 1.
+
+    Issue blocks in order. Missing/incomplete blocks must be filled before
+    claiming the prefix coverage. Co-occurrence is a tie-break heuristic, not a BIBD.
+    """
+    if len(sample_ids) != 64 or len(set(sample_ids)) != 64 or not 1 <= count <= 64:
+        raise ValueError('Need 64 distinct study sounds and 1–64 assignments')
+    rng = random.Random(seed)
+    coverage, pairs = Counter(), Counter()
+    result = []
+    for block_index in range(count):
+        selected = []
+        for _ in range(20):
+            remaining = [s for s in sample_ids if s not in selected]
+            rng.shuffle(remaining)
+            sample = min(remaining, key=lambda s: (coverage[s], sum(pairs[tuple(sorted((s,t)))] for t in selected)))
+            selected.append(sample)
+            coverage[sample] += 1
+        for i, first in enumerate(selected):
+            for second in selected[i+1:]:
+                pairs[tuple(sorted((first, second)))] += 1
+        rng.shuffle(selected)
+        trials = [dict(presentation_id=f'rated_{j+1:02d}', sample_id=s, kind='primary', repeat_of=None)
+                  for j, s in enumerate(selected)]
+        result.append(dict(assignment_id=f'block_{block_index+1:02d}', trials=trials))
+        if max(coverage[s] for s in sample_ids)-min(coverage[s] for s in sample_ids) > 1:
+            raise RuntimeError('Prefix coverage is unbalanced')
+    return result
