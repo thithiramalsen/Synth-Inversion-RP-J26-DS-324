@@ -1,7 +1,15 @@
 # Persistent C1 review deployment
 
-Prepared on 9 October 2026. **Not yet deployed:** hosting account setup, a real
-PostgreSQL integration run and the remote restart check remain outstanding.
+Updated 9 October 2026. **PostgreSQL verification passed:** the researcher ran
+all 23 integration tests against the configured test database using IPv4.
+The supplied final output reports `Ran 23 tests in 794.303s` and `OK`.
+This covers full listening-session flows, exports/withdrawal, correction,
+authentication, invitation handling, concurrency and timestamp precision.
+Local backend/deployment/routing checks also passed (40 tests).
+
+**Persistent deployment is not yet verified:** the Render build, hosted smoke
+test, redeploy/resume check and backup/restore check remain outstanding. The
+original deployment commit is present on GitHub's `c1-pilot-deployment` branch.
 The current Cloudflare Quick Tunnel is still a separate, temporary preview.
 
 Use Render's free Docker web service for a stable HTTPS address and Neon's free
@@ -116,6 +124,77 @@ workflow on PostgreSQL, including correction, exports, registration, expiry and
 idempotent initialization, plus concurrent duplicate submissions, concurrent
 invitation claims and expiry timestamp precision. Each test has its own schema.
 Do not set the test URL to a real participant database.
+
+If a test appears stuck after its name, `unittest -v` normally prints nothing
+until that entire test finishes. A remote database can make the many sequential
+queries slow. Stop the old test with Ctrl+C, then run this in the **same terminal**
+that has `SURVEY_TEST_POSTGRES_URL` configured:
+
+```powershell
+.\venv\Scripts\python.exe -B -u survey/deploy/check_postgres.py
+```
+
+It checks the connection and `SELECT 1` first, then reruns the single
+authentication/invitation/headphone-screen test with setup/request progress.
+After 30 seconds it also prints thread stacks to locate a socket, query or app
+wait; the stack output is diagnostic, not itself a failure. Add `--connection-only`
+to check just connectivity. The command never prints the connection string.
+Share the last progress line and stack/error, not the database URL. Environment
+variables set in a PowerShell window are not automatically available in another
+terminal or in an already-running Codex process.
+
+If the stack is in `psycopg.connect` / `waiting.wait_conn` before any query, use
+this focused transport check first:
+
+```powershell
+.\venv\Scripts\python.exe -B -u survey/deploy/check_postgres.py --network-only
+```
+
+It reports DNS, TCP and PostgreSQL TLS negotiation separately, with 5-second
+socket timeouts and a 60-second overall limit. It sends no password or SQL and
+does not print the hostname or connection string. If TCP fails, compare the same
+check on another network (such as a phone hotspot) and verify the database's
+endpoint in Neon. If TLS passes, investigate database authentication/driver
+negotiation next; transport success alone does not establish working login.
+Do not disable certificate verification to make a failing probe pass.
+
+If the output shows IPv6 timeouts followed by successful IPv4 and verified TLS,
+run the single test with the opt-in IPv4 connection mode:
+
+```powershell
+.\venv\Scripts\python.exe -B -u survey/deploy/check_postgres.py --ipv4
+```
+
+This applies IPv4 consistently to preflight, schema creation, all API connections
+and cleanup. Run the full PostgreSQL suite with visible progress in the same terminal:
+
+```powershell
+.\venv\Scripts\python.exe -B -u survey/deploy/check_postgres.py --ipv4 --all
+```
+
+Allow full-session cases to finish: they perform hundreds of database operations
+against the remote server and can take several minutes. The runner resets its
+30-second stack-dump timer whenever request/setup progress is reported. Expected
+401/409 responses are part of access-control and replay tests; the final unittest
+summary determines success. `KeyboardInterrupt` means the run was interrupted,
+not that an assertion failed. Keep the output through the final `Ran 23 tests` and
+`OK`, or the actual failure summary. Tests create their own temporary schemas and
+remove them when they finish; they do not use real participant sessions.
+
+Alternatively, use standard unittest without request-by-request progress:
+
+```powershell
+$env:SURVEY_POSTGRES_IPV4 = '1'
+.\venv\Scripts\python.exe -B -m unittest discover -s survey/backend/tests -p test_postgres.py -v
+```
+
+The helper resolves IPv4 addresses each time and retains all returned candidates
+for failover. It passes `hostaddr` alongside the original hostname, preserving
+TLS/SNI and the URL's authentication/security settings. It does not pin a provider
+IP, change Windows networking or enable the option on Render. Leave it unset on
+networks where normal dual-stack connections work. Transport success still needs
+the authentication and API tests to pass before deployment is considered verified.
+See [PostgreSQL host/hostaddr behavior](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-HOSTADDR).
 
 To validate the actual image where Docker is working:
 

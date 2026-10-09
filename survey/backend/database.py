@@ -50,7 +50,13 @@ def get_connection():
     url = os.environ.get('SURVEY_DATABASE_URL', '')
     if url:
         import psycopg
-        connection = psycopg.connect(url, row_factory=postgres_row_factory, connect_timeout=15)
+        from postgres_support import connect_postgres
+        connection = connect_postgres(
+            url,
+            row_factory=postgres_row_factory,
+            connect_timeout=15,
+            options=os.environ.get("SURVEY_POSTGRES_OPTIONS", ""),
+        )
         exposed = PostgresConnection(connection)
     else:
         if os.environ.get('RENDER') == 'true':

@@ -7,8 +7,9 @@ draft musician eligibility, separate bundles and temporary review-link access.
 The 36-presentation details below describe the preserved earlier rehearsal.
 
 **Persistent hosting preparation:** [Render + Neon setup](deploy/README.md) is
-prepared on `c1-pilot-deployment`. The frontend and local backend checks pass;
-account connection, PostgreSQL integration and remote deployment checks remain.
+prepared on `c1-pilot-deployment`. The frontend and local backend checks pass.
+All 23 PostgreSQL integration tests passed in the researcher's IPv4 run
+(794.303 seconds). Render setup/build and hosted persistence checks remain.
 The Cloudflare URL is still only the temporary supervisor preview.
 
 Updated 8 October 2026. This is the current launch checklist; older planning
