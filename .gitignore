@@ -48,3 +48,13 @@ generation/presets/base_basic_shapes_RP.vital
 generation/presets/base_restricted_v2.vital
 generation/presets/base_restricted_bend_v3.vital
 generation/presets/base_restricted_bend_sustain_v4.vital
+
+# Private reference files installed by the teammate reproduction setup
+reference/clone_integrity.json
+reference/restricted_bend_sustain_v4_config.json
+reference/parameters_normalized.parquet
+reference/parameters_full.parquet
+reference/full_waveform_reference.json
+reference/reference_recipe.json
+reference/reference_summary.json
+reference/corpus_verification.json

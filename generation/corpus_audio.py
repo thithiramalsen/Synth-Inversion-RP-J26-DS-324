@@ -6,6 +6,22 @@ import soundfile as sf
 from generation.audio_processing import DC_POLICY_ID, dc_filter
 
 ROOT = Path(__file__).resolve().parents[1]
+PROCESSED_FLOAT_POLICY = "float32_subnormal_signed_zero_v1"
+
+
+def canonical_float32(audio):
+    """Make float32 underflow independent of the renderer's CPU float mode.
+
+    Vital rendering leaves flush-to-zero enabled in its worker. A fresh reader
+    may preserve subnormal float32 values instead. Zero only those subnormals,
+    retaining their sign, using bits so the current CPU float mode cannot affect
+    the operation. Normal float32 samples and all raw masters remain untouched.
+    """
+    result = np.array(audio, dtype="<f4", copy=True)
+    bits = result.view(np.uint32)
+    subnormal = ((bits & 0x7f800000) == 0) & ((bits & 0x007fffff) != 0)
+    bits[subnormal] &= np.uint32(0x80000000)
+    return result
 
 
 def sample_digest(audio):
@@ -38,8 +54,10 @@ def load_audio(row, root=ROOT, *, verify=False):
     if row["audio_policy_id"] != DC_POLICY_ID:
         raise ValueError("Unexpected audio policy")
     raw = read_raw(row, root)
-    processed = dc_filter(raw, 44100).astype(np.float32)
-    if verify and (sample_digest(raw) != row["raw_samples_sha256"] or
-                   sample_digest(processed) != row["processed_samples_sha256"]):
-        raise ValueError(f"Waveform mismatch: {row['sample_id']}")
+    processed = canonical_float32(dc_filter(raw, 44100))
+    if verify:
+        if sample_digest(raw) != row["raw_samples_sha256"]:
+            raise ValueError(f"Raw waveform mismatch: {row['sample_id']}")
+        if sample_digest(processed) != row["processed_samples_sha256"]:
+            raise ValueError(f"Processed waveform mismatch: {row['sample_id']}")
     return processed, 44100

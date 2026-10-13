@@ -24,7 +24,8 @@ import numpy as np
 import pandas as pd
 import soundfile as sf
 from generation.audio_processing import audio_metrics, dc_filter
-from generation.corpus_audio import load_audio, raw_path, sample_digest
+from generation.corpus_audio import (PROCESSED_FLOAT_POLICY, canonical_float32,
+                                     load_audio, raw_path, sample_digest)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data/raw/corpus_v4"
@@ -75,6 +76,7 @@ def recipe(count):
         "runner_sources": {name: sha(ROOT / name) for name in (
             "generation/generate_corpus.py", "generation/corpus_audio.py")},
         "sample_hash_format": "SHA256 of mono 44100 Hz, 132300 little-endian float32 samples",
+        "processed_float32_policy": PROCESSED_FLOAT_POLICY,
     }
 
 
@@ -112,7 +114,7 @@ def exclusive_run():
                 fcntl.flock(handle, fcntl.LOCK_UN)
 
 
-def verify_rows(rows, samples):
+def verify_rows(rows, samples, *, progress=False):
     """Reject changed parameters, policy, paths, format, raw or derived audio."""
     g = generator()
     if len(rows) > len(samples):
@@ -141,6 +143,8 @@ def verify_rows(rows, samples):
                                    ("raw", controls[spec["control"]].value())):
                 if not math.isclose(actual, row[name + "_" + suffix], abs_tol=2e-6, rel_tol=0):
                     raise ValueError(f"Control value changed: {row['sample_id']}/{name}")
+        if progress and (index + 1) % 2048 == 0:
+            print(f"Verified checkpoint rows: {index+1:,}/{len(rows):,}", flush=True)
 
 
 def legacy_prefix(samples):
@@ -238,7 +242,8 @@ def render_one(task):
                audio_policy_id=g.PROFILE.AUDIO_POLICY_ID, **parameters,
                **g.calculate_audio_metrics(np.stack([processed, processed])),
                **{"raw_" + k: v for k, v in audio_metrics(raw, g.SAMPLE_RATE).items()},
-               raw_samples_sha256=sample_digest(raw), processed_samples_sha256=sample_digest(processed))
+               raw_samples_sha256=sample_digest(raw),
+               processed_samples_sha256=sample_digest(canonical_float32(processed)))
     return row, raw
 
 

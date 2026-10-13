@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 import tempfile
+import copy
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -11,7 +12,9 @@ import numpy as np
 import soundfile as sf
 from generation import generate_corpus as runner
 from generation.audio_processing import dc_filter, DC_POLICY_ID
-from generation.corpus_audio import load_audio, sample_digest
+from generation.corpus_audio import canonical_float32, load_audio, sample_digest
+from generation.repair_corpus_float_policy import LEGACY_SOURCES, validate_transition
+from generation.corpus_audio import PROCESSED_FLOAT_POLICY
 
 
 class CorpusTests(unittest.TestCase):
@@ -43,7 +46,7 @@ class CorpusTests(unittest.TestCase):
         audio = np.full(132300, (index + 1) / 100, dtype=np.float32)
         row = dict(sample_index=index, sample_id=f"{runner.PROFILE}_{index:05d}",
                    audio_policy_id=DC_POLICY_ID, raw_samples_sha256=sample_digest(audio),
-                   processed_samples_sha256=sample_digest(dc_filter(audio, 44100)),
+                   processed_samples_sha256=sample_digest(canonical_float32(dc_filter(audio, 44100))),
                    is_silent=False, is_clipped=False, has_large_dc_offset=False)
         return row, audio
 
@@ -79,7 +82,7 @@ class CorpusTests(unittest.TestCase):
         payload = json.loads(row_path.read_text())
         payload[0]["processed_samples_sha256"] = "wrong"
         row_path.write_text(json.dumps(payload))
-        with self.assertRaisesRegex(ValueError, "Waveform mismatch"):
+        with self.assertRaisesRegex(ValueError, "waveform mismatch"):
             runner.inspect(4)
 
     def test_conflicting_orphan_is_never_overwritten(self):
@@ -91,6 +94,17 @@ class CorpusTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not overwriting"):
             runner.save_master(row, audio * 2)
         self.assertEqual(path.read_bytes(), original)
+
+    def test_float32_subnormals_zeroed_with_sign_and_normal_samples_preserved(self):
+        bits = np.array([0, 0x80000000, 1, 0x80000001, 0x007fffff,
+                         0x807fffff, 0x00800000, 0x80800000, 0x3f800000], dtype=np.uint32)
+        original = bits.copy()
+        result = canonical_float32(bits.view(np.float32)).view(np.uint32)
+        np.testing.assert_array_equal(result, [0, 0x80000000, 0, 0x80000000,
+                                               0, 0x80000000, 0x00800000, 0x80800000, 0x3f800000])
+        np.testing.assert_array_equal(bits, original)
+        self.assertEqual(sample_digest(canonical_float32(result.view(np.float32))),
+                         sample_digest(result.view(np.float32)))
 
     def test_exclusive_writer_lock(self):
         with runner.exclusive_run():
@@ -127,6 +141,29 @@ class CorpusTests(unittest.TestCase):
         chunk.rename(self.output / "chunks/000001.json")
         with self.assertRaisesRegex(ValueError, "checkpoint"):
             runner.inspect(4)
+
+
+class FloatMigrationTests(unittest.TestCase):
+    def test_only_the_known_float_policy_transition_is_accepted(self):
+        before = {"synthesis": {"seed": 123}, "runner_sources": dict(LEGACY_SOURCES)}
+        after = dict(before, runner_sources={"new": "code"}, processed_float32_policy=PROCESSED_FLOAT_POLICY)
+        validate_transition(before, after)
+        changed = copy.deepcopy(after)
+        changed["synthesis"]["seed"] = 456
+        with self.assertRaisesRegex(ValueError, "Unrelated"):
+            validate_transition(before, changed)
+        unknown = dict(before, runner_sources={"unknown": "version"})
+        with self.assertRaisesRegex(ValueError, "exact original"):
+            validate_transition(unknown, after)
+
+    def test_reported_saved_sound_verifies_without_rendering(self):
+        checkpoint = runner.ROOT / "data/raw/corpus_v4/chunks/001280.json"
+        if not checkpoint.is_file():
+            self.skipTest("Local generated regression sound is not distributed")
+        row = next(r for r in json.loads(checkpoint.read_text()) if r["sample_index"] == 1287)
+        audio, sr = load_audio(row, runner.ROOT, verify=True)
+        self.assertEqual(sr, 44100)
+        self.assertEqual(sample_digest(audio), row["processed_samples_sha256"])
 
 
 if __name__ == "__main__":
