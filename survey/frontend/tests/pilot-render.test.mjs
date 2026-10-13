@@ -4,7 +4,7 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { createServer } from 'vite'
 
-let server, PilotApp, C4App, C4Admin, ComparisonPlayer, C4InvitationAssignments
+let server, PilotApp, C4App, C4Admin, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
 const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
 
@@ -15,6 +15,7 @@ before(async () => {
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
   C4App = c4.default; C4Admin = c4.C4Admin; ComparisonPlayer = c4.ComparisonPlayer
   C4InvitationAssignments = c4.C4InvitationAssignments
+  ComparisonQuestions = c4.ComparisonQuestions
 })
 
 after(async () => {
@@ -47,9 +48,35 @@ test('C4 review, researcher login and triple player render independently', () =>
     session: {session_id: 'test', token:'test'}, step: {phase:'rating'}, onCounts:()=>{}, onError:()=>{}
   }))
   assert.equal((html.match(/<audio/g)||[]).length, 1)
+  assert.match(html, /class="p-player c4-player"/)
+  assert.match(html, /controls=""/)
   assert.match(html,/Play.*Reference/)
   assert.match(html,/Play.*Sound A/)
   assert.match(html,/Play.*Sound B/)
+})
+
+test('C4 retains full-listen checks when its player remounts after a pause', () => {
+  const html = renderToString(React.createElement(ComparisonPlayer, {
+    session: { session_id: 'test', token: 'test' }, step: { phase: 'rating' },
+    initialCounts: { plays: { reference: 1 }, completed: { reference: 1 } },
+    onCounts: () => {}, onError: () => {},
+  }))
+  assert.match(html, /Play <!-- -->Reference<!-- --> ✓/)
+  assert.doesNotMatch(html, /Play <!-- -->Sound A<!-- --> ✓/)
+})
+
+test('C4 confidence uses five options and uncertainty needs no confidence', () => {
+  const confident = renderToString(React.createElement(ComparisonQuestions, {
+    answer: { choice: 'candidate_a', confidence: 4 }, onChange: () => {},
+  }))
+  assert.match(confident, /p-card p-rating-card/)
+  assert.equal((confident.match(/aria-label="Confidence: /g) || []).length, 5)
+  assert.match(confident, /aria-checked="true" aria-label="Confidence: 4"/)
+  const unclear = renderToString(React.createElement(ComparisonQuestions, {
+    answer: { choice: 'cannot_decide', confidence: null }, onChange: () => {},
+  }))
+  assert.match(unclear, /p-unclear selected/)
+  assert.doesNotMatch(unclear, /aria-label="Confidence"/)
 })
 
 test('C4 issued codes remain visible as assignments even with no started sessions', () => {

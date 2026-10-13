@@ -1,5 +1,12 @@
 # C4 hosted interface review
 
+**14 October UI alignment:** C4 now uses C1's native audio controls and sticky
+player styling, setup headings, listener badge, rating cards, pause, break,
+feedback and completion presentation. Reference/A/B still share one audio
+element, with explicit clip selection and full-listen indicators. Confidence
+remains 1–5; uncertainty remains a separate answer. The study assets, assignments,
+API answer schema and review-only status are unchanged.
+
 This release adds `/c4` and `/c4/admin` to the existing Render service.
 It is a supervisor/interface rehearsal. All C4 exports have
 `analysis_include=False`. Main-study recruitment is deliberately not implemented
@@ -48,10 +55,17 @@ choosing solely by loudness. A/B choices require confidence 1–5. “I cannot d
 records uncertainty, not equality, and has no confidence score. Optional comments
 are saved. There is no researcher-defined correct similarity answer.
 
-One audio element prevents overlap; each selection restarts its clip. Full
-playthrough is required for all three roles before submission. Switching/stopping
-does not credit an unfinished play. These browser-reported counts are interaction
-checks, not proof of human attention. The controls stay visible while scrolling.
+One audio element prevents overlap; each clip selection restarts its audio.
+Native play/pause, timeline and volume controls match C1. A clip only receives
+completion credit if its native played ranges cover the duration; seeking past
+unheard audio does not satisfy the gate. All three roles need completion before
+submission. Pause/resume within the page preserves completed clip counts and
+answers. An unfinished clip needs to be replayed after a pause. Refreshing the
+page still requires listening again to the current comparison.
+
+Play counts now follow native media play events, including resumes, as in C1.
+Completion and play counts are browser-reported interaction checks, not proof of
+human attention. The shared player stays visible while scrolling.
 Answers may be changed before saving; previous-comparison correction is not in
 this version. C1's existing correction policy is unchanged.
 
@@ -127,3 +141,9 @@ canonical A/B exports, CSV formula escaping, withdrawal, replacement, modified
 audio and review-only gating. Design tests check deterministic selection,
 distinct sounds, candidate counterbalancing and repeat spacing. They use an
 isolated SQLite database unless the dedicated PostgreSQL suite is selected.
+
+The UI alignment was checked in a separate local simulated-session database:
+native volume playback, headphone setup, Reference/A/B playback, preservation
+after pause, confidence selection, saving/advancing, and break/feedback/completion
+screens. Frontend tests cover full native playback versus skipped ranges, C1-style
+player rendering, retained completion checks and five-point confidence/uncertainty.
