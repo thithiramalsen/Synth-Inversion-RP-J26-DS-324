@@ -1,5 +1,12 @@
 # C2 worked example: actual development measurements
 
+Update 14 October 2026: the full deterministic model has now been trained.
+[FULL_BASELINE_RESULTS.md](FULL_BASELINE_RESULTS.md) compares the same clip with
+the earlier model. Its target distance changed from .363118 to .314926, and cutoff
+error z changed from .068822 to .002619. The measurements below preserve the
+original development example; the new audio is under
+`data/processed/c2_v4/worked_example_full_v1/`.
+
 Measured 13 October 2026. This is **one development example**, not final test
 evidence and not an uncertainty-calibrated prediction. Its numbers are real, not
 illustrative invented confidence scores.

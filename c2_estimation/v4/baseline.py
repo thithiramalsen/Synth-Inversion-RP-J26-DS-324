@@ -24,6 +24,16 @@ from c2_estimation.v4.data import (DEFAULT_PREPARED, NAMES, ROOT, SEED, digest_j
 from c2_estimation.v4.features import SHARD_SIZE, load_cache, training_statistics
 
 
+def build_model(device: torch.device) -> ParameterCNN:
+    model = ParameterCNN(np.zeros(13, dtype=np.float32), np.ones(13, dtype=np.float32))
+    if device.type == "cuda":
+        # 64x259 input -> 8x32 after three max pools. The adaptive 2x4 pool
+        # averages exactly these 4x8 windows, but its CUDA backward is flagged
+        # nondeterministic. The equivalent fixed pool supports strict execution.
+        model.features[-1] = torch.nn.AvgPool2d(kernel_size=(4, 8), stride=(4, 8))
+    return model.to(device)
+
+
 class CachedDataset(Dataset):
     def __init__(self, arrays, targets, indexes, mean, std):
         self.arrays, self.targets, self.indexes = arrays, targets, indexes
@@ -91,6 +101,8 @@ def train(args):
         raise ValueError("Epochs, batch size, patience and threads must be positive")
     set_deterministic_execution(args.seed, args.threads)
     device = choose_device(args.device)
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
     protocol, _ = load_prepared(args.prepared)
     cache, frame, arrays = load_cache(args.cache)
     if cache["protocol_sha256"] != sha(args.prepared / "protocol.json"):
@@ -111,6 +123,9 @@ def train(args):
               "parameter_names": list(NAMES), "lower": protocol["lower"], "upper": protocol["upper"],
               "python": platform.python_version(), "torch": str(torch.__version__),
               "numpy": np.__version__, "cuda": torch.version.cuda,
+              "gpu": torch.cuda.get_device_name(device) if device.type == "cuda" else None,
+              "cudnn": torch.backends.cudnn.version(), "strict_determinism": True,
+              "tf32": False, "pooling": "fixed_4x8" if device.type == "cuda" else "adaptive_2x4",
               "sources": {name: sha(ROOT / name) for name in (
                   "c2_estimation/v4/baseline.py", "c2_estimation/v4/features.py",
                   "c2_estimation/v4/data.py", "c2_estimation/pipeline.py")}}
@@ -129,7 +144,7 @@ def train(args):
     train_data = CachedDataset(arrays, targets, train_indexes, mean, std)
     val_loader = DataLoader(CachedDataset(arrays, targets, val_indexes, mean, std),
                             batch_size=args.batch_size, shuffle=False, num_workers=0)
-    model = ParameterCNN(np.zeros(13, dtype=np.float32), np.ones(13, dtype=np.float32)).to(device)
+    model = build_model(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     history, best, stale, first_epoch = [], float("inf"), 0, 1
     if args.resume:
@@ -190,7 +205,7 @@ def train(args):
         records[name + "_predicted_vital"] = lower[j] + predictions[:, j].astype(np.float64) * (upper[j]-lower[j])
     records.to_csv(args.output / "validation_predictions.csv", index=False)
     # Independent checkpoint load must reproduce the delivered predictions.
-    reloaded = ParameterCNN(np.zeros(13, dtype=np.float32), np.ones(13, dtype=np.float32)).to(device)
+    reloaded = build_model(device)
     reloaded.load_state_dict(torch.load(args.output / "best_model.pt", map_location=device, weights_only=True)["model"])
     reloaded_predictions, _ = evaluate(reloaded, val_loader, device)
     if not np.array_equal(predictions, reloaded_predictions):
@@ -210,6 +225,7 @@ def train(args):
                "checkpoint_reload_exact": True, "test_evaluated": False,
                "checkpoint_sha256": sha(args.output / "best_model.pt"),
                "predictions_sha256": sha(args.output / "validation_predictions.csv"),
+               "training_elapsed_seconds": time.perf_counter() - start,
                "uncertainty_calibration_implemented": False}
     write_json(args.output / "summary.json", summary)
     print(json.dumps(summary), flush=True)

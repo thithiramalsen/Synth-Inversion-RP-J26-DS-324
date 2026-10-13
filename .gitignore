@@ -8,6 +8,7 @@ survey/.env
 # Virtual environments
 venv/
 .venv/
+.venv-c2/
 venv-vita/
 
 # Python cache

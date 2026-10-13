@@ -13,11 +13,12 @@ import pandas as pd
 import torch
 
 from c2_estimation.pipeline import ParameterCNN, create_mel_filterbank, extract_log_mel
-from c2_estimation.v4.baseline import CachedDataset, regression_metrics, train, atomic_checkpoint
+from c2_estimation.v4.baseline import CachedDataset, regression_metrics, train, atomic_checkpoint, build_model
 from c2_estimation.v4.data import (NAMES, COUNTS, assignments, from_z, inverse_rows,
                                   load_prepared, sha, to_z, validate_frame, write_json)
 from c2_estimation.v4.diagnostics import distance, perturbation_pair
 from c2_estimation.v4.features import training_statistics
+from c2_estimation.v4.compare_baselines import compare
 
 
 class ProtocolTests(unittest.TestCase):
@@ -123,6 +124,36 @@ class FeatureAndModelTests(unittest.TestCase):
         result.mean().backward()
         self.assertTrue(all(p.grad is not None for p in model.parameters()))
 
+    def test_fixed_pool_matches_adaptive_values_and_gradients(self):
+        torch.set_num_threads(2)
+        first = torch.randn(2, 32, 8, 32, requires_grad=True)
+        second = first.detach().clone().requires_grad_(True)
+        adaptive = torch.nn.AdaptiveAvgPool2d((2, 4))(first)
+        fixed = torch.nn.AvgPool2d((4, 8))(second)
+        torch.testing.assert_close(adaptive, fixed, rtol=0, atol=1e-7)
+        adaptive.sum().backward()
+        fixed.sum().backward()
+        torch.testing.assert_close(first.grad, second.grad, rtol=0, atol=0)
+
+    @unittest.skipUnless(torch.cuda.is_available(), "CUDA training overlay required")
+    def test_cuda_training_step_is_strictly_reproducible(self):
+        states = []
+        for _ in range(2):
+            torch.manual_seed(123)
+            torch.cuda.manual_seed_all(123)
+            torch.use_deterministic_algorithms(True)
+            torch.backends.cudnn.benchmark = False
+            torch.backends.cudnn.deterministic = True
+            model = build_model(torch.device("cuda"))
+            optimizer = torch.optim.Adam(model.parameters(), lr=.001)
+            x = torch.ones(4, 1, 64, 259, device="cuda")
+            optimizer.zero_grad(set_to_none=True)
+            model(x).square().mean().backward()
+            optimizer.step()
+            states.append({k: v.detach().cpu().clone() for k, v in model.state_dict().items()})
+        for key in states[0]:
+            self.assertTrue(torch.equal(states[0][key], states[1][key]), key)
+
     def test_metrics_two_coordinates_and_constant_target(self):
         truth = np.tile(np.linspace(.1, .9, 3)[:, None], (1, 13))
         metrics = regression_metrics(truth, truth, np.zeros(13), np.ones(13))
@@ -208,6 +239,38 @@ class ResumeTests(unittest.TestCase):
                 for key in expected["model"]:
                     self.assertTrue(torch.equal(expected["model"][key], actual["model"][key]), key)
                 self.assertEqual(expected_predictions, (args.output / "validation_predictions.csv").read_bytes())
+
+
+class BaselineComparisonTests(unittest.TestCase):
+    def test_comparison_matches_ids_and_rejects_test_rows(self):
+        scratch_root = Path(__file__).resolve().parents[2] / "data/processed"
+        scratch_root.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="c2-comparison-test-", dir=scratch_root) as folder:
+            root = Path(folder)
+            runs = [root / "development", root / "full"]
+            truth = {"a": .2, "b": .8, "c": .4}
+            for path, ids, offset in ((runs[0], ["b", "a"], .1), (runs[1], ["c", "a", "b"], 0.)):
+                path.mkdir()
+                frame = pd.DataFrame({"sample_id": ids, "split": ["validation"]*len(ids),
+                    "validation_role": ["inverse"]*len(ids),
+                    **{n+"_true_z": [truth[i] for i in ids] for n in NAMES},
+                    **{n+"_predicted_z": [truth[i]+offset for i in ids] for n in NAMES}})
+                frame.to_csv(path / "validation_predictions.csv", index=False)
+                write_json(path / "summary.json", {"predictions_sha256": sha(path / "validation_predictions.csv")})
+                write_json(path / "run_config.json", {"protocol_sha256": "fixture-only",
+                    "lower": [0.]*13, "upper": [1.]*13})
+            compare(*runs)
+            result = json.loads((runs[1] / "matched_development_comparison.json").read_text())
+            self.assertEqual(result["matched_clips"], 2)
+            self.assertAlmostEqual(result["development_macro_z_mae"], .1)
+            self.assertEqual(result["full_macro_z_mae"], 0.)
+            self.assertEqual(result["controls_with_lower_mae"], 13)
+            altered = pd.read_csv(runs[1] / "validation_predictions.csv")
+            altered.loc[0, "split"] = "test"
+            altered.to_csv(runs[1] / "validation_predictions.csv", index=False)
+            write_json(runs[1] / "summary.json", {"predictions_sha256": sha(runs[1] / "validation_predictions.csv")})
+            with self.assertRaisesRegex(ValueError, "inverse-validation"):
+                compare(*runs)
 
 
 if __name__ == "__main__":

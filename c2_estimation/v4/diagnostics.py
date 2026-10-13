@@ -107,7 +107,7 @@ class Renderer:
         return audio, to_z(actual, self.lower, self.upper)
 
 
-def worked_example(prepared: Path, run: Path, output: Path):
+def worked_example(prepared: Path, run: Path, output: Path, sample_id: str | None = None):
     protocol, frame = load_prepared(prepared)
     config = json.loads((run / "run_config.json").read_text(encoding="utf-8"))
     summary = json.loads((run / "summary.json").read_text(encoding="utf-8"))
@@ -116,8 +116,16 @@ def worked_example(prepared: Path, run: Path, output: Path):
     if summary["predictions_sha256"] != sha(run / "validation_predictions.csv"):
         raise ValueError("Frozen validation predictions changed")
     predictions = pd.read_csv(run / "validation_predictions.csv")
-    # Lowest-index inverse-validation prediction: selected without inspecting its quality.
-    row = predictions.sort_values("sample_index").iloc[0]
+    if sample_id is None:
+        # Lowest-index inverse-validation prediction: selected without inspecting its quality.
+        row = predictions.sort_values("sample_index").iloc[0]
+        selection = "lowest-index inverse-validation prediction"
+    else:
+        selected = predictions[predictions.sample_id == sample_id]
+        if len(selected) != 1:
+            raise ValueError("Requested clip must occur once in inverse-validation predictions")
+        row = selected.iloc[0]
+        selection = "specified inverse-validation clip for development comparison"
     source = frame[frame.sample_id == row.sample_id].iloc[0]
     if source.split != "validation" or source.validation_role != "inverse":
         raise ValueError("Worked example must be inverse-validation, never test")
@@ -174,7 +182,7 @@ def worked_example(prepared: Path, run: Path, output: Path):
     if not np.array_equal(predicted_z, frozen) or sha(run / "validation_predictions.csv") != summary["predictions_sha256"]:
         raise ValueError("Diagnostic stage modified the frozen prediction")
     pd.DataFrame(diagnostic_rows).to_csv(output / "parameter_diagnostics.csv", index=False)
-    result = {"sample_id": str(row.sample_id), "selection": "lowest-index inverse-validation prediction",
+    result = {"sample_id": str(row.sample_id), "selection": selection,
         "model_status": summary["status"], "distance_config": DISTANCE_CONFIG,
         "R": feature_distance(target_features, prediction_features),
         "target_midpoint_distance": distance(target, midpoint),
@@ -184,6 +192,7 @@ def worked_example(prepared: Path, run: Path, output: Path):
         "inactive_filter_envelope_attack_distance": inactive_distance,
         "target_samples_sha256": sample_digest(target), "prediction_samples_sha256": sample_digest(prediction),
         "checkpoint_sha256": summary["checkpoint_sha256"],
+        "diagnostics_source_sha256": sha(Path(__file__)),
         "predictions_sha256": summary["predictions_sha256"],
         "delta_z": protocol["delta_z"], "tau_z": .05, "test_evaluated": False,
         "q": None, "q_note": "No ensemble/calibrator trained; no confidence probability claimed",
@@ -198,5 +207,6 @@ if __name__ == "__main__":
     parser.add_argument("--prepared", type=Path, default=DEFAULT_PREPARED)
     parser.add_argument("--run", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--sample-id", help="Explicit inverse-validation ID, e.g. to compare the same earlier development clip")
     args = parser.parse_args()
-    worked_example(args.prepared, args.run, args.output)
+    worked_example(args.prepared, args.run, args.output, args.sample_id)

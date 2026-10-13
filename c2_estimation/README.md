@@ -7,10 +7,17 @@ corpus**. Start with [V4_README.md](V4_README.md) for commands, verified status,
 split protections, and remaining work. [RESEARCH_DESIGN.md](RESEARCH_DESIGN.md)
 explains the technology choices and evaluation justification;
 [WORKED_EXAMPLE.md](WORKED_EXAMPLE.md) walks through actual development renders.
+The full deterministic model is now trained; measured results are in
+[FULL_BASELINE_RESULTS.md](FULL_BASELINE_RESULTS.md).
+[RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.md) indexes the saved EDA figures, tables,
+audits and statistical safeguards, and distinguishes running experiments from results.
 
-The v4 data/split, deterministic baseline and diagnostic example are implemented.
-The full-data trained ensemble, calibrated reliability probabilities and final
-test study are **not complete**. No C3 code or frozen generation code was changed.
+The v4 data/split, deterministic baseline, diagnostic example and research EDA pack
+are saved. The Gaussian ensemble, frozen-subset diagnostic pipeline and development
+calibration/ablation workflow are implemented and tested; the full ensemble fit is
+running. Completed trained/calibrated results and the final test study must not be
+claimed until their output status confirms completion. No C3 code or frozen
+generation code was changed.
 
 ## Historical eight-control pilot
 
