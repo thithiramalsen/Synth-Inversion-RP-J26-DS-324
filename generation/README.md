@@ -1,5 +1,9 @@
 # Vital generation configurations
 
+For the full **131,072-sound v4 corpus**, use
+[the full-dataset runbook](FULL_DATASET_RUNBOOK.md). It includes storage preflight,
+preserving the current 1,024, teammate reproduction and full-waveform comparison.
+
 ## Current selection: 13 controls, Bend plus filter-envelope sustain
 
 On 7 October 2026 the researcher chose to keep **both Bend and variable
