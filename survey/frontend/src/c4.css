@@ -1,7 +1,13 @@
-.c4-player { position: sticky; top: 12px; z-index: 10; border: 1px solid #b7ccc5; box-shadow: 0 8px 22px #17332914; }
-.c4-player p { margin: 0 0 12px; }
-.c4-player .p-muted { margin: 12px 0 0; }
-.c4-play-buttons, .c4-choices { display: flex; flex-wrap: wrap; gap: 10px; }
-.c4-play-buttons button { flex: 1 1 110px; }
-.c4-choices button { flex: 1 1 150px; }
-@media (max-width: 520px) { .c4-player { top: 4px; padding: 14px; } .c4-play-buttons { gap: 6px; } .c4-play-buttons button { padding: 10px; flex-basis: 40%; } }
+/* C4 inherits C1's cards, typography, native audio controls and sticky player. */
+.c4-player { align-items: flex-start; }
+.c4-player audio[hidden] { display: none; }
+.c4-play-buttons { display: flex; gap: 8px; margin: 10px 0; }
+.c4-play-buttons button { flex: 1 1 0; gap: 6px; min-height: 42px; padding: 8px 12px; }
+.c4-player .c4-listen-status { margin: 8px 0 0; }
+.c4-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.c4-confidence .p-ratings { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 600px) {
+  .c4-play-buttons { gap: 6px; }
+  .c4-play-buttons button { padding: 8px 5px; font-size: 12px !important; }
+  .c4-player .c4-listen-status { font-size: 11px; }
+}
