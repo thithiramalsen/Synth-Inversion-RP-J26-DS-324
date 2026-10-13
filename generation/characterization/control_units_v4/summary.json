@@ -1,0 +1,1655 @@
+{
+  "profile": "restricted_bend_sustain_v4",
+  "vita_version": "0.0.5",
+  "preset_sha256": "ee3c0d4df877a0715c3660bfdff730f80eb93287c10a45697f56bc0f9e03c49b",
+  "checked_parameter_points": 221,
+  "preset_round_trips": 17,
+  "audio_rendered": false,
+  "mappings": {
+    "wave_frame": {
+      "min": 0.0,
+      "max": 256.0,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": "",
+      "is_discrete": false,
+      "control": "osc_1_wave_frame",
+      "scale": "ValueScale.Linear",
+      "restricted_min": 0.0,
+      "restricted_max": 1.0,
+      "points": [
+        {
+          "requested_normalized": 0.0,
+          "actual_normalized": 0.0,
+          "native": 0.0,
+          "display": "0.000000"
+        },
+        {
+          "requested_normalized": 0.0625,
+          "actual_normalized": 0.0625,
+          "native": 16.0,
+          "display": "16.000000"
+        },
+        {
+          "requested_normalized": 0.125,
+          "actual_normalized": 0.125,
+          "native": 32.0,
+          "display": "32.000000"
+        },
+        {
+          "requested_normalized": 0.1875,
+          "actual_normalized": 0.1875,
+          "native": 48.0,
+          "display": "48.000000"
+        },
+        {
+          "requested_normalized": 0.25,
+          "actual_normalized": 0.25,
+          "native": 64.0,
+          "display": "64.000000"
+        },
+        {
+          "requested_normalized": 0.3125,
+          "actual_normalized": 0.3125,
+          "native": 80.0,
+          "display": "80.000000"
+        },
+        {
+          "requested_normalized": 0.375,
+          "actual_normalized": 0.375,
+          "native": 96.0,
+          "display": "96.000000"
+        },
+        {
+          "requested_normalized": 0.4375,
+          "actual_normalized": 0.4375,
+          "native": 112.0,
+          "display": "112.000000"
+        },
+        {
+          "requested_normalized": 0.5,
+          "actual_normalized": 0.5,
+          "native": 128.0,
+          "display": "128.000000"
+        },
+        {
+          "requested_normalized": 0.5625,
+          "actual_normalized": 0.5625,
+          "native": 144.0,
+          "display": "144.000000"
+        },
+        {
+          "requested_normalized": 0.625,
+          "actual_normalized": 0.625,
+          "native": 160.0,
+          "display": "160.000000"
+        },
+        {
+          "requested_normalized": 0.6875,
+          "actual_normalized": 0.6875,
+          "native": 176.0,
+          "display": "176.000000"
+        },
+        {
+          "requested_normalized": 0.75,
+          "actual_normalized": 0.75,
+          "native": 192.0,
+          "display": "192.000000"
+        },
+        {
+          "requested_normalized": 0.8125,
+          "actual_normalized": 0.8125,
+          "native": 208.0,
+          "display": "208.000000"
+        },
+        {
+          "requested_normalized": 0.875,
+          "actual_normalized": 0.875,
+          "native": 224.0,
+          "display": "224.000000"
+        },
+        {
+          "requested_normalized": 0.9375,
+          "actual_normalized": 0.9375,
+          "native": 240.0,
+          "display": "240.000000"
+        },
+        {
+          "requested_normalized": 1.0,
+          "actual_normalized": 1.0,
+          "native": 256.0,
+          "display": "256.000000"
+        }
+      ]
+    },
+    "bend_amount": {
+      "min": 0.0,
+      "max": 1.0,
+      "display_multiply": 100.0,
+      "post_offset": 0.0,
+      "display_units": "%",
+      "is_discrete": false,
+      "control": "osc_1_distortion_amount",
+      "scale": "ValueScale.Linear",
+      "restricted_min": 0.25,
+      "restricted_max": 0.75,
+      "points": [
+        {
+          "requested_normalized": 0.25,
+          "actual_normalized": 0.25,
+          "native": 0.25,
+          "display": "25.000000%"
+        },
+        {
+          "requested_normalized": 0.28125,
+          "actual_normalized": 0.28125,
+          "native": 0.28125,
+          "display": "28.125000%"
+        },
+        {
+          "requested_normalized": 0.3125,
+          "actual_normalized": 0.3125,
+          "native": 0.3125,
+          "display": "31.250000%"
+        },
+        {
+          "requested_normalized": 0.34375,
+          "actual_normalized": 0.34375,
+          "native": 0.34375,
+          "display": "34.375000%"
+        },
+        {
+          "requested_normalized": 0.375,
+          "actual_normalized": 0.375,
+          "native": 0.375,
+          "display": "37.500000%"
+        },
+        {
+          "requested_normalized": 0.40625,
+          "actual_normalized": 0.40625,
+          "native": 0.40625,
+          "display": "40.625000%"
+        },
+        {
+          "requested_normalized": 0.4375,
+          "actual_normalized": 0.4375,
+          "native": 0.4375,
+          "display": "43.750000%"
+        },
+        {
+          "requested_normalized": 0.46875,
+          "actual_normalized": 0.46875,
+          "native": 0.46875,
+          "display": "46.875000%"
+        },
+        {
+          "requested_normalized": 0.5,
+          "actual_normalized": 0.5,
+          "native": 0.5,
+          "display": "50.000000%"
+        },
+        {
+          "requested_normalized": 0.53125,
+          "actual_normalized": 0.53125,
+          "native": 0.53125,
+          "display": "53.125000%"
+        },
+        {
+          "requested_normalized": 0.5625,
+          "actual_normalized": 0.5625,
+          "native": 0.5625,
+          "display": "56.250000%"
+        },
+        {
+          "requested_normalized": 0.59375,
+          "actual_normalized": 0.59375,
+          "native": 0.59375,
+          "display": "59.375000%"
+        },
+        {
+          "requested_normalized": 0.625,
+          "actual_normalized": 0.625,
+          "native": 0.625,
+          "display": "62.500000%"
+        },
+        {
+          "requested_normalized": 0.65625,
+          "actual_normalized": 0.65625,
+          "native": 0.65625,
+          "display": "65.625000%"
+        },
+        {
+          "requested_normalized": 0.6875,
+          "actual_normalized": 0.6875,
+          "native": 0.6875,
+          "display": "68.750000%"
+        },
+        {
+          "requested_normalized": 0.71875,
+          "actual_normalized": 0.71875,
+          "native": 0.71875,
+          "display": "71.875000%"
+        },
+        {
+          "requested_normalized": 0.75,
+          "actual_normalized": 0.75,
+          "native": 0.75,
+          "display": "75.000000%"
+        }
+      ]
+    },
+    "filter_cutoff": {
+      "min": 8.0,
+      "max": 136.0,
+      "display_multiply": 1.0,
+      "post_offset": -60.0,
+      "display_units": " semitones",
+      "is_discrete": false,
+      "control": "filter_1_cutoff",
+      "scale": "ValueScale.Linear",
+      "restricted_min": 0.3,
+      "restricted_max": 0.85,
+      "points": [
+        {
+          "requested_normalized": 0.3,
+          "actual_normalized": 0.30000001192092896,
+          "native": 46.400001525878906,
+          "display": "-13.599998 semitones",
+          "base_hz_nominal": 119.26496624495762,
+          "display_semitones_relative_to_midi_60": -13.599998474121094
+        },
+        {
+          "requested_normalized": 0.334375,
+          "actual_normalized": 0.3343749940395355,
+          "native": 50.79999923706055,
+          "display": "-9.200001 semitones",
+          "base_hz_nominal": 153.77668598289017,
+          "display_semitones_relative_to_midi_60": -9.200000762939453
+        },
+        {
+          "requested_normalized": 0.36875,
+          "actual_normalized": 0.3687500059604645,
+          "native": 55.20000076293945,
+          "display": "-4.799999 semitones",
+          "base_hz_nominal": 198.2751105121903,
+          "display_semitones_relative_to_midi_60": -4.799999237060547
+        },
+        {
+          "requested_normalized": 0.403125,
+          "actual_normalized": 0.40312498807907104,
+          "native": 59.599998474121094,
+          "display": "-0.400002 semitones",
+          "base_hz_nominal": 255.65000659818676,
+          "display_semitones_relative_to_midi_60": -0.40000152587890625
+        },
+        {
+          "requested_normalized": 0.4375,
+          "actual_normalized": 0.4375,
+          "native": 64.0,
+          "display": "4.000000 semitones",
+          "base_hz_nominal": 329.6275569128699,
+          "display_semitones_relative_to_midi_60": 4.0
+        },
+        {
+          "requested_normalized": 0.471875,
+          "actual_normalized": 0.47187501192092896,
+          "native": 68.4000015258789,
+          "display": "8.400002 semitones",
+          "base_hz_nominal": 425.01202218673427,
+          "display_semitones_relative_to_midi_60": 8.400001525878906
+        },
+        {
+          "requested_normalized": 0.50625,
+          "actual_normalized": 0.5062500238418579,
+          "native": 72.80000305175781,
+          "display": "12.800003 semitones",
+          "base_hz_nominal": 547.9979304369998,
+          "display_semitones_relative_to_midi_60": 12.800003051757812
+        },
+        {
+          "requested_normalized": 0.540625,
+          "actual_normalized": 0.5406249761581421,
+          "native": 77.19999694824219,
+          "display": "17.199997 semitones",
+          "base_hz_nominal": 706.572011487759,
+          "display_semitones_relative_to_midi_60": 17.199996948242188
+        },
+        {
+          "requested_normalized": 0.575,
+          "actual_normalized": 0.574999988079071,
+          "native": 81.5999984741211,
+          "display": "21.599998 semitones",
+          "base_hz_nominal": 911.0330526835754,
+          "display_semitones_relative_to_midi_60": 21.599998474121094
+        },
+        {
+          "requested_normalized": 0.609375,
+          "actual_normalized": 0.609375,
+          "native": 86.0,
+          "display": "26.000000 semitones",
+          "base_hz_nominal": 1174.6590716696303,
+          "display_semitones_relative_to_midi_60": 26.0
+        },
+        {
+          "requested_normalized": 0.64375,
+          "actual_normalized": 0.643750011920929,
+          "native": 90.4000015258789,
+          "display": "30.400002 semitones",
+          "base_hz_nominal": 1514.57066304158,
+          "display_semitones_relative_to_midi_60": 30.400001525878906
+        },
+        {
+          "requested_normalized": 0.6781250000000001,
+          "actual_normalized": 0.6781250238418579,
+          "native": 94.80000305175781,
+          "display": "34.800003 semitones",
+          "base_hz_nominal": 1952.842615079528,
+          "display_semitones_relative_to_midi_60": 34.80000305175781
+        },
+        {
+          "requested_normalized": 0.7125,
+          "actual_normalized": 0.7124999761581421,
+          "native": 99.19999694824219,
+          "display": "39.199997 semitones",
+          "base_hz_nominal": 2517.9363972331425,
+          "display_semitones_relative_to_midi_60": 39.19999694824219
+        },
+        {
+          "requested_normalized": 0.746875,
+          "actual_normalized": 0.746874988079071,
+          "native": 103.5999984741211,
+          "display": "43.599998 semitones",
+          "base_hz_nominal": 3246.55271527711,
+          "display_semitones_relative_to_midi_60": 43.599998474121094
+        },
+        {
+          "requested_normalized": 0.78125,
+          "actual_normalized": 0.78125,
+          "native": 108.0,
+          "display": "48.000000 semitones",
+          "base_hz_nominal": 4186.009044809578,
+          "display_semitones_relative_to_midi_60": 48.0
+        },
+        {
+          "requested_normalized": 0.815625,
+          "actual_normalized": 0.815625011920929,
+          "native": 112.4000015258789,
+          "display": "52.400002 semitones",
+          "base_hz_nominal": 5397.31624894683,
+          "display_semitones_relative_to_midi_60": 52.400001525878906
+        },
+        {
+          "requested_normalized": 0.8500000000000001,
+          "actual_normalized": 0.8500000238418579,
+          "native": 116.80000305175781,
+          "display": "56.800003 semitones",
+          "base_hz_nominal": 6959.139930016719,
+          "display_semitones_relative_to_midi_60": 56.80000305175781
+        }
+      ]
+    },
+    "filter_resonance": {
+      "min": 0.0,
+      "max": 1.0,
+      "display_multiply": 100.0,
+      "post_offset": 0.0,
+      "display_units": "%",
+      "is_discrete": false,
+      "control": "filter_1_resonance",
+      "scale": "ValueScale.Linear",
+      "restricted_min": 0.0,
+      "restricted_max": 0.8,
+      "points": [
+        {
+          "requested_normalized": 0.0,
+          "actual_normalized": 0.0,
+          "native": 0.0,
+          "display": "0.000000%"
+        },
+        {
+          "requested_normalized": 0.05,
+          "actual_normalized": 0.05000000074505806,
+          "native": 0.05000000074505806,
+          "display": "5.000000%"
+        },
+        {
+          "requested_normalized": 0.1,
+          "actual_normalized": 0.10000000149011612,
+          "native": 0.10000000149011612,
+          "display": "10.000000%"
+        },
+        {
+          "requested_normalized": 0.15000000000000002,
+          "actual_normalized": 0.15000000596046448,
+          "native": 0.15000000596046448,
+          "display": "15.000001%"
+        },
+        {
+          "requested_normalized": 0.2,
+          "actual_normalized": 0.20000000298023224,
+          "native": 0.20000000298023224,
+          "display": "20.000000%"
+        },
+        {
+          "requested_normalized": 0.25,
+          "actual_normalized": 0.25,
+          "native": 0.25,
+          "display": "25.000000%"
+        },
+        {
+          "requested_normalized": 0.30000000000000004,
+          "actual_normalized": 0.30000001192092896,
+          "native": 0.30000001192092896,
+          "display": "30.000002%"
+        },
+        {
+          "requested_normalized": 0.35000000000000003,
+          "actual_normalized": 0.3499999940395355,
+          "native": 0.3499999940395355,
+          "display": "35.000000%"
+        },
+        {
+          "requested_normalized": 0.4,
+          "actual_normalized": 0.4000000059604645,
+          "native": 0.4000000059604645,
+          "display": "40.000000%"
+        },
+        {
+          "requested_normalized": 0.45,
+          "actual_normalized": 0.44999998807907104,
+          "native": 0.44999998807907104,
+          "display": "45.000000%"
+        },
+        {
+          "requested_normalized": 0.5,
+          "actual_normalized": 0.5,
+          "native": 0.5,
+          "display": "50.000000%"
+        },
+        {
+          "requested_normalized": 0.55,
+          "actual_normalized": 0.550000011920929,
+          "native": 0.550000011920929,
+          "display": "55.000000%"
+        },
+        {
+          "requested_normalized": 0.6000000000000001,
+          "actual_normalized": 0.6000000238418579,
+          "native": 0.6000000238418579,
+          "display": "60.000004%"
+        },
+        {
+          "requested_normalized": 0.65,
+          "actual_normalized": 0.6499999761581421,
+          "native": 0.6499999761581421,
+          "display": "65.000000%"
+        },
+        {
+          "requested_normalized": 0.7000000000000001,
+          "actual_normalized": 0.699999988079071,
+          "native": 0.699999988079071,
+          "display": "70.000000%"
+        },
+        {
+          "requested_normalized": 0.75,
+          "actual_normalized": 0.75,
+          "native": 0.75,
+          "display": "75.000000%"
+        },
+        {
+          "requested_normalized": 0.8,
+          "actual_normalized": 0.800000011920929,
+          "native": 0.800000011920929,
+          "display": "80.000000%"
+        }
+      ]
+    },
+    "filter_drive": {
+      "min": 0.0,
+      "max": 20.0,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": "dB",
+      "is_discrete": false,
+      "control": "filter_1_drive",
+      "scale": "ValueScale.Linear",
+      "restricted_min": 0.0,
+      "restricted_max": 0.75,
+      "points": [
+        {
+          "requested_normalized": 0.0,
+          "actual_normalized": 0.0,
+          "native": 0.0,
+          "display": "0.000000dB"
+        },
+        {
+          "requested_normalized": 0.046875,
+          "actual_normalized": 0.046875,
+          "native": 0.9375,
+          "display": "0.937500dB"
+        },
+        {
+          "requested_normalized": 0.09375,
+          "actual_normalized": 0.09375,
+          "native": 1.875,
+          "display": "1.875000dB"
+        },
+        {
+          "requested_normalized": 0.140625,
+          "actual_normalized": 0.140625,
+          "native": 2.8125,
+          "display": "2.812500dB"
+        },
+        {
+          "requested_normalized": 0.1875,
+          "actual_normalized": 0.1875,
+          "native": 3.75,
+          "display": "3.750000dB"
+        },
+        {
+          "requested_normalized": 0.234375,
+          "actual_normalized": 0.234375,
+          "native": 4.6875,
+          "display": "4.687500dB"
+        },
+        {
+          "requested_normalized": 0.28125,
+          "actual_normalized": 0.28125,
+          "native": 5.625,
+          "display": "5.625000dB"
+        },
+        {
+          "requested_normalized": 0.328125,
+          "actual_normalized": 0.328125,
+          "native": 6.5625,
+          "display": "6.562500dB"
+        },
+        {
+          "requested_normalized": 0.375,
+          "actual_normalized": 0.375,
+          "native": 7.5,
+          "display": "7.500000dB"
+        },
+        {
+          "requested_normalized": 0.421875,
+          "actual_normalized": 0.421875,
+          "native": 8.4375,
+          "display": "8.437500dB"
+        },
+        {
+          "requested_normalized": 0.46875,
+          "actual_normalized": 0.46875,
+          "native": 9.375,
+          "display": "9.375000dB"
+        },
+        {
+          "requested_normalized": 0.515625,
+          "actual_normalized": 0.515625,
+          "native": 10.3125,
+          "display": "10.312500dB"
+        },
+        {
+          "requested_normalized": 0.5625,
+          "actual_normalized": 0.5625,
+          "native": 11.25,
+          "display": "11.250000dB"
+        },
+        {
+          "requested_normalized": 0.609375,
+          "actual_normalized": 0.609375,
+          "native": 12.1875,
+          "display": "12.187500dB"
+        },
+        {
+          "requested_normalized": 0.65625,
+          "actual_normalized": 0.65625,
+          "native": 13.125,
+          "display": "13.125000dB"
+        },
+        {
+          "requested_normalized": 0.703125,
+          "actual_normalized": 0.703125,
+          "native": 14.0625,
+          "display": "14.062500dB"
+        },
+        {
+          "requested_normalized": 0.75,
+          "actual_normalized": 0.75,
+          "native": 15.0,
+          "display": "15.000000dB"
+        }
+      ]
+    },
+    "amp_attack": {
+      "min": 0.0,
+      "max": 2.378420114517212,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": " secs",
+      "is_discrete": false,
+      "control": "env_1_attack",
+      "scale": "ValueScale.Quartic",
+      "restricted_min": 0.05,
+      "restricted_max": 0.35,
+      "points": [
+        {
+          "requested_normalized": 0.05,
+          "actual_normalized": 0.05000000074505806,
+          "native": 0.11892100423574448,
+          "display": "0.000200 secs",
+          "seconds_nominal": 0.00020000196928894606
+        },
+        {
+          "requested_normalized": 0.06875,
+          "actual_normalized": 0.06875000149011612,
+          "native": 0.16351638734340668,
+          "display": "0.000715 secs",
+          "seconds_nominal": 0.0007148997312850066
+        },
+        {
+          "requested_normalized": 0.0875,
+          "actual_normalized": 0.08749999850988388,
+          "native": 0.20811176300048828,
+          "display": "0.001876 secs",
+          "seconds_nominal": 0.001875799921242161
+        },
+        {
+          "requested_normalized": 0.10625,
+          "actual_normalized": 0.10625001043081284,
+          "native": 0.2527071535587311,
+          "display": "0.004078 secs",
+          "seconds_nominal": 0.004078215246139905
+        },
+        {
+          "requested_normalized": 0.125,
+          "actual_normalized": 0.125,
+          "native": 0.2973025143146515,
+          "display": "0.007813 secs",
+          "seconds_nominal": 0.007812577316925261
+        },
+        {
+          "requested_normalized": 0.14375,
+          "actual_normalized": 0.14374999701976776,
+          "native": 0.3418978750705719,
+          "display": "0.013664 secs",
+          "seconds_nominal": 0.013664243935544093
+        },
+        {
+          "requested_normalized": 0.16249999999999998,
+          "actual_normalized": 0.16249999403953552,
+          "native": 0.3864932656288147,
+          "display": "0.022314 secs",
+          "seconds_nominal": 0.022313501386636597
+        },
+        {
+          "requested_normalized": 0.18125000000000002,
+          "actual_normalized": 0.18125000596046448,
+          "native": 0.4310886561870575,
+          "display": "0.034536 secs",
+          "seconds_nominal": 0.034535550200626354
+        },
+        {
+          "requested_normalized": 0.2,
+          "actual_normalized": 0.20000000298023224,
+          "native": 0.4756840169429779,
+          "display": "0.051201 secs",
+          "seconds_nominal": 0.05120050413797019
+        },
+        {
+          "requested_normalized": 0.21875,
+          "actual_normalized": 0.21875,
+          "native": 0.5202794075012207,
+          "display": "0.073273 secs",
+          "seconds_nominal": 0.07327343442352191
+        },
+        {
+          "requested_normalized": 0.2375,
+          "actual_normalized": 0.23749999701976776,
+          "native": 0.5648747682571411,
+          "display": "0.101814 secs",
+          "seconds_nominal": 0.10181428240593744
+        },
+        {
+          "requested_normalized": 0.25625,
+          "actual_normalized": 0.2562499940395355,
+          "native": 0.6094701290130615,
+          "display": "0.137978 secs",
+          "seconds_nominal": 0.13797795388319956
+        },
+        {
+          "requested_normalized": 0.27499999999999997,
+          "actual_normalized": 0.2750000059604645,
+          "native": 0.6540655493736267,
+          "display": "0.183014 secs",
+          "seconds_nominal": 0.18301433120896168
+        },
+        {
+          "requested_normalized": 0.29375,
+          "actual_normalized": 0.29374998807907104,
+          "native": 0.6986608505249023,
+          "display": "0.238268 secs",
+          "seconds_nominal": 0.23826795256378214
+        },
+        {
+          "requested_normalized": 0.3125,
+          "actual_normalized": 0.3125,
+          "native": 0.7432562708854675,
+          "display": "0.305179 secs",
+          "seconds_nominal": 0.30517877696890544
+        },
+        {
+          "requested_normalized": 0.33125,
+          "actual_normalized": 0.33125001192092896,
+          "native": 0.7878516912460327,
+          "display": "0.385281 secs",
+          "seconds_nominal": 0.3852812608832398
+        },
+        {
+          "requested_normalized": 0.35,
+          "actual_normalized": 0.3499999940395355,
+          "native": 0.8324470520019531,
+          "display": "0.480205 secs",
+          "seconds_nominal": 0.4802047798379932
+        }
+      ]
+    },
+    "amp_decay": {
+      "min": 0.0,
+      "max": 2.378420114517212,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": " secs",
+      "is_discrete": false,
+      "control": "env_1_decay",
+      "scale": "ValueScale.Quartic",
+      "restricted_min": 0.15,
+      "restricted_max": 0.4,
+      "points": [
+        {
+          "requested_normalized": 0.15,
+          "actual_normalized": 0.15000000596046448,
+          "native": 0.3567630350589752,
+          "display": "0.016200 secs",
+          "seconds_nominal": 0.016200163572262897
+        },
+        {
+          "requested_normalized": 0.165625,
+          "actual_normalized": 0.16562500596046448,
+          "native": 0.39392584562301636,
+          "display": "0.024080 secs",
+          "seconds_nominal": 0.024080078805202486
+        },
+        {
+          "requested_normalized": 0.18125,
+          "actual_normalized": 0.18125000596046448,
+          "native": 0.4310886561870575,
+          "display": "0.034536 secs",
+          "seconds_nominal": 0.034535550200626354
+        },
+        {
+          "requested_normalized": 0.196875,
+          "actual_normalized": 0.19687500596046448,
+          "native": 0.46825146675109863,
+          "display": "0.048075 secs",
+          "seconds_nominal": 0.04807470032527272
+        },
+        {
+          "requested_normalized": 0.2125,
+          "actual_normalized": 0.21250002086162567,
+          "native": 0.5054143071174622,
+          "display": "0.065251 secs",
+          "seconds_nominal": 0.06525144393823848
+        },
+        {
+          "requested_normalized": 0.228125,
+          "actual_normalized": 0.22812500596046448,
+          "native": 0.5425770878791809,
+          "display": "0.086665 secs",
+          "seconds_nominal": 0.0866654110384921
+        },
+        {
+          "requested_normalized": 0.24375,
+          "actual_normalized": 0.24375000596046448,
+          "native": 0.5797399282455444,
+          "display": "0.112962 secs",
+          "seconds_nominal": 0.11296212399773473
+        },
+        {
+          "requested_normalized": 0.259375,
+          "actual_normalized": 0.2593750059604645,
+          "native": 0.6169027090072632,
+          "display": "0.144833 secs",
+          "seconds_nominal": 0.1448327275159913
+        },
+        {
+          "requested_normalized": 0.275,
+          "actual_normalized": 0.2750000059604645,
+          "native": 0.6540655493736267,
+          "display": "0.183014 secs",
+          "seconds_nominal": 0.18301433120896168
+        },
+        {
+          "requested_normalized": 0.290625,
+          "actual_normalized": 0.2906250059604645,
+          "native": 0.6912283897399902,
+          "display": "0.228290 secs",
+          "seconds_nominal": 0.22828967390037247
+        },
+        {
+          "requested_normalized": 0.30625,
+          "actual_normalized": 0.3062500059604645,
+          "native": 0.728391170501709,
+          "display": "0.281487 secs",
+          "seconds_nominal": 0.2814872256814018
+        },
+        {
+          "requested_normalized": 0.321875,
+          "actual_normalized": 0.3218750059604645,
+          "native": 0.7655540108680725,
+          "display": "0.343481 secs",
+          "seconds_nominal": 0.3434814951686204
+        },
+        {
+          "requested_normalized": 0.3375,
+          "actual_normalized": 0.3375000059604645,
+          "native": 0.8027167916297913,
+          "display": "0.415192 secs",
+          "seconds_nominal": 0.4151923963543172
+        },
+        {
+          "requested_normalized": 0.353125,
+          "actual_normalized": 0.3531250059604645,
+          "native": 0.8398796319961548,
+          "display": "0.497586 secs",
+          "seconds_nominal": 0.4975860509430651
+        },
+        {
+          "requested_normalized": 0.36875,
+          "actual_normalized": 0.3687500059604645,
+          "native": 0.8770424127578735,
+          "display": "0.591674 secs",
+          "seconds_nominal": 0.5916738609967502
+        },
+        {
+          "requested_normalized": 0.384375,
+          "actual_normalized": 0.3843750059604645,
+          "native": 0.9142052531242371,
+          "display": "0.698514 secs",
+          "seconds_nominal": 0.6985135737013203
+        },
+        {
+          "requested_normalized": 0.4,
+          "actual_normalized": 0.4000000059604645,
+          "native": 0.9513680338859558,
+          "display": "0.819208 secs",
+          "seconds_nominal": 0.8192080662075231
+        }
+      ]
+    },
+    "amp_sustain": {
+      "min": 0.0,
+      "max": 1.0,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": "",
+      "is_discrete": false,
+      "control": "env_1_sustain",
+      "scale": "ValueScale.Linear",
+      "restricted_min": 0.2,
+      "restricted_max": 1.0,
+      "points": [
+        {
+          "requested_normalized": 0.2,
+          "actual_normalized": 0.20000000298023224,
+          "native": 0.20000000298023224,
+          "display": "0.200000"
+        },
+        {
+          "requested_normalized": 0.25,
+          "actual_normalized": 0.25,
+          "native": 0.25,
+          "display": "0.250000"
+        },
+        {
+          "requested_normalized": 0.30000000000000004,
+          "actual_normalized": 0.30000001192092896,
+          "native": 0.30000001192092896,
+          "display": "0.300000"
+        },
+        {
+          "requested_normalized": 0.35000000000000003,
+          "actual_normalized": 0.3499999940395355,
+          "native": 0.3499999940395355,
+          "display": "0.350000"
+        },
+        {
+          "requested_normalized": 0.4,
+          "actual_normalized": 0.4000000059604645,
+          "native": 0.4000000059604645,
+          "display": "0.400000"
+        },
+        {
+          "requested_normalized": 0.45,
+          "actual_normalized": 0.44999998807907104,
+          "native": 0.44999998807907104,
+          "display": "0.450000"
+        },
+        {
+          "requested_normalized": 0.5,
+          "actual_normalized": 0.5,
+          "native": 0.5,
+          "display": "0.500000"
+        },
+        {
+          "requested_normalized": 0.55,
+          "actual_normalized": 0.550000011920929,
+          "native": 0.550000011920929,
+          "display": "0.550000"
+        },
+        {
+          "requested_normalized": 0.6000000000000001,
+          "actual_normalized": 0.6000000238418579,
+          "native": 0.6000000238418579,
+          "display": "0.600000"
+        },
+        {
+          "requested_normalized": 0.65,
+          "actual_normalized": 0.6499999761581421,
+          "native": 0.6499999761581421,
+          "display": "0.650000"
+        },
+        {
+          "requested_normalized": 0.7,
+          "actual_normalized": 0.699999988079071,
+          "native": 0.699999988079071,
+          "display": "0.700000"
+        },
+        {
+          "requested_normalized": 0.75,
+          "actual_normalized": 0.75,
+          "native": 0.75,
+          "display": "0.750000"
+        },
+        {
+          "requested_normalized": 0.8,
+          "actual_normalized": 0.800000011920929,
+          "native": 0.800000011920929,
+          "display": "0.800000"
+        },
+        {
+          "requested_normalized": 0.8500000000000001,
+          "actual_normalized": 0.8500000238418579,
+          "native": 0.8500000238418579,
+          "display": "0.850000"
+        },
+        {
+          "requested_normalized": 0.9000000000000001,
+          "actual_normalized": 0.8999999761581421,
+          "native": 0.8999999761581421,
+          "display": "0.900000"
+        },
+        {
+          "requested_normalized": 0.95,
+          "actual_normalized": 0.949999988079071,
+          "native": 0.949999988079071,
+          "display": "0.950000"
+        },
+        {
+          "requested_normalized": 1.0,
+          "actual_normalized": 1.0,
+          "native": 1.0,
+          "display": "1.000000"
+        }
+      ]
+    },
+    "amp_release": {
+      "min": 0.0,
+      "max": 2.378420114517212,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": " secs",
+      "is_discrete": false,
+      "control": "env_1_release",
+      "scale": "ValueScale.Quartic",
+      "restricted_min": 0.1,
+      "restricted_max": 0.45,
+      "points": [
+        {
+          "requested_normalized": 0.1,
+          "actual_normalized": 0.10000000149011612,
+          "native": 0.23784200847148895,
+          "display": "0.003200 secs",
+          "seconds_nominal": 0.003200031508623137
+        },
+        {
+          "requested_normalized": 0.12187500000000001,
+          "actual_normalized": 0.12187500298023224,
+          "native": 0.2898699641227722,
+          "display": "0.007060 secs",
+          "seconds_nominal": 0.00706013274985842
+        },
+        {
+          "requested_normalized": 0.14375,
+          "actual_normalized": 0.14374999701976776,
+          "native": 0.3418978750705719,
+          "display": "0.013664 secs",
+          "seconds_nominal": 0.013664243935544093
+        },
+        {
+          "requested_normalized": 0.165625,
+          "actual_normalized": 0.16562500596046448,
+          "native": 0.39392584562301636,
+          "display": "0.024080 secs",
+          "seconds_nominal": 0.024080078805202486
+        },
+        {
+          "requested_normalized": 0.1875,
+          "actual_normalized": 0.1875,
+          "native": 0.4459537863731384,
+          "display": "0.039551 secs",
+          "seconds_nominal": 0.03955117795320789
+        },
+        {
+          "requested_normalized": 0.209375,
+          "actual_normalized": 0.20937499403953552,
+          "native": 0.4979816973209381,
+          "display": "0.061497 secs",
+          "seconds_nominal": 0.061496942552322874
+        },
+        {
+          "requested_normalized": 0.23124999999999998,
+          "actual_normalized": 0.23125000298023224,
+          "native": 0.5500096678733826,
+          "display": "0.091513 secs",
+          "seconds_nominal": 0.0915126841393821
+        },
+        {
+          "requested_normalized": 0.253125,
+          "actual_normalized": 0.25312501192092896,
+          "native": 0.6020376086235046,
+          "display": "0.131369 secs",
+          "seconds_nominal": 0.13136948216519895
+        },
+        {
+          "requested_normalized": 0.275,
+          "actual_normalized": 0.2750000059604645,
+          "native": 0.6540655493736267,
+          "display": "0.183014 secs",
+          "seconds_nominal": 0.18301433120896168
+        },
+        {
+          "requested_normalized": 0.296875,
+          "actual_normalized": 0.296875,
+          "native": 0.7060934901237488,
+          "display": "0.248570 secs",
+          "seconds_nominal": 0.2485700673710355
+        },
+        {
+          "requested_normalized": 0.31875,
+          "actual_normalized": 0.3187499940395355,
+          "native": 0.7581213712692261,
+          "display": "0.330335 secs",
+          "seconds_nominal": 0.3303352791085598
+        },
+        {
+          "requested_normalized": 0.34062499999999996,
+          "actual_normalized": 0.34062498807907104,
+          "native": 0.8101493120193481,
+          "display": "0.430785 secs",
+          "seconds_nominal": 0.4307846998891552
+        },
+        {
+          "requested_normalized": 0.36249999999999993,
+          "actual_normalized": 0.36250001192092896,
+          "native": 0.862177312374115,
+          "display": "0.552569 secs",
+          "seconds_nominal": 0.5525688032100217
+        },
+        {
+          "requested_normalized": 0.384375,
+          "actual_normalized": 0.3843750059604645,
+          "native": 0.9142052531242371,
+          "display": "0.698514 secs",
+          "seconds_nominal": 0.6985135737013203
+        },
+        {
+          "requested_normalized": 0.40625,
+          "actual_normalized": 0.40625,
+          "native": 0.9662331938743591,
+          "display": "0.871621 secs",
+          "seconds_nominal": 0.8716212554520024
+        },
+        {
+          "requested_normalized": 0.428125,
+          "actual_normalized": 0.4281249940395355,
+          "native": 1.0182610750198364,
+          "display": "1.075070 secs",
+          "seconds_nominal": 1.0750695702982263
+        },
+        {
+          "requested_normalized": 0.44999999999999996,
+          "actual_normalized": 0.44999998807907104,
+          "native": 1.0702890157699585,
+          "display": "1.312213 secs",
+          "seconds_nominal": 1.3122128108886157
+        }
+      ]
+    },
+    "filter_env_amount": {
+      "min": -1.0,
+      "max": 1.0,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": "",
+      "is_discrete": false,
+      "control": "modulation_1_amount",
+      "scale": "ValueScale.Linear",
+      "restricted_min": 0.5,
+      "restricted_max": 0.5625,
+      "points": [
+        {
+          "requested_normalized": 0.5,
+          "actual_normalized": 0.5,
+          "native": 0.0,
+          "display": "0.000000",
+          "peak_cutoff_depth_semitones_nominal": 0.0
+        },
+        {
+          "requested_normalized": 0.50390625,
+          "actual_normalized": 0.50390625,
+          "native": 0.0078125,
+          "display": "0.007812",
+          "peak_cutoff_depth_semitones_nominal": 1.0
+        },
+        {
+          "requested_normalized": 0.5078125,
+          "actual_normalized": 0.5078125,
+          "native": 0.015625,
+          "display": "0.015625",
+          "peak_cutoff_depth_semitones_nominal": 2.0
+        },
+        {
+          "requested_normalized": 0.51171875,
+          "actual_normalized": 0.51171875,
+          "native": 0.0234375,
+          "display": "0.023438",
+          "peak_cutoff_depth_semitones_nominal": 3.0
+        },
+        {
+          "requested_normalized": 0.515625,
+          "actual_normalized": 0.515625,
+          "native": 0.03125,
+          "display": "0.031250",
+          "peak_cutoff_depth_semitones_nominal": 4.0
+        },
+        {
+          "requested_normalized": 0.51953125,
+          "actual_normalized": 0.51953125,
+          "native": 0.0390625,
+          "display": "0.039062",
+          "peak_cutoff_depth_semitones_nominal": 5.0
+        },
+        {
+          "requested_normalized": 0.5234375,
+          "actual_normalized": 0.5234375,
+          "native": 0.046875,
+          "display": "0.046875",
+          "peak_cutoff_depth_semitones_nominal": 6.0
+        },
+        {
+          "requested_normalized": 0.52734375,
+          "actual_normalized": 0.52734375,
+          "native": 0.0546875,
+          "display": "0.054688",
+          "peak_cutoff_depth_semitones_nominal": 7.0
+        },
+        {
+          "requested_normalized": 0.53125,
+          "actual_normalized": 0.53125,
+          "native": 0.0625,
+          "display": "0.062500",
+          "peak_cutoff_depth_semitones_nominal": 8.0
+        },
+        {
+          "requested_normalized": 0.53515625,
+          "actual_normalized": 0.53515625,
+          "native": 0.0703125,
+          "display": "0.070312",
+          "peak_cutoff_depth_semitones_nominal": 9.0
+        },
+        {
+          "requested_normalized": 0.5390625,
+          "actual_normalized": 0.5390625,
+          "native": 0.078125,
+          "display": "0.078125",
+          "peak_cutoff_depth_semitones_nominal": 10.0
+        },
+        {
+          "requested_normalized": 0.54296875,
+          "actual_normalized": 0.54296875,
+          "native": 0.0859375,
+          "display": "0.085938",
+          "peak_cutoff_depth_semitones_nominal": 11.0
+        },
+        {
+          "requested_normalized": 0.546875,
+          "actual_normalized": 0.546875,
+          "native": 0.09375,
+          "display": "0.093750",
+          "peak_cutoff_depth_semitones_nominal": 12.0
+        },
+        {
+          "requested_normalized": 0.55078125,
+          "actual_normalized": 0.55078125,
+          "native": 0.1015625,
+          "display": "0.101562",
+          "peak_cutoff_depth_semitones_nominal": 13.0
+        },
+        {
+          "requested_normalized": 0.5546875,
+          "actual_normalized": 0.5546875,
+          "native": 0.109375,
+          "display": "0.109375",
+          "peak_cutoff_depth_semitones_nominal": 14.0
+        },
+        {
+          "requested_normalized": 0.55859375,
+          "actual_normalized": 0.55859375,
+          "native": 0.1171875,
+          "display": "0.117188",
+          "peak_cutoff_depth_semitones_nominal": 15.0
+        },
+        {
+          "requested_normalized": 0.5625,
+          "actual_normalized": 0.5625,
+          "native": 0.125,
+          "display": "0.125000",
+          "peak_cutoff_depth_semitones_nominal": 16.0
+        }
+      ]
+    },
+    "filter_env_attack": {
+      "min": 0.0,
+      "max": 2.378420114517212,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": " secs",
+      "is_discrete": false,
+      "control": "env_2_attack",
+      "scale": "ValueScale.Quartic",
+      "restricted_min": 0.05,
+      "restricted_max": 0.35,
+      "points": [
+        {
+          "requested_normalized": 0.05,
+          "actual_normalized": 0.05000000074505806,
+          "native": 0.11892100423574448,
+          "display": "0.000200 secs",
+          "seconds_nominal": 0.00020000196928894606
+        },
+        {
+          "requested_normalized": 0.06875,
+          "actual_normalized": 0.06875000149011612,
+          "native": 0.16351638734340668,
+          "display": "0.000715 secs",
+          "seconds_nominal": 0.0007148997312850066
+        },
+        {
+          "requested_normalized": 0.0875,
+          "actual_normalized": 0.08749999850988388,
+          "native": 0.20811176300048828,
+          "display": "0.001876 secs",
+          "seconds_nominal": 0.001875799921242161
+        },
+        {
+          "requested_normalized": 0.10625,
+          "actual_normalized": 0.10625001043081284,
+          "native": 0.2527071535587311,
+          "display": "0.004078 secs",
+          "seconds_nominal": 0.004078215246139905
+        },
+        {
+          "requested_normalized": 0.125,
+          "actual_normalized": 0.125,
+          "native": 0.2973025143146515,
+          "display": "0.007813 secs",
+          "seconds_nominal": 0.007812577316925261
+        },
+        {
+          "requested_normalized": 0.14375,
+          "actual_normalized": 0.14374999701976776,
+          "native": 0.3418978750705719,
+          "display": "0.013664 secs",
+          "seconds_nominal": 0.013664243935544093
+        },
+        {
+          "requested_normalized": 0.16249999999999998,
+          "actual_normalized": 0.16249999403953552,
+          "native": 0.3864932656288147,
+          "display": "0.022314 secs",
+          "seconds_nominal": 0.022313501386636597
+        },
+        {
+          "requested_normalized": 0.18125000000000002,
+          "actual_normalized": 0.18125000596046448,
+          "native": 0.4310886561870575,
+          "display": "0.034536 secs",
+          "seconds_nominal": 0.034535550200626354
+        },
+        {
+          "requested_normalized": 0.2,
+          "actual_normalized": 0.20000000298023224,
+          "native": 0.4756840169429779,
+          "display": "0.051201 secs",
+          "seconds_nominal": 0.05120050413797019
+        },
+        {
+          "requested_normalized": 0.21875,
+          "actual_normalized": 0.21875,
+          "native": 0.5202794075012207,
+          "display": "0.073273 secs",
+          "seconds_nominal": 0.07327343442352191
+        },
+        {
+          "requested_normalized": 0.2375,
+          "actual_normalized": 0.23749999701976776,
+          "native": 0.5648747682571411,
+          "display": "0.101814 secs",
+          "seconds_nominal": 0.10181428240593744
+        },
+        {
+          "requested_normalized": 0.25625,
+          "actual_normalized": 0.2562499940395355,
+          "native": 0.6094701290130615,
+          "display": "0.137978 secs",
+          "seconds_nominal": 0.13797795388319956
+        },
+        {
+          "requested_normalized": 0.27499999999999997,
+          "actual_normalized": 0.2750000059604645,
+          "native": 0.6540655493736267,
+          "display": "0.183014 secs",
+          "seconds_nominal": 0.18301433120896168
+        },
+        {
+          "requested_normalized": 0.29375,
+          "actual_normalized": 0.29374998807907104,
+          "native": 0.6986608505249023,
+          "display": "0.238268 secs",
+          "seconds_nominal": 0.23826795256378214
+        },
+        {
+          "requested_normalized": 0.3125,
+          "actual_normalized": 0.3125,
+          "native": 0.7432562708854675,
+          "display": "0.305179 secs",
+          "seconds_nominal": 0.30517877696890544
+        },
+        {
+          "requested_normalized": 0.33125,
+          "actual_normalized": 0.33125001192092896,
+          "native": 0.7878516912460327,
+          "display": "0.385281 secs",
+          "seconds_nominal": 0.3852812608832398
+        },
+        {
+          "requested_normalized": 0.35,
+          "actual_normalized": 0.3499999940395355,
+          "native": 0.8324470520019531,
+          "display": "0.480205 secs",
+          "seconds_nominal": 0.4802047798379932
+        }
+      ]
+    },
+    "filter_env_decay": {
+      "min": 0.0,
+      "max": 2.378420114517212,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": " secs",
+      "is_discrete": false,
+      "control": "env_2_decay",
+      "scale": "ValueScale.Quartic",
+      "restricted_min": 0.15,
+      "restricted_max": 0.4,
+      "points": [
+        {
+          "requested_normalized": 0.15,
+          "actual_normalized": 0.15000000596046448,
+          "native": 0.3567630350589752,
+          "display": "0.016200 secs",
+          "seconds_nominal": 0.016200163572262897
+        },
+        {
+          "requested_normalized": 0.165625,
+          "actual_normalized": 0.16562500596046448,
+          "native": 0.39392584562301636,
+          "display": "0.024080 secs",
+          "seconds_nominal": 0.024080078805202486
+        },
+        {
+          "requested_normalized": 0.18125,
+          "actual_normalized": 0.18125000596046448,
+          "native": 0.4310886561870575,
+          "display": "0.034536 secs",
+          "seconds_nominal": 0.034535550200626354
+        },
+        {
+          "requested_normalized": 0.196875,
+          "actual_normalized": 0.19687500596046448,
+          "native": 0.46825146675109863,
+          "display": "0.048075 secs",
+          "seconds_nominal": 0.04807470032527272
+        },
+        {
+          "requested_normalized": 0.2125,
+          "actual_normalized": 0.21250002086162567,
+          "native": 0.5054143071174622,
+          "display": "0.065251 secs",
+          "seconds_nominal": 0.06525144393823848
+        },
+        {
+          "requested_normalized": 0.228125,
+          "actual_normalized": 0.22812500596046448,
+          "native": 0.5425770878791809,
+          "display": "0.086665 secs",
+          "seconds_nominal": 0.0866654110384921
+        },
+        {
+          "requested_normalized": 0.24375,
+          "actual_normalized": 0.24375000596046448,
+          "native": 0.5797399282455444,
+          "display": "0.112962 secs",
+          "seconds_nominal": 0.11296212399773473
+        },
+        {
+          "requested_normalized": 0.259375,
+          "actual_normalized": 0.2593750059604645,
+          "native": 0.6169027090072632,
+          "display": "0.144833 secs",
+          "seconds_nominal": 0.1448327275159913
+        },
+        {
+          "requested_normalized": 0.275,
+          "actual_normalized": 0.2750000059604645,
+          "native": 0.6540655493736267,
+          "display": "0.183014 secs",
+          "seconds_nominal": 0.18301433120896168
+        },
+        {
+          "requested_normalized": 0.290625,
+          "actual_normalized": 0.2906250059604645,
+          "native": 0.6912283897399902,
+          "display": "0.228290 secs",
+          "seconds_nominal": 0.22828967390037247
+        },
+        {
+          "requested_normalized": 0.30625,
+          "actual_normalized": 0.3062500059604645,
+          "native": 0.728391170501709,
+          "display": "0.281487 secs",
+          "seconds_nominal": 0.2814872256814018
+        },
+        {
+          "requested_normalized": 0.321875,
+          "actual_normalized": 0.3218750059604645,
+          "native": 0.7655540108680725,
+          "display": "0.343481 secs",
+          "seconds_nominal": 0.3434814951686204
+        },
+        {
+          "requested_normalized": 0.3375,
+          "actual_normalized": 0.3375000059604645,
+          "native": 0.8027167916297913,
+          "display": "0.415192 secs",
+          "seconds_nominal": 0.4151923963543172
+        },
+        {
+          "requested_normalized": 0.353125,
+          "actual_normalized": 0.3531250059604645,
+          "native": 0.8398796319961548,
+          "display": "0.497586 secs",
+          "seconds_nominal": 0.4975860509430651
+        },
+        {
+          "requested_normalized": 0.36875,
+          "actual_normalized": 0.3687500059604645,
+          "native": 0.8770424127578735,
+          "display": "0.591674 secs",
+          "seconds_nominal": 0.5916738609967502
+        },
+        {
+          "requested_normalized": 0.384375,
+          "actual_normalized": 0.3843750059604645,
+          "native": 0.9142052531242371,
+          "display": "0.698514 secs",
+          "seconds_nominal": 0.6985135737013203
+        },
+        {
+          "requested_normalized": 0.4,
+          "actual_normalized": 0.4000000059604645,
+          "native": 0.9513680338859558,
+          "display": "0.819208 secs",
+          "seconds_nominal": 0.8192080662075231
+        }
+      ]
+    },
+    "filter_env_sustain": {
+      "min": 0.0,
+      "max": 1.0,
+      "display_multiply": 1.0,
+      "post_offset": 0.0,
+      "display_units": "",
+      "is_discrete": false,
+      "control": "env_2_sustain",
+      "scale": "ValueScale.Linear",
+      "restricted_min": 0.0,
+      "restricted_max": 1.0,
+      "points": [
+        {
+          "requested_normalized": 0.0,
+          "actual_normalized": 0.0,
+          "native": 0.0,
+          "display": "0.000000"
+        },
+        {
+          "requested_normalized": 0.0625,
+          "actual_normalized": 0.0625,
+          "native": 0.0625,
+          "display": "0.062500"
+        },
+        {
+          "requested_normalized": 0.125,
+          "actual_normalized": 0.125,
+          "native": 0.125,
+          "display": "0.125000"
+        },
+        {
+          "requested_normalized": 0.1875,
+          "actual_normalized": 0.1875,
+          "native": 0.1875,
+          "display": "0.187500"
+        },
+        {
+          "requested_normalized": 0.25,
+          "actual_normalized": 0.25,
+          "native": 0.25,
+          "display": "0.250000"
+        },
+        {
+          "requested_normalized": 0.3125,
+          "actual_normalized": 0.3125,
+          "native": 0.3125,
+          "display": "0.312500"
+        },
+        {
+          "requested_normalized": 0.375,
+          "actual_normalized": 0.375,
+          "native": 0.375,
+          "display": "0.375000"
+        },
+        {
+          "requested_normalized": 0.4375,
+          "actual_normalized": 0.4375,
+          "native": 0.4375,
+          "display": "0.437500"
+        },
+        {
+          "requested_normalized": 0.5,
+          "actual_normalized": 0.5,
+          "native": 0.5,
+          "display": "0.500000"
+        },
+        {
+          "requested_normalized": 0.5625,
+          "actual_normalized": 0.5625,
+          "native": 0.5625,
+          "display": "0.562500"
+        },
+        {
+          "requested_normalized": 0.625,
+          "actual_normalized": 0.625,
+          "native": 0.625,
+          "display": "0.625000"
+        },
+        {
+          "requested_normalized": 0.6875,
+          "actual_normalized": 0.6875,
+          "native": 0.6875,
+          "display": "0.687500"
+        },
+        {
+          "requested_normalized": 0.75,
+          "actual_normalized": 0.75,
+          "native": 0.75,
+          "display": "0.750000"
+        },
+        {
+          "requested_normalized": 0.8125,
+          "actual_normalized": 0.8125,
+          "native": 0.8125,
+          "display": "0.812500"
+        },
+        {
+          "requested_normalized": 0.875,
+          "actual_normalized": 0.875,
+          "native": 0.875,
+          "display": "0.875000"
+        },
+        {
+          "requested_normalized": 0.9375,
+          "actual_normalized": 0.9375,
+          "native": 0.9375,
+          "display": "0.937500"
+        },
+        {
+          "requested_normalized": 1.0,
+          "actual_normalized": 1.0,
+          "native": 1.0,
+          "display": "1.000000"
+        }
+      ]
+    }
+  },
+  "limits": "Tests wrapper/state mappings, not measured acoustic response. Nominal cutoff is before envelope modulation; depth is nominal at full unipolar envelope output."
+}
