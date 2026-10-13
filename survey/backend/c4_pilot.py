@@ -428,13 +428,45 @@ def replace_invitation(body: ReplaceInvitation):
 
 @router.get("/admin/summary", dependencies=[Depends(require_admin)])
 def summary():
-    _, checksum = load_bundle()
+    bundle, checksum = load_bundle()
     with get_connection() as db:
         sessions = db.execute('''SELECT participant_id,assignment_id,phase,current_index,started_at,completed_at,
                                 withdrawn_at,listener_number FROM c4_sessions JOIN c4_listener_labels USING(session_id)
                                 WHERE bundle_hash=?''', (checksum,)).fetchall()
+        invitations = db.execute('''SELECT i.assignment_id,i.issued_at,s.phase,s.current_index,
+                                    s.completed_at,s.withdrawn_at,l.listener_number
+                                    FROM c4_invites i
+                                    LEFT JOIN c4_sessions s ON s.session_id=i.session_id AND s.bundle_hash=i.bundle_hash
+                                    LEFT JOIN c4_listener_labels l ON l.session_id=s.session_id
+                                    WHERE i.bundle_hash=? AND i.retired_at IS NULL''', (checksum,)).fetchall()
+    active = {row["assignment_id"]: row for row in invitations}
+    assignments = []
+    for block in bundle["assignments"]:
+        row = active.get(block["assignment_id"])
+        status = "missing"
+        if row is not None:
+            status = "issued"
+            if row["withdrawn_at"]:
+                status = "withdrawn"
+            elif row["completed_at"] or row["phase"] == "complete":
+                status = "completed"
+            elif row["phase"] == "screen_failed":
+                status = "screen_failed"
+            elif row["phase"]:
+                status = "in_progress"
+        protected = row is not None and row["completed_at"] and not row["withdrawn_at"] and not bundle["rehearsal"]
+        assignments.append(dict(
+            assignment_id=block["assignment_id"], status=status,
+            issued_at=row["issued_at"] if row is not None else None,
+            participant_label=listener_label(row["listener_number"]) if row is not None and row["listener_number"] is not None else None,
+            phase=row["phase"] if row is not None else None,
+            saved_presentations=(row["current_index"] or 0) if row is not None else 0,
+            can_replace=row is not None and not protected,
+        ))
     return dict(bundle_hash=checksum, sessions=[dict(r, participant_label=listener_label(r["listener_number"])) for r in sessions],
-                completed=sum(r["phase"] == "complete" and not r["withdrawn_at"] for r in sessions))
+                completed=sum(r["phase"] == "complete" and not r["withdrawn_at"] for r in sessions),
+                assignments=assignments, assignment_capacity=len(assignments),
+                missing_invitation_count=sum(row["status"] == "missing" for row in assignments))
 
 
 @router.get("/admin/export", dependencies=[Depends(require_admin)])
