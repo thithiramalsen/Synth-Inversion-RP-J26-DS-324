@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT/'survey/backend'))
 sys.path.insert(0, str(ROOT))
 from fastapi.testclient import TestClient
 import database
+import c4_pilot
 import main
 from survey.deploy.build_c4_review import build
 
@@ -45,9 +46,11 @@ class C4PilotTests(unittest.TestCase):
         self.client = self.enterContext(TestClient(main.app))
         self.admin = {'Authorization': 'Bearer '+ADMIN}
 
-    def start(self, number=0):
-        codes = self.client.post('/api/c4-pilot/admin/invitations', headers=self.admin, json={}).json()['invitations']
-        entry = dict(invitation=codes[number]['invitation'], adult=True, consent=True, headphones=True,
+    def start(self, number=0, invitation=None):
+        if invitation is None:
+            codes = self.client.post('/api/c4-pilot/admin/invitations', headers=self.admin, json={}).json()['invitations']
+            invitation = codes[number]['invitation']
+        entry = dict(invitation=invitation, adult=True, consent=True, headphones=True,
                      quiet_environment=True, understands_language=True, activities=['Sound design'],
                      experience_months=12, recent_frequency='Weekly', tools='Test synthesizer',
                      example='I made synthesizer patches for a music production.')
@@ -80,6 +83,75 @@ class C4PilotTests(unittest.TestCase):
     def expose(self, state):
         for role in ROLES:
             self.assertEqual(self.post('playback/'+state['presentation_id']+'/'+role,{}).status_code,200)
+
+    def admin_summary(self):
+        response = self.client.get('/api/c4-pilot/admin/summary', headers=self.admin)
+        self.assertEqual(response.status_code, 200, response.text)
+        return response.json()
+
+    def test_assignment_inventory_before_and_after_invitation_issuance(self):
+        self.assertEqual(self.client.get('/api/c4-pilot/admin/summary').status_code, 401)
+        summary = self.admin_summary()
+        expected_ids = [block['assignment_id'] for block in self.bundle['assignments']]
+        self.assertEqual(summary['assignment_capacity'], len(expected_ids))
+        self.assertEqual(summary['missing_invitation_count'], len(expected_ids))
+        self.assertEqual(summary['sessions'], [])
+        self.assertEqual(summary['completed'], 0)
+        self.assertEqual([row['assignment_id'] for row in summary['assignments']], expected_ids)
+        for row in summary['assignments']:
+            self.assertEqual(row['status'], 'missing')
+            self.assertIsNone(row['issued_at'])
+            self.assertIsNone(row['participant_label'])
+            self.assertFalse(row['can_replace'])
+        issued = self.client.post('/api/c4-pilot/admin/invitations', headers=self.admin, json={}).json()
+        self.assertEqual(len(issued['invitations']), len(expected_ids))
+        summary = self.admin_summary()
+        self.assertEqual(summary['missing_invitation_count'], 0)
+        self.assertEqual(summary['sessions'], [])
+        for row in summary['assignments']:
+            self.assertEqual(row['status'], 'issued')
+            self.assertTrue(row['issued_at'])
+            self.assertIsNone(row['participant_label'])
+            self.assertIsNone(row['phase'])
+            self.assertEqual(row['saved_presentations'], 0)
+            self.assertTrue(row['can_replace'])
+            self.assertNotIn('invitation', row)
+            self.assertNotIn('invite_hash', row)
+        self.assertEqual(self.client.post('/api/c4-pilot/admin/invitations', headers=self.admin, json={}).json()['invitations'], [])
+
+    def test_assignment_inventory_replacement_preserves_saved_responses(self):
+        self.start(); self.setup_audio()
+        state = self.state()
+        self.expose(state)
+        self.assertEqual(self.post('ratings', self.body(state)).status_code, 200)
+        assignment = self.admin_summary()['assignments'][0]
+        self.assertEqual(assignment['status'], 'in_progress')
+        self.assertEqual(assignment['participant_label'], 'Listener 001')
+        self.assertEqual(assignment['phase'], 'rating')
+        self.assertEqual(assignment['saved_presentations'], 1)
+        self.assertTrue(assignment['can_replace'])
+        export_before = list(csv.DictReader(io.StringIO(self.client.get('/api/c4-pilot/admin/export', headers=self.admin).text)))
+        response = self.client.post('/api/c4-pilot/admin/replace-invitation', headers=self.admin,
+                                    json=dict(assignment_id=assignment['assignment_id'], reason='The original invitation was lost.'))
+        self.assertEqual(response.status_code, 200, response.text)
+        summary = self.admin_summary()
+        replacement = summary['assignments'][0]
+        self.assertEqual(replacement['status'], 'issued')
+        self.assertIsNone(replacement['participant_label'])
+        self.assertIsNone(replacement['phase'])
+        self.assertEqual(replacement['saved_presentations'], 0)
+        self.assertTrue(replacement['can_replace'])
+        self.assertEqual(summary['missing_invitation_count'], 0)
+        self.assertEqual(summary['sessions'][0]['phase'], 'replaced')
+        self.assertEqual(summary['sessions'][0]['current_index'], 1)
+        self.assertEqual(self.state()['phase'], 'replaced')
+        export_after = list(csv.DictReader(io.StringIO(self.client.get('/api/c4-pilot/admin/export', headers=self.admin).text)))
+        self.assertEqual(len(export_after), 1)
+        for column in ('session_id', 'presentation_id', 'choice', 'chosen_sample_id', 'confidence', 'comment', 'submitted_at'):
+            self.assertEqual(export_after[0][column], export_before[0][column])
+        self.assertEqual(self.client.post('/api/c4-pilot/sessions', json=self.entry).status_code, 403)
+        self.start(invitation=response.json()['invitation'])
+        self.assertEqual(self.admin_summary()['assignments'][0]['participant_label'], 'Listener 002')
 
     def test_authentication_isolation_and_gates(self):
         self.assertEqual(self.client.get('/api/c4-pilot/admin/summary').status_code,401)
@@ -119,6 +191,17 @@ class C4PilotTests(unittest.TestCase):
             self.assertEqual(self.state()['current_index'],index+1)
         self.assertEqual(self.state()['phase'],'feedback')
         self.assertEqual(self.post('feedback',dict(clarity='Clear',length='About right',comment='')).status_code,200)
+        summary = self.admin_summary()
+        self.assertEqual(summary['assignments'][0]['status'], 'completed')
+        self.assertEqual(summary['assignments'][0]['saved_presentations'], 14)
+        self.assertTrue(summary['assignments'][0]['can_replace'])
+        self.assertEqual(summary['completed'], 1)
+        formal_bundle = dict(self.bundle, rehearsal=False)
+        with patch.object(c4_pilot, 'load_bundle', return_value=(formal_bundle, summary['bundle_hash'])):
+            self.assertFalse(self.admin_summary()['assignments'][0]['can_replace'])
+            protected = self.client.post('/api/c4-pilot/admin/replace-invitation', headers=self.admin,
+                                          json=dict(assignment_id='c4_review_01', reason='This completed study must stay protected.'))
+            self.assertEqual(protected.status_code, 409)
         output=self.client.get('/api/c4-pilot/admin/export',headers=self.admin)
         rows=list(csv.DictReader(io.StringIO(output.text)))
         self.assertEqual(len(rows),14)
@@ -129,6 +212,10 @@ class C4PilotTests(unittest.TestCase):
         self.assertEqual(sum(r['kind']=='repeat' for r in rows),2)
         self.assertEqual(self.post('withdraw',{}).status_code,200)
         self.assertEqual(self.state()['phase'],'withdrawn')
+        withdrawn = self.admin_summary()
+        self.assertEqual(withdrawn['assignments'][0]['status'], 'withdrawn')
+        self.assertTrue(withdrawn['assignments'][0]['can_replace'])
+        self.assertEqual(withdrawn['completed'], 0)
         self.assertEqual(self.post('playback/p_01/reference',{}).status_code,409)
         r=self.client.post('/api/c4-pilot/admin/replace-invitation',headers=self.admin,
                            json=dict(assignment_id='c4_review_01',reason='Repeat the interface review.'))

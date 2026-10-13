@@ -1,5 +1,10 @@
 # C1 from sounds to human descriptions and control effects
 
+**14 October update:** The full 131,072-sound corpus is now generated and verified.
+For the complete research method and engineering plan using simulated ratings
+while approval is pending, see [the current plan](C1_RESEARCH_AND_ENGINEERING_PLAN.md).
+The dated explanation below preserves the 9 October development status.
+
 Updated 9 October 2026. This describes the current repository, separates what is
 built from what is proposed, and supersedes older 36-presentation explanations.
 

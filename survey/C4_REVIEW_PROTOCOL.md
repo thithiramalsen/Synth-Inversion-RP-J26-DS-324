@@ -17,6 +17,31 @@ research responses.
 5. Give feedback about clarity and session length. Saved steps resume in the same
    browser profile; a consumed invitation does not recover another browser's token.
 
+## Researcher invitation workflow
+
+Open `/c4/admin` and sign in with the same researcher account used for C1.
+The updated panel loads invitation assignments and sessions automatically.
+Each assignment is one listener's fixed set of comparisons. Invitation codes
+for C1, C4 and researcher accounts are different.
+
+- **Create participant invitations** issues codes only for assignments without
+  an active invitation. Save `private-c4-invitations.json`; codes are displayed
+  when created and cannot be retrieved again after leaving the page.
+- An empty sessions table means nobody has started, not that no invitations were
+  issued. The assignment table includes codes issued to unused assignments.
+- If all assignments already have invitations and the download is lost, select
+  **Replace lost code** on an assignment marked **Code issued · not started**.
+  Enter a reason and generate the replacement. Its code is shown and downloaded.
+- **Review replacement** on a started assignment requires acknowledging that
+  its current session closes. Saved answers remain in the audit. Completion
+  protection for any future formal study remains enforced by the backend.
+- **Invite a researcher to the admin panel** grants teammate access; its code
+  cannot start a participant survey.
+
+On the earlier deployed panel, first click **Load sessions** to reveal the
+participant invitation and replacement controls. All issued codes returning an
+empty result from **Create missing invitations** is expected, not a survey outage.
+
 Each comparison presents a reference, A and B. Choose the candidate with more
 similar overall timbre, considering spectral and temporal character, without
 choosing solely by loudness. A/B choices require confidence 1–5. “I cannot decide”

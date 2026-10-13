@@ -205,6 +205,27 @@ function Entry({ status, busy, onSubmit }) {
   </form>
 }
 
+export function C4InvitationAssignments({ data, busy, onCreate, onReplace }) {
+  const rows = data.assignments || []
+  const labels = { missing: 'No invitation yet', issued: 'Code issued · not started', in_progress: 'Session in progress', completed: 'Completed', withdrawn: 'Withdrawn', screen_failed: 'Headphone check failed' }
+  const missing = data.missing_invitation_count
+  return <section className="p-card" aria-label="C4 participant invitations">
+    <h2>Participant invitations</h2>
+    <p>These codes let listeners start <a href="/c4">the C4 survey</a>. C1 study codes and researcher account invitations are separate.</p>
+    <p className="p-muted">Each assignment is one listener’s set of comparisons. This version is for supervisor/interface review; responses remain excluded from research analysis.</p>
+    <p>1. Create codes for available assignments. 2. Save the downloaded file. 3. Give each listener one code and the C4 study link.</p>
+    <p role="status">{missing ?? '—'} of {data.assignment_capacity ?? rows.length} assignments need an invitation.</p>
+    <button type="button" className="p-primary" disabled={busy || missing === 0} onClick={onCreate}>Create participant invitations{missing !== undefined ? ` (${missing})` : ''}</button>
+    <p className="p-muted">Existing codes are shown only when created. If you have lost a code, choose “Replace lost code” for an assignment marked “not started” below.</p>
+    {missing === 0 && <p className="p-notice">All assignments already have codes. Creating invitations will not recover an earlier download; use a replacement for a lost code.</p>}
+    <div className="p-table"><table><thead><tr><th>Assignment</th><th>Invitation / session status</th><th>Listener</th><th>Saved presentations</th><th>Action</th></tr></thead><tbody>
+      {rows.map(row => <tr key={row.assignment_id}><td>{row.assignment_id}</td><td>{labels[row.status] || row.status}</td><td>{row.participant_label || 'Not started'}</td><td>{row.saved_presentations}</td><td>
+        {row.can_replace ? <button type="button" className="p-secondary" disabled={busy} onClick={() => onReplace(row.assignment_id)}>{row.status === 'issued' ? 'Replace lost code' : 'Review replacement'}</button> : row.status === 'missing' ? 'Create invitations above' : 'Replacement unavailable'}
+      </td></tr>)}
+    </tbody></table></div>
+  </section>
+}
+
 export function C4Admin() {
   const [authenticated, setAuthenticated] = useState(false), [credentials, setCredentials] = useState({ username: '', password: '' })
   const [data, setData] = useState(null), [error, setError] = useState('')
@@ -212,8 +233,22 @@ export function C4Admin() {
   const [accountInvite, setAccountInvite] = useState(null)
   const [replacement, setReplacement] = useState({ assignment_id: '', reason: '' })
   const [busy, setBusy] = useState(false), [issued, setIssued] = useState(null)
+  const [loading, setLoading] = useState(false), [replaceAcknowledged, setReplaceAcknowledged] = useState(false)
+  const replacementForm = useRef(null)
+  const locked = busy || loading
+  const assignments = data?.assignments || []
+  const selectedAssignment = assignments.find(row => row.assignment_id === replacement.assignment_id)
   async function act(fn) { setError(''); setBusy(true); try { await fn() } catch (e) { setError(e.message) } finally { setBusy(false) } }
   useEffect(() => { fetch(`${API}/api/researcher/session`, { credentials: 'include' }).then(r => setAuthenticated(r.ok)).catch(() => {}) }, [])
+  useEffect(() => {
+    if (!authenticated) return
+    let cancelled = false
+    setLoading(true)
+    request('/admin/summary').then(result => { if (!cancelled) setData(result) })
+      .catch(e => { if (!cancelled) setError(e.message) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [authenticated])
   async function researcherRequest(path, body) {
     const response = await fetch(`${API}/api/researcher${path}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     const result = await response.json().catch(() => ({}))
@@ -237,14 +272,20 @@ export function C4Admin() {
   async function createMissing() {
     const result = await request('/admin/invitations', { body: {} })
     setIssued(result.invitations)
-    if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-invitations.json', 'application/json')
+    if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-c4-invitations.json', 'application/json')
+    setData(await request('/admin/summary'))
   }
   async function replaceInvitation() {
     const result = await request('/admin/replace-invitation', { body: replacement })
     setIssued([result])
-    download(JSON.stringify(result, null, 2), 'private-replacement-invitation.json', 'application/json')
+    download(JSON.stringify(result, null, 2), 'private-c4-replacement-invitation.json', 'application/json')
     setReplacement({ assignment_id: '', reason: '' })
+    setReplaceAcknowledged(false)
     setData(await request('/admin/summary'))
+  }
+  function selectReplacement(assignment_id) {
+    setReplacement({ assignment_id, reason: '' }); setReplaceAcknowledged(false)
+    replacementForm.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
   if (!authenticated) return <div className="pilot-app"><SiteHeader current="c4-admin" researcher /><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
     <p>For the research team. Study participants should <a href="/c4">open the listening study</a>.</p>
@@ -259,16 +300,21 @@ export function C4Admin() {
   return <div className="pilot-app">
     <SiteHeader current="c4-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
-    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C4 review sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
-    <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
-      <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
-      {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}
-    </section>
+    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>Manage C4 invitations and sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={locked} onClick={() => act(async () => setData(await request('/admin/summary')))}>{locked ? 'Working…' : 'Refresh invitations and sessions'}</button><button className="p-secondary" disabled={locked} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null); setReplacement({ assignment_id: '', reason: '' }); setReplaceAcknowledged(false) })}>Sign out</button></div>{loading && <p role="status">Loading participant assignments…</p>}</section>
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
       <h2 role="status">{issued.length ? 'New invitation ready' : 'All assignments already have invitations'}</h2>
-      {issued.length ? <><p>The code is shown here and downloaded as JSON. Copy only the invitation code to the participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<button type="button" className="p-secondary" onClick={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')}>Download these invitations again</button></> : <p>Use “Generate a replacement invitation” below to replace a lost or used code. Creating missing invitations does not reissue existing codes.</p>}
+      {issued.length ? <><p>Save the downloaded file before leaving this page. Copy only the invitation code to the participant and send them to <a href="/c4">the C4 study</a>.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<button type="button" className="p-secondary" onClick={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-c4-invitations.json', 'application/json')}>Download these invitations again</button></> : <p>Choose “Replace lost code” for an unused assignment below. Creating invitations does not reissue existing codes.</p>}
     </section>}
-    {data && <><section className="p-card"><h2>{data.completed} completed sessions</h2><p>Create missing invitations fills assignments without a code. To start an assignment again, use the replacement form below.</p><div className="p-actions"><button className="p-secondary" disabled={busy} onClick={() => act(createMissing)}>Create missing invitations</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('export', 'c4-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('sessions', 'c4-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th><th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td><td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section>
-      <form className="p-card" onSubmit={e => { e.preventDefault(); act(replaceInvitation) }}><h2>Generate a replacement invitation</h2><p>This retires the previous code and closes its session, preserving responses in the audit log. Completed research assignments cannot be replaced; rehearsal assignments can.</p><label>Assignment ID<input required disabled={busy} value={replacement.assignment_id} onChange={e => setReplacement(r => ({ ...r, assignment_id: e.target.value }))} placeholder="For example, c4_review_01" /></label><label>Reason<textarea required disabled={busy} minLength="10" maxLength="500" value={replacement.reason} onChange={e => setReplacement(r => ({ ...r, reason: e.target.value }))} placeholder="For example: Repeat the full interface rehearsal." /></label><button className="p-secondary" disabled={busy}>{busy ? 'Working…' : 'Generate replacement code'}</button></form></>}
+    {data && <><C4InvitationAssignments data={data} busy={locked} onCreate={() => act(createMissing)} onReplace={selectReplacement} />
+      <form ref={replacementForm} className="p-card" onSubmit={e => { e.preventDefault(); act(replaceInvitation) }}><h2>Replace a lost or used participant code</h2><p>Choose an assignment and explain why you need a new code. The previous code stops working; any existing session closes, while its saved answers remain in the audit.</p>
+        <label>Assignment<select required disabled={locked} value={replacement.assignment_id} onChange={e => { setReplacement(r => ({ ...r, assignment_id: e.target.value })); setReplaceAcknowledged(false) }}><option value="">Choose an assignment</option>{assignments.filter(row => row.can_replace).map(row => <option key={row.assignment_id} value={row.assignment_id}>{row.assignment_id} · {row.participant_label || 'not started'}</option>)}</select></label>
+        {selectedAssignment?.phase && <label className="p-check"><input type="checkbox" required disabled={locked} checked={replaceAcknowledged} onChange={e => setReplaceAcknowledged(e.target.checked)} />I understand this closes {selectedAssignment.participant_label || 'the existing listener'}’s session for this assignment.</label>}
+        <label>Reason<textarea required disabled={locked} minLength="10" maxLength="500" value={replacement.reason} onChange={e => setReplacement(r => ({ ...r, reason: e.target.value }))} placeholder="For example: Lost the downloaded code for this unused review assignment." /></label><button className="p-secondary" disabled={locked || !selectedAssignment || (Boolean(selectedAssignment.phase) && !replaceAcknowledged)}>{busy ? 'Working…' : 'Generate replacement code'}</button>
+      </form>
+      <section className="p-card"><h2>{data.completed} completed sessions</h2><p>This table shows listeners who have started, including preserved sessions closed by a replacement. An empty table means nobody has started yet.</p><div className="p-actions"><button className="p-secondary" disabled={locked} onClick={() => act(() => exportFile('export', 'c4-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={locked} onClick={() => act(() => exportFile('sessions', 'c4-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th><th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td><td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section></>}
+    <section className="p-card"><h2>Invite a researcher to the admin panel</h2><p>This creates an account invitation for a teammate who needs to manage studies and responses. Use “Participant invitations” above for listener codes.</p>
+      <button className="p-secondary" disabled={locked} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
+      {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}
+    </section>
   </main></div>
 }
