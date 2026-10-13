@@ -1,0 +1,12 @@
+Random samples selected for manual listening:
+
+restricted_bend_sustain_v4_00093 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00093.wav | RMS -38.56 dBFS | Peak -15.98 dBFS
+restricted_bend_sustain_v4_00227 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00227.wav | RMS -27.31 dBFS | Peak -14.70 dBFS
+restricted_bend_sustain_v4_00230 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00230.wav | RMS -21.53 dBFS | Peak -12.04 dBFS
+restricted_bend_sustain_v4_00243 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00243.wav | RMS -31.72 dBFS | Peak -11.07 dBFS
+restricted_bend_sustain_v4_00391 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00391.wav | RMS -29.20 dBFS | Peak -12.05 dBFS
+restricted_bend_sustain_v4_00556 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00556.wav | RMS -46.79 dBFS | Peak -22.05 dBFS
+restricted_bend_sustain_v4_00645 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00645.wav | RMS -22.14 dBFS | Peak -12.07 dBFS
+restricted_bend_sustain_v4_00661 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00661.wav | RMS -38.99 dBFS | Peak -15.30 dBFS
+restricted_bend_sustain_v4_00742 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00742.wav | RMS -36.60 dBFS | Peak -14.91 dBFS
+restricted_bend_sustain_v4_00960 | data\raw\audio\restricted_bend_sustain_v4\restricted_bend_sustain_v4_00960.wav | RMS -18.27 dBFS | Peak -13.06 dBFS

@@ -1,0 +1,4027 @@
+{
+  "study_id": "c4_review_v1",
+  "rehearsal": true,
+  "seed": 41009,
+  "purpose": "Supervisor/interface review only; not representative sampling or metric evaluation.",
+  "selection": "30 distinct sounds sampled without replacement from the 64 C1 primary playback assets; independent of metric scores.",
+  "assignments": [
+    {
+      "assignment_id": "c4_review_01",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_066",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_065",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_042",
+          "candidate_b": "sound_031",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_059",
+          "candidate_b": "sound_061",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_009",
+          "candidate_b": "sound_008",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_022",
+          "candidate_b": "sound_024",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_008",
+          "candidate_b": "sound_009",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_02",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_066",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_065",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_031",
+          "candidate_b": "sound_042",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_061",
+          "candidate_b": "sound_059",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_008",
+          "candidate_b": "sound_009",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_024",
+          "candidate_b": "sound_022",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_009",
+          "candidate_b": "sound_008",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_03",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_066",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_065",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_061",
+          "candidate_b": "sound_059",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_024",
+          "candidate_b": "sound_022",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_008",
+          "candidate_b": "sound_009",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_031",
+          "candidate_b": "sound_042",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_04",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_066",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_065",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_059",
+          "candidate_b": "sound_061",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_022",
+          "candidate_b": "sound_024",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_009",
+          "candidate_b": "sound_008",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_042",
+          "candidate_b": "sound_031",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_05",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_066",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_065",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_059",
+          "candidate_b": "sound_061",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_009",
+          "candidate_b": "sound_008",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_022",
+          "candidate_b": "sound_024",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_042",
+          "candidate_b": "sound_031",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_06",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_066",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_065",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_061",
+          "candidate_b": "sound_059",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_008",
+          "candidate_b": "sound_009",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_024",
+          "candidate_b": "sound_022",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_031",
+          "candidate_b": "sound_042",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_07",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_066",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_065",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_024",
+          "candidate_b": "sound_022",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_061",
+          "candidate_b": "sound_059",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_008",
+          "candidate_b": "sound_009",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_031",
+          "candidate_b": "sound_042",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_08",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_066",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_065",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_022",
+          "candidate_b": "sound_024",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_059",
+          "candidate_b": "sound_061",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_009",
+          "candidate_b": "sound_008",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_042",
+          "candidate_b": "sound_031",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_09",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_066",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_065",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_042",
+          "candidate_b": "sound_031",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_022",
+          "candidate_b": "sound_024",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_059",
+          "candidate_b": "sound_061",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_009",
+          "candidate_b": "sound_008",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_024",
+          "candidate_b": "sound_022",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_10",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_066",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_065",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_031",
+          "candidate_b": "sound_042",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_024",
+          "candidate_b": "sound_022",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_061",
+          "candidate_b": "sound_059",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_008",
+          "candidate_b": "sound_009",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_022",
+          "candidate_b": "sound_024",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_11",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_066",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_065",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_031",
+          "candidate_b": "sound_042",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_024",
+          "candidate_b": "sound_022",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_008",
+          "candidate_b": "sound_009",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_061",
+          "candidate_b": "sound_059",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_12",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_066",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_065",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_042",
+          "candidate_b": "sound_031",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_022",
+          "candidate_b": "sound_024",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_009",
+          "candidate_b": "sound_008",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_059",
+          "candidate_b": "sound_061",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_13",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_066",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_065",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_042",
+          "candidate_b": "sound_031",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_059",
+          "candidate_b": "sound_061",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_009",
+          "candidate_b": "sound_008",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_022",
+          "candidate_b": "sound_024",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_14",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_066",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_065",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_031",
+          "candidate_b": "sound_042",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_061",
+          "candidate_b": "sound_059",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_008",
+          "candidate_b": "sound_009",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_024",
+          "candidate_b": "sound_022",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_15",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_066",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_065",
+          "candidate_b": "sound_067",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_024",
+          "candidate_b": "sound_022",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_008",
+          "candidate_b": "sound_009",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_061",
+          "candidate_b": "sound_059",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_014",
+          "candidate_b": "sound_005",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_020",
+          "candidate_b": "sound_056",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_045",
+          "candidate_b": "sound_032",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_050",
+          "candidate_b": "sound_038",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_031",
+          "candidate_b": "sound_042",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    },
+    {
+      "assignment_id": "c4_review_16",
+      "trials": [
+        {
+          "presentation_id": "p_01",
+          "triplet_id": "practice_1",
+          "reference": "sound_065",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_066",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_02",
+          "triplet_id": "practice_2",
+          "reference": "sound_066",
+          "candidate_a": "sound_067",
+          "candidate_b": "sound_065",
+          "kind": "practice",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_03",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_013",
+          "candidate_b": "sound_002",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_04",
+          "triplet_id": "triplet_09",
+          "reference": "sound_023",
+          "candidate_a": "sound_022",
+          "candidate_b": "sound_024",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_05",
+          "triplet_id": "triplet_02",
+          "reference": "sound_011",
+          "candidate_a": "sound_009",
+          "candidate_b": "sound_008",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_06",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_037",
+          "candidate_b": "sound_047",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_07",
+          "triplet_id": "triplet_08",
+          "reference": "sound_054",
+          "candidate_a": "sound_059",
+          "candidate_b": "sound_061",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_08",
+          "triplet_id": "triplet_04",
+          "reference": "sound_035",
+          "candidate_a": "sound_005",
+          "candidate_b": "sound_014",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_09",
+          "triplet_id": "triplet_07",
+          "reference": "sound_051",
+          "candidate_a": "sound_056",
+          "candidate_b": "sound_020",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_10",
+          "triplet_id": "triplet_06",
+          "reference": "sound_053",
+          "candidate_a": "sound_032",
+          "candidate_b": "sound_045",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_11",
+          "triplet_id": "triplet_03",
+          "reference": "sound_004",
+          "candidate_a": "sound_002",
+          "candidate_b": "sound_013",
+          "kind": "repeat",
+          "repeat_of": "p_03"
+        },
+        {
+          "presentation_id": "p_12",
+          "triplet_id": "triplet_01",
+          "reference": "sound_049",
+          "candidate_a": "sound_038",
+          "candidate_b": "sound_050",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_13",
+          "triplet_id": "triplet_05",
+          "reference": "sound_029",
+          "candidate_a": "sound_042",
+          "candidate_b": "sound_031",
+          "kind": "primary",
+          "repeat_of": null
+        },
+        {
+          "presentation_id": "p_14",
+          "triplet_id": "triplet_10",
+          "reference": "sound_063",
+          "candidate_a": "sound_047",
+          "candidate_b": "sound_037",
+          "kind": "repeat",
+          "repeat_of": "p_06"
+        }
+      ]
+    }
+  ],
+  "canonical_triplets": [
+    {
+      "triplet_id": "triplet_01",
+      "reference": "sound_049",
+      "candidate_1": "sound_050",
+      "candidate_2": "sound_038"
+    },
+    {
+      "triplet_id": "triplet_02",
+      "reference": "sound_011",
+      "candidate_1": "sound_009",
+      "candidate_2": "sound_008"
+    },
+    {
+      "triplet_id": "triplet_03",
+      "reference": "sound_004",
+      "candidate_1": "sound_002",
+      "candidate_2": "sound_013"
+    },
+    {
+      "triplet_id": "triplet_04",
+      "reference": "sound_035",
+      "candidate_1": "sound_005",
+      "candidate_2": "sound_014"
+    },
+    {
+      "triplet_id": "triplet_05",
+      "reference": "sound_029",
+      "candidate_1": "sound_031",
+      "candidate_2": "sound_042"
+    },
+    {
+      "triplet_id": "triplet_06",
+      "reference": "sound_053",
+      "candidate_1": "sound_032",
+      "candidate_2": "sound_045"
+    },
+    {
+      "triplet_id": "triplet_07",
+      "reference": "sound_051",
+      "candidate_1": "sound_020",
+      "candidate_2": "sound_056"
+    },
+    {
+      "triplet_id": "triplet_08",
+      "reference": "sound_054",
+      "candidate_1": "sound_059",
+      "candidate_2": "sound_061"
+    },
+    {
+      "triplet_id": "triplet_09",
+      "reference": "sound_023",
+      "candidate_1": "sound_024",
+      "candidate_2": "sound_022"
+    },
+    {
+      "triplet_id": "triplet_10",
+      "reference": "sound_063",
+      "candidate_1": "sound_037",
+      "candidate_2": "sound_047"
+    }
+  ],
+  "samples": {
+    "sound_002": {
+      "sample_id": "sound_002",
+      "source_sample_id": "restricted_bend_sustain_v4_00771",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00771.wav",
+      "source_sha256": "aed1ea7da8772a455f48a97a11fe327494a6efd5e3ae7e84873f371846fa96fd",
+      "parameters": {
+        "wave_frame": 0.9704223275184631,
+        "bend_amount": 0.7301692962646484,
+        "filter_cutoff": 0.8428311944007874,
+        "filter_resonance": 0.7144536972045898,
+        "filter_drive": 0.7247743010520935,
+        "amp_attack": 0.3479936718940735,
+        "amp_decay": 0.2125156968832016,
+        "amp_sustain": 0.7854579091072083,
+        "amp_release": 0.1058422103524208,
+        "filter_env_amount": 0.5503989458084106,
+        "filter_env_attack": 0.1584404557943344,
+        "filter_env_decay": 0.17911094427108765,
+        "filter_env_sustain": 0.804334282875061
+      },
+      "playback_path": "audio/sound_002.wav",
+      "playback_sha256": "532bd2df8a1271e43916651baf7b8aaa8647d108e2ae04309ae92523862cab19",
+      "feature_path": "audio/sound_002_features.wav",
+      "feature_sha256": "898d979ee5fca99138ded4cee0b67d30d1cafd2a6f746d49bc200466109b012b",
+      "gain": 0.8041594934427719,
+      "gain_db": -1.8931561331759035,
+      "before_level": {
+        "rms": 0.035075380231578496,
+        "rms_dbfs": -29.099952246858006,
+        "peak": 0.2524617910385132,
+        "dc_offset": -6.20623175997968e-13,
+        "dc_to_rms": 1.7693982842108115e-11,
+        "held_rms": 0.04958479404094131,
+        "tail_peak": 1.7967276927459837e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.02820619999933878,
+        "rms_dbfs": -30.993108380033906,
+        "peak": 0.2030195459951857,
+        "dc_offset": -4.99080036321096e-13,
+        "dc_to_rms": 1.7693983462245733e-11,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 1.4448556312532106e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_004": {
+      "sample_id": "sound_004",
+      "source_sample_id": "restricted_bend_sustain_v4_00104",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00104.wav",
+      "source_sha256": "dae2566016387dc6611e637ac75c2e002be7d1f6725e9dbeebc3941c3e053437",
+      "parameters": {
+        "wave_frame": 0.6290007829666138,
+        "bend_amount": 0.2809894382953644,
+        "filter_cutoff": 0.8218627572059631,
+        "filter_resonance": 0.49998676776885986,
+        "filter_drive": 0.22307737171649933,
+        "amp_attack": 0.3443290889263153,
+        "amp_decay": 0.24059846997261047,
+        "amp_sustain": 0.3114474415779114,
+        "amp_release": 0.42783787846565247,
+        "filter_env_amount": 0.5083058476448059,
+        "filter_env_attack": 0.3338272273540497,
+        "filter_env_decay": 0.35779210925102234,
+        "filter_env_sustain": 0.9555470943450928
+      },
+      "playback_path": "audio/sound_004.wav",
+      "playback_sha256": "5b2dff4cb41bb910bfdd84c3b3604dd29a254ae89bcf997298fd32ceffd3c2c8",
+      "feature_path": "audio/sound_004_features.wav",
+      "feature_sha256": "842532b789506ede44087a4aaa72e12f9de17cdb146a5f1b2fd7610d42f7e610",
+      "gain": 0.9938300669014445,
+      "gain_db": -0.0537573687173589,
+      "before_level": {
+        "rms": 0.028496848239389576,
+        "rms_dbfs": -30.904063408905603,
+        "peak": 0.2757885456085205,
+        "dc_offset": 1.28420045236952e-12,
+        "dc_to_rms": 4.506464860890976e-11,
+        "held_rms": 0.040121630635251995,
+        "tail_peak": 1.4563686289380783e-14,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.02832102459223285,
+        "rms_dbfs": -30.957820777622963,
+        "peak": 0.274086948732768,
+        "dc_offset": 1.2762770386177543e-12,
+        "dc_to_rms": 4.506464921356617e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 1.4473829319306953e-14,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_005": {
+      "sample_id": "sound_005",
+      "source_sample_id": "restricted_bend_sustain_v4_00563",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00563.wav",
+      "source_sha256": "dc56a6751027d19df3396047ab6ab73498cdab737d5003dc259aadbba08e550a",
+      "parameters": {
+        "wave_frame": 0.9237169623374939,
+        "bend_amount": 0.5567438006401062,
+        "filter_cutoff": 0.6600095629692078,
+        "filter_resonance": 0.5161450505256653,
+        "filter_drive": 0.048287346959114075,
+        "amp_attack": 0.33900752663612366,
+        "amp_decay": 0.23356495797634125,
+        "amp_sustain": 0.6844080090522766,
+        "amp_release": 0.43543776869773865,
+        "filter_env_amount": 0.5383213758468628,
+        "filter_env_attack": 0.1522066593170166,
+        "filter_env_decay": 0.2574114203453064,
+        "filter_env_sustain": 0.05344771221280098
+      },
+      "playback_path": "audio/sound_005.wav",
+      "playback_sha256": "aec6aa22a0c287b6937e3ad1881a36a92807400a5a90bef98fa6a1b3b1a478e2",
+      "feature_path": "audio/sound_005_features.wav",
+      "feature_sha256": "f39256464b648926cdc410473aa84773294b1bbe0498625ac47b66e7d17785e6",
+      "gain": 0.9813868593676337,
+      "gain_db": -0.1631952291671276,
+      "before_level": {
+        "rms": 0.029818807110238956,
+        "rms_dbfs": -30.510194686341308,
+        "peak": 0.2608945071697235,
+        "dc_offset": -1.6001477878510145e-14,
+        "dc_to_rms": 5.366236757678908e-13,
+        "held_rms": 0.04063034111147646,
+        "tail_peak": 1.6424945984468836e-13,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.029263785460006676,
+        "rms_dbfs": -30.673389915508437,
+        "peak": 0.25603844101756157,
+        "dc_offset": -1.5703662020703423e-14,
+        "dc_to_rms": 5.366244241424206e-13,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 1.6119226154980897e-13,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_008": {
+      "sample_id": "sound_008",
+      "source_sample_id": "restricted_bend_sustain_v4_00066",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00066.wav",
+      "source_sha256": "19b5b32dcda43c4a846e9145692b30dc22224d0a0f15385e707123e753b902dd",
+      "parameters": {
+        "wave_frame": 0.3991662859916687,
+        "bend_amount": 0.4844958484172821,
+        "filter_cutoff": 0.828532874584198,
+        "filter_resonance": 0.08710114657878876,
+        "filter_drive": 0.12412570416927338,
+        "amp_attack": 0.2704569697380066,
+        "amp_decay": 0.3436550199985504,
+        "amp_sustain": 0.7918336391448975,
+        "amp_release": 0.14349623024463654,
+        "filter_env_amount": 0.5513116717338562,
+        "filter_env_attack": 0.3192279040813446,
+        "filter_env_decay": 0.39624059200286865,
+        "filter_env_sustain": 0.07137308269739151
+      },
+      "playback_path": "audio/sound_008.wav",
+      "playback_sha256": "2895242a2601b5849d107239a485df7952249f9577d8a2ad815c6ecb16434511",
+      "feature_path": "audio/sound_008_features.wav",
+      "feature_sha256": "cd129701c8290aeac0183fe1e8be49d567f78d2a35dc790fc5a9fc97f85b6eb7",
+      "gain": 0.4172608017377365,
+      "gain_db": -7.591848236203884,
+      "before_level": {
+        "rms": 0.06762563123741115,
+        "rms_dbfs": -23.397773360696036,
+        "peak": 0.25126391649246216,
+        "dc_offset": 3.4666930332513958e-12,
+        "dc_to_rms": 5.12630044232931e-11,
+        "held_rms": 0.09556153535718373,
+        "tail_peak": 2.3547535749513886e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028217525108142696,
+        "rms_dbfs": -30.989621596899916,
+        "peak": 0.10484258324340844,
+        "dc_offset": 1.4465151038849434e-12,
+        "dc_to_rms": 5.126300404947719e-11,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 9.825463645790176e-32,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_009": {
+      "sample_id": "sound_009",
+      "source_sample_id": "restricted_bend_sustain_v4_01009",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_01009.wav",
+      "source_sha256": "b7b8306614ae5faba82ec6ae3c6764733e241bb54a8939a3da4793c35141a5ba",
+      "parameters": {
+        "wave_frame": 0.02368609607219696,
+        "bend_amount": 0.5451249480247498,
+        "filter_cutoff": 0.810117781162262,
+        "filter_resonance": 0.26858261227607727,
+        "filter_drive": 0.20483656227588654,
+        "amp_attack": 0.3339623212814331,
+        "amp_decay": 0.16623985767364502,
+        "amp_sustain": 0.23146818578243256,
+        "amp_release": 0.38141876459121704,
+        "filter_env_amount": 0.5566411018371582,
+        "filter_env_attack": 0.3256368041038513,
+        "filter_env_decay": 0.30762189626693726,
+        "filter_env_sustain": 0.9258201718330383
+      },
+      "playback_path": "audio/sound_009.wav",
+      "playback_sha256": "841e432a2fbe928ba4c2b501dcda612c86c33a2bbdb25b906c0aa5685af2733d",
+      "feature_path": "audio/sound_009_features.wav",
+      "feature_sha256": "ee4fefb5177cb03b9d242f7670c8eee24a299884d861d3b12109905218222467",
+      "gain": 1.1588639887197398,
+      "gain_db": 1.2806493505971597,
+      "before_level": {
+        "rms": 0.024358615189743454,
+        "rms_dbfs": -32.26694810776854,
+        "peak": 0.1998058408498764,
+        "dc_offset": 9.37310346915805e-13,
+        "dc_to_rms": 3.847962372304617e-11,
+        "held_rms": 0.034407905713317234,
+        "tail_peak": 6.196601491440743e-23,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028228321958475338,
+        "rms_dbfs": -30.986298757171387,
+        "peak": 0.2315477936967893,
+        "dc_offset": 1.0862152258527397e-12,
+        "dc_to_rms": 3.8479624380457085e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 7.181018320877709e-23,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_011": {
+      "sample_id": "sound_011",
+      "source_sample_id": "restricted_bend_sustain_v4_00491",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00491.wav",
+      "source_sha256": "65981821d950618163feb6a5189a8b4059a40753cb3b871ef7e1e7a9f961cd3f",
+      "parameters": {
+        "wave_frame": 0.8312897086143494,
+        "bend_amount": 0.6188712120056152,
+        "filter_cutoff": 0.7539861798286438,
+        "filter_resonance": 0.08875897526741028,
+        "filter_drive": 0.16988295316696167,
+        "amp_attack": 0.16700981557369232,
+        "amp_decay": 0.18198096752166748,
+        "amp_sustain": 0.23329241573810577,
+        "amp_release": 0.4297531843185425,
+        "filter_env_amount": 0.5403448343276978,
+        "filter_env_attack": 0.06437762081623077,
+        "filter_env_decay": 0.35998719930648804,
+        "filter_env_sustain": 0.866240918636322
+      },
+      "playback_path": "audio/sound_011.wav",
+      "playback_sha256": "8351b2c49c08069c740f4a837a386070eb0bd64ab708c291124bd4e553da84d6",
+      "feature_path": "audio/sound_011_features.wav",
+      "feature_sha256": "b52d79df9334c0334a7aafdb9ae2288a84768e04e956df1a9d8ddbff37afb9d3",
+      "gain": 3.143112528658122,
+      "gain_db": 9.947198595219204,
+      "before_level": {
+        "rms": 0.009081495068803739,
+        "rms_dbfs": -40.83685297080717,
+        "peak": 0.2831588089466095,
+        "dc_offset": 6.825664909405571e-13,
+        "dc_to_rms": 7.516014552331505e-11,
+        "held_rms": 0.012686177314641304,
+        "tail_peak": 4.598856966899975e-15,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028544160929703983,
+        "rms_dbfs": -30.889654375587973,
+        "peak": 0.8899999999999999,
+        "dc_offset": 2.1453832692894974e-12,
+        "dc_to_rms": 7.51601448216662e-11,
+        "held_rms": 0.03987408285842753,
+        "tail_peak": 1.4454724950170003e-14,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_013": {
+      "sample_id": "sound_013",
+      "source_sample_id": "restricted_bend_sustain_v4_00832",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00832.wav",
+      "source_sha256": "9d53f22513c93efc4f159c359072f4b1a6147a1e54b05b6339899637ae601301",
+      "parameters": {
+        "wave_frame": 0.5317736864089966,
+        "bend_amount": 0.32809993624687195,
+        "filter_cutoff": 0.8030648827552795,
+        "filter_resonance": 0.7914501428604126,
+        "filter_drive": 0.2216181457042694,
+        "amp_attack": 0.3117885887622833,
+        "amp_decay": 0.15576674044132233,
+        "amp_sustain": 0.839748740196228,
+        "amp_release": 0.40097373723983765,
+        "filter_env_amount": 0.5347344875335693,
+        "filter_env_attack": 0.2209724485874176,
+        "filter_env_decay": 0.26827311515808105,
+        "filter_env_sustain": 0.4441819489002228
+      },
+      "playback_path": "audio/sound_013.wav",
+      "playback_sha256": "1776a31b48517ba399238cc88a2677381bf70e2dd7babb5b81891caf05e8a1b1",
+      "feature_path": "audio/sound_013_features.wav",
+      "feature_sha256": "ac88cfdeb95b554889f47adfe50db00ffe2b40178e93f61a324a23579a7e8ae4",
+      "gain": 0.5009431778534768,
+      "gain_db": -6.004230670049216,
+      "before_level": {
+        "rms": 0.05808902191169959,
+        "rms_dbfs": -24.71811872006324,
+        "peak": 0.2513466775417328,
+        "dc_offset": -1.6861836140006604e-12,
+        "dc_to_rms": 2.902757799165232e-11,
+        "held_rms": 0.07959801554596777,
+        "tail_peak": 9.615698549399507e-19,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.029099299234847033,
+        "rms_dbfs": -30.72234939011246,
+        "peak": 0.12591040339066872,
+        "dc_offset": -8.446821163072652e-13,
+        "dc_to_rms": 2.9027575870134368e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 4.816918588617256e-19,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_014": {
+      "sample_id": "sound_014",
+      "source_sample_id": "restricted_bend_sustain_v4_00577",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00577.wav",
+      "source_sha256": "64fa1504ada16379a172e5b7feb28c093f2a4a5c5a6d03aab4dad5101a876d9a",
+      "parameters": {
+        "wave_frame": 0.06279327720403671,
+        "bend_amount": 0.5191746950149536,
+        "filter_cutoff": 0.7164573073387146,
+        "filter_resonance": 0.14296065270900726,
+        "filter_drive": 0.09157626330852509,
+        "amp_attack": 0.07182861864566803,
+        "amp_decay": 0.3145538568496704,
+        "amp_sustain": 0.2757064700126648,
+        "amp_release": 0.15636613965034485,
+        "filter_env_amount": 0.5062253475189209,
+        "filter_env_attack": 0.09214238077402115,
+        "filter_env_decay": 0.175176739692688,
+        "filter_env_sustain": 0.857018768787384
+      },
+      "playback_path": "audio/sound_014.wav",
+      "playback_sha256": "2ccf1df2f7970b667900f4f9b875556569baf4bbb5f54bfb13c58bf94f53e34a",
+      "feature_path": "audio/sound_014_features.wav",
+      "feature_sha256": "cc3f62fba6e2fc41fe4ba62658f5fe52e78e513e0f260d32ca991f06e5925db2",
+      "gain": 1.2779109848414625,
+      "gain_db": 2.130012066454658,
+      "before_level": {
+        "rms": 0.022066335171265897,
+        "rms_dbfs": -33.12539578992376,
+        "peak": 0.21252694725990295,
+        "dc_offset": -1.2834653336764666e-12,
+        "dc_to_rms": 5.8163955351668714e-11,
+        "held_rms": 0.031202551141208252,
+        "tail_peak": 3.4259130455350863e-32,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028198812110554205,
+        "rms_dbfs": -30.9953837234691,
+        "peak": 0.27159052047825216,
+        "dc_offset": -1.6401544282467398e-12,
+        "dc_to_rms": 5.816395463101318e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 4.378011914000956e-32,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_020": {
+      "sample_id": "sound_020",
+      "source_sample_id": "restricted_bend_sustain_v4_00060",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00060.wav",
+      "source_sha256": "acc1c20cfe60a5c8ad18a653e214f373f0e3821ec725930a1fdded4455c158b0",
+      "parameters": {
+        "wave_frame": 0.9880222678184509,
+        "bend_amount": 0.40912941098213196,
+        "filter_cutoff": 0.8349632024765015,
+        "filter_resonance": 0.19506505131721497,
+        "filter_drive": 0.4036029875278473,
+        "amp_attack": 0.07576646655797958,
+        "amp_decay": 0.18375226855278015,
+        "amp_sustain": 0.33907249569892883,
+        "amp_release": 0.4049386978149414,
+        "filter_env_amount": 0.5527388453483582,
+        "filter_env_attack": 0.3451472222805023,
+        "filter_env_decay": 0.37216809391975403,
+        "filter_env_sustain": 0.27384570240974426
+      },
+      "playback_path": "audio/sound_020.wav",
+      "playback_sha256": "185472594e0bd730cf83934cf9dc43777e99732001307ee5cd29925e1105ed94",
+      "feature_path": "audio/sound_020_features.wav",
+      "feature_sha256": "fa615237355878f3678755974642fb5c15649027b06d54260f182df24b3e6772",
+      "gain": 2.833032160811627,
+      "gain_db": 9.045030093894406,
+      "before_level": {
+        "rms": 0.010202391948653588,
+        "rms_dbfs": -39.82595992100219,
+        "peak": 0.12172845005989075,
+        "dc_offset": -3.267988258856545e-13,
+        "dc_to_rms": 3.203158901661117e-11,
+        "held_rms": 0.014074701801833457,
+        "tail_peak": 1.393279449136862e-18,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028903704507741223,
+        "rms_dbfs": -30.78092982710778,
+        "peak": 0.3448606139054225,
+        "dc_offset": -9.25831598335112e-13,
+        "dc_to_rms": 3.2031589517777845e-11,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 3.947205488402637e-18,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_022": {
+      "sample_id": "sound_022",
+      "source_sample_id": "restricted_bend_sustain_v4_00608",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00608.wav",
+      "source_sha256": "b7fb01d0be454e50fdcb5744d15b22423a5614d9837f4860ece0631b2c162caf",
+      "parameters": {
+        "wave_frame": 0.5157297253608704,
+        "bend_amount": 0.2951490581035614,
+        "filter_cutoff": 0.8290603160858154,
+        "filter_resonance": 0.10936633497476578,
+        "filter_drive": 0.711624026298523,
+        "amp_attack": 0.13307204842567444,
+        "amp_decay": 0.36742445826530457,
+        "amp_sustain": 0.3870905041694641,
+        "amp_release": 0.24057036638259888,
+        "filter_env_amount": 0.5606735944747925,
+        "filter_env_attack": 0.2004910260438919,
+        "filter_env_decay": 0.2662277817726135,
+        "filter_env_sustain": 0.04008892923593521
+      },
+      "playback_path": "audio/sound_022.wav",
+      "playback_sha256": "7f7c22df290229a7b4525b371bb640eaeadaf110125be5c29ef19101c3e835e1",
+      "feature_path": "audio/sound_022_features.wav",
+      "feature_sha256": "71dda612ec44cf230d5600277ecfc4804b7f196e82eb46536697458c7a27bc7a",
+      "gain": 0.6521675342794323,
+      "gain_db": -3.7128164943558435,
+      "before_level": {
+        "rms": 0.04327385465766131,
+        "rms_dbfs": -27.275488358105168,
+        "peak": 0.27005985379219055,
+        "dc_offset": -1.3527710563389426e-12,
+        "dc_to_rms": 3.126070157236258e-11,
+        "held_rms": 0.06114085838768969,
+        "tail_peak": 2.360428015321226e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.0282218030908535,
+        "rms_dbfs": -30.988304852461013,
+        "peak": 0.17612426895551692,
+        "dc_offset": -8.82233335265303e-13,
+        "dc_to_rms": 3.1260700545077115e-11,
+        "held_rms": 0.03987408285842753,
+        "tail_peak": 1.5393945185961381e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_023": {
+      "sample_id": "sound_023",
+      "source_sample_id": "restricted_bend_sustain_v4_00933",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00933.wav",
+      "source_sha256": "417ed3609c23b688ecd373761403720f0dbf05c15ee221f7445c347b41ebfed3",
+      "parameters": {
+        "wave_frame": 0.35927581787109375,
+        "bend_amount": 0.6440290808677673,
+        "filter_cutoff": 0.7952885031700134,
+        "filter_resonance": 0.7637585401535034,
+        "filter_drive": 0.37515386939048767,
+        "amp_attack": 0.08342328667640686,
+        "amp_decay": 0.25831854343414307,
+        "amp_sustain": 0.2163183093070984,
+        "amp_release": 0.4460172653198242,
+        "filter_env_amount": 0.5043959617614746,
+        "filter_env_attack": 0.31585603952407837,
+        "filter_env_decay": 0.2966097593307495,
+        "filter_env_sustain": 0.37315279245376587
+      },
+      "playback_path": "audio/sound_023.wav",
+      "playback_sha256": "3150e7ba6d528c791d0a83d526cf21a2b1869a22b1bf4b4547f489764ac5df65",
+      "feature_path": "audio/sound_023_features.wav",
+      "feature_sha256": "e0e7579bc3a6f19599f74c69d6cd96879d67054ad2ee17361eb4f74741375e67",
+      "gain": 3.417865394824966,
+      "gain_db": 10.675099099608559,
+      "before_level": {
+        "rms": 0.00829153923800578,
+        "rms_dbfs": -41.6272967942539,
+        "peak": 0.16875973343849182,
+        "dc_offset": -6.857635092604094e-14,
+        "dc_to_rms": 8.270641790092331e-12,
+        "held_rms": 0.011666370161563822,
+        "tail_peak": 6.270007950337497e-12,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028339365031413325,
+        "rms_dbfs": -30.95219769464535,
+        "peak": 0.5767980529593069,
+        "dc_offset": -2.3438473636125246e-13,
+        "dc_to_rms": 8.270641776957391e-12,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 2.1430043198735945e-11,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_024": {
+      "sample_id": "sound_024",
+      "source_sample_id": "restricted_bend_sustain_v4_00653",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00653.wav",
+      "source_sha256": "2168b82c78e2f6a26a41439b0299d4869bacfa69e01c15bf297513f2b5fac60e",
+      "parameters": {
+        "wave_frame": 0.44676440954208374,
+        "bend_amount": 0.5214588642120361,
+        "filter_cutoff": 0.3010064363479614,
+        "filter_resonance": 0.38115376234054565,
+        "filter_drive": 0.6584811806678772,
+        "amp_attack": 0.34212467074394226,
+        "amp_decay": 0.37519338726997375,
+        "amp_sustain": 0.20377978682518005,
+        "amp_release": 0.3014850914478302,
+        "filter_env_amount": 0.5103558897972107,
+        "filter_env_attack": 0.1209452673792839,
+        "filter_env_decay": 0.2765617072582245,
+        "filter_env_sustain": 0.9377227425575256
+      },
+      "playback_path": "audio/sound_024.wav",
+      "playback_sha256": "d8d782ccd4939fea02f01f90c398c5c58d1b9895a893bcf31c04ed0b2cce022f",
+      "feature_path": "audio/sound_024_features.wav",
+      "feature_sha256": "5148fd45031461e9b0dd2055c657e0bcc90c0c66bd9956ba0c66143721d2514e",
+      "gain": 2.8531795331060046,
+      "gain_db": 9.106582000152468,
+      "before_level": {
+        "rms": 0.009883291173781644,
+        "rms_dbfs": -40.10196819205652,
+        "peak": 0.0600275881588459,
+        "dc_offset": 3.76625822261033e-14,
+        "dc_to_rms": 3.8107328382689414e-12,
+        "held_rms": 0.013975315046165407,
+        "tail_peak": 3.608289465922508e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028198804096761003,
+        "rms_dbfs": -30.995386191904046,
+        "peak": 0.1712694859565355,
+        "dc_offset": 1.0745809214317292e-13,
+        "dc_to_rms": 3.810732248589077e-12,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 1.0295097653692096e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_029": {
+      "sample_id": "sound_029",
+      "source_sample_id": "restricted_bend_sustain_v4_00851",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00851.wav",
+      "source_sha256": "a0c5c881a2d35160b6b42f78b38d40ebe246d2f3342859db16dc7d3b6f59b389",
+      "parameters": {
+        "wave_frame": 0.9010801911354065,
+        "bend_amount": 0.6981654763221741,
+        "filter_cutoff": 0.516075611114502,
+        "filter_resonance": 0.5819295644760132,
+        "filter_drive": 0.2099786251783371,
+        "amp_attack": 0.08869025856256485,
+        "amp_decay": 0.26395124197006226,
+        "amp_sustain": 0.46799546480178833,
+        "amp_release": 0.4452177584171295,
+        "filter_env_amount": 0.5599110722541809,
+        "filter_env_attack": 0.33139216899871826,
+        "filter_env_decay": 0.2366303950548172,
+        "filter_env_sustain": 0.16220155358314514
+      },
+      "playback_path": "audio/sound_029.wav",
+      "playback_sha256": "108f180f184725270f654a115e2e64d27bacb68eb6f5ab3fa95bf02a82773e1c",
+      "feature_path": "audio/sound_029_features.wav",
+      "feature_sha256": "37f997d38754f8b216a687b66356f2dd18e84058e7244248e67219a4c15279c2",
+      "gain": 2.0021781405166474,
+      "gain_db": 6.030054310034324,
+      "before_level": {
+        "rms": 0.014531016754307294,
+        "rms_dbfs": -36.754079929681545,
+        "peak": 0.11567284166812897,
+        "dc_offset": 2.008405437240483e-12,
+        "dc_to_rms": 1.3821506582773364e-10,
+        "held_rms": 0.01991535221143625,
+        "tail_peak": 7.0747852021213475e-12,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.02909368410495523,
+        "rms_dbfs": -30.724025619647218,
+        "peak": 0.23159763503937103,
+        "dc_offset": 4.0211854515232236e-12,
+        "dc_to_rms": 1.3821506540790192e-10,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 1.4164980280538014e-11,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_031": {
+      "sample_id": "sound_031",
+      "source_sample_id": "restricted_bend_sustain_v4_00738",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00738.wav",
+      "source_sha256": "5104e95530e6d96c9ba319c03fd6d8594f59a97bd8e5a812f14b03d6f9bd0a53",
+      "parameters": {
+        "wave_frame": 0.41404545307159424,
+        "bend_amount": 0.2699071168899536,
+        "filter_cutoff": 0.8416085839271545,
+        "filter_resonance": 0.3550085425376892,
+        "filter_drive": 0.6206557154655457,
+        "amp_attack": 0.07325096428394318,
+        "amp_decay": 0.1653568595647812,
+        "amp_sustain": 0.8197392225265503,
+        "amp_release": 0.29305940866470337,
+        "filter_env_amount": 0.5568804144859314,
+        "filter_env_attack": 0.28913217782974243,
+        "filter_env_decay": 0.16964766383171082,
+        "filter_env_sustain": 0.538275957107544
+      },
+      "playback_path": "audio/sound_031.wav",
+      "playback_sha256": "7c1f55ca91269a193e697adebbcd3235ad2aff946a73124b7a0190cbc90e1fb3",
+      "feature_path": "audio/sound_031_features.wav",
+      "feature_sha256": "e30d0054ac5d05cd6c3b63fef07182248517d06f25027f9921100ab788d21956",
+      "gain": 0.3710848424042244,
+      "gain_db": -8.610535695813157,
+      "before_level": {
+        "rms": 0.076612807313729,
+        "rms_dbfs": -22.313972471383316,
+        "peak": 0.17676694691181183,
+        "dc_offset": -7.139578455608312e-13,
+        "dc_to_rms": 9.319040387557892e-12,
+        "held_rms": 0.10745273937918627,
+        "tail_peak": 2.559872656000384e-28,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.02842985152816034,
+        "rms_dbfs": -30.92450816719647,
+        "peak": 0.0655955346370456,
+        "dc_offset": -2.649389190439752e-13,
+        "dc_to_rms": 9.319039840273096e-12,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 9.499299411267859e-29,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_032": {
+      "sample_id": "sound_032",
+      "source_sample_id": "restricted_bend_sustain_v4_00371",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00371.wav",
+      "source_sha256": "4abcc5eb14eff5a06d84ffef9164b730bd4d31a0ee523960c0d492792600a3be",
+      "parameters": {
+        "wave_frame": 0.9195907711982727,
+        "bend_amount": 0.690109133720398,
+        "filter_cutoff": 0.35377970337867737,
+        "filter_resonance": 0.7303372025489807,
+        "filter_drive": 0.01057363674044609,
+        "amp_attack": 0.17061081528663635,
+        "amp_decay": 0.16652676463127136,
+        "amp_sustain": 0.2890896201133728,
+        "amp_release": 0.26896509528160095,
+        "filter_env_amount": 0.526447594165802,
+        "filter_env_attack": 0.08142169564962387,
+        "filter_env_decay": 0.2673060894012451,
+        "filter_env_sustain": 0.2663349509239197
+      },
+      "playback_path": "audio/sound_032.wav",
+      "playback_sha256": "afde901ddef671c74531fec359d60880572e0ff0f086be6d2d54d7c3b1b3c933",
+      "feature_path": "audio/sound_032_features.wav",
+      "feature_sha256": "44d52b904caaa0f7658cfb387be84bbceb5b7132d44f939d9279930fc9529c12",
+      "gain": 5.10531733885448,
+      "gain_db": 14.160454847087413,
+      "before_level": {
+        "rms": 0.00552787028814607,
+        "rms_dbfs": -45.14884312527964,
+        "peak": 0.13757352530956268,
+        "dc_offset": -2.231163801574234e-13,
+        "dc_to_rms": 4.03620867580545e-11,
+        "held_rms": 0.00781030447509349,
+        "tail_peak": 1.210240083041633e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.02822153202901064,
+        "rms_dbfs": -30.98838827819222,
+        "peak": 0.702356504130246,
+        "dc_offset": -1.1390798846273891e-12,
+        "dc_to_rms": 4.036208535583607e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 6.1786596801291344e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_035": {
+      "sample_id": "sound_035",
+      "source_sample_id": "restricted_bend_sustain_v4_00384",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00384.wav",
+      "source_sha256": "99865904bebe01facc4c6af28a90b9b347d7491417d620ea05b51c2438465f5a",
+      "parameters": {
+        "wave_frame": 0.5479621291160583,
+        "bend_amount": 0.47284549474716187,
+        "filter_cutoff": 0.7060264945030212,
+        "filter_resonance": 0.7344667315483093,
+        "filter_drive": 0.3744485080242157,
+        "amp_attack": 0.2665848135948181,
+        "amp_decay": 0.27841275930404663,
+        "amp_sustain": 0.33887216448783875,
+        "amp_release": 0.1538291573524475,
+        "filter_env_amount": 0.5407357811927795,
+        "filter_env_attack": 0.15517178177833557,
+        "filter_env_decay": 0.1975945085287094,
+        "filter_env_sustain": 0.9488784670829773
+      },
+      "playback_path": "audio/sound_035.wav",
+      "playback_sha256": "33cfae9463ffac090be8aafc581e25bb342be1cd728bb4fa789fd760bab51e92",
+      "feature_path": "audio/sound_035_features.wav",
+      "feature_sha256": "c8b8cd261aeca1b21f475ba998b342a394172cdca44f20ae538644618aaaafe1",
+      "gain": 1.16138724928427,
+      "gain_db": 1.2995410732455772,
+      "before_level": {
+        "rms": 0.024282053602769867,
+        "rms_dbfs": -32.29429173032442,
+        "peak": 0.22374756634235382,
+        "dc_offset": 6.683561418257876e-13,
+        "dc_to_rms": 2.752469592397028e-11,
+        "held_rms": 0.03433315018999976,
+        "tail_peak": 7.227765641384052e-32,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028200867440694097,
+        "rms_dbfs": -30.994750657078836,
+        "peak": 0.25985757060839604,
+        "dc_offset": 7.762203691599462e-13,
+        "dc_to_rms": 2.7524698337465088e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 8.394234856718382e-32,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_037": {
+      "sample_id": "sound_037",
+      "source_sample_id": "restricted_bend_sustain_v4_00458",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00458.wav",
+      "source_sha256": "9553b384ae09a4acef06963c07e9ab9a73854e4fb8fcbda59034f7f28ea35c22",
+      "parameters": {
+        "wave_frame": 0.2533341646194458,
+        "bend_amount": 0.31652963161468506,
+        "filter_cutoff": 0.7916584610939026,
+        "filter_resonance": 0.05985407531261444,
+        "filter_drive": 0.6221036911010742,
+        "amp_attack": 0.11516255885362625,
+        "amp_decay": 0.23457883298397064,
+        "amp_sustain": 0.3289182484149933,
+        "amp_release": 0.3609391748905182,
+        "filter_env_amount": 0.5167803764343262,
+        "filter_env_attack": 0.2560747265815735,
+        "filter_env_decay": 0.3314170837402344,
+        "filter_env_sustain": 0.050402116030454636
+      },
+      "playback_path": "audio/sound_037.wav",
+      "playback_sha256": "7026272a841be12c2012244b2619aa030ad7892508e6c3a484bfdc8cbd88d445",
+      "feature_path": "audio/sound_037_features.wav",
+      "feature_sha256": "a42ebd1a522461f956fe784c3cd55f77633c2b4e28b2f3de409c964ea5f97dde",
+      "gain": 1.621142793508744,
+      "gain_db": 4.196425401247178,
+      "before_level": {
+        "rms": 0.017565243472648616,
+        "rms_dbfs": -35.10691652108846,
+        "peak": 0.19626642763614655,
+        "dc_offset": -7.016620382893399e-14,
+        "dc_to_rms": 3.994604682718572e-12,
+        "held_rms": 0.02459628048688141,
+        "tail_peak": 1.770356121470658e-24,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028475767871910806,
+        "rms_dbfs": -30.910491119841282,
+        "peak": 0.31817590477004437,
+        "dc_offset": -1.137494574890541e-13,
+        "dc_to_rms": 3.994605448419157e-12,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 2.8700000682662477e-24,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_038": {
+      "sample_id": "sound_038",
+      "source_sample_id": "restricted_bend_sustain_v4_00380",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00380.wav",
+      "source_sha256": "f1206658f61346424de1b0eeb696dcd03746d12e6d890787c12abde5836f1c01",
+      "parameters": {
+        "wave_frame": 0.982418417930603,
+        "bend_amount": 0.3872295022010803,
+        "filter_cutoff": 0.6988548040390015,
+        "filter_resonance": 0.4932425022125244,
+        "filter_drive": 0.7424672245979309,
+        "amp_attack": 0.12971946597099304,
+        "amp_decay": 0.3283519744873047,
+        "amp_sustain": 0.40035131573677063,
+        "amp_release": 0.11692935973405838,
+        "filter_env_amount": 0.5460336208343506,
+        "filter_env_attack": 0.06375671923160553,
+        "filter_env_decay": 0.22421883046627045,
+        "filter_env_sustain": 0.14541278779506683
+      },
+      "playback_path": "audio/sound_038.wav",
+      "playback_sha256": "6c833538253083cccd55907ce947cae90d478ae0cd685c442e4c75f6c6304920",
+      "feature_path": "audio/sound_038_features.wav",
+      "feature_sha256": "0ade5c52c863ab36f9d42fc0ebdc1e891fccc6a1ba42894ac06c4c7695f60dcc",
+      "gain": 1.949246011104722,
+      "gain_db": 5.797333083253965,
+      "before_level": {
+        "rms": 0.014467961161195354,
+        "rms_dbfs": -36.791853315185385,
+        "peak": 0.2098999172449112,
+        "dc_offset": -9.787176209308624e-13,
+        "dc_to_rms": 6.764723861409647e-11,
+        "held_rms": 0.020456157217338188,
+        "tail_peak": 7.258685609689211e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.02820161558227809,
+        "rms_dbfs": -30.994520231931418,
+        "peak": 0.4091465764208544,
+        "dc_offset": -1.90776140832611e-12,
+        "dc_to_rms": 6.764723824988765e-11,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 1.4148963970549943e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_042": {
+      "sample_id": "sound_042",
+      "source_sample_id": "restricted_bend_sustain_v4_00867",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00867.wav",
+      "source_sha256": "c1ffd2732a9cd04a425044e11aa263fd1b0fe327cdc66f67fe6b079001822bef",
+      "parameters": {
+        "wave_frame": 0.9525426030158997,
+        "bend_amount": 0.6601727604866028,
+        "filter_cutoff": 0.6446237564086914,
+        "filter_resonance": 0.47696608304977417,
+        "filter_drive": 0.17155586183071136,
+        "amp_attack": 0.11352043598890305,
+        "amp_decay": 0.16504991054534912,
+        "amp_sustain": 0.3019883930683136,
+        "amp_release": 0.2501946985721588,
+        "filter_env_amount": 0.5537484288215637,
+        "filter_env_attack": 0.2719295024871826,
+        "filter_env_decay": 0.33392825722694397,
+        "filter_env_sustain": 0.8329687118530273
+      },
+      "playback_path": "audio/sound_042.wav",
+      "playback_sha256": "92745efd5d45a4069052967b3403a7af7a223d8925064101938377dd674959bf",
+      "feature_path": "audio/sound_042_features.wav",
+      "feature_sha256": "1b8a73e2f31a587d25abbf4de490ac802caf82935cf2ae082aecba95a6f9328a",
+      "gain": 4.352780730971455,
+      "gain_db": 12.775335807068837,
+      "before_level": {
+        "rms": 0.006501084665509702,
+        "rms_dbfs": -43.74028355961575,
+        "peak": 0.10754039883613586,
+        "dc_offset": -6.805179223947182e-13,
+        "dc_to_rms": 1.0467759726389656e-10,
+        "held_rms": 0.009160599929766833,
+        "tail_peak": 1.4650676275442462e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028297796062444636,
+        "rms_dbfs": -30.964947752546912,
+        "peak": 0.4680997758549173,
+        "dc_offset": -2.9621452688239165e-12,
+        "dc_to_rms": 1.046775961734745e-10,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 6.377118138744659e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_045": {
+      "sample_id": "sound_045",
+      "source_sample_id": "restricted_bend_sustain_v4_00526",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00526.wav",
+      "source_sha256": "787ce2fe62ae1821e59477a1b291944a83f58b8b0d90920a0dc254adc6da4c97",
+      "parameters": {
+        "wave_frame": 0.027217481285333633,
+        "bend_amount": 0.44994592666625977,
+        "filter_cutoff": 0.7084512114524841,
+        "filter_resonance": 0.479661762714386,
+        "filter_drive": 0.044317469000816345,
+        "amp_attack": 0.1980261504650116,
+        "amp_decay": 0.3889671862125397,
+        "amp_sustain": 0.5906482338905334,
+        "amp_release": 0.42523378133773804,
+        "filter_env_amount": 0.55247962474823,
+        "filter_env_attack": 0.2049693763256073,
+        "filter_env_decay": 0.1720065176486969,
+        "filter_env_sustain": 0.8971680998802185
+      },
+      "playback_path": "audio/sound_045.wav",
+      "playback_sha256": "f6fe1efba320ad889dbcf4179211d6958695d424347efeaf3c9af33bf9dde1d1",
+      "feature_path": "audio/sound_045_features.wav",
+      "feature_sha256": "1e087e49e7479c9a61de9c2d243379e6d16581179b436d75cd3b774106021a5e",
+      "gain": 0.8552175649954598,
+      "gain_db": -1.3584677578970727,
+      "before_level": {
+        "rms": 0.033607148627039354,
+        "rms_dbfs": -29.47136666704841,
+        "peak": 0.13721954822540283,
+        "dc_offset": 2.7055344199987717e-12,
+        "dc_to_rms": 8.050472981281059e-11,
+        "held_rms": 0.04662449006018629,
+        "tail_peak": 7.886862473529903e-16,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028741423815257107,
+        "rms_dbfs": -30.82983442494548,
+        "peak": 0.11735256790310607,
+        "dc_offset": 2.3138204957471274e-12,
+        "dc_to_rms": 8.050472762309215e-11,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 6.744983320066312e-16,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_047": {
+      "sample_id": "sound_047",
+      "source_sample_id": "restricted_bend_sustain_v4_00287",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00287.wav",
+      "source_sha256": "8fde769b1fe09d884c0dcf267e1b0c75bb64aab31d9e24747c0942bee186f11a",
+      "parameters": {
+        "wave_frame": 0.5252273082733154,
+        "bend_amount": 0.7405198812484741,
+        "filter_cutoff": 0.395717054605484,
+        "filter_resonance": 0.17682018876075745,
+        "filter_drive": 0.2895236611366272,
+        "amp_attack": 0.3163601756095886,
+        "amp_decay": 0.2186719924211502,
+        "amp_sustain": 0.6675882339477539,
+        "amp_release": 0.12009304761886597,
+        "filter_env_amount": 0.5590188503265381,
+        "filter_env_attack": 0.22065040469169617,
+        "filter_env_decay": 0.323932021856308,
+        "filter_env_sustain": 0.8688852787017822
+      },
+      "playback_path": "audio/sound_047.wav",
+      "playback_sha256": "9ae0c722cefe5298fa4d13ab578038881df4cecff05ec21ab7f91cadecbc0dfc",
+      "feature_path": "audio/sound_047_features.wav",
+      "feature_sha256": "eef6fcc6330bd2884d08442c9294a47e9f0524bd26aa023b46ab3858e664ec40",
+      "gain": 0.5122352047799132,
+      "gain_db": -5.810611535069735,
+      "before_level": {
+        "rms": 0.05508506061882923,
+        "rms_dbfs": -25.179323366169207,
+        "peak": 0.29781511425971985,
+        "dc_offset": 5.968031328220837e-12,
+        "dc_to_rms": 1.0834210330669652e-10,
+        "held_rms": 0.07784330808648698,
+        "tail_peak": 3.5317353493054326e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028216507306399925,
+        "rms_dbfs": -30.98993490123894,
+        "peak": 0.15255138603938087,
+        "dc_offset": 3.0570358120297277e-12,
+        "dc_to_rms": 1.0834210552120129e-10,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 1.8090791798799267e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_049": {
+      "sample_id": "sound_049",
+      "source_sample_id": "restricted_bend_sustain_v4_00284",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00284.wav",
+      "source_sha256": "4758b28cbd46b6f73ee933980534dc5806de331605cabc925af13e5214dad1ae",
+      "parameters": {
+        "wave_frame": 0.940605640411377,
+        "bend_amount": 0.4406135380268097,
+        "filter_cutoff": 0.7928629517555237,
+        "filter_resonance": 0.7057545185089111,
+        "filter_drive": 0.14209839701652527,
+        "amp_attack": 0.21462580561637878,
+        "amp_decay": 0.39394521713256836,
+        "amp_sustain": 0.8871895670890808,
+        "amp_release": 0.23944944143295288,
+        "filter_env_amount": 0.5426691174507141,
+        "filter_env_attack": 0.3246084153652191,
+        "filter_env_decay": 0.38202881813049316,
+        "filter_env_sustain": 0.24188877642154694
+      },
+      "playback_path": "audio/sound_049.wav",
+      "playback_sha256": "7cffb9b30bfc69347ab0a8eb82bbca682888e8757ee1b4ba28d2ea884b5ab581",
+      "feature_path": "audio/sound_049_features.wav",
+      "feature_sha256": "8c5a9e128e2c644e468bbaefdfed3f23827a0d5798df946dc643b881ca34b2c8",
+      "gain": 0.6244229869858526,
+      "gain_db": -4.090422351226547,
+      "before_level": {
+        "rms": 0.04530764383064838,
+        "rms_dbfs": -26.87657044388235,
+        "peak": 0.264955997467041,
+        "dc_offset": 2.1168134348765862e-13,
+        "dc_to_rms": 4.672088980810489e-12,
+        "held_rms": 0.06385748713528855,
+        "tail_peak": 6.453005543217538e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028291134294024602,
+        "rms_dbfs": -30.966992795108897,
+        "peak": 0.16544461535818575,
+        "dc_offset": 1.3217868640547652e-13,
+        "dc_to_rms": 4.672088613760322e-12,
+        "held_rms": 0.03987408285842753,
+        "tail_peak": 4.029404996332159e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_050": {
+      "sample_id": "sound_050",
+      "source_sample_id": "restricted_bend_sustain_v4_00351",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00351.wav",
+      "source_sha256": "5dcb1f2f108b227375bc43376eaa34ef4cf32cf217d550b284a07970b07af76f",
+      "parameters": {
+        "wave_frame": 0.50201815366745,
+        "bend_amount": 0.6010469794273376,
+        "filter_cutoff": 0.8240291476249695,
+        "filter_resonance": 0.7756467461585999,
+        "filter_drive": 0.41096073389053345,
+        "amp_attack": 0.25312885642051697,
+        "amp_decay": 0.33377471566200256,
+        "amp_sustain": 0.7375741600990295,
+        "amp_release": 0.35924580693244934,
+        "filter_env_amount": 0.558333694934845,
+        "filter_env_attack": 0.09596659988164902,
+        "filter_env_decay": 0.28407567739486694,
+        "filter_env_sustain": 0.5066125988960266
+      },
+      "playback_path": "audio/sound_050.wav",
+      "playback_sha256": "79944c786343cac3a916c80286a9643c91df4a1fc8ef44498bb20988d4fbe289",
+      "feature_path": "audio/sound_050_features.wav",
+      "feature_sha256": "c926daa4e988adde6cc21077bbe488d124c0fc9a51846bad3d3130681ae59941",
+      "gain": 0.4646624362355396,
+      "gain_db": -6.657248697830251,
+      "before_level": {
+        "rms": 0.06165667279829077,
+        "rms_dbfs": -24.2003982994007,
+        "peak": 0.2632179856300354,
+        "dc_offset": 4.278572850007328e-12,
+        "dc_to_rms": 6.939350853401771e-11,
+        "held_rms": 0.08581301122911338,
+        "tail_peak": 4.9898513035541254e-24,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028649539792631316,
+        "rms_dbfs": -30.857646997230948,
+        "peak": 0.1223075104638635,
+        "dc_offset": 1.9880921105237604e-12,
+        "dc_to_rms": 6.939350945647997e-11,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 2.318596463162543e-24,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_051": {
+      "sample_id": "sound_051",
+      "source_sample_id": "restricted_bend_sustain_v4_00482",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00482.wav",
+      "source_sha256": "b0679912931e8b362d8f19f7e918b5f5f4133bc11dc9d1cdc969124a1b90baaf",
+      "parameters": {
+        "wave_frame": 0.40669354796409607,
+        "bend_amount": 0.37292662262916565,
+        "filter_cutoff": 0.6392297148704529,
+        "filter_resonance": 0.7926275134086609,
+        "filter_drive": 0.13675250113010406,
+        "amp_attack": 0.2911103367805481,
+        "amp_decay": 0.3225817084312439,
+        "amp_sustain": 0.57645583152771,
+        "amp_release": 0.3417666256427765,
+        "filter_env_amount": 0.5017195343971252,
+        "filter_env_attack": 0.11481393128633499,
+        "filter_env_decay": 0.2072998285293579,
+        "filter_env_sustain": 0.6233265399932861
+      },
+      "playback_path": "audio/sound_051.wav",
+      "playback_sha256": "2956009ea47096ab9cbb4aa935a0fc5a1c2ed6d41c142b236f99440c08c26d7f",
+      "feature_path": "audio/sound_051_features.wav",
+      "feature_sha256": "e930d8e5a13fdef852e3625e5996f8b0e8fc524c33e5482b012c131f99449983",
+      "gain": 1.1244930830320379,
+      "gain_db": 1.0191357670602939,
+      "before_level": {
+        "rms": 0.025318032140646558,
+        "rms_dbfs": -31.931401062881044,
+        "peak": 0.19076582789421082,
+        "dc_offset": -4.248105336050047e-13,
+        "dc_to_rms": 1.6778971258315028e-11,
+        "held_rms": 0.035459607053262315,
+        "tail_peak": 4.610927736276582e-26,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028469952018139875,
+        "rms_dbfs": -30.912265295820745,
+        "peak": 0.21451485394592024,
+        "dc_offset": -4.776965041721628e-13,
+        "dc_to_rms": 1.677897117170392e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 5.184956345803589e-26,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_053": {
+      "sample_id": "sound_053",
+      "source_sample_id": "restricted_bend_sustain_v4_00611",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00611.wav",
+      "source_sha256": "270011a8c7a588ac476400ef25a63e440cd69f8bc9f60bc73d6a0445708e60fd",
+      "parameters": {
+        "wave_frame": 0.948121964931488,
+        "bend_amount": 0.5266166925430298,
+        "filter_cutoff": 0.4367818534374237,
+        "filter_resonance": 0.7866848707199097,
+        "filter_drive": 0.47082000970840454,
+        "amp_attack": 0.09901314973831177,
+        "amp_decay": 0.24494662880897522,
+        "amp_sustain": 0.5674828886985779,
+        "amp_release": 0.11860743910074234,
+        "filter_env_amount": 0.5410124659538269,
+        "filter_env_attack": 0.34487882256507874,
+        "filter_env_decay": 0.18957991898059845,
+        "filter_env_sustain": 0.9130924344062805
+      },
+      "playback_path": "audio/sound_053.wav",
+      "playback_sha256": "410cdf1be38aa8fc83d496b218f11464ac3bce9a43546fe653cbfeb606c40171",
+      "feature_path": "audio/sound_053_features.wav",
+      "feature_sha256": "2696b5c959de9125920bcb658baf0967d67fd749024e838c0a9e4ea19dfd3687",
+      "gain": 1.3239177225960224,
+      "gain_db": 2.4372199175895446,
+      "before_level": {
+        "rms": 0.02130173536424984,
+        "rms_dbfs": -33.43170029890767,
+        "peak": 0.12154131382703781,
+        "dc_offset": 4.55633804810083e-13,
+        "dc_to_rms": 2.1389515784463343e-11,
+        "held_rms": 0.030118248421238662,
+        "tail_peak": 4.478788641887224e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.0282017449707808,
+        "rms_dbfs": -30.994480381318127,
+        "peak": 0.16091069940322034,
+        "dc_offset": 6.032216714042133e-13,
+        "dc_to_rms": 2.138951586255382e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 5.9295476587562655e-31,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_054": {
+      "sample_id": "sound_054",
+      "source_sample_id": "restricted_bend_sustain_v4_01021",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_01021.wav",
+      "source_sha256": "e72b2dcb2d1d7a651d725903ad982ce53f45f7894bc0a5ac02aa2d501da1044d",
+      "parameters": {
+        "wave_frame": 0.3778534233570099,
+        "bend_amount": 0.5833808183670044,
+        "filter_cutoff": 0.583958089351654,
+        "filter_resonance": 0.777580976486206,
+        "filter_drive": 0.683516800403595,
+        "amp_attack": 0.27447760105133057,
+        "amp_decay": 0.15922240912914276,
+        "amp_sustain": 0.2774584889411926,
+        "amp_release": 0.386337012052536,
+        "filter_env_amount": 0.5253009796142578,
+        "filter_env_attack": 0.2018442153930664,
+        "filter_env_decay": 0.348224937915802,
+        "filter_env_sustain": 0.43589627742767334
+      },
+      "playback_path": "audio/sound_054.wav",
+      "playback_sha256": "b0ffa29c0e1001d361d5d847bb26b413be4ebcbd544c2b627e91c9bd45d0184c",
+      "feature_path": "audio/sound_054_features.wav",
+      "feature_sha256": "14c6b4894bb8e3d6155e2d60bdf9f19f3bdcfff1d4caacb2b2d21e95079277a1",
+      "gain": 2.2010959753244954,
+      "gain_db": 6.852779593866457,
+      "before_level": {
+        "rms": 0.012868804260212568,
+        "rms_dbfs": -37.809236097369855,
+        "peak": 0.19487126171588898,
+        "dc_offset": 8.062915731482576e-13,
+        "dc_to_rms": 6.26547390763514e-11,
+        "held_rms": 0.018115558478793328,
+        "tail_peak": 1.782205866185247e-21,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028325473264392602,
+        "rms_dbfs": -30.956456503503397,
+        "peak": 0.42893034986924966,
+        "dc_offset": 1.774725127921459e-12,
+        "dc_to_rms": 6.265473877015256e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 3.922806159260054e-21,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_056": {
+      "sample_id": "sound_056",
+      "source_sample_id": "restricted_bend_sustain_v4_00713",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00713.wav",
+      "source_sha256": "f86e9c7e56654e5cba4d29d94c88a694bae0d395f36568f84a1754e28db72bde",
+      "parameters": {
+        "wave_frame": 0.2169143557548523,
+        "bend_amount": 0.5242624282836914,
+        "filter_cutoff": 0.4650251865386963,
+        "filter_resonance": 0.2198614627122879,
+        "filter_drive": 0.3617972135543823,
+        "amp_attack": 0.20792238414287567,
+        "amp_decay": 0.2340075820684433,
+        "amp_sustain": 0.8785274028778076,
+        "amp_release": 0.4178226590156555,
+        "filter_env_amount": 0.5596194863319397,
+        "filter_env_attack": 0.10545504838228226,
+        "filter_env_decay": 0.34624671936035156,
+        "filter_env_sustain": 0.9735440611839294
+      },
+      "playback_path": "audio/sound_056.wav",
+      "playback_sha256": "bd0addb864e4e6e2ad3991ac021e8e3dec34203b99b9a7aa29362225c7c7d601",
+      "feature_path": "audio/sound_056_features.wav",
+      "feature_sha256": "bd4fae48778264b8145924e4cc18bd2641d4cfb8b05c8857fb391cc3c3ff281c",
+      "gain": 0.34187520208269667,
+      "gain_db": -9.322647992212271,
+      "before_level": {
+        "rms": 0.08516135104936588,
+        "rms_dbfs": -21.395149145559678,
+        "peak": 0.2129041850566864,
+        "dc_offset": 1.6038287217995236e-12,
+        "dc_to_rms": 1.883282383425111e-11,
+        "held_rms": 0.11663344581740778,
+        "tail_peak": 6.247644212287285e-17,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.02911455409963743,
+        "rms_dbfs": -30.717797137771953,
+        "peak": 0.07278666129050651,
+        "dc_offset": 5.483092899679346e-13,
+        "dc_to_rms": 1.8832824576034387e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 2.135914627616506e-17,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_059": {
+      "sample_id": "sound_059",
+      "source_sample_id": "restricted_bend_sustain_v4_00451",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00451.wav",
+      "source_sha256": "b20d99f23af9f63978377d9dac4c7f0500581e16c26690cb982bd43c520bc1f3",
+      "parameters": {
+        "wave_frame": 0.9845116138458252,
+        "bend_amount": 0.5629632472991943,
+        "filter_cutoff": 0.6661915183067322,
+        "filter_resonance": 0.7590339779853821,
+        "filter_drive": 0.5713947415351868,
+        "amp_attack": 0.2304529994726181,
+        "amp_decay": 0.34395843744277954,
+        "amp_sustain": 0.48614394664764404,
+        "amp_release": 0.4489672780036926,
+        "filter_env_amount": 0.5563812851905823,
+        "filter_env_attack": 0.22440655529499054,
+        "filter_env_decay": 0.2324558049440384,
+        "filter_env_sustain": 0.3074418604373932
+      },
+      "playback_path": "audio/sound_059.wav",
+      "playback_sha256": "9f029896e928628a3171e61c30a526e2248d158ef683b58c1632439a47ccf643",
+      "feature_path": "audio/sound_059_features.wav",
+      "feature_sha256": "df9bd44e1b51c8b2fff34c506b52c4b5281e0914aa4773da8e37b5f634b8e8e9",
+      "gain": 1.2295100112862614,
+      "gain_db": 1.7946413866460629,
+      "before_level": {
+        "rms": 0.023378253272549627,
+        "rms_dbfs": -32.62375881338255,
+        "peak": 0.24240441620349884,
+        "dc_offset": -6.089663047782297e-13,
+        "dc_to_rms": 2.6048409078246587e-11,
+        "held_rms": 0.032430872861875244,
+        "tail_peak": 1.558863732542548e-10,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028743796444985568,
+        "rms_dbfs": -30.829117426736488,
+        "peak": 0.29803865650220346,
+        "dc_offset": -7.48730152581656e-13,
+        "dc_to_rms": 2.604840853276617e-11,
+        "held_rms": 0.03987408285842755,
+        "tail_peak": 1.9166385653921318e-10,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_061": {
+      "sample_id": "sound_061",
+      "source_sample_id": "restricted_bend_sustain_v4_00591",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00591.wav",
+      "source_sha256": "94903ad362506140127040008fd7ed4ecc646351a04f78df2ca35994bdc08fe1",
+      "parameters": {
+        "wave_frame": 0.5989695191383362,
+        "bend_amount": 0.6861048340797424,
+        "filter_cutoff": 0.7582483291625977,
+        "filter_resonance": 0.7319943904876709,
+        "filter_drive": 0.1389009803533554,
+        "amp_attack": 0.31535154581069946,
+        "amp_decay": 0.35115179419517517,
+        "amp_sustain": 0.8159680366516113,
+        "amp_release": 0.37834811210632324,
+        "filter_env_amount": 0.5091015696525574,
+        "filter_env_attack": 0.2823648750782013,
+        "filter_env_decay": 0.36272117495536804,
+        "filter_env_sustain": 0.17333552241325378
+      },
+      "playback_path": "audio/sound_061.wav",
+      "playback_sha256": "0db72850da04f4d17f7b730844c4041992297f19bbbb070ae6c23277018b9948",
+      "feature_path": "audio/sound_061_features.wav",
+      "feature_sha256": "ac5f6b1f4b81cf93096e388cb8f0be17ee04cf8b09f7fa038541f1767deb1f02",
+      "gain": 0.5160415964759257,
+      "gain_db": -5.746305797228811,
+      "before_level": {
+        "rms": 0.055876004307225606,
+        "rms_dbfs": -25.05549315687212,
+        "peak": 0.24981094896793365,
+        "dc_offset": 3.2526429689399843e-16,
+        "dc_to_rms": 5.8211803246628515e-15,
+        "held_rms": 0.07726912545564092,
+        "tail_peak": 1.819105876323355e-21,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028834342467396405,
+        "rms_dbfs": -30.801798954100935,
+        "peak": 0.1289128409225785,
+        "dc_offset": 1.6788116206682565e-16,
+        "dc_to_rms": 5.822264275894357e-15,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 9.387343005766419e-22,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_063": {
+      "sample_id": "sound_063",
+      "source_sample_id": "restricted_bend_sustain_v4_00619",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00619.wav",
+      "source_sha256": "3618b4dd6a540a76c0d35ed866e515d49898045110bc043e8b58966723f6d7f5",
+      "parameters": {
+        "wave_frame": 0.8407407402992249,
+        "bend_amount": 0.7461189031600952,
+        "filter_cutoff": 0.7236681580543518,
+        "filter_resonance": 0.53006511926651,
+        "filter_drive": 0.3551391065120697,
+        "amp_attack": 0.15029680728912354,
+        "amp_decay": 0.19886091351509094,
+        "amp_sustain": 0.6217175126075745,
+        "amp_release": 0.3968510329723358,
+        "filter_env_amount": 0.5569673776626587,
+        "filter_env_attack": 0.11148963868618011,
+        "filter_env_decay": 0.19799993932247162,
+        "filter_env_sustain": 0.24119047820568085
+      },
+      "playback_path": "audio/sound_063.wav",
+      "playback_sha256": "2eafb54414bd03c3f5da9bcf2692da0bedb8cfa45875d31d233f5d34d20378d3",
+      "feature_path": "audio/sound_063_features.wav",
+      "feature_sha256": "a541ea188c74f560b22df987e58b9e8b947d259a69293c1ebb79a7bb83590305",
+      "gain": 1.0795319837611181,
+      "gain_db": 0.6647102778273,
+      "before_level": {
+        "rms": 0.026796067913009865,
+        "rms_dbfs": -31.438578603730058,
+        "peak": 0.2452865093946457,
+        "dc_offset": 2.564546956000835e-13,
+        "dc_to_rms": 9.570609256277156e-12,
+        "held_rms": 0.036936453443005154,
+        "tail_peak": 1.5719131607725687e-19,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028927212351129186,
+        "rms_dbfs": -30.77386832590276,
+        "peak": 0.264794632076642,
+        "dc_offset": 2.7685107974919987e-13,
+        "dc_to_rms": 9.570610413083681e-12,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 1.6969305327490206e-19,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_065": {
+      "sample_id": "sound_065",
+      "source_sample_id": "restricted_bend_sustain_v4_00596",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00596.wav",
+      "source_sha256": "3778e716d4f6e9ec0ff7691a0a64a4d858cda74917bf36f865e34c71702f0f91",
+      "parameters": {
+        "wave_frame": 0.8217109441757202,
+        "bend_amount": 0.465603768825531,
+        "filter_cutoff": 0.6467560529708862,
+        "filter_resonance": 0.7981826066970825,
+        "filter_drive": 0.7351256012916565,
+        "amp_attack": 0.1628444939851761,
+        "amp_decay": 0.38390016555786133,
+        "amp_sustain": 0.7470362782478333,
+        "amp_release": 0.18690063059329987,
+        "filter_env_amount": 0.5041020512580872,
+        "filter_env_attack": 0.17236800491809845,
+        "filter_env_decay": 0.37056541442871094,
+        "filter_env_sustain": 0.6252833008766174
+      },
+      "playback_path": "audio/sound_065.wav",
+      "playback_sha256": "dda794b2adc6364e7dafdbe11036d5fa38d1807622acbbef6e4d402be4f23222",
+      "feature_path": "audio/sound_065_features.wav",
+      "feature_sha256": "cde5612b95c590817b32b89c72d4f43f953cfb27ad22c626aac108e49feac723",
+      "gain": 0.7428055390573262,
+      "gain_db": -2.582497328234198,
+      "before_level": {
+        "rms": 0.03800134548957744,
+        "rms_dbfs": -28.404020526424762,
+        "peak": 0.21154505014419556,
+        "dc_offset": 1.0652190509524181e-12,
+        "dc_to_rms": 2.803108777410457e-11,
+        "held_rms": 0.05368037899802232,
+        "tail_peak": 1.5548673790755964e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.02822760992128926,
+        "rms_dbfs": -30.986517854658963,
+        "peak": 0.15713683500726827,
+        "dc_offset": 7.912505781177862e-13,
+        "dc_to_rms": 2.8031086596567465e-11,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 1.1549641016769002e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_066": {
+      "sample_id": "sound_066",
+      "source_sample_id": "restricted_bend_sustain_v4_00255",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00255.wav",
+      "source_sha256": "006e44576bb8bdab473aca8b5e69ea885df6b2510d311d1abac68a671f570f94",
+      "parameters": {
+        "wave_frame": 0.5574732422828674,
+        "bend_amount": 0.7290307283401489,
+        "filter_cutoff": 0.6266801357269287,
+        "filter_resonance": 0.09472218155860901,
+        "filter_drive": 0.40051549673080444,
+        "amp_attack": 0.3089430630207062,
+        "amp_decay": 0.3481036424636841,
+        "amp_sustain": 0.5283486843109131,
+        "amp_release": 0.12543754279613495,
+        "filter_env_amount": 0.5145954489707947,
+        "filter_env_attack": 0.3380381464958191,
+        "filter_env_decay": 0.2278868705034256,
+        "filter_env_sustain": 0.04843994230031967
+      },
+      "playback_path": "audio/sound_066.wav",
+      "playback_sha256": "c83fbee536e999941d02d1ae3efb1ffec8d24e17b4b7a1102113208e35d4ab74",
+      "feature_path": "audio/sound_066_features.wav",
+      "feature_sha256": "51a82246fa030ed5096384c5d1b2cff5067f8bd574bb227ecb65519c0b27a38f",
+      "gain": 0.45258772241912865,
+      "gain_db": -6.885944631043658,
+      "before_level": {
+        "rms": 0.06232169353442707,
+        "rms_dbfs": -24.10721507247899,
+        "peak": 0.3338944911956787,
+        "dc_offset": 5.489963793891543e-12,
+        "dc_to_rms": 8.80907350641689e-11,
+        "held_rms": 0.08810244044026735,
+        "tail_peak": 2.3774773853855525e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028206033334049287,
+        "rms_dbfs": -30.993159703522647,
+        "peak": 0.15111654729854604,
+        "dc_offset": 2.484690143228408e-12,
+        "dc_to_rms": 8.809073270962143e-11,
+        "held_rms": 0.03987408285842754,
+        "tail_peak": 1.0760170749546322e-30,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    },
+    "sound_067": {
+      "sample_id": "sound_067",
+      "source_sample_id": "restricted_bend_sustain_v4_00032",
+      "source_path": "data\\raw\\audio\\restricted_bend_sustain_v4\\restricted_bend_sustain_v4_00032.wav",
+      "source_sha256": "b977a5ebf72ece92b0b6404d4c8c8e72141f79e2c3c395c11ddd4bc71dcc2cd3",
+      "parameters": {
+        "wave_frame": 0.5096119046211243,
+        "bend_amount": 0.3533259928226471,
+        "filter_cutoff": 0.7621472477912903,
+        "filter_resonance": 0.04214920476078987,
+        "filter_drive": 0.36103928089141846,
+        "amp_attack": 0.28606632351875305,
+        "amp_decay": 0.3897857367992401,
+        "amp_sustain": 0.9293476939201355,
+        "amp_release": 0.2864234745502472,
+        "filter_env_amount": 0.5283181071281433,
+        "filter_env_attack": 0.2132406234741211,
+        "filter_env_decay": 0.39044103026390076,
+        "filter_env_sustain": 0.4970456063747406
+      },
+      "playback_path": "audio/sound_067.wav",
+      "playback_sha256": "26fa40d51d791b710bed944152aec480a6da11d6b333fe45024af00dcb5bd92f",
+      "feature_path": "audio/sound_067_features.wav",
+      "feature_sha256": "929f00d2f3a9734110a1c3253b5eb9cb2a0cc8263d54d8a397375696c0402928",
+      "gain": 0.1902707302830235,
+      "gain_db": -14.41256029881562,
+      "before_level": {
+        "rms": 0.14935888323172247,
+        "rms_dbfs": -16.515378846026067,
+        "peak": 0.33594802021980286,
+        "dc_offset": -1.3827397679866128e-11,
+        "dc_to_rms": 9.257834137935836e-11,
+        "held_rms": 0.20956498563449943,
+        "tail_peak": 8.46282807439471e-29,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "after_level": {
+        "rms": 0.028418623786756667,
+        "rms_dbfs": -30.927939144841687,
+        "peak": 0.06392107514435783,
+        "dc_offset": -2.63094910517014e-12,
+        "dc_to_rms": 9.257834316368922e-11,
+        "held_rms": 0.039874082858427536,
+        "tail_peak": 1.610228477974755e-29,
+        "clipped": false,
+        "silent": false,
+        "dc_warning": false
+      },
+      "policy_ids": [
+        "dc_highpass_10hz_v1",
+        "held_rms_gain_v1"
+      ]
+    }
+  },
+  "headphones": [
+    {
+      "screen_id": "headphones_01",
+      "path": "headphones_01.wav",
+      "correct_interval": 1,
+      "sha256": "b86135a99f3ae6bb2c353a54068f065f22eb13f2b21421243dd8e887faf535b3"
+    },
+    {
+      "screen_id": "headphones_02",
+      "path": "headphones_02.wav",
+      "correct_interval": 2,
+      "sha256": "e19fa8fbe2dbe5be293279cff803e63e441f2d7fd9d9d6e8bd50c101f179b07b"
+    },
+    {
+      "screen_id": "headphones_03",
+      "path": "headphones_03.wav",
+      "correct_interval": 3,
+      "sha256": "2d790dc070d8f18f7775a016cd9b3a57a42e6383723b6cf131f3628b16465fe4"
+    },
+    {
+      "screen_id": "headphones_04",
+      "path": "headphones_04.wav",
+      "correct_interval": 2,
+      "sha256": "c64e0098605dc073d08095f3d2e383303a4a128426ce69d196c9d4cd3b8f58e2"
+    },
+    {
+      "screen_id": "headphones_05",
+      "path": "headphones_05.wav",
+      "correct_interval": 1,
+      "sha256": "6ddc2c4f848025a58cd8f935b93930dc6a09536580229102e9c74e26768f6bb8"
+    },
+    {
+      "screen_id": "headphones_06",
+      "path": "headphones_06.wav",
+      "correct_interval": 3,
+      "sha256": "698271ecf6a8078ea4db9bfa72d1d0d7f9e3550bf51972b798ece0423f231b8d"
+    }
+  ],
+  "calibration": {
+    "path": "volume_reference.wav",
+    "sha256": "0e2b88a79aee2a26da064bfdedb7f8b0070f2c0a14a7f894e803df1e2806d0d8"
+  },
+  "source_bundle_sha256": "256df943ed0daa3bf5af82dd34fdce550f95ace69097966480a72279731eeda5"
+}

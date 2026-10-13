@@ -1,7 +1,12 @@
+"""Historical eight-control engineering profile. New work uses restricted_config.py."""
+
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATASET_NAME = "pilot_v1"
+SCHEMA_STATUS = "engineering_test_8_controls"
+MODULATIONS = ()
 
 BASE_PRESET = (
     PROJECT_ROOT

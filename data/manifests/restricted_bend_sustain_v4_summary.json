@@ -1,0 +1,21 @@
+{
+  "sample_count": 1024,
+  "dataset_name": "restricted_bend_sustain_v4",
+  "schema_status": "selected_13_controls_dc_integrated_pilot_bounds_provisional",
+  "preserved_samples": 0,
+  "new_render_count": 1024,
+  "generation_seconds": 294.4488975999993,
+  "samples_per_second": 3.4776832528375623,
+  "silent_samples": 0,
+  "clipped_samples": 0,
+  "large_dc_offset_samples": 0,
+  "maximum_absolute_dc_offset": 3.590840029789226e-13,
+  "maximum_dc_to_rms_ratio": 1.2711693930671913e-11,
+  "identical_stereo_channel_samples": 1024,
+  "minimum_rms_dbfs": -52.719637196034085,
+  "maximum_rms_dbfs": -16.51537884418584,
+  "maximum_peak": 0.3784803497995339,
+  "audio_directory": "D:\\VSCode\\GitHub\\Synth-Inversion-RP\\data\\raw\\audio\\restricted_bend_sustain_v4",
+  "csv_manifest": "D:\\VSCode\\GitHub\\Synth-Inversion-RP\\data\\manifests\\restricted_bend_sustain_v4.csv",
+  "parquet_manifest": "D:\\VSCode\\GitHub\\Synth-Inversion-RP\\data\\manifests\\restricted_bend_sustain_v4.parquet"
+}

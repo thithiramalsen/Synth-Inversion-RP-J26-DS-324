@@ -1,0 +1,13 @@
+order,background,wave_frame,filter_cutoff,bend_audibility,notes
+1,clean_held,0.0,0.3,unrated,
+2,clean_held,0.5,0.575,unrated,
+3,clean_held,1.0,0.85,unrated,
+4,resonant_held,0.0,0.3,unrated,
+5,resonant_held,0.5,0.575,unrated,
+6,resonant_held,1.0,0.85,unrated,
+7,driven_pluck,0.0,0.3,unrated,
+8,driven_pluck,0.5,0.575,unrated,
+9,driven_pluck,1.0,0.85,unrated,
+10,resonant_driven_swell,0.0,0.3,unrated,
+11,resonant_driven_swell,0.5,0.575,unrated,
+12,resonant_driven_swell,1.0,0.85,unrated,

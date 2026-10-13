@@ -1,0 +1,11 @@
+{
+  "case": "neutral_B_vs_A_sustain_zero",
+  "maximum_absolute_difference": 2.332031726837158e-06,
+  "difference_rms": 1.2591284255344906e-07,
+  "difference_rms_dbfs": -137.99859943030515,
+  "relative_rms_difference": 2.776270659012032e-06,
+  "shape_distance": 7.332392976325188e-08,
+  "original_maximum_error_tolerance": 2e-06,
+  "original_check_passed": false,
+  "interpretation": "Tiny difference between enabled-neutral Bend and bypass DSP paths; does not affect the exact-repeat or serialization results. Original threshold failure retained. No audibility conclusion."
+}

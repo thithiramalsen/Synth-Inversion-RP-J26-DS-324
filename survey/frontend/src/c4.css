@@ -1,0 +1,13 @@
+/* C4 inherits C1's cards, typography, native audio controls and sticky player. */
+.c4-player { align-items: flex-start; }
+.c4-player audio[hidden] { display: none; }
+.c4-play-buttons { display: flex; gap: 8px; margin: 10px 0; }
+.c4-play-buttons button { flex: 1 1 0; gap: 6px; min-height: 42px; padding: 8px 12px; }
+.c4-player .c4-listen-status { margin: 8px 0 0; }
+.c4-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.c4-confidence .p-ratings { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 600px) {
+  .c4-play-buttons { gap: 6px; }
+  .c4-play-buttons button { padding: 8px 5px; font-size: 12px !important; }
+  .c4-player .c4-listen-status { font-size: 11px; }
+}

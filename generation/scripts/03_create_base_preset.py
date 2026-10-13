@@ -1,6 +1,11 @@
+import argparse
+import sys
 from pathlib import Path
 
 import vita
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from generation.vital_setup import DEFAULT_PROFILE, PROFILES, build_restricted_preset, load_profile
 
 
 SAMPLE_RATE = 44_100
@@ -42,6 +47,13 @@ def set_optional_raw(controls, name: str, value: float) -> None:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Build the selected versioned Vital base preset.")
+    parser.add_argument("--profile", choices=tuple(PROFILES), default=DEFAULT_PROFILE)
+    args = parser.parse_args()
+    if args.profile != "pilot_v1":
+        print(f"Created {len(load_profile(args.profile).PARAMS)}-control candidate preset: {build_restricted_preset(args.profile)}")
+        return
+
     synth = vita.Synth()
 
     if hasattr(synth, "set_sample_rate"):
@@ -184,6 +196,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-    
-    

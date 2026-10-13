@@ -1,0 +1,76 @@
+{
+  "protocol_version": "c1_pilot_2026-10-09_20unique_v1",
+  "title": "How would you describe this sound?",
+  "description": "A listening study about the character of short synthesizer sounds.",
+  "target_participants": 16,
+  "navigation_policy": "previous_before_next_play_v1",
+  "descriptors": [
+    {
+      "id": "brightness",
+      "label": "Brightness",
+      "definition": "How much high-frequency or treble character does this sound have?"
+    },
+    {
+      "id": "roughness",
+      "label": "Roughness",
+      "definition": "How much rapid fluttering, beating or grating texture does this sound have?"
+    },
+    {
+      "id": "percussiveness",
+      "label": "Percussiveness",
+      "definition": "How much does this sound resemble a struck or plucked event, with a distinct onset followed by a fall in sound level?"
+    },
+    {
+      "id": "sustainedness",
+      "label": "Sustainedness",
+      "definition": "How strongly does this sound have a continuing, held quality after it begins?"
+    }
+  ],
+  "scale": {
+    "minimum": 1,
+    "maximum": 7,
+    "low_label": "Not at all",
+    "high_label": "Very",
+    "unclear_label": "I cannot judge / the term is unclear"
+  },
+  "information_version": "c1_information_2026-10-09_20unique_v1",
+  "experience_question": {
+    "label": "Give one example of making music, performing, singing or shaping a sound yourself.",
+    "help": "One short sentence is enough. Say what you did and which instrument, vocal activity or music tool you used. Personal practice counts; it does not need to be released or professional work.",
+    "placeholder": "For example: I practised a song on piano and varied the touch to shape its tone."
+  },
+  "resume_instructions": "You may close this tab and return to the same study link using the same browser profile on the same device while the study is open. Avoid private/incognito mode and do not clear this site's data. Your invitation starts one session; it cannot restore a session in a different browser. Each saved response is kept; an unfinished answer may need to be entered again.",
+  "information": [
+    "You will listen to 20 different synthesizer sounds and rate four aspects of their character: brightness, roughness, percussiveness and sustainedness.",
+    "There are 3 practice sounds followed by 20 study sounds, with a break after study sound 10. Setup and a headphone check come first. Allow roughly 10–15 minutes; this estimate is provisional and will be checked in the rehearsal.",
+    "Participation is voluntary. You may stop or withdraw using the study controls. Use a comfortable volume and stop if listening becomes uncomfortable.",
+    "We store a participant code, your experience answers, sound ratings, playback counts and response times. Do not enter your name, email address or identifying links in free-text answers.",
+    "Responses are intended for this synth-timbre research and its research report. The study uses participant codes; it does not ask for your name. Hosting services may keep technical access logs.",
+    "You can withdraw this session's responses using the withdrawal control while you retain access on this browser. Withdrawal marks your responses as excluded from analysis. Researchers must describe any later data-retention or deletion arrangements before recruitment."
+  ],
+  "eligibility": {
+    "minimum_age": 18,
+    "activities": [
+      "Music production",
+      "Sound design",
+      "Synthesizer patch creation",
+      "Instrument performance",
+      "Singing"
+    ],
+    "rule": "Adult volunteer with practical experience in music production, sound design, synth patch creation, instrumental performance or singing, supported by a brief example. Personal practice counts; passive music listening alone does not qualify. Pending supervisor confirmation.",
+    "supervisor_confirmed": false
+  },
+  "researcher_name": "",
+  "researcher_email": "",
+  "supervisor_contact": "",
+  "retention_statement": "",
+  "institutional_review_status": "pending_supervisor_confirmation",
+  "level_policy_listening_checked": false,
+  "rehearsal_completed": false,
+  "assignment_capacity": 26,
+  "break_after_rated": 10,
+  "hidden_repeats": 0,
+  "unique_sounds_per_person": 20,
+  "experience_tools_label": "Which instruments, vocal activities or music tools have you used?",
+  "experience_tools_placeholder": "For example: piano, bass guitar, singing, a DAW or a synthesizer"
+}

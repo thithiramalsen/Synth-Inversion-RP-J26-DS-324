@@ -1,0 +1,394 @@
+{
+  "dataset_name": "restricted_v2",
+  "schema_status": "candidate_for_technical_characterization",
+  "purpose": "Technical activity/reproducibility checks, NOT a human study or proof of perceptual coverage",
+  "base_preset_sha256": "80ff2fe4c0a19f176695f6f25e04879bd59cd04eb18579f1f7436c73e92261f3",
+  "versions": {
+    "vita": "0.0.5",
+    "numpy": "2.5.1",
+    "soundfile": "0.14.0"
+  },
+  "parameter_order": [
+    "wave_frame",
+    "filter_cutoff",
+    "filter_resonance",
+    "filter_drive",
+    "amp_attack",
+    "amp_decay",
+    "amp_sustain",
+    "amp_release",
+    "filter_env_amount",
+    "filter_env_attack",
+    "filter_env_decay",
+    "filter_env_sustain"
+  ],
+  "parameters": {
+    "wave_frame": {
+      "control": "osc_1_wave_frame",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 1.0,
+      "description": "Position within the fixed Basic Shapes wavetable."
+    },
+    "filter_cutoff": {
+      "control": "filter_1_cutoff",
+      "mode": "normalized",
+      "min": 0.3,
+      "max": 0.85,
+      "description": "Analog 12 dB filter cutoff. Extremely low values are excluded to reduce near-silent samples."
+    },
+    "filter_resonance": {
+      "control": "filter_1_resonance",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 0.8,
+      "description": "Analog filter resonance."
+    },
+    "filter_drive": {
+      "control": "filter_1_drive",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 0.75,
+      "description": "Internal drive of Filter 1."
+    },
+    "amp_attack": {
+      "control": "env_1_attack",
+      "mode": "normalized",
+      "min": 0.05,
+      "max": 0.35,
+      "description": "Amplitude attack; candidate maximum about 0.480 s."
+    },
+    "amp_decay": {
+      "control": "env_1_decay",
+      "mode": "normalized",
+      "min": 0.15,
+      "max": 0.4,
+      "description": "Amplitude decay; candidate maximum about 0.819 s."
+    },
+    "amp_sustain": {
+      "control": "env_1_sustain",
+      "mode": "normalized",
+      "min": 0.2,
+      "max": 1.0,
+      "description": "Amplitude-envelope sustain. Very low sustain values are excluded from the first pilot."
+    },
+    "amp_release": {
+      "control": "env_1_release",
+      "mode": "normalized",
+      "min": 0.1,
+      "max": 0.45,
+      "description": "Amplitude-envelope release, restricted so most of the tail fits inside the render."
+    },
+    "filter_env_amount": {
+      "control": "modulation_1_amount",
+      "mode": "normalized",
+      "min": 0.5,
+      "max": 0.5625,
+      "description": "ENV 2 -> cutoff, positive unipolar depth. Normalized 0.5 is ZERO; raw range 0 to 0.125. Verify nominal 0 to 16 semitones in characterization."
+    },
+    "filter_env_attack": {
+      "control": "env_2_attack",
+      "mode": "normalized",
+      "min": 0.05,
+      "max": 0.35,
+      "description": "Filter-envelope rise; candidate range about 0.0002 to 0.480 s."
+    },
+    "filter_env_decay": {
+      "control": "env_2_decay",
+      "mode": "normalized",
+      "min": 0.15,
+      "max": 0.4,
+      "description": "Filter-envelope fall toward sustain; candidate range about 0.0162 to 0.819 s."
+    },
+    "filter_env_sustain": {
+      "control": "env_2_sustain",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 1.0,
+      "description": "Held fraction of filter-envelope depth. At 1, decay is inactive; at zero depth all ENV 2 timing/level controls are inactive."
+    }
+  },
+  "fixed_controls": {
+    "osc_1_on": [
+      "raw",
+      1.0
+    ],
+    "osc_2_on": [
+      "raw",
+      0.0
+    ],
+    "osc_3_on": [
+      "raw",
+      0.0
+    ],
+    "sample_on": [
+      "raw",
+      0.0
+    ],
+    "osc_1_destination": [
+      "raw",
+      0.0
+    ],
+    "osc_1_transpose": [
+      "raw",
+      0.0
+    ],
+    "osc_1_tune": [
+      "raw",
+      0.0
+    ],
+    "osc_1_random_phase": [
+      "raw",
+      0.0
+    ],
+    "osc_1_level": [
+      "normalized",
+      0.5
+    ],
+    "osc_1_unison_voices": [
+      "raw",
+      1.0
+    ],
+    "osc_1_unison_detune": [
+      "normalized",
+      0.0
+    ],
+    "filter_1_on": [
+      "raw",
+      1.0
+    ],
+    "filter_2_on": [
+      "raw",
+      0.0
+    ],
+    "filter_1_model": [
+      "raw",
+      0.0
+    ],
+    "filter_1_style": [
+      "raw",
+      0.0
+    ],
+    "filter_1_mix": [
+      "raw",
+      1.0
+    ],
+    "filter_1_keytrack": [
+      "raw",
+      0.0
+    ],
+    "filter_1_blend": [
+      "normalized",
+      0.0
+    ],
+    "chorus_on": [
+      "raw",
+      0.0
+    ],
+    "compressor_on": [
+      "raw",
+      0.0
+    ],
+    "delay_on": [
+      "raw",
+      0.0
+    ],
+    "distortion_on": [
+      "raw",
+      0.0
+    ],
+    "eq_on": [
+      "raw",
+      0.0
+    ],
+    "filter_fx_on": [
+      "raw",
+      0.0
+    ],
+    "flanger_on": [
+      "raw",
+      0.0
+    ],
+    "phaser_on": [
+      "raw",
+      0.0
+    ],
+    "reverb_on": [
+      "raw",
+      0.0
+    ],
+    "polyphony": [
+      "raw",
+      1.0
+    ],
+    "osc_1_phase": [
+      "raw",
+      0.5
+    ],
+    "env_1_delay": [
+      "raw",
+      0.0
+    ],
+    "env_1_hold": [
+      "raw",
+      0.0
+    ],
+    "env_1_attack_power": [
+      "raw",
+      0.0
+    ],
+    "env_1_decay_power": [
+      "raw",
+      -2.0
+    ],
+    "env_1_release_power": [
+      "raw",
+      -2.0
+    ],
+    "env_2_delay": [
+      "raw",
+      0.0
+    ],
+    "env_2_hold": [
+      "raw",
+      0.0
+    ],
+    "env_2_attack_power": [
+      "raw",
+      0.0
+    ],
+    "env_2_decay_power": [
+      "raw",
+      -2.0
+    ],
+    "env_2_release": [
+      "normalized",
+      0.3
+    ],
+    "env_2_release_power": [
+      "raw",
+      -2.0
+    ],
+    "modulation_1_bipolar": [
+      "raw",
+      0.0
+    ],
+    "modulation_1_bypass": [
+      "raw",
+      0.0
+    ],
+    "modulation_1_power": [
+      "raw",
+      0.0
+    ],
+    "modulation_1_stereo": [
+      "raw",
+      0.0
+    ]
+  },
+  "modulations": [
+    {
+      "source": "env_2",
+      "destination": "filter_1_cutoff",
+      "slot": 1
+    }
+  ],
+  "sample_rate": 44100,
+  "midi_note": 60,
+  "velocity": 0.8,
+  "note_duration_seconds": 1.5,
+  "render_duration_seconds": 3.0,
+  "contexts": {
+    "low_cutoff": {
+      "wave_frame": 0.25,
+      "filter_cutoff": 0.35
+    },
+    "middle_cutoff": {
+      "wave_frame": 0.5,
+      "filter_cutoff": 0.5
+    },
+    "high_cutoff": {
+      "wave_frame": 0.8,
+      "filter_cutoff": 0.75
+    }
+  },
+  "base_values": {
+    "wave_frame": 0.5,
+    "filter_cutoff": 0.5,
+    "filter_resonance": 0.2,
+    "filter_drive": 0.0,
+    "amp_attack": 0.1,
+    "amp_decay": 0.3,
+    "amp_sustain": 0.8,
+    "amp_release": 0.3,
+    "filter_env_amount": 0.53125,
+    "filter_env_attack": 0.2,
+    "filter_env_decay": 0.3,
+    "filter_env_sustain": 0.4
+  },
+  "effect_probe_filter_env_amount": 0.5625,
+  "sweep_render_count": 108,
+  "numerically_active_by_parameter": {
+    "wave_frame": true,
+    "filter_cutoff": true,
+    "filter_resonance": true,
+    "filter_drive": true,
+    "amp_attack": true,
+    "amp_decay": true,
+    "amp_sustain": true,
+    "amp_release": true,
+    "filter_env_amount": true,
+    "filter_env_attack": true,
+    "filter_env_decay": true,
+    "filter_env_sustain": true
+  },
+  "numerical_activity_threshold_relative_rms": 0.0001,
+  "repeated_render_maximum_absolute_difference": 0.0,
+  "negative_controls": [
+    {
+      "condition": "zero_filter_envelope_depth",
+      "parameter": "filter_env_attack",
+      "maximum_absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "condition": "zero_filter_envelope_depth",
+      "parameter": "filter_env_decay",
+      "maximum_absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "condition": "zero_filter_envelope_depth",
+      "parameter": "filter_env_sustain",
+      "maximum_absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "condition": "filter_envelope_sustain_one",
+      "parameter": "filter_env_decay",
+      "maximum_absolute_difference": 0.0,
+      "passed": true
+    }
+  ],
+  "depth_check": {
+    "normalized": 0.5625,
+    "raw": 0.125,
+    "nominal_semitones": 16,
+    "relative_errors_by_static_semitone_offset": {
+      "0": 0.5374978236019232,
+      "8": 0.2668233723650704,
+      "16": 0.0019735962770271423,
+      "24": 0.21119785131170957
+    },
+    "passed": true,
+    "tolerance_relative_rms": 0.01,
+    "steady_window_seconds": [
+      0.1,
+      1.4
+    ]
+  },
+  "silent_samples": 0,
+  "clipped_samples": 0,
+  "dc_warning_samples": 2,
+  "technical_checks_passed": true
+}

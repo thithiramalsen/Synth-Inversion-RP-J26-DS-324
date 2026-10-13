@@ -1,0 +1,571 @@
+{
+  "created_utc": "2026-10-06T12:14:39.946462+00:00",
+  "purpose": "Matched engineering comparison, not human perceptual validation or a new training dataset",
+  "versions": {
+    "vita": "0.0.5",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "soundfile": "0.14.0"
+  },
+  "source_hashes": {
+    "generation\\compare_architectures.py": "cf5dc4f118339da9d6bc28681f045eaaafb3d14651a4fbcf2fa55ac7cb3a25dc",
+    "generation\\vital_setup.py": "003df7fcc373c86043ddacc47bce26251b1f73296cb2570a8c6325a6ac082ea4",
+    "generation\\characterize.py": "f46fd03b18690b0e155d8007ad38490968fddc767d2b4beae67acc43030cc094",
+    "generation\\restricted_config.py": "6a9839fb50b8787af2fe025fe4a771607c276a8bd8564383b2de4ac73b9a6e8e",
+    "generation\\params_config.py": "3de72448e77a14599ed01cb37304bd70dba0ddd2e5d3be5cd422947f34dedd34",
+    "generation\\presets\\base_restricted_v2.vital": "80ff2fe4c0a19f176695f6f25e04879bd59cd04eb18579f1f7436c73e92261f3"
+  },
+  "current_profile_name": "restricted_v2",
+  "current_parameters": {
+    "wave_frame": {
+      "control": "osc_1_wave_frame",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 1.0,
+      "description": "Position within the fixed Basic Shapes wavetable."
+    },
+    "filter_cutoff": {
+      "control": "filter_1_cutoff",
+      "mode": "normalized",
+      "min": 0.3,
+      "max": 0.85,
+      "description": "Analog 12 dB filter cutoff. Extremely low values are excluded to reduce near-silent samples."
+    },
+    "filter_resonance": {
+      "control": "filter_1_resonance",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 0.8,
+      "description": "Analog filter resonance."
+    },
+    "filter_drive": {
+      "control": "filter_1_drive",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 0.75,
+      "description": "Internal drive of Filter 1."
+    },
+    "amp_attack": {
+      "control": "env_1_attack",
+      "mode": "normalized",
+      "min": 0.05,
+      "max": 0.35,
+      "description": "Amplitude attack; candidate maximum about 0.480 s."
+    },
+    "amp_decay": {
+      "control": "env_1_decay",
+      "mode": "normalized",
+      "min": 0.15,
+      "max": 0.4,
+      "description": "Amplitude decay; candidate maximum about 0.819 s."
+    },
+    "amp_sustain": {
+      "control": "env_1_sustain",
+      "mode": "normalized",
+      "min": 0.2,
+      "max": 1.0,
+      "description": "Amplitude-envelope sustain. Very low sustain values are excluded from the first pilot."
+    },
+    "amp_release": {
+      "control": "env_1_release",
+      "mode": "normalized",
+      "min": 0.1,
+      "max": 0.45,
+      "description": "Amplitude-envelope release, restricted so most of the tail fits inside the render."
+    },
+    "filter_env_amount": {
+      "control": "modulation_1_amount",
+      "mode": "normalized",
+      "min": 0.5,
+      "max": 0.5625,
+      "description": "ENV 2 -> cutoff, positive unipolar depth. Normalized 0.5 is ZERO; raw range 0 to 0.125. Verify nominal 0 to 16 semitones in characterization."
+    },
+    "filter_env_attack": {
+      "control": "env_2_attack",
+      "mode": "normalized",
+      "min": 0.05,
+      "max": 0.35,
+      "description": "Filter-envelope rise; candidate range about 0.0002 to 0.480 s."
+    },
+    "filter_env_decay": {
+      "control": "env_2_decay",
+      "mode": "normalized",
+      "min": 0.15,
+      "max": 0.4,
+      "description": "Filter-envelope fall toward sustain; candidate range about 0.0162 to 0.819 s."
+    },
+    "filter_env_sustain": {
+      "control": "env_2_sustain",
+      "mode": "normalized",
+      "min": 0.0,
+      "max": 1.0,
+      "description": "Held fraction of filter-envelope depth. At 1, decay is inactive; at zero depth all ENV 2 timing/level controls are inactive."
+    }
+  },
+  "current_fixed_controls": {
+    "osc_1_on": [
+      "raw",
+      1.0
+    ],
+    "osc_2_on": [
+      "raw",
+      0.0
+    ],
+    "osc_3_on": [
+      "raw",
+      0.0
+    ],
+    "sample_on": [
+      "raw",
+      0.0
+    ],
+    "osc_1_destination": [
+      "raw",
+      0.0
+    ],
+    "osc_1_transpose": [
+      "raw",
+      0.0
+    ],
+    "osc_1_tune": [
+      "raw",
+      0.0
+    ],
+    "osc_1_random_phase": [
+      "raw",
+      0.0
+    ],
+    "osc_1_level": [
+      "normalized",
+      0.5
+    ],
+    "osc_1_unison_voices": [
+      "raw",
+      1.0
+    ],
+    "osc_1_unison_detune": [
+      "normalized",
+      0.0
+    ],
+    "filter_1_on": [
+      "raw",
+      1.0
+    ],
+    "filter_2_on": [
+      "raw",
+      0.0
+    ],
+    "filter_1_model": [
+      "raw",
+      0.0
+    ],
+    "filter_1_style": [
+      "raw",
+      0.0
+    ],
+    "filter_1_mix": [
+      "raw",
+      1.0
+    ],
+    "filter_1_keytrack": [
+      "raw",
+      0.0
+    ],
+    "filter_1_blend": [
+      "normalized",
+      0.0
+    ],
+    "chorus_on": [
+      "raw",
+      0.0
+    ],
+    "compressor_on": [
+      "raw",
+      0.0
+    ],
+    "delay_on": [
+      "raw",
+      0.0
+    ],
+    "distortion_on": [
+      "raw",
+      0.0
+    ],
+    "eq_on": [
+      "raw",
+      0.0
+    ],
+    "filter_fx_on": [
+      "raw",
+      0.0
+    ],
+    "flanger_on": [
+      "raw",
+      0.0
+    ],
+    "phaser_on": [
+      "raw",
+      0.0
+    ],
+    "reverb_on": [
+      "raw",
+      0.0
+    ],
+    "polyphony": [
+      "raw",
+      1.0
+    ],
+    "osc_1_phase": [
+      "raw",
+      0.5
+    ],
+    "env_1_delay": [
+      "raw",
+      0.0
+    ],
+    "env_1_hold": [
+      "raw",
+      0.0
+    ],
+    "env_1_attack_power": [
+      "raw",
+      0.0
+    ],
+    "env_1_decay_power": [
+      "raw",
+      -2.0
+    ],
+    "env_1_release_power": [
+      "raw",
+      -2.0
+    ],
+    "env_2_delay": [
+      "raw",
+      0.0
+    ],
+    "env_2_hold": [
+      "raw",
+      0.0
+    ],
+    "env_2_attack_power": [
+      "raw",
+      0.0
+    ],
+    "env_2_decay_power": [
+      "raw",
+      -2.0
+    ],
+    "env_2_release": [
+      "normalized",
+      0.3
+    ],
+    "env_2_release_power": [
+      "raw",
+      -2.0
+    ],
+    "modulation_1_bipolar": [
+      "raw",
+      0.0
+    ],
+    "modulation_1_bypass": [
+      "raw",
+      0.0
+    ],
+    "modulation_1_power": [
+      "raw",
+      0.0
+    ],
+    "modulation_1_stereo": [
+      "raw",
+      0.0
+    ]
+  },
+  "current_modulations": [
+    {
+      "source": "env_2",
+      "destination": "filter_1_cutoff",
+      "slot": 1
+    }
+  ],
+  "architecture_A_variable_controls": [
+    "wave_frame",
+    "filter_cutoff",
+    "filter_resonance",
+    "filter_drive",
+    "amp_attack",
+    "amp_decay",
+    "amp_sustain",
+    "amp_release",
+    "filter_env_amount",
+    "filter_env_attack",
+    "filter_env_decay",
+    "filter_env_sustain"
+  ],
+  "architecture_B_variable_controls": [
+    "wave_frame",
+    "filter_cutoff",
+    "filter_resonance",
+    "filter_drive",
+    "amp_attack",
+    "amp_decay",
+    "amp_sustain",
+    "amp_release",
+    "filter_env_amount",
+    "filter_env_attack",
+    "filter_env_decay",
+    "bend_amount"
+  ],
+  "warp_fixed_settings": {
+    "mode_A": "None",
+    "mode_B": "Bend",
+    "distortion_phase": 0.5,
+    "distortion_spread": 0.0,
+    "spectral_morph_type": 0,
+    "spectral_morph_amount": 0.5,
+    "spectral_morph_spread": 0.0
+  },
+  "architecture_B_filter_env_sustain": 0.0,
+  "sample_rate": 44100,
+  "midi_note": 60,
+  "velocity": 0.8,
+  "note_duration": 1.5,
+  "render_duration": 3.0,
+  "main_wave_positions": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "main_cutoffs": [
+    0.3,
+    0.575,
+    0.85
+  ],
+  "backgrounds": {
+    "clean_held": {
+      "filter_resonance": 0.2,
+      "filter_drive": 0.0,
+      "amp_attack": 0.1,
+      "amp_decay": 0.3,
+      "amp_sustain": 0.8,
+      "amp_release": 0.3,
+      "filter_env_amount": 0.53125,
+      "filter_env_attack": 0.2,
+      "filter_env_decay": 0.3
+    },
+    "resonant_held": {
+      "filter_resonance": 0.75,
+      "filter_drive": 0.0,
+      "amp_attack": 0.1,
+      "amp_decay": 0.3,
+      "amp_sustain": 0.8,
+      "amp_release": 0.3,
+      "filter_env_amount": 0.53125,
+      "filter_env_attack": 0.2,
+      "filter_env_decay": 0.3
+    },
+    "driven_pluck": {
+      "filter_resonance": 0.2,
+      "filter_drive": 0.75,
+      "amp_attack": 0.05,
+      "amp_decay": 0.2,
+      "amp_sustain": 0.2,
+      "amp_release": 0.15,
+      "filter_env_amount": 0.5625,
+      "filter_env_attack": 0.05,
+      "filter_env_decay": 0.2
+    },
+    "resonant_driven_swell": {
+      "filter_resonance": 0.75,
+      "filter_drive": 0.75,
+      "amp_attack": 0.35,
+      "amp_decay": 0.4,
+      "amp_sustain": 0.8,
+      "amp_release": 0.45,
+      "filter_env_amount": 0.5625,
+      "filter_env_attack": 0.35,
+      "filter_env_decay": 0.4
+    }
+  },
+  "A_sustain_levels": [
+    0.0,
+    0.4,
+    1.0
+  ],
+  "B_bend_levels": [
+    0.25,
+    0.5,
+    0.75
+  ],
+  "edge_bend_levels": [
+    0.0,
+    1.0
+  ],
+  "main_contexts": 36,
+  "main_render_count": 216,
+  "unique_render_count": 376,
+  "total_render_calls": 450,
+  "main_quality": {
+    "A": {
+      "count": 108,
+      "silent": 0,
+      "clipped": 0,
+      "dc_warnings": 19,
+      "max_peak": 0.2814207673072815,
+      "max_absolute_dc": 0.00942064287820934
+    },
+    "B": {
+      "count": 108,
+      "silent": 0,
+      "clipped": 0,
+      "dc_warnings": 61,
+      "max_peak": 0.2814207375049591,
+      "max_absolute_dc": 0.02268034692337706
+    }
+  },
+  "all_render_quality": {
+    "silent": 0,
+    "clipped": 0,
+    "dc_warnings": 122
+  },
+  "bend_numerical_comparisons": 108,
+  "bend_numerically_active": 108,
+  "bend_relative_difference_range": [
+    0.6908767035642149,
+    1.768952344945367
+  ],
+  "bend_shape_distance_range": [
+    0.0004272421813699215,
+    0.5807160417728502
+  ],
+  "numerical_activity_tolerance": 0.0001,
+  "check_count": 109,
+  "failed_checks": [
+    {
+      "kind": "B_neutral_vs_A_sustain_zero",
+      "sample_id": "B_resonant_driven_swell_w1p000_c0p850_s0p000_b0p500",
+      "max_absolute_error": 2.332031726837158e-06,
+      "tolerance": 2e-06,
+      "passed": false
+    }
+  ],
+  "serialized_preset_hashes": {
+    "A_clean_held_w0p500_c0p575_s0p400_b0p500.vital": "723e6cd272521e51346c8134d3ea1e4572691df296361b90aa5fc829c67af5cf",
+    "A_driven_pluck_w0p500_c0p575_s0p400_b0p500.vital": "39265bd43f3876d03a01bf03c89b13f6d882a5bde3134a174430ff20adf20830",
+    "A_resonant_driven_swell_w0p500_c0p575_s0p400_b0p500.vital": "13adb4c3fc58ac9f1d7adc81a5de7907e96b41287a7416a52ecedbb20d0cddf5",
+    "A_resonant_held_w0p500_c0p575_s0p400_b0p500.vital": "ffc13021648c2dc1fcf1f0bc596eed9dd51c012989aeacb4daa17d30da922e9c",
+    "B_clean_held_w0p500_c0p575_s0p000_b0p250.vital": "bed224addedd4904d8496b4d8fccb26c421f0fcd86f8f099f61b9e5150feca88",
+    "B_clean_held_w0p500_c0p575_s0p000_b0p500.vital": "c826cac2052627fe3c9b759148e036de26d3cccd318f5b5f75cc0d2170836f53",
+    "B_clean_held_w0p500_c0p575_s0p000_b0p750.vital": "66e29f64740114e9469f71df71ccd481f8bd0da1455bffb14c6b69462796a5a8",
+    "B_clean_held_w0p500_c0p850_s0p000_b0p000.vital": "c1e6fe3539e9c50602180dad7b1482045f26c1fb5fb2894f2ff35e8882370d2b",
+    "B_clean_held_w0p500_c0p850_s0p000_b1p000.vital": "ce60a9fe8c811ed9246e21ae31ac8397acdcb303392f5a084e70ba43a1a38d5d",
+    "B_driven_pluck_w0p500_c0p575_s0p000_b0p250.vital": "8fa9fec585429fdbdde6c25c9c3aa61833bca45674772df4e80f358f0b0fde11",
+    "B_driven_pluck_w0p500_c0p575_s0p000_b0p500.vital": "920049ea1de081ce6f3f4bf6342b3a24074872d14ac4d08d64c0370babe6d447",
+    "B_driven_pluck_w0p500_c0p575_s0p000_b0p750.vital": "ebce44f31fa2fc3ac9c538ae3c98431f33fb99698c91b1171552ba37ae011738",
+    "B_driven_pluck_w0p500_c0p850_s0p000_b0p000.vital": "a947c690c6599848ab794d50ff1982de0f1c969790a9077e8369550cb0e5e70b",
+    "B_driven_pluck_w0p500_c0p850_s0p000_b1p000.vital": "824318c0b81f7ddf5acd92e0d59b52f0cae231d3502c3c51e2278b38ec2bf3bf",
+    "B_resonant_driven_swell_w0p500_c0p575_s0p000_b0p250.vital": "dedc0dbb14cb10fc85147433f03ae7ce1d8b80593572d16b6fed328ee5ce7cf5",
+    "B_resonant_driven_swell_w0p500_c0p575_s0p000_b0p500.vital": "35316357c835750e6a4ff34b9cde8da7c307be843c3129efb84e27fdda56e152",
+    "B_resonant_driven_swell_w0p500_c0p575_s0p000_b0p750.vital": "f304616f6e997e6acd620e5d2dab93b193a53821690c0b0fa0fd3fb6d5d51be4",
+    "B_resonant_driven_swell_w0p500_c0p850_s0p000_b0p000.vital": "2e82f0c44ab7337ea28f70fd5b9961d5bbead7ba996b648ec063bcb1205ce626",
+    "B_resonant_driven_swell_w0p500_c0p850_s0p000_b1p000.vital": "1ee5cf07085d2e59182df025dddb7dbe4266adf04d44b5e6b2ecc597078ca8e8",
+    "B_resonant_held_w0p500_c0p575_s0p000_b0p250.vital": "1efab94e12481412a43fd2ef12c71f38293c6565ad0880ce65ca1c74c78d1240",
+    "B_resonant_held_w0p500_c0p575_s0p000_b0p500.vital": "935ab7a090a561ebe402dd9a65ec32f85ac3d20141bb1a7a8196ae556b410575",
+    "B_resonant_held_w0p500_c0p575_s0p000_b0p750.vital": "d7f408f3ad352519f0fd39d4dda8ea769a63697278b9b74979682518f2864d30",
+    "B_resonant_held_w0p500_c0p850_s0p000_b0p000.vital": "e7fc87521c2c54964c3ad207a73ba89bfb529979a0b4baaa8dd5869408bbc7f1",
+    "B_resonant_held_w0p500_c0p850_s0p000_b1p000.vital": "efdeecc66c077bd90bd70c858a542ad35dbe307675b4edc73532ba806dbc6e7b"
+  },
+  "finite_reference_grid": {
+    "wave_positions": 9,
+    "cutoff_positions": 5,
+    "backgrounds": 4,
+    "tested_targets": 72,
+    "median_remaining_distance_ratio": 0.5695849230325292,
+    "limitation": "Only a finite no-Bend wave/cutoff grid with ENV2 sustain zero; does not prove independence or whole-architecture equivalence"
+  },
+  "shape_metric": {
+    "name": "Hellinger distance on normalized log-band power per time window",
+    "windows": [
+      [
+        0.0,
+        0.2
+      ],
+      [
+        0.2,
+        0.7
+      ],
+      [
+        0.7,
+        1.5
+      ]
+    ],
+    "band_edges_hz": [
+      40.0,
+      45.31787889321416,
+      51.342753684500636,
+      58.16861733795813,
+      65.90195889768262,
+      74.66342480376896,
+      84.58970107524512,
+      95.83564572352866,
+      108.57670466379629,
+      123.01164881445506,
+      139.36567508570167,
+      157.89391963512156,
+      178.88543819998324,
+      202.66771560265968,
+      229.61177478114257,
+      260.1379650496946,
+      294.72251989123106,
+      333.9049865883428,
+      378.2966436012705,
+      428.59003701079445,
+      485.56978480233397,
+      550.1248175469059,
+      623.2622464435556,
+      706.1230750760412,
+      800.0000000000003,
+      906.3575778642837,
+      1026.8550736900133,
+      1163.3723467591635,
+      1318.039177953653,
+      1493.2684960753802,
+      1691.7940215049034,
+      1916.7129144705743,
+      2171.5340932759264,
+      2460.2329762891013,
+      2787.3135017140335,
+      3157.878392702432,
+      3577.7087639996653,
+      4053.3543120531945,
+      4592.235495622852,
+      5202.759300993894,
+      5894.450397824621,
+      6678.099731766856,
+      7565.932872025411,
+      8571.80074021589,
+      9711.39569604668,
+      11002.49635093812,
+      12465.244928871112,
+      14122.461501520827,
+      16000.0
+    ],
+    "fft": 2048,
+    "hop": 512,
+    "weighting": "equal windows",
+    "detrend": "constant per STFT frame",
+    "gain_invariant": true,
+    "limitation": "Not a perceptual distance; phase discarded and low-energy windows normalized"
+  },
+  "playback": {
+    "native_common_gain": 1.0,
+    "rms_matching_window_seconds": [
+      0.0,
+      1.5
+    ],
+    "rms_matched_target_dbfs": -27.64890332905905,
+    "peak_limit": 0.9,
+    "note": "RMS matching is not perceptual loudness matching; no DC removal, EQ or compression"
+  },
+  "audibility_status": "Awaiting listening; no listener data collected",
+  "decision": "Do not select/freeze B solely from computational results"
+}
