@@ -6,6 +6,21 @@ privately alongside the repository URL. The ZIP is about 60 MiB and contains
 the exact preset, frozen code bytes, pinned requirements, parameter tables and
 waveform references. No audio transfer is needed. The preset is excluded from Git.
 
+## Checks on Thithira's original PC
+
+The `reference/` paths below are installed on a **fresh teammate clone** by the
+setup command. On Thithira's original completed-dataset PC, the exported reference
+files already live in `data/processed/team_handoff_v4_131072/`. Use these paths:
+
+```powershell
+.\venv\Scripts\python.exe -B generation/verify_parameter_reference.py --reference data/processed/team_handoff_v4_131072/parameters_full.parquet --manifest data/raw/corpus_v4/manifest.parquet
+.\venv\Scripts\python.exe -B -u -m generation.audit_full_corpus --count 131072 --workers 4 --reference data/processed/team_handoff_v4_131072/full_waveform_reference.json
+```
+
+The clone setup command is only for fresh clones; it must not be applied to the
+original completed-dataset folder. A successful full audio audit takes several
+minutes because it reads all 131,072 sounds.
+
 ## Message to send to teammates
 
 Use Windows x64 and **Python 3.13.14**, with at least **80 GiB free** on the
