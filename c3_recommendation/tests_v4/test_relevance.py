@@ -40,3 +40,12 @@ def test_proxy_correlates_with_subset_distance(params):
 def test_c4_placeholder_raises():
     with pytest.raises(NotImplementedError, match="C4"):
         C4Relevance()
+
+
+def test_score_bank_matches_score_ids_and_requires_fit(params):
+    proxy = ParamProxyRelevance(params, seed=1)
+    with pytest.raises(RuntimeError, match="fit"):
+        proxy.score_bank("s_000")
+    bank = list(params.index[10:])
+    proxy.fit(bank)
+    assert np.array_equal(proxy.score_bank("s_000"), proxy.score_ids("s_000", bank))

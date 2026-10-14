@@ -23,6 +23,9 @@ class RelevanceFunction(Protocol):
     def fit(self, bank_ids: Sequence[str]) -> None:
         """Prepare using bank samples only (e.g. feature standardisation statistics)."""
 
+    def score_bank(self, target_id: str) -> np.ndarray:
+        """Relevance of every fitted bank sample to a target, in ``fit`` order (fast path)."""
+
     def score_ids(self, target_id: str, candidate_ids: Sequence[str]) -> np.ndarray:
         """Relevance of each candidate to an in-dataset target."""
 
@@ -63,13 +66,21 @@ class ParamProxyRelevance:
 
     def fit(self, bank_ids: Sequence[str]) -> None:
         self.bank_ids = list(bank_ids)
+        self._bank_pos = self._position.loc[self.bank_ids].to_numpy()
 
-    def score_ids(self, target_id: str, candidate_ids: Sequence[str]) -> np.ndarray:
+    def _score_positions(self, target_id: str, cand_pos: np.ndarray) -> np.ndarray:
         target_pos = int(self._position[target_id])
-        cand_pos = self._position.loc[list(candidate_ids)].to_numpy()
         base = 1.0 - self._metric.cdist(self._values[target_pos], self._values[cand_pos])[0]
         noise = np.random.default_rng([self.seed, target_pos]).normal(0.0, self.noise_sigma, len(self._position))
         return base + noise[cand_pos]
+
+    def score_bank(self, target_id: str) -> np.ndarray:
+        if self.bank_ids is None:
+            raise RuntimeError("call fit(bank_ids) before score_bank")
+        return self._score_positions(target_id, self._bank_pos)
+
+    def score_ids(self, target_id: str, candidate_ids: Sequence[str]) -> np.ndarray:
+        return self._score_positions(target_id, self._position.loc[list(candidate_ids)].to_numpy())
 
     def score_audio(self, audio: np.ndarray, sr: int, candidate_ids: Sequence[str]) -> np.ndarray:
         raise NotImplementedError("ParamProxyRelevance is a smoke-test proxy and cannot score audio")
@@ -95,6 +106,9 @@ class C4Relevance:
         raise NotImplementedError("C4 relevance is not available yet; waiting for the C4 model")
 
     def fit(self, bank_ids):  # pragma: no cover - unreachable until implemented
+        raise NotImplementedError
+
+    def score_bank(self, target_id):  # pragma: no cover
         raise NotImplementedError
 
     def score_ids(self, target_id, candidate_ids):  # pragma: no cover
