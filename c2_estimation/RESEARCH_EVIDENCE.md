@@ -74,7 +74,7 @@ true-error/true-parameter feature, no class rebalancing, explicit single-class
 fallback, and declared ranking/binning/tie policies. Bootstrap samples whole audio
 examples so their 13 controls are kept together.
 
-## Ensemble complete; development calibration still in progress
+## Ensemble and development calibration complete
 
 `ensemble_full_v1/` contains three completed independent Gaussian-head CNNs with
 different initialization/shuffle seeds, strict CUDA determinism and epoch checkpoint
@@ -91,12 +91,11 @@ deterministic model on the same 4,096 IDs; this is not a point-accuracy improvem
 The saved ensemble EDA pack has 11 figures, including raw uncertainty versus error.
 The 128-clip training diagnostic smoke batch passed, including four renderer audits.
 
-`development_uncertainty_v1/status.json` records stage transitions; the active
-diagnostic log records per-clip counts. A stale `running` status alone is not proof
-of liveness. On 14 October, the interrupted workflow resumed from 994 saved
-calibration cases and new case counts were verified. Frozen predictions for all
-2,048 calibration clips already exist. The ongoing workflow measures this fixed
-calibration subset and the 512 reliability-validation clips, not the whole corpus.
+`development_uncertainty_v1/status.json` records completion at 2026-10-14 06:49:57 UTC.
+The interrupted workflow resumed from 994 saved calibration cases and finished all
+2,048 calibration and 512 reliability-validation cases, with four renderer audits
+per partition. All three correctness-tolerance calibrations completed. These fixed
+subsets, not the whole corpus, were measured.
 Perturbation audio is streamed/discarded; readbacks, steps, case checksums and S/R
 are saved. The same delivered patch is used for every ablation.
 
@@ -111,9 +110,38 @@ Two thousand paired whole-audio bootstrap replicates summarize Brier differences
 Tolerance .025/.05/.10 analyses reuse the same predictions and diagnostic distances.
 
 Reliability-validation also chooses C, so its scores/intervals are **development
-evidence, not unbiased final test conclusions**. Stronger models, five-member final
-runs, perturbation-step checks, frozen final method, held-out test and the small
-human validation study remain later stages. C3 is not changed.
+evidence, not unbiased final test conclusions**. A frozen final method, held-out
+test and the small human validation study remain later stages. Stronger or larger
+ensembles remain optional research decisions, not prerequisites silently launched
+by these commands. C3 is not changed.
+
+## Per-control audit and perturbation robustness
+
+See [VALIDATION_RESULTS.md](VALIDATION_RESULTS.md) for interpretation. The new packs
+preserve the original models, predictions, calibrators and .02 default step:
+
+| Artifact directory | Saved evidence | Purpose and limit |
+|---|---|---|
+| `results_audit_v1/` | Per-control MAE/RMSE/R2, success counts, probability/ranking scores, matched-coverage CSVs; two figures; paired whole-audio Brier intervals | 512 reliability-validation cases; descriptive because this partition selected regularization |
+| `step_stability_v1/` | 9,984 control/step measurements; 117 pair/group summaries; rank heatmaps and magnitude scatterplots; checksummed cases and eight new renderer audits | 256 fixed calibration clips, .01/.02/.05; no refitting or formal derivative-convergence claim |
+| `viewer_v1/` | Six examples, 174 PCM16 playback WAVs, six spectrogram figures, four copied research figures, data and checksums | First six validation diagnostic ranks, not quality-selected; saved-results demonstration only |
+| `verification_validation_viewer_v1/` | Test log, counts and source hashes | 43 discovered, 41 passed, two CUDA-only skips; synthetic checks are not research results |
+
+Full g(U,S,R) macro Brier is .115385 versus .116267 for g(U) and .115572 for g(U,R).
+The paired full-minus-g(U,R) interval includes zero: the extra contribution of S
+is not established. Excluding wave frame removes the aggregate improvement over
+g(U); that is an exploratory explanation, not a replacement endpoint.
+
+Step-size ranks are highly consistent for most controls. Wave frame and bend have
+lower agreement; amplitude attack also shows magnitude changes despite high rank
+agreement. Common-interior and boundary-affected results, sample sizes and undefined
+rank scores are retained. Small boundary groups must not be overinterpreted.
+
+Browser checks covered example/control/calibrator switching, reference reveal,
+target/reconstruction playback, exclusive playback and all four evidence figures.
+No JavaScript errors were observed. Screenshots are saved as `viewer-preview.jpg`
+and `viewer-controls.jpg`. Loopback HTTP was tested; direct `file://` opening was
+not tested because the browser automation surface does not permit that protocol.
 
 ## Rebuild and inspect
 
