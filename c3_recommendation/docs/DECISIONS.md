@@ -117,4 +117,44 @@ Status: confirmed by user 2026-10-14 (agreed to switch once the gate passes).
   plausible by chance; std and 5–95% quantiles agree. The seed is **kept** (re-rolling for a
   nicer-looking split would be seed-shopping).
 
-Status: produced by Claude Code; awaiting user confirmation.
+Status: confirmed by user 2026-10-14.
+
+## D-011 — Parameter-space structure and proposed epsilon grid (2026-10-14, Phase 3)
+
+Measured on 2,000 seeded bank samples against the 104,858-sample bank
+(`euclid_sqrt_d`, unit scale; `outputs/v4/analysis/param_structure.json`):
+
+| Distribution | min | p1 | p5 | p25 | median | p95 |
+|---|---|---|---|---|---|---|
+| 1-NN | 0.0813 | 0.0970 | 0.1074 | 0.1203 | 0.1286 | 0.1502 |
+| 5-NN | — | 0.1285 | 0.1332 | 0.1415 | 0.1489 | 0.1694 |
+| random pair | 0.2038 | 0.2476 | 0.2878 | 0.3581 | 0.4034 | 0.5140 |
+
+Observations:
+- The Sobol bank has **no natural near-duplicates**: no sampled point has a neighbour closer
+  than 0.081, and 1-NN distances are tightly concentrated (std 0.013). Random pairs are
+  ~3× further apart than nearest neighbours.
+- Leave-one-parameter-out: dropping any single control lowers the median 1-NN distance by a
+  similar amount (−0.0077 amp_attack … −0.0123 filter_env_amount). No control dominates the
+  distance under equal weighting.
+
+Proposed grid written to `near_duplicate.epsilon_grid`:
+`[0.05, 0.097, 0.1, 0.1074, 0.1121, 0.1203, 0.15]`
+
+| ε | Source | share of 1-NN below |
+|---|---|---|
+| 0.05 | round value — "practically identical recipe"; below every observed 1-NN distance | 0.000 |
+| 0.097 | p1 of 1-NN | 0.011 |
+| 0.1 | round value | 0.014 |
+| 0.1074 | p5 of 1-NN | 0.051 |
+| 0.1121 | p10 of 1-NN | 0.100 |
+| 0.1203 | p25 of 1-NN | 0.252 |
+| 0.15 | round value — roughly the 5-NN median | 0.949 |
+
+Interpretation: a pair with distance < ε is "as close as (or closer than) the closest patches
+the bank offers". Because the percentile values are crowded between 0.097 and 0.12,
+conclusions are expected to be similar among them; 0.05 and 0.15 bracket the range. The primary
+ε is **not** chosen here: it is finalised on validation data in Phase 7 with a sensitivity
+table, using a rule written before looking at test data.
+
+Status: proposed by Claude Code; awaiting user confirmation.
