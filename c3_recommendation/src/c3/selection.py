@@ -52,15 +52,32 @@ def mmr(
     ties go to the lower ``audio_rank`` (unique within a pool). ``lam == 1`` equals top-k.
     """
     _check_pool(pool, k)
-    if not 0.0 <= lam <= 1.0:
-        raise ValueError("lam must lie in [0, 1]")
     ids = pool["candidate_id"].tolist()
-    relevance = scale_relevance(pool["relevance"].to_numpy(dtype=np.float64), relevance_scaling)
     vectors = param_vectors.loc[ids].to_numpy(dtype=np.float64)
     similarity = 1.0 - distance.cdist(vectors, vectors)
+    selected = mmr_indices(pool["relevance"].to_numpy(dtype=np.float64), similarity, k, lam, relevance_scaling)
+    return [ids[i] for i in selected]
 
-    penalty = np.zeros(len(ids))
-    available = np.ones(len(ids), dtype=bool)
+
+def mmr_indices(
+    relevance: np.ndarray,
+    similarity: np.ndarray,
+    k: int,
+    lam: float,
+    relevance_scaling: str = "none",
+) -> list[int]:
+    """MMR on precomputed arrays; positions refer to a pool in ``audio_rank`` order.
+
+    ``similarity`` is the pool's parameter-similarity matrix. Used by the evaluator so
+    every lambda reuses one matrix per pool.
+    """
+    if not 0.0 <= lam <= 1.0:
+        raise ValueError("lam must lie in [0, 1]")
+    if k < 1 or k > len(relevance):
+        raise ValueError(f"k={k} must be in [1, {len(relevance)}]")
+    relevance = scale_relevance(np.asarray(relevance, dtype=np.float64), relevance_scaling)
+    penalty = np.zeros(len(relevance))
+    available = np.ones(len(relevance), dtype=bool)
     selected: list[int] = []
     for _ in range(k):
         score = lam * relevance - (1.0 - lam) * penalty
@@ -69,7 +86,7 @@ def mmr(
         selected.append(best)
         available[best] = False
         penalty = np.maximum(penalty, similarity[best])
-    return [ids[i] for i in selected]
+    return selected
 
 
 def random_from_pool(pool: pd.DataFrame, k: int, rng: np.random.Generator) -> list[str]:
