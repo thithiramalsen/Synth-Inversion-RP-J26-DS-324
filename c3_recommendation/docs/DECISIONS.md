@@ -99,3 +99,22 @@ matches the shared reference."). `data.source` is now `corpus_v4`: parameters co
 raw masters with DC-on-read. `ReferenceSource` stays available for parameter-only work.
 
 Status: confirmed by user 2026-10-14 (agreed to switch once the gate passes).
+
+## D-010 — Frozen bank / val / test split (2026-10-14, Phase 2)
+
+- Source `corpus_v4`, 131,072 samples, seed 20261014, sample-level random permutation
+  (no grouping column, D-003). Counts: bank 104,858 / val 13,107 / test 13,107.
+- Exact-duplicate guard (max-abs ≤ 1e-9 on the unit scale): 0 duplicate groups, 0 moves.
+- SHA-256 of sorted IDs per split:
+  - bank `55f9b68ef8c3cfe76d173e961130f175c9b7116717074c22edb9ed4a6ae86867`
+  - val  `a4bab1020958aa12fb59a9e944198070881ac7e7db33fd40fe783c87d8b62af2`
+  - test `fc6cee6de99ba5eb2fdd3f5dfb1251d2e1460a47a6c4a9bade7bee7586ea636b`
+- Re-running `scripts/02_make_splits.py` reproduces these hashes; a differing split is refused
+  without `--overwrite`.
+- Balance (`outputs/v4/splits/split_balance.csv`): no parameter has a split-mean gap > 0.02.
+  Largest gap is `filter_cutoff` 0.0125 (val 0.5077 vs test 0.4952), ~3.5 standard errors of a
+  difference between two uniform samples of 13,107 — the largest of 39 comparisons, unusual but
+  plausible by chance; std and 5–95% quantiles agree. The seed is **kept** (re-rolling for a
+  nicer-looking split would be seed-shopping).
+
+Status: produced by Claude Code; awaiting user confirmation.
