@@ -12,7 +12,7 @@ All facts below were read from the files by `scripts/00_inspect_data.py` on 2026
 | Dataset config | `reference/restricted_bend_sustain_v4_config.json` | Schema, ranges, fixed controls, audio policy |
 | Full parameter table | `reference/parameters_full.parquet` | 131,072 × 54 |
 | Normalized parameter table | `reference/parameters_normalized.parquet` | 131,072 × 15 |
-| Audio corpus | `data/raw/corpus_v4/` | Still generating (`.run.lock` present) |
+| Audio corpus | `data/raw/corpus_v4/` | Complete 2026-10-14; own generation, git-ignored (section 5) |
 
 The SHA-256 of all 7 hashed reference files matches `clone_integrity.json` /
 `corpus_verification.json`.
@@ -102,22 +102,30 @@ No `group`, `family`, `anchor`, `parent`, `sibling`, `perturbation`, `sobol_inde
 
 The corpus is **not** peak-normalised (normalization: none).
 
-## 5. Corpus layout — unverified until audio generation finishes
+## 5. Corpus layout — verified by the Phase 5 gate (2026-10-14)
 
-Observed from file metadata only (honouring the `.run.lock` rule):
+Generation finished 2026-10-14 15:07 (`summary.json`: 131,072 rendered, 0 silent, 0 clipped,
+0 large DC offset). Files in `data/raw/corpus_v4/`:
 
-- `data/raw/corpus_v4/recipe.json` — synthesis config identical to the dataset config,
-  plus `storage_policy`, `runner_sources`, `sample_hash_format`, `processed_float32_policy`.
-- `data/raw/corpus_v4/raw_float/<sample_id>.wav` — one WAV per sample, ~529 KB each
-  (132,300 float32 samples + header). 86,083 files present at inspection time.
-- `data/raw/corpus_v4/chunks/<start_index:06d>.json` — one JSON per block of 128 samples
-  (names step by 128; 1,024 expected). Each record carries `sample_id`, `sample_index`,
-  rendering conditions, `audio_policy_id` and all four parameter columns. 672 present.
-- `reference/full_waveform_reference.json` maps each of the 131,072 IDs to a list of two
-  SHA-256 strings — presumably raw and DC-processed audio hashes (order unverified).
+| File | Content |
+|---|---|
+| `.run.lock` | Permanent 1-byte file. The generator holds an OS lock on it only while running (D-006). |
+| `recipe.json` | Synthesis settings (identical to the dataset config except `sample_count`/`created_utc`), `storage_policy: raw_float_dc_on_read_v1`, `processed_float32_policy: float32_subnormal_signed_zero_v1`, `sample_hash_format`. |
+| `summary.json` | Completion count and QA flag totals. |
+| `manifest.parquet` / `.csv` | 131,072 × 85. Same `sample_id`/`sample_index` order as the reference; all 52 parameter columns (`_sample_01`, `_normalized`, `_raw`, `_display`) identical to `parameters_full.parquet` (max diff 0.0). Plus rendering conditions, QA metrics for processed and raw audio, `raw_samples_sha256`, `processed_samples_sha256`, `raw_audio_path`, `raw_audio_sha256`. |
+| `raw_float/<sample_id>.wav` | One raw 32-bit FLOAT mono 44.1 kHz WAV, 132,300 frames, per sample. Exactly 131,072 files. |
+| `chunks/<start_index:06d>.json` | 1,024 checkpoint chunks of 128 rows (authoritative during generation; the manifest is rebuilt from them at completion). |
 
-Mapping assumed for Phase 5: `sample_id → raw_float/<sample_id>.wav`, and
-`chunks/{(sample_index // 128) * 128:06d}.json` for metadata. To be verified by the audio gate.
+Reading audio (implemented in `c3.audio_io`): raw WAV → `dc_highpass_10hz_v1` SOS filter once
+in float64 → float32 with subnormals zeroed keeping sign. This reproduces the generator's
+`processed_samples_sha256` bit-exactly (gate check 7).
+
+`reference/full_waveform_reference.json` maps each ID to
+`[raw_samples_sha256, processed_samples_sha256]` (order confirmed in
+`generation/generate_corpus.py:reference`). The manifest's hashes equal it for all 131,072 IDs.
+
+QA note: 61,789 raw masters carry `raw_dc_warning`; this is the DC offset the 10 Hz policy
+removes. After processing, 0 rows have `has_large_dc_offset`.
 
 ## 6. Questions
 
@@ -127,8 +135,6 @@ Resolved 2026-10-14 (see DECISIONS.md):
 2. Distance is computed on slider positions, not physical units (D-002).
 3. `sample_count: 1024` in the dataset config is stale; the real count is 131,072, split
    ~104,858 bank / 13,107 val / 13,107 test (D-004).
+4. Hash order in `full_waveform_reference.json` is `[raw, processed]` (section 5).
 
-Still open:
-
-4. Order of the two hashes in `full_waveform_reference.json` (raw vs processed) — confirm
-   from `generation/` code in Phase 5.
+No open questions.
