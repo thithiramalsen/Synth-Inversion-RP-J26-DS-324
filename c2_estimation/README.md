@@ -13,11 +13,13 @@ The full deterministic model is now trained; measured results are in
 audits and statistical safeguards, and distinguishes running experiments from results.
 
 The v4 data/split, deterministic baseline, diagnostic example and research EDA pack
-are saved. The Gaussian ensemble, frozen-subset diagnostic pipeline and development
-calibration/ablation workflow are implemented and tested; the full ensemble fit is
-running. Completed trained/calibrated results and the final test study must not be
-claimed until their output status confirms completion. No C3 code or frozen
-generation code was changed.
+are saved. All three Gaussian ensemble members are now trained, and the 128-clip
+diagnostic smoke batch is complete. The interrupted development-calibration
+workflow was resumed on 14 October 2026 from 994 saved calibration cases; its
+remaining diagnostics and calibration scores are still in progress. See the
+[live progress and model locations](V4_README.md#live-progress-and-saved-models).
+Calibrated results and the final test study must not be claimed before completion.
+No C3 code or frozen generation code was changed.
 
 ## Historical eight-control pilot
 

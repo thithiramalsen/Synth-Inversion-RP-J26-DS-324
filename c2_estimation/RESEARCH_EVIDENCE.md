@@ -74,21 +74,29 @@ true-error/true-parameter feature, no class rebalancing, explicit single-class
 fallback, and declared ranking/binning/tie policies. Bootstrap samples whole audio
 examples so their 13 controls are kept together.
 
-## Next experiment: implemented, not yet a completed research result
+## Ensemble complete; development calibration still in progress
 
-`ensemble_full_v1/` trains three independent Gaussian-head CNNs with different
-initialization/shuffle seeds, strict CUDA determinism and epoch checkpoint resume.
-It saves member NLL/point-error histories, mean predictions, within-member variance,
+`ensemble_full_v1/` contains three completed independent Gaussian-head CNNs with
+different initialization/shuffle seeds, strict CUDA determinism and epoch checkpoint
+resume. Each ran 60 epochs; selected epochs are 57/59/58 and checkpoint reloads
+reproduce predictions exactly. It saves member NLL/point-error histories, mean predictions, within-member variance,
 between-member disagreement and total mixture variance. Means are sigmoid-bounded;
 variances use softplus plus `1e-4` in z². The Gaussian objective is a practical
 working model on bounded labels, **not a calibrated or truncated posterior**.
 Within/between components are operational summaries, not proven pure aleatoric/
 epistemic decompositions. See [deep ensembles](https://arxiv.org/abs/1612.01474).
 
-`development_uncertainty_v1/status.json` records actual workflow progress. After all
-members finish, the workflow saves ensemble EDA and freezes predictions for 128
-training smoke clips. Only after smoke/audit checks pass does it render the fixed
-2,048 calibration and 512 reliability-validation subsets, not the whole corpus.
+Ensemble inverse-validation macro z MAE is **.127991**, versus **.126112** for the
+deterministic model on the same 4,096 IDs; this is not a point-accuracy improvement.
+The saved ensemble EDA pack has 11 figures, including raw uncertainty versus error.
+The 128-clip training diagnostic smoke batch passed, including four renderer audits.
+
+`development_uncertainty_v1/status.json` records stage transitions; the active
+diagnostic log records per-clip counts. A stale `running` status alone is not proof
+of liveness. On 14 October, the interrupted workflow resumed from 994 saved
+calibration cases and new case counts were verified. Frozen predictions for all
+2,048 calibration clips already exist. The ongoing workflow measures this fixed
+calibration subset and the 512 reliability-validation clips, not the whole corpus.
 Perturbation audio is streamed/discarded; readbacks, steps, case checksums and S/R
 are saved. The same delivered patch is used for every ablation.
 

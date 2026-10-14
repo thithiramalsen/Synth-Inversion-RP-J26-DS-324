@@ -1,7 +1,8 @@
 # C2 v4 implementation and runbook
 
-Status: 14 October 2026. The development milestone and **full deterministic
-baseline are complete**. The reliability-calibration study is still in progress.
+Status: 14 October 2026. The development milestone, **full deterministic baseline
+and three-member ensemble training are complete**. The reliability-calibration
+study is still in progress.
 Nothing here regenerates the corpus. See [FULL_BASELINE_RESULTS.md](FULL_BASELINE_RESULTS.md).
 Saved EDA/audit evidence is indexed in [RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.md).
 
@@ -28,8 +29,10 @@ Saved EDA/audit evidence is indexed in [RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.
   controls; macro z MAE .184187 -> .126339. Updated audio example for the same clip.
 - A 10-figure EDA pack with plotted tables, parameter distributions, split balance,
   training correlation, training audio QA and all-control validation error analysis.
-- Independent Gaussian-head ensemble training, mixture-moment decomposition and
-  interrupted/resumed prediction reproducibility (synthetic checks; full fit running).
+- Three independent Gaussian-head CNNs, each trained for 60 epochs; selected
+  epochs 57/59/58, exact checkpoint reload, and saved mixture-moment decomposition.
+- Ensemble evidence pack (11 figures), frozen 128-clip training-smoke and
+  2,048-clip calibration predictions; completed smoke diagnostics with four audits.
 - Frozen non-test subset prediction, resumable forward-diagnostic cases and
   calibration/ablation implementation. Batch-core checks reproduce the saved real
   example's R and all 13 sensitivities exactly within the declared numeric tolerance.
@@ -38,8 +41,8 @@ Saved EDA/audit evidence is indexed in [RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.
 
 ## Not yet completed
 
-- Completed full-data 3-member ensemble results and frozen ensemble predictions.
-- Full 128-clip diagnostic smoke batch and bounded 2,048/512/1,024 reliability study.
+- Remaining 2,048-clip calibration diagnostics and 512-clip reliability-validation
+  predictions/diagnostics. Resumed from 994 completed calibration cases on 14 October.
 - Measured real-data calibrators, ablations, bootstrap intervals and final threshold policy.
 - Final untouched-test evaluation and the later exploratory human usefulness study.
 
@@ -183,11 +186,12 @@ the full run only with the identical command plus `--resume`.
 .\venv\Scripts\python.exe -B -m c2_estimation.v4.run_development --ensemble data/processed/c2_v4/ensemble_full_v1 --output data/processed/c2_v4/development_uncertainty_v1 --workers 4 --wait-minutes 120
 ```
 
-The evidence directory already exists; choose a new name to rebuild it. The ensemble
-command is **already running**. Do not launch another writer into `ensemble_full_v1`.
-If training stops, first confirm the old process is no longer running, then repeat
-the identical ensemble command with `--resume`. The workflow does not start another
-training job. It waits up to 120 minutes for the already-running ensemble, then
+The evidence directory and completed ensemble already exist; these commands record
+how they were produced. Do not launch another writer into `ensemble_full_v1`.
+All three models are saved, so this workflow resume does not retrain them. For an
+interrupted training run, first confirm no old writer remains, then repeat its
+identical ensemble command with `--resume`. The workflow reuses verified completed
+stages (or waits up to 120 minutes if ensemble training is still in progress), then
 performs these stages in order:
 
 1. Save ensemble EDA, including raw variance vs squared-error plots.
@@ -213,6 +217,53 @@ can take roughly 80 minutes before diagnostics, unless early stopping reduces it
 Forward-render timing is measured in stage logs, not assumed from CNN speed.
 Four CPU workers bound parallel rendering. No second multi-gigabyte feature cache
 is created, and perturbation waveforms are streamed rather than saved in bulk.
+
+### Live progress and saved models
+
+The workflow was resumed from **994/2,048 saved calibration cases** on 14 October
+2026. New case counts were observed after restart; saved models and completed
+smoke diagnostics were reused. This is a dated restart record, not a live count.
+
+From the repository root in VS Code's PowerShell terminal, follow the active
+calibration diagnostic log:
+
+```powershell
+Get-Content data/processed/c2_v4/development_uncertainty_v1/logs/diagnose_calibration.log -Tail 10 -Wait
+```
+
+`Ctrl+C` stops this viewer only. It does not stop the workflow running in another
+terminal/session. Once calibration diagnostics finish, follow
+`logs/diagnose_reliability-validation.log` instead. Inspect the current stage with:
+
+```powershell
+Get-Content data/processed/c2_v4/development_uncertainty_v1/status.json
+```
+
+`status.json` is updated at stage boundaries, not per clip. Its `running` value can
+remain stale after an interruption; advancing log counts/new case files demonstrate
+progress. Only the terminal exit result or final completion status confirms that
+the workflow has finished. To resume after confirming the previous writer stopped,
+rerun the identical `run_development` command above. Do not delete partial cases.
+
+Saved checkpoints, relative to `data/processed/c2_v4/`:
+
+| Model | Best checkpoint |
+|---|---|
+| Deterministic baseline | `baseline_full_v1/best_model.pt` |
+| Ensemble member 0 | `ensemble_full_v1/member_00/best_model.pt` |
+| Ensemble member 1 | `ensemble_full_v1/member_01/best_model.pt` |
+| Ensemble member 2 | `ensemble_full_v1/member_02/best_model.pt` |
+
+Each model directory also has `last_model.pt` for training resume. The ensemble
+uses all three best checkpoints together, not just the last-trained member.
+Keep run configs, preprocessing/protocol metadata and checksums with the weights.
+These generated artifacts are ignored by Git and need a separate backup.
+
+Measured ensemble inverse-validation macro z MAE is **.127991**, compared with
+**.126112** for the deterministic baseline on the same 4,096 clips. Point accuracy
+therefore did not improve in this run. Whether U/S/R improves correctness reliability
+is a separate question, still awaiting the real-data calibration/ablation results.
+No held-out test has been evaluated.
 
 For an individual stage after ensemble completion:
 
