@@ -157,4 +157,28 @@ conclusions are expected to be similar among them; 0.05 and 0.15 bracket the ran
 ε is **not** chosen here: it is finalised on validation data in Phase 7 with a sensitivity
 table, using a rule written before looking at test data.
 
-Status: proposed by Claude Code; awaiting user confirmation.
+Status: confirmed by user 2026-10-14.
+
+## D-012 — Evaluation pipeline design and smoke test (2026-10-14, Phase 4)
+
+Implementation choices in `evaluate.py` / `stats.py` that later phases reuse:
+
+- The bank is scored once per target (`RelevanceFunction.score_bank`); the largest pool is built
+  once and smaller pools are its prefixes (same total ranking), so all N share one ranking.
+- One pairwise parameter-distance matrix per pool is reused by top-k, every MMR lambda, the
+  random baseline and the metrics (`PoolArrays`, `mmr_indices`, `metrics_from_indices`).
+- Random-from-pool: 200 draws per (target, N, k) with RNG seed `[seed, target sample position, N, k]`;
+  `per_target` stores the mean over draws. Individual random draws are not written to
+  `recommendations.parquet` (top-k and MMR sets are).
+- `rel_loss_vs_topk` = (top-k mean_rel − policy mean_rel) / top-k mean_rel, per target;
+  `delta_*_pair_dist_vs_topk` = policy − top-k. Summary CIs: percentile bootstrap of the mean,
+  10,000 resamples, seeded, targets ordered by ID within each group.
+- Label: tables carry `relevance_function = SMOKE_TEST_PROXY` (the column `relevance` already holds
+  scores in `recommendations`); `run_config.json` carries `"relevance": "SMOKE_TEST_PROXY"`.
+
+Smoke test (`scripts/04_smoke_test.py`, 200 val targets, N ∈ {50, 100}, k ∈ {5, 3}, 11 lambdas):
+λ = 1 equals top-k for every set (0 mismatches); 0 self-matches; 0 candidates outside the bank;
+in-process re-run identical; a second process run produced byte-identical artefacts.
+≈148 ms per target, ≈75 s total. **Proxy numbers are a pipeline check only and are never reported.**
+
+Status: implementation choices by Claude Code; smoke test result recorded 2026-10-14.
