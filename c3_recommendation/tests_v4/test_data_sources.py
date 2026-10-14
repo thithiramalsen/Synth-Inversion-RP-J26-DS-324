@@ -1,4 +1,4 @@
-"""ReferenceSource on synthetic parquet tables; CorpusV4Source lock guard."""
+"""ReferenceSource and CorpusV4Source on synthetic tables, including the generator lock guard."""
 
 import numpy as np
 import pytest
@@ -6,7 +6,7 @@ import pytest
 from c3.data_sources import CorpusV4Source, ReferenceSource
 from c3.schema import SchemaError
 
-from conftest import make_reference_tables
+from conftest import hold_generator_lock, make_reference_tables
 
 
 @pytest.fixture
@@ -55,13 +55,25 @@ def test_reference_source_has_no_audio(reference_dir, schema):
         ReferenceSource(path, schema).audio(full["sample_id"][0])
 
 
-def test_corpus_source_refuses_while_generation_runs(tmp_path, schema):
-    (tmp_path / ".run.lock").write_text("1")
-    with pytest.raises(RuntimeError, match="still running"):
-        CorpusV4Source(tmp_path, schema)
+def test_corpus_source_refuses_while_generator_holds_lock(tmp_path, schema):
+    full, _ = make_reference_tables(schema)
+    full.to_parquet(tmp_path / "manifest.parquet", index=False)
+    with hold_generator_lock(tmp_path):
+        with pytest.raises(RuntimeError, match="still running"):
+            CorpusV4Source(tmp_path, schema)
 
 
-def test_corpus_source_is_skeleton_without_lock(tmp_path, schema):
+def test_corpus_source_reads_manifest_when_lock_file_is_free(tmp_path, schema):
+    full, _ = make_reference_tables(schema)
+    full.sample(frac=1, random_state=1).to_parquet(tmp_path / "manifest.parquet", index=False)
+    (tmp_path / ".run.lock").write_bytes(b"0")  # leftover file, nobody holds the lock
     source = CorpusV4Source(tmp_path, schema)
-    with pytest.raises(NotImplementedError):
-        source.params_unit()
+    assert list(source.sample_ids()) == list(full["sample_id"])
+    expected = full[[f"{n}_sample_01" for n in schema.names]].to_numpy()
+    assert np.allclose(source.params_unit().to_numpy(), expected, atol=1e-12)
+    assert np.allclose(source.params_raw()["wave_frame"], full["wave_frame_raw"])
+
+
+def test_corpus_source_requires_manifest(tmp_path, schema):
+    with pytest.raises(FileNotFoundError, match="manifest"):
+        CorpusV4Source(tmp_path, schema)
