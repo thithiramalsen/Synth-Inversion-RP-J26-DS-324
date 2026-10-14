@@ -6,7 +6,7 @@ import pytest
 
 from c3.splits import (
     BANK, TEST, VAL, LeakageError, Splits, TestSplitLocked, find_duplicate_groups, load_manifest,
-    make_splits, save_splits,
+    make_splits, save_splits, split_balance,
 )
 
 
@@ -78,3 +78,19 @@ def test_val_targets_seeded_and_bank_refused():
     assert set(splits.get_targets(VAL, 20, seed=4)) <= set(splits.ids(VAL))
     with pytest.raises(LeakageError):
         splits.get_targets(BANK, 5, 0)
+
+
+def test_split_balance_reports_and_flags():
+    params = unit_frame(n=2000)
+    result = make_splits(params, 0.1, 0.1, seed=2)
+    table = split_balance(params, result.manifest, threshold=0.02)
+    assert len(table) == params.shape[1] * 3
+    assert set(table["split"]) == {BANK, VAL, TEST}
+    assert table.groupby("parameter")["n"].sum().eq(2000).all()
+
+    # Shift one parameter only in the val split -> only that parameter is flagged.
+    shifted = params.copy()
+    val_ids = result.manifest.loc[result.manifest.split == VAL, "sample_id"]
+    shifted.loc[val_ids, 0] = np.clip(shifted.loc[val_ids, 0] + 0.2, 0, 1)
+    flagged = split_balance(shifted, result.manifest).query("flagged")["parameter"].unique()
+    assert list(flagged) == [0]

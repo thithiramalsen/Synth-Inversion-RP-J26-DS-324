@@ -171,6 +171,35 @@ def assert_valid_split(manifest: pd.DataFrame, all_ids: Sequence[str], groups: p
             raise LeakageError("a group straddles more than one split")
 
 
+# ---------------------------------------------------------------------- balance check
+BALANCE_QUANTILES = (0.05, 0.25, 0.5, 0.75, 0.95)
+
+
+def split_balance(unit_params: pd.DataFrame, manifest: pd.DataFrame, threshold: float = 0.02) -> pd.DataFrame:
+    """Per-parameter distribution per split on the unit scale.
+
+    One row per (parameter, split) with mean, std and quantiles, plus
+    ``max_mean_gap`` = largest difference between split means for that parameter and
+    ``flagged`` when that gap exceeds ``threshold``. Descriptive only - no targets are drawn.
+    """
+    labels = manifest.set_index("sample_id")["split"].reindex(unit_params.index)
+    if labels.isna().any():
+        raise ValueError("manifest does not cover every sample")
+    rows = []
+    for name in unit_params.columns:
+        for split in SPLIT_NAMES:
+            values = unit_params.loc[(labels == split).to_numpy(), name].to_numpy()
+            row = {"parameter": name, "split": split, "n": len(values),
+                   "mean": values.mean(), "std": values.std(ddof=1)}
+            row.update({f"q{int(q * 100):02d}": v for q, v in zip(BALANCE_QUANTILES, np.quantile(values, BALANCE_QUANTILES))})
+            rows.append(row)
+    table = pd.DataFrame(rows)
+    gaps = table.groupby("parameter")["mean"].agg(lambda m: m.max() - m.min())
+    table["max_mean_gap"] = table["parameter"].map(gaps)
+    table["flagged"] = table["max_mean_gap"] > threshold
+    return table
+
+
 # ---------------------------------------------------------------------- persistence
 def save_splits(result: SplitResult, out_dir: str | Path) -> dict:
     out_dir = Path(out_dir)
