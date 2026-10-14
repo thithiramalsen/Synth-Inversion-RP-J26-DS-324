@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import os
+from contextlib import contextmanager
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -46,3 +50,27 @@ def make_reference_tables(schema: ParamSchema, n: int = 12, seed: int = 0) -> tu
         full[f"{name}_display"] = [f"{v:.6f}" for v in vital[:, j] * 10.0]
         norm[f"{name}_normalized"] = vital[:, j]
     return full, norm
+
+
+@contextmanager
+def hold_generator_lock(corpus_dir: Path):
+    """Hold the 1-byte OS lock on .run.lock exactly like generation/generate_corpus.py does."""
+    with (Path(corpus_dir) / ".run.lock").open("a+b") as handle:
+        if handle.tell() == 0:
+            handle.write(b"0")
+            handle.flush()
+        handle.seek(0)
+        if os.name == "nt":
+            import msvcrt
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        try:
+            yield
+        finally:
+            handle.seek(0)
+            if os.name == "nt":
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                fcntl.flock(handle, fcntl.LOCK_UN)
