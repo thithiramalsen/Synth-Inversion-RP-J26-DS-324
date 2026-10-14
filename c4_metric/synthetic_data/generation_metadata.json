@@ -4,11 +4,15 @@
   "corpus_manifest_sha256": "32059656a9946d56e4931156260efc074d0b7f4de36558dea3d24c16a971fb0a",
   "full_corpus_size": 131072,
   "clap_pool_size": 1024,
-  "triplets": 20,
+  "questions_per_participant": 20,
+  "triplet_bank_size": 200,
+  "triplets": 200,
   "participants": 100,
   "rows": 2000,
+  "session_rows": 100,
   "seed": 20261014,
   "clap_model": "laion/clap-htsat-unfused",
   "clap_model_revision": "8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a",
-  "human_preference_simulation_independent_of_clap": true
+  "human_preference_simulation_independent_of_clap": true,
+  "survey_response_shape": "C4 rating export fields plus C4 session entry, headphone-screen, and closing-feedback fields"
 }

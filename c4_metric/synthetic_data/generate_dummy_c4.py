@@ -24,6 +24,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 DEFAULT_MANIFEST = ROOT / "data/raw/corpus_v4/manifest.csv"
 OUTPUT_RESPONSES = HERE / "dummy_c4_responses.csv"
+OUTPUT_SESSIONS = HERE / "dummy_c4_sessions.csv"
 OUTPUT_TRIPLETS = HERE / "clap_triplets.csv"
 OUTPUT_CACHE = HERE / "clap_embedding_cache.npz"
 OUTPUT_META = HERE / "clap_embedding_cache.json"
@@ -200,17 +201,37 @@ def build_triplets(pool: list[dict[str, str]], embeddings: np.ndarray,
 
 
 def simulate_responses(triplets: list[dict[str, str]], participants: int,
-                       seed: int) -> list[dict[str, object]]:
+                       questions_per_participant: int,
+                       seed: int) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
     rng = random.Random(seed + 1009)
+    c4_bundle = json.loads((ROOT / "survey/deploy/study/c4_bundle.json").read_text(encoding="utf-8"))
+    headphone_checks = c4_bundle["headphones"]
     # Latent preferences are randomly assigned and independent from the CLAP ranking.
     preference = {t["triplet_id"]: rng.choice((t["candidate_a_sample_id"], t["candidate_b_sample_id"]))
                   for t in triplets}
     rows = []
+    sessions = []
+    assignments_per_round = len(triplets) // questions_per_participant
+    assignment_batches: list[list[int]] = []
+    for _ in range(0, participants, assignments_per_round):
+        bank_order = list(range(len(triplets)))
+        rng.shuffle(bank_order)
+        assignment_batches.append(bank_order)
     for person in range(1, participants + 1):
         participant = f"SYN_{person:03d}"
+        session = f"SYN_SESSION_{person:03d}"
         consistency = rng.uniform(.58, .88)
-        order = list(range(len(triplets)))
+        batch_index = (person - 1) // assignments_per_round
+        slot_in_batch = (person - 1) % assignments_per_round
+        start_index = slot_in_batch * questions_per_participant
+        order = assignment_batches[batch_index][start_index:start_index + questions_per_participant]
         rng.shuffle(order)
+        started_at = f"2030-01-{1 + (person - 1) % 28:02d}T09:00:00+00:00"
+        activities = rng.sample([
+            "Music production", "Sound design", "Synthesizer patch creation",
+            "Instrument performance", "Singing",
+        ], k=rng.randint(1, 3))
+        session_trials = []
         for position, triplet_index in enumerate(order, start=1):
             triplet = triplets[triplet_index]
             favored = preference[triplet["triplet_id"]]
@@ -224,21 +245,90 @@ def simulate_responses(triplets: list[dict[str, str]], participants: int,
             if uncertain:
                 choice = "cannot_decide"
             confidence = "" if uncertain else rng.choices([1, 2, 3, 4, 5], [5, 15, 30, 35, 15])[0]
+            submitted_at = f"2030-01-{1 + (person - 1) % 28:02d}T09:{position:02d}:00+00:00"
+            chosen_id = None if uncertain else candidate_a if choice == "candidate_a" else candidate_b
+            presentation_id = f"{participant}_p{position:02d}"
+            session_trials.append({
+                "presentation_id": presentation_id,
+                "triplet_id": triplet["triplet_id"],
+                "reference": triplet["reference_sample_id"],
+                "candidate_a": candidate_a,
+                "candidate_b": candidate_b,
+                "kind": "primary",
+                "repeat_of": None,
+            })
             rows.append({
                 "data_status": SYNTHETIC_MARK,
                 "participant_id": participant,
-                "question_id": triplet["triplet_id"],
+                "session_id": session,
+                "study_id": "c4_dummy_20_question",
+                "bundle_hash": "synthetic_no_live_bundle",
+                "protocol_hash": "synthetic_c4_questionnaire_schema",
+                "assignment_id": f"dummy_assignment_{person:03d}",
+                "presentation_id": presentation_id,
+                "triplet_id": triplet["triplet_id"],
+                "reference": triplet["reference_sample_id"],
+                "candidate_a": candidate_a,
+                "candidate_b": candidate_b,
+                "kind": "primary",
+                "repeat_of": "",
                 "trial_order": position,
-                "reference_sample_id": triplet["reference_sample_id"],
-                "candidate_a_sample_id": candidate_a,
-                "candidate_b_sample_id": candidate_b,
                 "choice": choice,
-                "chosen_sample_id": None if uncertain else candidate_a if choice == "candidate_a" else candidate_b,
-                "confidence_1_to_5": confidence,
+                "chosen_sample_id": chosen_id or "",
+                "confidence": confidence,
                 "comment": "",
+                "play_count": json.dumps({"reference": 1, "candidate_a": 1, "candidate_b": 1}),
+                "completed_plays": json.dumps({"reference": 1, "candidate_a": 1, "candidate_b": 1}),
+                "started_at": started_at,
+                "submitted_at": submitted_at,
+                "phase": "complete",
+                "completed_at": f"2030-01-{1 + (person - 1) % 28:02d}T09:30:00+00:00",
+                "withdrawn_at": "",
+                "analysis_include": "false",
                 "synthetic_seed": seed,
             })
-    return rows
+        # Session-level answers use the real C4 entry and closing-feedback fields.
+        # These are fictional examples for checking imports only, not records of consent.
+        shuffled_checks = headphone_checks[:]
+        rng.shuffle(shuffled_checks)
+        screen_answers = []
+        for n, check in enumerate(shuffled_checks, start=1):
+            expected = check["correct_interval"]
+            answer = expected if n <= 5 else (expected % 3) + 1
+            screen_answers.append({
+                "screen_id": check["screen_id"], "screen_number": n,
+                "interval": answer, "completed_plays": 1, "correct": n <= 5,
+                "data_status": SYNTHETIC_MARK,
+            })
+        entry = {
+            "adult": True, "consent": True, "headphones": True,
+            "quiet_environment": True, "understands_language": True,
+            "activities": activities, "experience_months": rng.randint(6, 120),
+            "recent_frequency": rng.choice(["Monthly", "Weekly", "Daily"]),
+            "tools": rng.choice(["DAW and synthesizer", "Piano and synthesizer", "Guitar and DAW"]),
+            "example": "Synthetic example: practiced shaping a synthesizer sound in a DAW.",
+            "data_status": SYNTHETIC_MARK,
+        }
+        feedback = {
+            "clarity": rng.choice(["Clear", "Some terms unclear", "Difficult to understand"]),
+            "length": rng.choice(["About right", "Too long", "Could be longer"]),
+            "comment": "", "data_status": SYNTHETIC_MARK,
+        }
+        sessions.append({
+            "data_status": SYNTHETIC_MARK, "participant_id": participant,
+            "participant_label": f"Synthetic listener {person:03d}",
+            "session_id": session, "study_id": "c4_dummy_20_question",
+            "assignment_id": f"dummy_assignment_{person:03d}",
+            "phase": "complete", "current_index": len(triplets),
+            "started_at": started_at,
+            "completed_at": f"2030-01-{1 + (person - 1) % 28:02d}T09:30:00+00:00",
+            "withdrawn_at": "", "entry_json": json.dumps(entry),
+            "screen_answers": json.dumps(screen_answers),
+            "feedback_json": json.dumps(feedback),
+            "trial_order": json.dumps(session_trials),
+            "analysis_include": "false",
+        })
+    return rows, sessions
 
 
 def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
@@ -279,7 +369,9 @@ def main() -> None:
     parser.add_argument("--expected-corpus-size", type=int, default=131072)
     parser.add_argument("--pool-size", type=int, default=1024)
     parser.add_argument("--participants", type=int, default=100)
-    parser.add_argument("--triplets", type=int, default=20)
+    parser.add_argument("--triplets", type=int, default=20, help="Comparison questions per participant")
+    parser.add_argument("--triplet-bank-size", type=int, default=200,
+                        help="Distinct CLAP triplets available for randomized participant assignments")
     parser.add_argument("--seed", type=int, default=20261014)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--model-path", type=Path, help="Optional local Hugging Face model directory")
@@ -288,8 +380,11 @@ def main() -> None:
     parser.add_argument("--triplets-output", type=Path, default=OUTPUT_TRIPLETS)
     parser.add_argument("--cache", type=Path, default=OUTPUT_CACHE)
     args = parser.parse_args()
-    if not 1 <= args.participants <= 100 or args.pool_size < args.triplets * 3:
-        parser.error("participants must be 1-100 and pool-size must be at least three times triplets")
+    if (not 1 <= args.participants <= 100 or args.triplet_bank_size < args.triplets
+            or args.triplet_bank_size % args.triplets != 0
+            or args.pool_size < args.triplet_bank_size * 3):
+        parser.error("participants must be 1-100; triplet-bank-size must be a multiple of triplets; "
+                     "pool-size must be at least three times triplet-bank-size")
 
     manifest = load_manifest(args.manifest, args.expected_corpus_size)
     manifest_hash = sha256(args.manifest)
@@ -300,8 +395,8 @@ def main() -> None:
     model_revision = args.model_revision or DEFAULT_MODEL_REVISION
     embeddings, _, pool_gains = get_embeddings(pool, args.cache, meta_path, manifest_hash,
                                                args.seed, args.batch_size, model_source, model_revision)
-    triplets = build_triplets(pool, embeddings, args.seed, args.triplets)
-    responses = simulate_responses(triplets, args.participants, args.seed)
+    triplets = build_triplets(pool, embeddings, args.seed, args.triplet_bank_size)
+    responses, sessions = simulate_responses(triplets, args.participants, args.triplets, args.seed)
     playback = export_stimuli(triplets, manifest, pool, pool_gains, STIMULI_DIR)
     for triplet in triplets:
         for role, sample_field in (("reference", "reference_sample_id"),
@@ -312,19 +407,24 @@ def main() -> None:
             triplet[f"{role}_playback_sha256"] = digest
     write_csv(args.triplets_output, triplets)
     write_csv(args.responses_output, responses)
+    write_csv(OUTPUT_SESSIONS, sessions)
     run_meta = {
         "data_status": SYNTHETIC_MARK,
         "corpus_manifest": str(args.manifest.relative_to(ROOT)),
         "corpus_manifest_sha256": manifest_hash,
         "full_corpus_size": args.expected_corpus_size,
         "clap_pool_size": args.pool_size,
-        "triplets": args.triplets,
+        "questions_per_participant": args.triplets,
+        "triplet_bank_size": args.triplet_bank_size,
+        "triplets": len(triplets),
         "participants": args.participants,
         "rows": len(responses),
+        "session_rows": len(sessions),
         "seed": args.seed,
         "clap_model": model_source,
         "clap_model_revision": model_revision,
         "human_preference_simulation_independent_of_clap": True,
+        "survey_response_shape": "C4 rating export fields plus C4 session entry, headphone-screen, and closing-feedback fields",
     }
     (HERE / "generation_metadata.json").write_text(json.dumps(run_meta, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(run_meta, indent=2))
