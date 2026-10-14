@@ -116,3 +116,78 @@ class C4Relevance:
 
     def score_audio(self, audio, sr, candidate_ids):  # pragma: no cover
         raise NotImplementedError
+
+
+class FeatureCosineRelevance:
+    """Audio relevance: cosine similarity of bank-standardised feature summaries (Phase 6).
+
+    ``fit`` z-scores every feature with the mean/std of the BANK rows only (no val/test
+    statistics), then L2-normalises each row; relevance is the dot product. Dimensions with
+    zero bank variance are left unscaled (std set to 1) and reported in ``describe()``.
+    ``score_audio`` expects audio already prepared like the corpus
+    (:func:`c3.audio_io.load_external_audio`).
+    """
+
+    def __init__(self, representation: str, features: np.ndarray, sample_ids: Sequence[str], extractor=None):
+        self.name = representation
+        self.representation = representation
+        self._features = np.asarray(features, dtype=np.float64)
+        if self._features.ndim != 2 or len(self._features) != len(sample_ids):
+            raise ValueError("features must be a 2-D array with one row per sample ID")
+        if not np.isfinite(self._features).all():
+            raise ValueError("features contain non-finite values")
+        self._position = pd.Series(np.arange(len(sample_ids)), index=pd.Index(sample_ids))
+        self.extractor = extractor
+        self.bank_ids: list[str] | None = None
+
+    @classmethod
+    def from_cache(cls, features_dir, representation: str) -> "FeatureCosineRelevance":
+        from .features import FeatureExtractor, FeatureSettings, load_feature_cache
+
+        array, ids, meta = load_feature_cache(features_dir, representation)
+        settings = FeatureSettings(**meta["settings"])
+        return cls(representation, array, ids, extractor=FeatureExtractor(settings))
+
+    def fit(self, bank_ids: Sequence[str]) -> None:
+        self.bank_ids = list(bank_ids)
+        bank_pos = self._position.loc[self.bank_ids].to_numpy()
+        bank = self._features[bank_pos]
+        self.mean = bank.mean(axis=0)
+        std = bank.std(axis=0)
+        self.zero_variance_dims = np.flatnonzero(std == 0).tolist()
+        self.std = np.where(std == 0, 1.0, std)
+        self._unit_all = self._normalise((self._features - self.mean) / self.std)
+        self._bank_matrix = np.ascontiguousarray(self._unit_all[bank_pos])
+
+    @staticmethod
+    def _normalise(z: np.ndarray) -> np.ndarray:
+        norms = np.linalg.norm(z, axis=-1, keepdims=True)
+        if np.any(norms == 0):
+            raise ValueError("a standardised feature vector is exactly zero; cosine is undefined")
+        return z / norms
+
+    def _require_fit(self):
+        if self.bank_ids is None:
+            raise RuntimeError("call fit(bank_ids) first")
+
+    def score_bank(self, target_id: str) -> np.ndarray:
+        self._require_fit()
+        return self._bank_matrix @ self._unit_all[int(self._position[target_id])]
+
+    def score_ids(self, target_id: str, candidate_ids: Sequence[str]) -> np.ndarray:
+        self._require_fit()
+        candidates = self._unit_all[self._position.loc[list(candidate_ids)].to_numpy()]
+        return candidates @ self._unit_all[int(self._position[target_id])]
+
+    def score_audio(self, audio: np.ndarray, sr: int, candidate_ids: Sequence[str]) -> np.ndarray:
+        self._require_fit()
+        if self.extractor is None:
+            raise RuntimeError("no feature extractor attached; build with from_cache or pass extractor=")
+        vector = self.extractor.extract(audio, sr)[self.representation]
+        query = self._normalise((vector - self.mean) / self.std)
+        return self._unit_all[self._position.loc[list(candidate_ids)].to_numpy()] @ query
+
+    def describe(self) -> dict:
+        return {"relevance": self.representation, "similarity": "cosine",
+                "standardize_with": "bank", "n_bank": None if self.bank_ids is None else len(self.bank_ids),
+                "zero_variance_dims": getattr(self, "zero_variance_dims", None)}
