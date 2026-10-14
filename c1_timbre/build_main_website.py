@@ -17,7 +17,7 @@ Output: data/processed/<version>/website/
 With --publish-dir c1_timbre/main_study/site the deployable files are also copied
 into the repository so a Render static site can serve them.
     app.js, study.json, audio/
-"""
+ """
 from __future__ import annotations
 
 import argparse
