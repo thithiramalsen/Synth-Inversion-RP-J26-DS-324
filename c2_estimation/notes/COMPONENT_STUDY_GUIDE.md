@@ -1,20 +1,44 @@
 # Understanding C2: from generated audio to parameter reliability
 
+Each local file link is followed by its full path as plain text. A final `:number` identifies the source line; in VS Code, open the file with `Ctrl+P` and jump to that line with `Ctrl+G`.
+
 Evidence snapshot: 15 October 2026. Repository: `D:/VSCode/GitHub/Synth-Inversion-RP`.
 
-Read this for understanding. Use [the demonstration walkthrough](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/DEMONSTRATION_WALKTHROUGH.md)
-for what to open and say, and [the metrics reference](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/METRICS_REFERENCE.md)
+Read this for understanding. Use [the demonstration walkthrough](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/DEMONSTRATION_WALKTHROUGH.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/DEMONSTRATION_WALKTHROUGH.md`)
+for what to open and say, and [the metrics reference](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/METRICS_REFERENCE.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/METRICS_REFERENCE.md`)
 for formulas and complete measured tables. Code blocks below are excerpts from the
 actual source, with clickable file and line links. They are explanations, not a
 sequence of commands to execute. Historical experiment commands are in
-[V4_README.md](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/V4_README.md).
+[V4_README.md](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/V4_README.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/V4_README.md`).
 
 Read sections 1-10 for the data/model foundations, 11-16 for the reliability
 experiment, and 17-23 for a real example, evidence, questions and file vocabulary.
 You do not need to memorize the code. Practise explaining what enters each block,
 what comes out, why it is there and how you checked it.
 
-## 1. What is my component trying to answer?
+## Contents
+
+Choose a stage below. In VS Code, the **Outline** panel shows the same stage groups; expand the one you need. In Markdown preview, click a link to jump there. Original section numbers are retained.
+
+| Stage | What is inside |
+|---|---|
+| [Part 1. Research overview](#part-1-research-overview) | The research question and current completion status; sections 1-2 |
+| [Part 2. Dataset generation](#part-2-dataset-generation) | Synth setup, 13 parameters, Sobol sampling, rendering and data QA; sections 3-4 |
+| [Part 3. Preprocessing and data splits](#part-3-preprocessing-and-data-splits) | DC filtering, n/z coordinates, protected splits and log-mel features; sections 5-8 |
+| [Part 4. Model training](#part-4-model-training) | Single CNN training, Gaussian ensemble training and uncertainty U; sections 9-10 |
+| [Part 5. Inference and forward diagnostics](#part-5-inference-and-forward-diagnostics) | Frozen predictions, reconstruction R, perturbations S and step-size checks; sections 11-14 |
+| [Part 6. Reliability calibration](#part-6-reliability-calibration) | Correctness labels, feature transforms, logistic fitting and q; section 15 |
+| [Part 7. Evaluation and validation](#part-7-evaluation-and-validation) | Ablations, measured comparisons and paired bootstrap; section 16 |
+| [Part 8. Real example and saved evidence](#part-8-real-example-and-saved-evidence) | A complete clip walkthrough, EDA figures and scientific checks; sections 17-18 |
+| [Part 9. Technology choices and justifications](#part-9-technology-choices-and-justifications) | Why these methods and what their limitations are; section 19 |
+| [Part 10. Revision and code reference](#part-10-revision-and-code-reference) | Questions, one-minute explanation, file map and glossary; sections 20-23 |
+
+For the practical demonstration, open the [VS Code/browser walkthrough](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/DEMONSTRATION_WALKTHROUGH.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/DEMONSTRATION_WALKTHROUGH.md`). For metric formulas and all measured tables, open the [metrics reference](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/METRICS_REFERENCE.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/METRICS_REFERENCE.md`).
+
+
+## Part 1. Research overview
+
+### 1. What is my component trying to answer?
 
 Imagine hearing a sound made by a machine with 13 knobs. You want to copy the sound,
 but you cannot see the original knob positions. A neural network guesses them.
@@ -67,7 +91,7 @@ Target audio -> log-mel -> frozen ensemble -> predicted z and uncertainty U
 The original generating z teaches/evaluates this process on research data. It is
 not an input needed for the eventual reliability calculation on an unknown clip.
 
-## 2. What has actually been completed?
+### 2. What has actually been completed?
 
 | Stage | Current evidence |
 |---|---|
@@ -97,15 +121,19 @@ Do not confuse the datasets:
 
 | Name/location | Meaning |
 |---|---|
-| [pilot_v1.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/manifests/pilot_v1.csv) | Historical 1,024-sound, eight-control engineering baseline |
-| [restricted_bend_sustain_v4.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/manifests/restricted_bend_sustain_v4.csv) | Earlier 1,024-sound prefix of the new 13-control family |
-| [corpus_v4/manifest.parquet](D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/manifest.parquet) | Canonical complete 131,072-sound dataset used by current C2 |
-| [protocol_v1/manifest.parquet](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/protocol_v1/manifest.parquet) | C2's derived manifest: canonical labels, z coordinates and assignments |
+| [pilot_v1.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/manifests/pilot_v1.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/manifests/pilot_v1.csv`) | Historical 1,024-sound, eight-control engineering baseline |
+| [restricted_bend_sustain_v4.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/manifests/restricted_bend_sustain_v4.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/manifests/restricted_bend_sustain_v4.csv`) | Earlier 1,024-sound prefix of the new 13-control family |
+| [corpus_v4/manifest.parquet](D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/manifest.parquet) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/manifest.parquet`) | Canonical complete 131,072-sound dataset used by current C2 |
+| [protocol_v1/manifest.parquet](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/protocol_v1/manifest.parquet) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/protocol_v1/manifest.parquet`) | C2's derived manifest: canonical labels, z coordinates and assignments |
 
 The old pilot's 80/10/10 split and eight-control test scores are historical. They
 are not the partition or test results of today's C2 experiment.
 
-## 3. What exactly makes one sound?
+[Back to contents](#contents)
+
+## Part 2. Dataset generation
+
+### 3. What exactly makes one sound?
 
 A synthesizer is the forward machine: settings go in, audio comes out. An inverse
 model learns the harder direction: audio goes in, predicted settings come out.
@@ -133,7 +161,7 @@ Attack describes the rise, decay the move toward the held level, sustain the hel
 level, and release the fall after note-off. ENV2 changes the filter through time;
 the amplitude envelope changes the volume through time.
 
-### The 13 parameters and their actual controls
+#### The 13 parameters and their actual controls
 
 The bounds below are **Vital normalized values n**, not seconds or Hz. Model z
 values rescale each restricted interval to 0-1.
@@ -155,41 +183,41 @@ values rescale each restricted interval to 0-1.
 | filter_env_sustain | env_2_sustain | 0-1 | Held filter-envelope fraction |
 
 The inheritance chain is
-[params_config.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/params_config.py)
--> [restricted_config.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/restricted_config.py)
--> [bend_config.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/bend_config.py)
--> [bend_sustain_config.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/bend_sustain_config.py:28).
+[params_config.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/params_config.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/params_config.py`)
+-> [restricted_config.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/restricted_config.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/restricted_config.py`)
+-> [bend_config.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/bend_config.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/bend_config.py`)
+-> [bend_sustain_config.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/bend_sustain_config.py:28) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/bend_sustain_config.py:28`).
 The v4 file adds variable filter-envelope sustain back to the Bend architecture.
 The frozen preset is
-[base_restricted_bend_sustain_v4.vital](D:/VSCode/GitHub/Synth-Inversion-RP/generation/presets/base_restricted_bend_sustain_v4.vital).
+[base_restricted_bend_sustain_v4.vital](D:/VSCode/GitHub/Synth-Inversion-RP/generation/presets/base_restricted_bend_sustain_v4.vital) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/presets/base_restricted_bend_sustain_v4.vital`).
 
 Why 13? The selected set keeps both oscillator waveform shaping and the held filter
 trajectory while keeping the experiment manageable. Thirteen is not intrinsically
 optimal. Ranges were chosen through engineering characterization and researcher
 review, not a completed human validation of independent perceptual effects.
 The dated decision is
-[2026-10-07_bend_and_sustain.md](D:/VSCode/GitHub/Synth-Inversion-RP/generation/decisions/2026-10-07_bend_and_sustain.md).
+[2026-10-07_bend_and_sustain.md](D:/VSCode/GitHub/Synth-Inversion-RP/generation/decisions/2026-10-07_bend_and_sustain.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/decisions/2026-10-07_bend_and_sustain.md`).
 That record preserves what was pending then; later integration is evidenced by
 the current policy, recipe and completed corpus, not by rewriting the old record.
 
 Unit details are in
-[PARAMETER_UNITS.md](D:/VSCode/GitHub/Synth-Inversion-RP/generation/PARAMETER_UNITS.md).
+[PARAMETER_UNITS.md](D:/VSCode/GitHub/Synth-Inversion-RP/generation/PARAMETER_UNITS.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/PARAMETER_UNITS.md`).
 Cutoff's native value is a pitch coordinate, envelope-time native values use a
 quartic mapping, and drive has a dB mapping. Do not call every normalized number
 Hz, seconds or a percentage of perceived sound. The saved units audit checked 221
 control points and 17 preset serialization roundtrips; it did not measure acoustic
 response at those points.
 
-## 4. How was the dataset generated and selected?
+### 4. How was the dataset generated and selected?
 
-### 4.1 Choose parameter combinations with Sobol
+#### 4.1 Choose parameter combinations with Sobol
 
 Imagine placing dots across a box rather than letting many dots accidentally bunch
 in one corner. Sobol supplies a reproducible, low-discrepancy design in the 13
 parameter coordinates. The full design has 131,072 = 2^17 points. Generation uses
 seed **20260803**, distinct from C2's later partition/training seed.
 
-[generation/scripts/05_generate_pilot_dataset.py:206](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:206)
+[generation/scripts/05_generate_pilot_dataset.py:206](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:206) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:206`)
 
 ```python
 def create_sobol_samples(
@@ -232,7 +260,7 @@ Sobol improves coverage in the chosen coordinates. It does not establish uniform
 perceived timbre coverage, independent audible effects, or coverage of all Vital sounds.
 Uniform normalized time controls also do not mean uniform durations in seconds.
 
-### 4.2 Set controls, then record what the engine actually accepted
+#### 4.2 Set controls, then record what the engine actually accepted
 
 There are four different quantities:
 
@@ -246,7 +274,7 @@ There are four different quantities:
 The sampler requests `n = lower + sample_01 * (upper-lower)`. The code sets that
 value and reads back the control. Tiny floating-point differences are retained.
 
-[generation/scripts/05_generate_pilot_dataset.py:354](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:354)
+[generation/scripts/05_generate_pilot_dataset.py:354](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:354) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:354`)
 
 ```python
 def apply_sampled_parameters(
@@ -306,48 +334,48 @@ recorded fields preserve design, engine state and display separately. Ground tru
 comes from **the synthesizer that generated the clip**, not a human annotation or
 another model. Labels alone are not waveforms; join audio and labels by `sample_id`.
 
-### 4.3 Render each complete patch
+#### 4.3 Render each complete patch
 
-[render_one](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:225)
+[render_one](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:225) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:225`)
 creates a fresh synth, loads the preset, applies fixed settings, applies one sampled
 vector, renders it and records identifiers, controls, audio QA and sample hashes.
-[render_sample](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:406)
+[render_sample](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:406) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:406`)
 calls `synth.render(MIDI_NOTE, VELOCITY, NOTE_DURATION, RENDER_DURATION)` and checks
 shape and finite values. A fresh instance and fixed phase reduce state/randomness
 confounds between clips.
 
-[ordered_results](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:250)
+[ordered_results](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:250) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:250`)
 runs workers concurrently but commits in sample-index order.
-[save_master](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:278)
+[save_master](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:278) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:278`)
 saves raw FLOAT WAVs atomically;
-[commit](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:293)
+[commit](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:293) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py:293`)
 checkpoints 128 new rows. The runner verifies an imported prefix and checks existing
 files on resume rather than overwriting conflicting audio.
 
 The full manifest is
-[manifest.parquet](D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/manifest.parquet)
-or its [CSV copy](D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/manifest.csv).
+[manifest.parquet](D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/manifest.parquet) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/manifest.parquet`)
+or its [CSV copy](D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/manifest.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/manifest.csv`).
 Its `raw_audio_path` is authoritative: imported prefix audio can remain in its
 original folder, so not all 131,072 files necessarily live in one directory.
-[recipe.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/recipe.json)
+[recipe.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/recipe.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/raw/corpus_v4/recipe.json`)
 records preset/source/runtime identities and conditions.
 
-### 4.4 Check audio quality and integrity
+#### 4.4 Check audio quality and integrity
 
 The completed
-[full-corpus verification](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/team_handoff_v4_131072/verification.json)
+[full-corpus verification](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/team_handoff_v4_131072/verification.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/team_handoff_v4_131072/verification.json`)
 records 131,072 verified rows and unique raw paths, zero uncheckpointed WAVs, verified
 raw/conditioned hashes, matching CSV/Parquet/checkpoints and zero conditioned
 silence/clipping/DC warnings. Generation **flags** these conditions; this is not a
 claim that bad Sobol rows were silently removed or resampled.
 
 The generation QA in
-[calculate_audio_metrics](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:448)
+[calculate_audio_metrics](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:448) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py:448`)
 uses silence below -60 dBFS RMS, clipping at peak >=1, and a DC warning at absolute
 mean >=.005 or absolute mean/RMS >=.20. A zero warning count means passing those
 declared rules, not all possible perceptual quality tests.
 
-[audit_full_corpus.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audit_full_corpus.py:69)
+[audit_full_corpus.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audit_full_corpus.py:69) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/audit_full_corpus.py:69`)
 rechecks files, waveforms, labels, display strings and QA against checkpoints.
 Hash identity and re-render equality are different: a hash checks saved bytes;
 an independent known-parameter roundtrip checks whether the synthesis path can
@@ -357,14 +385,18 @@ The full corpus was generated earlier. This guide does not regenerate it. The
 latest generation summary's elapsed time describes its last resumed invocation,
 not necessarily total time spent across every generation session.
 
-## 5. Why condition audio before extracting features?
+[Back to contents](#contents)
+
+## Part 3. Preprocessing and data splits
+
+### 5. Why condition audio before extracting features?
 
 DC offset means the waveform is displaced from its zero centre. The selected
 policy applies the same causal second-order Butterworth 10 Hz high-pass to every
 clip. It is an engineering choice supported by the saved numerical checks and
 informal researcher listening, not a formal perceptual equivalence study.
 
-[generation/audio_processing.py:30](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audio_processing.py:30)
+[generation/audio_processing.py:30](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audio_processing.py:30) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/audio_processing.py:30`)
 
 ```python
 def dc_filter(audio, sample_rate: int, *, input_policy_id: str = "raw") -> np.ndarray:
@@ -377,13 +409,13 @@ def dc_filter(audio, sample_rate: int, *, input_policy_id: str = "raw") -> np.nd
 ```
 
 The policy is
-[dc_highpass_10hz_v1.json](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audio_policies/dc_highpass_10hz_v1.json).
+[dc_highpass_10hz_v1.json](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audio_policies/dc_highpass_10hz_v1.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/audio_policies/dc_highpass_10hz_v1.json`).
 There is no per-clip peak/loudness normalization in C2. This matters because amplitude,
 drive and envelope changes are part of the signal we want to inspect. The repository
 also contains level-matching helpers for other review workflows; their presence does
 not mean the C2 loader applies them.
 
-[generation/corpus_audio.py:48](D:/VSCode/GitHub/Synth-Inversion-RP/generation/corpus_audio.py:48)
+[generation/corpus_audio.py:48](D:/VSCode/GitHub/Synth-Inversion-RP/generation/corpus_audio.py:48) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/corpus_audio.py:48`)
 
 ```python
 def load_audio(row, root=ROOT, *, verify=False):
@@ -408,18 +440,18 @@ The loader always begins with a raw master and applies conditioning once. During
 feature extraction `verify=True` checks both raw and conditioned sample hashes.
 The processed waveform is derived in memory, avoiding a second full stored corpus.
 
-[canonical_float32](D:/VSCode/GitHub/Synth-Inversion-RP/generation/corpus_audio.py:12)
+[canonical_float32](D:/VSCode/GitHub/Synth-Inversion-RP/generation/corpus_audio.py:12) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/corpus_audio.py:12`)
 sets only float32 subnormal values to signed zero so CPU flush-to-zero state does
 not change hashes of inaudibly tiny tails. Raw masters remain unchanged. This is
 a reproducibility detail, not denoising or loudness matching.
 
-## 6. What are n and z, and why rescale targets?
+### 6. What are n and z, and why rescale targets?
 
 Different knobs have different allowed interval widths. Training directly on them
 would give a wide-range knob more influence simply because its numbers move farther.
 Each actual normalized readback n is mapped to `z=(n-lower)/(upper-lower)`.
 
-[c2_estimation/v4/data.py:56](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:56)
+[c2_estimation/v4/data.py:56](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:56) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:56`)
 
 ```python
 def to_z(values: np.ndarray, lower: np.ndarray, upper: np.ndarray) -> np.ndarray:
@@ -435,13 +467,13 @@ For cutoff, lower=.30 and upper=.85. If z=.40, the normalized Vital value is
 `.30 + .40*.55 = .52`. A z error of .05 corresponds to .0275 in that normalized
 control, but not a constant Hz error. This is a coordinate example, not a measured
 model prediction. Reconstruct using
-[from_z](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:65).
+[from_z](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:65) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:65`).
 
 z uses the **actual readback**, not the requested Sobol proposal. The generator's
 sampling coordinate is sometimes called q in older unit notes; it is unrelated
 to C2's calibrated correctness probability q.
 
-## 7. How are clips separated without leakage?
+### 7. How are clips separated without leakage?
 
 Think of separate exercise books: learn the settings from one, learn the reliability
 rule from another, choose settings using development books, and keep the final exam
@@ -461,7 +493,7 @@ so they are forced into training. A seeded permutation assigns the rest. Seed
 **20261013** controls this protocol; a separate seed+1 ordering selects diagnostic
 subsets before errors, uncertainty or audio quality of predictions are observed.
 
-[c2_estimation/v4/data.py:72](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:72)
+[c2_estimation/v4/data.py:72](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:72) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:72`)
 
 ```python
 def assignments(count: int, *, seed: int = SEED, counts: dict | None = None,
@@ -500,10 +532,10 @@ def assignments(count: int, *, seed: int = SEED, counts: dict | None = None,
                          "selection_rank": rank, "diagnostic_rank": diagnostic_rank})
 ```
 
-[prepare](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:132)
+[prepare](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:132) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py:132`)
 verifies agreement with the shared parameter reference and saves
-[protocol.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/protocol_v1/protocol.json),
-[split_manifest.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/protocol_v1/split_manifest.csv)
+[protocol.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/protocol_v1/protocol.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/protocol_v1/protocol.json`),
+[split_manifest.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/protocol_v1/split_manifest.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/protocol_v1/split_manifest.csv`)
 and the derived manifest. Hashes protect later reuse.
 
 Important limits: disjoint IDs and no duplicate complete parameter vectors do not
@@ -517,7 +549,7 @@ is different from extracting test features, measuring a model's test predictions
 or using test outcomes to choose a method. The former checks the dataset exists
 correctly; the latter remain reserved for the locked final evaluation.
 
-## 8. How does audio become an input image?
+### 8. How does audio become an input image?
 
 A waveform lists pressure-like sample values over time. A spectrogram shows which
 frequencies are present at each time. The mel filterbank groups frequencies into
@@ -528,7 +560,7 @@ The exact sequence is: canonical waveform -> reflect padding -> overlapping Hann
 windows -> real FFT -> magnitude scaling -> power -> triangular mel bands -> dB
 -> fixed -80 to 0 dB clipping -> float32 array.
 
-[c2_estimation/pipeline.py:323](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py:323)
+[c2_estimation/pipeline.py:323](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py:323) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py:323`)
 
 ```python
 def extract_log_mel(
@@ -560,8 +592,8 @@ def extract_log_mel(
 | Per-clip array | 64 x 259; model adds a single input channel |
 | dB reference | Fixed 0 dBFS; not each clip's own maximum |
 
-[create_mel_filterbank](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py:300)
-constructs the triangular filters. [features.build_cache](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/features.py:28)
+[create_mel_filterbank](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py:300) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py:300`)
+constructs the triangular filters. [features.build_cache](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/features.py:28) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/features.py:28`)
 checks allowed IDs and hashes, extracts features and saves 512-clip float32 shards.
 The full cache contains 98,304 train + 4,096 inverse-validation clips, about 6.3 GiB.
 It is memory-mapped during training rather than loaded as one enormous tensor.
@@ -569,7 +601,7 @@ It is memory-mapped during training rather than loaded as one enormous tensor.
 We then standardize with one scalar mean and standard deviation computed over
 training spectrogram values only:
 
-[c2_estimation/v4/features.py:117](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/features.py:117)
+[c2_estimation/v4/features.py:117](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/features.py:117) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/features.py:117`)
 
 ```python
 def training_statistics(arrays: list[np.ndarray], train_indexes: np.ndarray) -> tuple[float, float]:
@@ -595,18 +627,22 @@ standardization, not per-audio loudness normalization. Calibration/validation/te
 do not supply new normalization statistics.
 
 Feature settings and identity are in
-[features_full_v1/cache.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/features_full_v1/cache.json).
+[features_full_v1/cache.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/features_full_v1/cache.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/features_full_v1/cache.json`).
 PNG spectrograms are explanatory visualizations of arrays, saved by
-[save_examples](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:84).
+[save_examples](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:84) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:84`).
 
-## 9. How does the single CNN learn the settings?
+[Back to contents](#contents)
+
+## Part 4. Model training
+
+### 9. How does the single CNN learn the settings?
 
 A convolution slides small filters over the spectrogram and learns useful local
 patterns. ReLU introduces nonlinearity. Pooling compresses position detail. The
 final dense layers combine those patterns into 13 continuous outputs. This is
 regression, not classification into 13 sound categories.
 
-[c2_estimation/pipeline.py:82](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py:82)
+[c2_estimation/pipeline.py:82](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py:82) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py:82`)
 
 ```python
 class ParameterCNN(nn.Module):
@@ -657,13 +693,13 @@ module does not make current training an eight-control pilot run.
 ```
 
 The single model has **23,181 trainable parameters**. The CUDA-specific
-[build_model](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:27)
+[build_model](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:27) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:27`)
 uses a fixed 4x8 average pool instead of adaptive 2x4 pooling for this exact input
 shape. Values/gradients were checked to agree; the change permits deterministic
 CUDA backward execution.
 
 The training loop is in
-[baseline.train](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:99).
+[baseline.train](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:99) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:99`).
 Its central operations are:
 
 ```python
@@ -693,11 +729,11 @@ for always predicting training-set means. The matched original 512-clip comparis
 reduced MAE from .184187 to .126339; this changes multiple training conditions,
 so it is not a causal experiment on dataset size alone.
 
-Open [baseline_full_v1/summary.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/summary.json),
-[validation_metrics.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/validation_metrics.csv)
-and [learning_curves.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/learning_curves.png).
+Open [baseline_full_v1/summary.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/summary.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/summary.json`),
+[validation_metrics.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/validation_metrics.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/validation_metrics.csv`)
+and [learning_curves.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/learning_curves.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/learning_curves.png`).
 
-## 10. Where does uncertainty U come from?
+### 10. Where does uncertainty U come from?
 
 Think of asking three independently trained estimators. Each gives a setting and
 a spread. We retain both their own predicted spread and disagreement between their
@@ -708,7 +744,7 @@ sigmoid mean head and a softplus variance head plus 1e-4. It has **24,026 traina
 parameters**. The variance is positive and input-dependent; it is not yet a calibrated
 correctness probability.
 
-[c2_estimation/v4/ensemble.py:29](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py:29)
+[c2_estimation/v4/ensemble.py:29](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py:29) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py:29`)
 
 ```python
 class GaussianCNN(nn.Module):
@@ -733,7 +769,7 @@ class GaussianCNN(nn.Module):
         return mean, variance
 ```
 
-[c2_estimation/v4/ensemble.py:51](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py:51)
+[c2_estimation/v4/ensemble.py:51](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py:51) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py:51`)
 
 ```python
 def gaussian_nll(mean, variance, target):
@@ -751,7 +787,7 @@ Gaussian has unbounded support; this is not a truncated posterior or proof of
 correct uncertainty. The three seeds are 20261013, 20262022 and 20263031. Each
 member is selected by its own lowest inverse-validation **NLL**, not baseline MSE.
 
-[c2_estimation/v4/ensemble.py:55](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py:55)
+[c2_estimation/v4/ensemble.py:55](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py:55) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py:55`)
 
 ```python
 def combine(means, variances):
@@ -780,21 +816,25 @@ Do not claim the ensemble improves everything or that three is the optimal membe
 count. The point of retaining it is to test its uncertainty information separately.
 
 Weights and provenance are in
-[ensemble_full_v1/run_config.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/run_config.json),
-[summary.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/summary.json)
+[ensemble_full_v1/run_config.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/run_config.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/run_config.json`),
+[summary.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/summary.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/summary.json`)
 and `member_00`, `member_01`, `member_02` subfolders, each with `best_model.pt` and
 `last_model.pt`. The complete ensemble needs all three best checkpoints and the
 recorded preprocessing configuration.
 
-## 11. How do we freeze predictions for the reliability experiment?
+[Back to contents](#contents)
 
-[predict_subsets.predict](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/predict_subsets.py:42)
+## Part 5. Inference and forward diagnostics
+
+### 11. How do we freeze predictions for the reliability experiment?
+
+[predict_subsets.predict](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/predict_subsets.py:42) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/predict_subsets.py:42`)
 loads the frozen ensemble, verifies model/source/protocol identities, uses the same
 audio and log-mel rules, and applies training normalization without refitting it.
 Each batch is predicted twice to check repeat inference. Means/variances and IDs
 are exported before any forward diagnostic is generated.
 
-[c2_estimation/v4/predict_subsets.py:27](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/predict_subsets.py:27)
+[c2_estimation/v4/predict_subsets.py:27](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/predict_subsets.py:27) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/predict_subsets.py:27`)
 
 ```python
 def select(frame, partition):
@@ -817,27 +857,27 @@ command rejects test. The calibrator sees only U/S/R; true z exists in research
 records for labels/evaluation but never becomes a reliability input.
 
 Frozen records are under
-[predictions_calibration/predictions.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/predictions_calibration/predictions.json)
+[predictions_calibration/predictions.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/predictions_calibration/predictions.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/predictions_calibration/predictions.json`)
 and
-[predictions_reliability-validation/predictions.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/predictions_reliability-validation/predictions.json).
+[predictions_reliability-validation/predictions.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/predictions_reliability-validation/predictions.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/predictions_reliability-validation/predictions.json`).
 The corresponding Parquet files hold actual/predicted z and uncertainty components.
 
-## 12. What is reconstruction residual R?
+### 12. What is reconstruction residual R?
 
 Take the predicted 13 settings, map them to normalized Vital controls and render a
 new clip using the same preset/note/phase conditions. Compare this clip with the
 target. That difference is R. R is a clip-level number shared by the 13 per-control
 calibrators; it does not identify which individual parameter caused a mismatch.
 
-[Renderer.render](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:90)
+[Renderer.render](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:90) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:90`)
 creates a fresh synth, loads the frozen preset, applies controls, checks readbacks,
 renders, verifies stereo agreement and applies canonical conditioning.
-[representation](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:32)
+[representation](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:32) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:32`)
 uses linear-frequency STFT magnitudes at FFT sizes 512/1024/2048 with quarter-window
 hops. Short windows emphasize timing detail; longer windows resolve frequency more
 finely. All three contribute to one fixed diagnostic distance.
 
-[c2_estimation/v4/diagnostics.py:44](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:44)
+[c2_estimation/v4/diagnostics.py:44](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:44) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:44`)
 
 ```python
 def feature_distance(a, b):
@@ -865,14 +905,14 @@ multiple STFT resolutions in audio generation. It does not validate our exact
 symmetric distance as a perceptual similarity scale. R=.10 does not mean 90%
 similarity. Listening is useful, but a formal perceptual claim needs its own study.
 
-## 13. How are perturbations made, and what is S?
+### 13. How are perturbations made, and what is S?
 
 For each predicted patch, move one knob a little lower and a little higher while
 all other settings stay fixed. Render both versions. If they differ strongly, that
 knob is locally acoustically active under this metric. Divide by the actual distance
 between knob positions so the score accounts for step size.
 
-[c2_estimation/v4/diagnostics.py:62](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:62)
+[c2_estimation/v4/diagnostics.py:62](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:62) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py:62`)
 
 ```python
 def perturbation_pair(z, parameter, delta=.02):
@@ -900,7 +940,7 @@ so its span is about .04. Near a boundary one endpoint is the original predictio
 and the other moves .02; the span is about .02. Never clip an endpoint but pretend
 the span is still .04.
 
-[diagnostic_batch.measure](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostic_batch.py:31)
+[diagnostic_batch.measure](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostic_batch.py:31) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostic_batch.py:31`)
 checks the other 12 readbacks remain exactly unchanged and computes
 `S_j = D(render_minus,render_plus)/(actual_z_plus-actual_z_minus)`.
 It reuses the base render at a boundary. The engine-readback denominator handles
@@ -915,7 +955,7 @@ The prediction is **not optimized** during this step. Even if a perturbed versio
 is closer to the target, it is not adopted. Otherwise a calibration improvement
 could be confounded by changing the patch being judged.
 
-### Why not perturb every corpus clip?
+#### Why not perturb every corpus clip?
 
 Central diagnostics need up to `1 + 2*13 = 27` renders per clip, excluding audits.
 Doing this for 131,072 clips would require up to 3,538,944 renders. Instead, frozen
@@ -929,32 +969,36 @@ rendering, exact known-parameter roundtrip, inactive ENV2 attack at zero depth a
 unchanged predictions. Passing these checks supports implementation correctness
 for the tested fixtures, not a global identifiability proof.
 
-## 14. Was the .02 perturbation choice checked?
+### 14. Was the .02 perturbation choice checked?
 
 Yes. The bounded study used the first 256 preassigned calibration ranks, kept the
 same predictions and compared .01/.02/.05. It reused 256 saved .02 cases and rendered
 512 extra cases for .01/.05. Eight additional renderer audits passed.
 
-[stability.select_pilot](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py:37)
+[stability.select_pilot](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py:37) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py:37`)
 checks the calibration-only, aligned, fixed selection.
-[agreement](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py:80)
+[agreement](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py:80) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py:80`)
 compares ranks and log1p magnitudes;
-[summarize](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py:97)
+[summarize](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py:97) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py:97`)
 separates all/common-interior/boundary-affected cases.
 
 Most controls have very similar rankings. Wave frame and bend are more step-dependent;
 amplitude attack shows magnitude changes even with high rank agreement. Some boundary
 groups are tiny. No post-hoc pass cutoff or replacement step was selected. Default
 .02 and existing calibrators stay unchanged. Detailed numbers are in the metrics
-reference and [step_stability_v1/RESULTS.md](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/RESULTS.md).
+reference and [step_stability_v1/RESULTS.md](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/RESULTS.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/RESULTS.md`).
 
-## 15. How does U/S/R become a probability q?
+[Back to contents](#contents)
+
+## Part 6. Reliability calibration
+
+### 15. How does U/S/R become a probability q?
 
 We need examples where the answer is known. For calibration clip i and parameter j,
 compare predicted z with original z. Call it correct when the error is <=.05.
 That gives a binary teaching label y, separate from the continuous inverse target.
 
-[c2_estimation/v4/calibration.py:39](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:39)
+[c2_estimation/v4/calibration.py:39](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:39) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:39`)
 
 ```python
 def labels(frame,name,tau):
@@ -977,12 +1021,12 @@ standardize each feature using calibration-only mean/std
 q = sigmoid(intercept + weight_U*scaled_U + weight_S*scaled_S + weight_R*scaled_R)
 ```
 
-[features](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:29)
+[features](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:29) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:29`)
 implements transforms; unused terms are omitted for each ablation. The logarithms
 compress skewed magnitudes; calibration-only scaling puts features on comparable
 scales without leaking validation information into fitting statistics.
 
-[c2_estimation/v4/calibration.py:46](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:46)
+[c2_estimation/v4/calibration.py:46](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:46) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:46`)
 
 ```python
 def fit(x,y,c):
@@ -1027,7 +1071,7 @@ For each parameter and variant, C is selected from .01/.1/1/10 using lowest Brie
 on the separate 512 reliability-validation cases; smaller C breaks ties. This
 penalty is stronger for smaller C and weaker for larger C. This
 selection appears inside
-[calibration.run](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:165).
+[calibration.run](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:165) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:165`).
 Those validation scores are therefore development estimates, not an unbiased final
 test. Per tolerance, there are 13 x 4 selected feature-based models plus 13 constants.
 
@@ -1037,11 +1081,15 @@ a guarantee about one example. U=.02 cannot be read as 98% confidence, and a sma
 R cannot be converted directly to q.
 
 The fitted models, scalers, feature choices and C values are saved in
-[calibrators.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/calibrators.json).
+[calibrators.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/calibrators.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/calibrators.json`).
 No Accept/Approximate/Abstain thresholds are validated yet. The viewer displays
 continuous probabilities and known reference outcomes only when requested.
 
-## 16. How do we test the research hypothesis fairly?
+[Back to contents](#contents)
+
+## Part 7. Evaluation and validation
+
+### 16. How do we test the research hypothesis fairly?
 
 Use the **same frozen predictions, original settings, audio IDs and tolerance** for
 all methods. Change only the reliability inputs.
@@ -1076,13 +1124,13 @@ interval [-.000757,.000400], which includes zero. An exploratory analysis exclud
 wave frame removes the overall gain over U alone. That analysis explains a pattern;
 it does not replace the original 13-control endpoint.
 
-### Why paired bootstrap and why resample whole audio?
+#### Why paired bootstrap and why resample whole audio?
 
 Imagine drawing the evaluated audio examples again with replacement many times.
 For each resample, compare both methods on exactly the same examples. Keep each
 clip's 13 controls together because they share a sound and are not independent trials.
 
-[c2_estimation/v4/calibration.py:149](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:149)
+[c2_estimation/v4/calibration.py:149](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:149) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:149`)
 
 ```python
 def paired_brier_bootstrap(y,probabilities,reference="g(U)",replicates=2000,seed=SEED):
@@ -1106,12 +1154,16 @@ percentiles. These intervals condition on the fitted models and validation selec
 They do not include all training-seed uncertainty or establish final generalization.
 Per-control follow-up intervals are exploratory and unadjusted for multiple comparisons.
 
-[audit_results.comparisons](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/audit_results.py:63)
+[audit_results.comparisons](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/audit_results.py:63) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/audit_results.py:63`)
 adds the conditional U+R comparison and exploratory wave-frame analysis. All measured
 tables and figures are preserved in
-[results_audit_v1/summary.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/summary.json).
+[results_audit_v1/summary.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/summary.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/summary.json`).
 
-## 17. A complete real example
+[Back to contents](#contents)
+
+## Part 8. Real example and saved evidence
+
+### 17. A complete real example
 
 Use the viewer's first example, **restricted_bend_sustain_v4_63764**. It is the first
 preassigned reliability-validation rank, not selected because it sounds good.
@@ -1161,31 +1213,31 @@ Filter-envelope amount is within tolerance despite a low q. An individual low-q
 success is not, by itself, evidence of miscalibration. Calibration concerns frequencies
 across many similarly scored predictions.
 
-Open [example.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/example.json),
-[target.wav](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/target.wav),
-[predicted.wav](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/predicted.wav)
-and [spectrograms.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/spectrograms.png).
+Open [example.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/example.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/example.json`),
+[target.wav](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/target.wav) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/target.wav`),
+[predicted.wav](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/predicted.wav) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/predicted.wav`)
+and [spectrograms.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/spectrograms.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/viewer_v1/examples/restricted_bend_sustain_v4_63764/spectrograms.png`).
 Playback copies are 16-bit WAV for browser compatibility; numerical diagnostics
 use canonical float32 samples before quantization. No independent gain matching is applied.
 
-## 18. What EDA and scientific checks were actually saved?
+### 18. What EDA and scientific checks were actually saved?
 
 EDA means looking at the data before claiming the model or experiment is sound.
 It includes distribution, range, quality and error checks, not just an attractive plot.
 
 | Evidence | Question answered | File to show |
 |---|---|---|
-| Distributions and split balance | Are allowed values covered, and do non-test groups look comparable? | [target_distributions_and_split_balance.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/target_distributions_and_split_balance.png) |
-| Parameter correlation | Does the sampled training design strongly correlate controls? | [training_parameter_correlation.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/training_parameter_correlation.png) |
-| Audio QA | Do fixed training examples have valid rate, duration, level, DC and hashes? | [training_audio_quality.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/training_audio_quality.png) |
-| Learning curves | What happened during training and checkpoint selection? | [learning_curves.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/learning_curves.png) |
-| Actual vs predicted | Which parameters are recovered well or poorly? | [validation_actual_vs_predicted.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/evidence_ensemble/validation_actual_vs_predicted.png) |
-| Error across values | Are errors concentrated in parts of a parameter's interval? | [validation_error_by_actual_value.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/validation_error_by_actual_value.png) |
-| Envelope context | Is recovery different at weak versus strong generating depth? | [filter_envelope_error_context.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/filter_envelope_error_context.png) |
-| Raw uncertainty vs error | Does U visually track error before calibration? | [raw_uncertainty_vs_squared_error.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/evidence_ensemble/raw_uncertainty_vs_squared_error.png) |
-| Reliability diagrams | Do predicted probabilities match observed success frequencies? | [reliability_diagrams.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/reliability_diagrams.png) |
-| Matched coverage | Does a method retain more useful predictions at the same fraction? | [matched_coverage_audit.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/matched_coverage_audit.png) |
-| Step robustness | Do sensitivity ranks and magnitudes depend on delta? | [step_size_magnitude_agreement.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/step_size_magnitude_agreement.png) |
+| Distributions and split balance | Are allowed values covered, and do non-test groups look comparable? | [target_distributions_and_split_balance.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/target_distributions_and_split_balance.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/target_distributions_and_split_balance.png`) |
+| Parameter correlation | Does the sampled training design strongly correlate controls? | [training_parameter_correlation.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/training_parameter_correlation.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/training_parameter_correlation.png`) |
+| Audio QA | Do fixed training examples have valid rate, duration, level, DC and hashes? | [training_audio_quality.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/training_audio_quality.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/training_audio_quality.png`) |
+| Learning curves | What happened during training and checkpoint selection? | [learning_curves.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/learning_curves.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/learning_curves.png`) |
+| Actual vs predicted | Which parameters are recovered well or poorly? | [validation_actual_vs_predicted.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/evidence_ensemble/validation_actual_vs_predicted.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/evidence_ensemble/validation_actual_vs_predicted.png`) |
+| Error across values | Are errors concentrated in parts of a parameter's interval? | [validation_error_by_actual_value.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/validation_error_by_actual_value.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/validation_error_by_actual_value.png`) |
+| Envelope context | Is recovery different at weak versus strong generating depth? | [filter_envelope_error_context.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/filter_envelope_error_context.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/evidence_baseline_full_v1/filter_envelope_error_context.png`) |
+| Raw uncertainty vs error | Does U visually track error before calibration? | [raw_uncertainty_vs_squared_error.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/evidence_ensemble/raw_uncertainty_vs_squared_error.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/evidence_ensemble/raw_uncertainty_vs_squared_error.png`) |
+| Reliability diagrams | Do predicted probabilities match observed success frequencies? | [reliability_diagrams.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/reliability_diagrams.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/reliability_diagrams.png`) |
+| Matched coverage | Does a method retain more useful predictions at the same fraction? | [matched_coverage_audit.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/matched_coverage_audit.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/matched_coverage_audit.png`) |
+| Step robustness | Do sensitivity ranks and magnitudes depend on delta? | [step_size_magnitude_agreement.png](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/step_size_magnitude_agreement.png) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/step_size_magnitude_agreement.png`) |
 
 The baseline evidence pack has 10 figures; the ensemble pack has 11. Each has
 underlying CSV tables and provenance. The correlation maximum .004659 describes
@@ -1198,11 +1250,15 @@ tests check implementation, including split protections, restart reproducibility
 Gaussian variance arithmetic, calibration metrics, perturbations and audio exports.
 They do not test the scientific hypothesis against human listeners.
 
-Open [verification_validation_viewer_v1/verification.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/verification_validation_viewer_v1/verification.json),
-[verification_gpu_v1/verification.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/verification_gpu_v1/verification.json)
-and [RESEARCH_EVIDENCE.md](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/RESEARCH_EVIDENCE.md).
+Open [verification_validation_viewer_v1/verification.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/verification_validation_viewer_v1/verification.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/verification_validation_viewer_v1/verification.json`),
+[verification_gpu_v1/verification.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/verification_gpu_v1/verification.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/verification_gpu_v1/verification.json`)
+and [RESEARCH_EVIDENCE.md](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/RESEARCH_EVIDENCE.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/RESEARCH_EVIDENCE.md`).
 
-## 19. Why these technologies and not something larger?
+[Back to contents](#contents)
+
+## Part 9. Technology choices and justifications
+
+### 19. Why these technologies and not something larger?
 
 | Choice | Justification | Limitation / alternative |
 |---|---|---|
@@ -1233,7 +1289,11 @@ same predictions, perturbations and partitions. See the
 MFCC is also not this C2 inverse input or diagnostic. Log-mel and MR-STFT have
 different jobs; choosing both does not mean arbitrarily averaging unrelated scores.
 
-## 20. Questions you should be able to answer
+[Back to contents](#contents)
+
+## Part 10. Revision and code reference
+
+### 20. Questions you should be able to answer
 
 **What is the novelty?** Testing whether forward-rendered R and local S improve
 per-control correctness reliability of one frozen inverse estimate over calibrated
@@ -1295,7 +1355,7 @@ patch, compute R/S, apply saved calibrators and export patch/audio/scores. Vita
 already serializes presets in the generation tooling; the C2 live service and export
 path still require implementation and reload verification.
 
-## 21. One-minute explanation to practise
+### 21. One-minute explanation to practise
 
 > We generated a controlled dataset by setting 13 Vital parameters, recording what
 > the synth actually accepted, and rendering each sound under the same note and
@@ -1312,45 +1372,45 @@ path still require implementation and reload verification.
 Use this to understand the argument, then put it into your own words. If asked for
 a number, state its partition, sample count, coordinate and metric before interpreting it.
 
-## 22. File map and validation pipeline
+### 22. File map and validation pipeline
 
 The workflow coordinator is
-[run_development.run](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/run_development.py:28).
+[run_development.run](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/run_development.py:28) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/run_development.py:28`).
 After ensemble completion, it runs ensemble EDA, smoke prediction/diagnostics,
 calibration prediction/diagnostics, reliability-validation prediction/diagnostics,
 then calibrations at .05, .025 and .10. Stages verify completed outputs before
 reuse. Per-case diagnostic files permit resume; source/signature drift is rejected.
-The resulting [status.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/status.json)
+The resulting [status.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/status.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/status.json`)
 records completion. A stale historical running flag or open terminal alone would
 not prove a process is still progressing.
 
 | Source | Main blocks and responsibility |
 |---|---|
-| [generation/vital_setup.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/vital_setup.py) | Profile loading, engine/control validation and base-preset building |
-| [generation/scripts/05_generate_pilot_dataset.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py) | Frozen Sobol sampling, setters/readbacks, render call, QA and versioned pilot generation |
-| [generation/generate_corpus.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py) | Full-corpus recipe guard, parallel fresh renders, raw masters, checkpoint/resume and consolidation |
-| [generation/audio_processing.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audio_processing.py) | Fixed DC policy and separate optional review-level helpers |
-| [generation/corpus_audio.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/corpus_audio.py) | Raw loading, canonical once-only conditioning and sample-hash checks |
-| [generation/audit_full_corpus.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audit_full_corpus.py) | Full file/label/QA/manifest verification and optional reference export |
-| [generation/audit_control_units.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audit_control_units.py) | Normalized/native/display and preset serialization checks |
-| [c2_estimation/pipeline.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py) | Reused mel/CNN/determinism primitives; its command-line main is the historical eight-control run |
-| [v4/data.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py) | Exact label/reference validation, coordinate mapping, frozen splits and subsets |
-| [v4/features.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/features.py) | Guarded inverse-feature extraction, shards, cache loading and train statistics |
-| [v4/baseline.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py) | Single CNN fitting, checkpoints, recovery metrics and training plots |
-| [v4/compare_baselines.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/compare_baselines.py) | Earlier/full baseline comparison on the same original 512 IDs |
-| [v4/setup_cuda.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/setup_cuda.py) | Isolated training environment and runtime record; not inference logic |
-| [v4/ensemble.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py) | Gaussian heads, NLL fitting, independent seeds and mixture U |
-| [v4/predict_subsets.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/predict_subsets.py) | Frozen inference on preassigned non-test subsets |
-| [v4/diagnostics.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py) | Renderer, STFT representation/distance, perturbation rule and worked example |
-| [v4/diagnostic_batch.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostic_batch.py) | Many fixed predictions -> measured R/S, audits, case resume and readback exports |
-| [v4/calibration.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py) | Correctness labels, logistic fitting, C selection, ablations and reliability metrics |
-| [v4/evidence.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/evidence.py) | EDA/error/uncertainty figures, tables and provenance |
-| [v4/audit_results.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/audit_results.py) | Per-control audit, conditional/paired comparisons and coverage summaries |
-| [v4/stability.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py) | Fixed calibration-only .01/.02/.05 robustness study |
-| [v4/verification.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/verification.py) | Saves synthetic test log/counts/source fingerprints |
-| [v4/verify_forward_batch.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/verify_forward_batch.py) | Checks new batch diagnostics against a saved real worked example |
-| [v4/build_viewer.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/build_viewer.py) | Fixed example selection, verified audio/data export and display refresh |
-| [viewer/index.html](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/viewer/index.html), [app.js](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/viewer/app.js), [style.css](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/viewer/style.css) | Browser layout, saved-data interactions and styling |
+| [generation/vital_setup.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/vital_setup.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/vital_setup.py`) | Profile loading, engine/control validation and base-preset building |
+| [generation/scripts/05_generate_pilot_dataset.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/scripts/05_generate_pilot_dataset.py`) | Frozen Sobol sampling, setters/readbacks, render call, QA and versioned pilot generation |
+| [generation/generate_corpus.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/generate_corpus.py`) | Full-corpus recipe guard, parallel fresh renders, raw masters, checkpoint/resume and consolidation |
+| [generation/audio_processing.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audio_processing.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/audio_processing.py`) | Fixed DC policy and separate optional review-level helpers |
+| [generation/corpus_audio.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/corpus_audio.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/corpus_audio.py`) | Raw loading, canonical once-only conditioning and sample-hash checks |
+| [generation/audit_full_corpus.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audit_full_corpus.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/audit_full_corpus.py`) | Full file/label/QA/manifest verification and optional reference export |
+| [generation/audit_control_units.py](D:/VSCode/GitHub/Synth-Inversion-RP/generation/audit_control_units.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/generation/audit_control_units.py`) | Normalized/native/display and preset serialization checks |
+| [c2_estimation/pipeline.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/pipeline.py`) | Reused mel/CNN/determinism primitives; its command-line main is the historical eight-control run |
+| [v4/data.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/data.py`) | Exact label/reference validation, coordinate mapping, frozen splits and subsets |
+| [v4/features.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/features.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/features.py`) | Guarded inverse-feature extraction, shards, cache loading and train statistics |
+| [v4/baseline.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py`) | Single CNN fitting, checkpoints, recovery metrics and training plots |
+| [v4/compare_baselines.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/compare_baselines.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/compare_baselines.py`) | Earlier/full baseline comparison on the same original 512 IDs |
+| [v4/setup_cuda.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/setup_cuda.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/setup_cuda.py`) | Isolated training environment and runtime record; not inference logic |
+| [v4/ensemble.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/ensemble.py`) | Gaussian heads, NLL fitting, independent seeds and mixture U |
+| [v4/predict_subsets.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/predict_subsets.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/predict_subsets.py`) | Frozen inference on preassigned non-test subsets |
+| [v4/diagnostics.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostics.py`) | Renderer, STFT representation/distance, perturbation rule and worked example |
+| [v4/diagnostic_batch.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostic_batch.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/diagnostic_batch.py`) | Many fixed predictions -> measured R/S, audits, case resume and readback exports |
+| [v4/calibration.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py`) | Correctness labels, logistic fitting, C selection, ablations and reliability metrics |
+| [v4/evidence.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/evidence.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/evidence.py`) | EDA/error/uncertainty figures, tables and provenance |
+| [v4/audit_results.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/audit_results.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/audit_results.py`) | Per-control audit, conditional/paired comparisons and coverage summaries |
+| [v4/stability.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/stability.py`) | Fixed calibration-only .01/.02/.05 robustness study |
+| [v4/verification.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/verification.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/verification.py`) | Saves synthetic test log/counts/source fingerprints |
+| [v4/verify_forward_batch.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/verify_forward_batch.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/verify_forward_batch.py`) | Checks new batch diagnostics against a saved real worked example |
+| [v4/build_viewer.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/build_viewer.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/build_viewer.py`) | Fixed example selection, verified audio/data export and display refresh |
+| [viewer/index.html](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/viewer/index.html) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/viewer/index.html`), [app.js](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/viewer/app.js) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/viewer/app.js`), [style.css](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/viewer/style.css) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/viewer/style.css`) | Browser layout, saved-data interactions and styling |
 
 The test files are under `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/tests/`:
 `test_v4.py` checks data/model/restart behaviour; `test_ensemble.py` checks heads,
@@ -1358,7 +1418,7 @@ mixture moments and reproducibility; `test_reliability.py` checks diagnostic and
 calibration arithmetic; `test_stability.py`, `test_audit_results.py` and
 `test_viewer.py` cover the added checks. `test_pipeline.py` preserves pilot checks.
 
-### Do not confuse model weights, patches and audio
+#### Do not confuse model weights, patches and audio
 
 | File format | What it contains |
 |---|---|
@@ -1375,16 +1435,16 @@ The eventual patch download must be a full preset with the fixed setup plus the
 13 predicted controls, not simply a renamed model checkpoint or parameter vector.
 Reload and audio/readback checks must verify the export before presenting it as usable.
 
-### Proposal alignment
+#### Proposal alignment
 
-The supplied [project report](<E:/SLIIT/Projects/RESEARCH PROJECT/Audio to Synth/1. Project Progression/1. Project Proposal/Individual Reports/IT23203280_Acoustic_Identifiability_Aware_Reliability_Calibration.pdf>)
+The supplied [project report](<E:/SLIIT/Projects/RESEARCH PROJECT/Audio to Synth/1. Project Progression/1. Project Proposal/Individual Reports/IT23203280_Acoustic_Identifiability_Aware_Reliability_Calibration.pdf>) (path: `E:/SLIIT/Projects/RESEARCH PROJECT/Audio to Synth/1. Project Progression/1. Project Proposal/Individual Reports/IT23203280_Acoustic_Identifiability_Aware_Reliability_Calibration.pdf`)
 was checked at methodology pages 17-24 and architecture/responsibility pages 28-29.
 It is a design reference, not the authority for current completion claims. Current
 source, protocol and saved measured outputs establish implemented counts and status.
 The individual reliability experiment is distinct from the team's shared generation
 infrastructure and from C1/C3/C4 research contributions.
 
-## 23. Small dictionary for reading the code
+### 23. Small dictionary for reading the code
 
 | Term or symbol | Meaning here |
 |---|---|

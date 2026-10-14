@@ -1,10 +1,28 @@
 # C2 metrics: definitions, measured results and interpretation
 
+Each local file link is followed by its full path as plain text. A final `:number` identifies the source line; in VS Code, open the file with `Ctrl+P` and jump to that line with `Ctrl+G`.
+
 Snapshot: 15 October 2026. These tables come from saved non-test outputs, not new
 training or test evaluation. Display values are rounded to six decimal places;
 original CSV/JSON files preserve precision. All recovery errors below use research
 coordinates z unless stated otherwise. Read with the
-[component guide](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/COMPONENT_STUDY_GUIDE.md).
+[component guide](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/COMPONENT_STUDY_GUIDE.md) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/COMPONENT_STUDY_GUIDE.md`).
+
+## Contents
+
+Jump directly to the results or definitions you need.
+
+| Topic | Jump to |
+|---|---|
+| Definitions | [1. Which kind of number am I looking at?](#1-which-kind-of-number-am-i-looking-at) · [2. Recovery metrics in plain language and equations](#2-recovery-metrics-in-plain-language-and-equations) · [5. Probability, ranking and selective metrics](#5-probability-ranking-and-selective-metrics) |
+| Training results | [3. Single CNN and ensemble: the same 4,096 inverse-validation clips](#3-single-cnn-and-ensemble-the-same-4096-inverse-validation-clips) |
+| Correctness labels and recovery | [4. What is a correctness label?](#4-what-is-a-correctness-label) |
+| Calibration and uncertainty results | [6. All five probability models: macro development results](#6-all-five-probability-models-macro-development-results) · [7. Per-parameter Brier for every probability ablation](#7-per-parameter-brier-for-every-probability-ablation) · [8. Full U+S+R reliability results for all parameters](#8-full-usr-reliability-results-for-all-parameters) · [9. Raw uncertainty ranking before logistic calibration](#9-raw-uncertainty-ranking-before-logistic-calibration) |
+| Matched-coverage evaluation | [10. Same 50% coverage: retain 256 settings per parameter](#10-same-50-coverage-retain-256-settings-per-parameter) |
+| Tolerance checks and statistical comparisons | [11. Different definitions of correct: secondary tolerance analysis](#11-different-definitions-of-correct-secondary-tolerance-analysis) · [12. Paired uncertainty around Brier differences](#12-paired-uncertainty-around-brier-differences) |
+| Audio diagnostics and perturbation validation | [13. Reconstruction residual R and sensitivity S](#13-reconstruction-residual-r-and-sensitivity-s) · [14. Perturbation-step agreement on 256 calibration clips](#14-perturbation-step-agreement-on-256-calibration-clips) |
+| Audio QA and result files | [15. Audio QA numbers are different again](#15-audio-qa-numbers-are-different-again) · [16. Where are all remaining numbers?](#16-where-are-all-remaining-numbers) |
+
 
 ## 1. Which kind of number am I looking at?
 
@@ -43,7 +61,7 @@ frequency/time or a perceptual threshold. Macro MAE gives each of 13 parameters
 equal weight. Averaging 13 RMSEs is not the same as taking the square root of
 the all-parameter MSE; say which aggregation you use.
 
-Code: [baseline.regression_metrics](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:53).
+Code: [baseline.regression_metrics](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:53) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/baseline.py:53`).
 
 ## 3. Single CNN and ensemble: the same 4,096 inverse-validation clips
 
@@ -70,9 +88,9 @@ The two models use different training objectives, so differences do not isolate
 ensemble averaging alone.
 
 Sources:
-[single CNN metrics](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/validation_metrics.csv),
-[ensemble metrics](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/parameter_metrics.csv),
-[training-mean baseline](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/mean_baseline_metrics.csv).
+[single CNN metrics](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/validation_metrics.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/validation_metrics.csv`),
+[ensemble metrics](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/parameter_metrics.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/parameter_metrics.csv`),
+[training-mean baseline](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/mean_baseline_metrics.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/baseline_full_v1/mean_baseline_metrics.csv`).
 Each recovery CSV also includes Vital-normalized coordinate metrics.
 
 ## 4. What is a correctness label?
@@ -137,7 +155,7 @@ audio IDs; this does not define a whole-patch acceptance rule.
 
 The exact calculation:
 
-[c2_estimation/v4/calibration.py:111](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:111)
+[c2_estimation/v4/calibration.py:111](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:111) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:111`)
 
 ```python
 def probability_metrics(y,q,error):
@@ -161,8 +179,8 @@ def probability_metrics(y,q,error):
 ```
 
 Related code:
-[ranking_metrics](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:85),
-[risk_curve](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:102).
+[ranking_metrics](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:85) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:85`),
+[risk_curve](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:102) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/v4/calibration.py:102`).
 
 ## 6. All five probability models: macro development results
 
@@ -267,11 +285,11 @@ identify recordings outside the training domain.
 Compare methods at equal retained count; a method cannot gain credit merely by
 keeping fewer predictions. All variants and nominal coverages .1/.25/.5/.75/1 are
 preserved in
-[parameter_metrics.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/parameter_metrics.csv),
-[raw_uncertainty_ranking.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/raw_uncertainty_ranking.csv)
-and [matched_coverage_audit.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/matched_coverage_audit.csv).
+[parameter_metrics.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/parameter_metrics.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/parameter_metrics.csv`),
+[raw_uncertainty_ranking.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/raw_uncertainty_ranking.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/raw_uncertainty_ranking.csv`)
+and [matched_coverage_audit.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/matched_coverage_audit.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/matched_coverage_audit.csv`).
 The full prefix curves are in
-[risk_coverage.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/risk_coverage.csv).
+[risk_coverage.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/risk_coverage.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/risk_coverage.csv`).
 
 ## 11. Different definitions of correct: secondary tolerance analysis
 
@@ -305,8 +323,8 @@ Intervals condition on the fitted models and development selection and do not
 include uncertainty from retraining.
 
 Exact source:
-[macro_paired_comparisons.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/macro_paired_comparisons.csv),
-[per_parameter_paired_comparisons.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/per_parameter_paired_comparisons.csv).
+[macro_paired_comparisons.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/macro_paired_comparisons.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/macro_paired_comparisons.csv`),
+[per_parameter_paired_comparisons.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/per_parameter_paired_comparisons.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/results_audit_v1/per_parameter_paired_comparisons.csv`).
 
 ## 13. Reconstruction residual R and sensitivity S
 
@@ -359,9 +377,9 @@ Near-perfect ranks can coexist with changing magnitudes, especially amp attack.
 Wave frame/bend are more scale-dependent. Keep .02; no calibrator was refitted.
 
 All pairs, zero counts, group counts and modes are in
-[step_size_agreement.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/step_size_agreement.csv).
+[step_size_agreement.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/step_size_agreement.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/step_size_agreement.csv`).
 The complete 9,984 measurements are in
-[step_size_measurements.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/step_size_measurements.csv).
+[step_size_measurements.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/step_size_measurements.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/step_stability_v1/step_size_measurements.csv`).
 Tiny boundary groups and undefined constant/empty correlations must be interpreted cautiously.
 
 ## 15. Audio QA numbers are different again
@@ -379,19 +397,19 @@ of unique parameter recovery.
 
 | Evidence | Exact file |
 |---|---|
-| Member seeds/epochs/checkpoint hashes/variance summaries | [ensemble summary](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/summary.json) |
-| Epoch-by-epoch losses and errors | [member 0 history](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/member_00/training_history.csv), equivalent files under member_01/member_02 |
-| Selected C, fitted weights, transforms and calibration class counts | [calibrators.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/calibrators.json) |
-| Every candidate C validation score | [candidate_C_scores.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/candidate_C_scores.csv) |
-| Reliability bin counts and observed frequencies | [reliability_bins.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/reliability_bins.csv) |
-| Each clip's frozen prediction/U/S/R | [diagnostics.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/diagnostics_reliability-validation/diagnostics.csv) |
-| Actual perturbation endpoints and denominators | [perturbation_readbacks.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/diagnostics_reliability-validation/perturbation_readbacks.csv) |
-| Delivered q values for every model and clip | [validation_probabilities.parquet](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/validation_probabilities.parquet) |
-| Implementation checks and skip reasons | [verification.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/verification_validation_viewer_v1/verification.json) |
-| Snapshot source fingerprints | [STUDY_GUIDE_EVIDENCE.json](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/docs/STUDY_GUIDE_EVIDENCE.json) |
+| Member seeds/epochs/checkpoint hashes/variance summaries | [ensemble summary](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/summary.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/summary.json`) |
+| Epoch-by-epoch losses and errors | [member 0 history](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/member_00/training_history.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/ensemble_full_v1/member_00/training_history.csv`), equivalent files under member_01/member_02 |
+| Selected C, fitted weights, transforms and calibration class counts | [calibrators.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/calibrators.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/calibrators.json`) |
+| Every candidate C validation score | [candidate_C_scores.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/candidate_C_scores.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/candidate_C_scores.csv`) |
+| Reliability bin counts and observed frequencies | [reliability_bins.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/reliability_bins.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/reliability_bins.csv`) |
+| Each clip's frozen prediction/U/S/R | [diagnostics.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/diagnostics_reliability-validation/diagnostics.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/diagnostics_reliability-validation/diagnostics.csv`) |
+| Actual perturbation endpoints and denominators | [perturbation_readbacks.csv](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/diagnostics_reliability-validation/perturbation_readbacks.csv) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/diagnostics_reliability-validation/perturbation_readbacks.csv`) |
+| Delivered q values for every model and clip | [validation_probabilities.parquet](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/validation_probabilities.parquet) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/validation_probabilities.parquet`) |
+| Implementation checks and skip reasons | [verification.json](D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/verification_validation_viewer_v1/verification.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/data/processed/c2_v4/verification_validation_viewer_v1/verification.json`) |
+| Snapshot source fingerprints | [STUDY_GUIDE_EVIDENCE.json](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/docs/STUDY_GUIDE_EVIDENCE.json) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/docs/STUDY_GUIDE_EVIDENCE.json`) |
 
 The read-only collector is
-[collect_study_evidence.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/docs/collect_study_evidence.py).
+[collect_study_evidence.py](D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/docs/collect_study_evidence.py) (path: `D:/VSCode/GitHub/Synth-Inversion-RP/c2_estimation/docs/collect_study_evidence.py`).
 It reads saved tables and source excerpts, checks expected dimensions/non-test flags,
 and prints documentation evidence. It does not rerender, retrain, refit or evaluate
 test audio. These documents describe this snapshot, not automatic future results.
