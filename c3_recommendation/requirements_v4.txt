@@ -1,0 +1,10 @@
+# C3 v4 dependencies. Pinned to the versions installed in the project venv.
+# Further packages (scikit-learn, statsmodels, librosa, matplotlib, tqdm) are added
+# in the phase that first needs them.
+numpy==2.5.1
+pandas==3.0.5
+pyarrow==25.0.0
+pyyaml==6.0.3
+scipy==1.18.0
+soundfile==0.14.0
+pytest==9.1.1
