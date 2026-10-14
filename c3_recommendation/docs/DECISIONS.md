@@ -182,3 +182,38 @@ in-process re-run identical; a second process run produced byte-identical artefa
 ≈148 ms per target, ≈75 s total. **Proxy numbers are a pipeline check only and are never reported.**
 
 Status: implementation choices by Claude Code; smoke test result recorded 2026-10-14.
+
+## D-013 — Audio features and representation diagnostic (2026-10-14, Phase 6)
+
+Features (`c3.features`, cache in `outputs/v4/features/`, one streaming pass, 13.6 min, 8 workers):
+- `mfcc26`: the legacy pilot_v1 MFCC exactly (n_fft 2048, hop 512, symmetric Hann, reflect pad,
+  40 HTK-mel bands 20 Hz–20 kHz, natural log, orthonormal DCT-II, 13 MFCCs, mean + std). Equality
+  with `pipeline.py:extract_mfcc_summary` is tested (max difference 0.0). librosa is not used.
+- `logmel_stats`: same power spectrum, 64 HTK-mel bands, natural log, mean + std (128 dims).
+- CLAP: not computed now (user agreed to decide after MFCC/log-mel).
+- Relevance: z-score with bank mean/std only, L2-normalise, cosine (`FeatureCosineRelevance`).
+
+Sanity (500 val targets; 200 for self-relevance): self-relevance = 1 within 4.4e-16; 20 cached
+rows recomputed from audio match exactly; no zero-variance dimensions.
+
+Representation diagnostic (val targets; parameter distance from target to audio top-k):
+
+| | mfcc26 | logmel_stats |
+|---|---|---|
+| top-1 param distance, mean [95% CI] | 0.3083 [0.3024, 0.3141] | 0.3059 [0.2998, 0.3118] |
+| top-5 mean param distance | 0.3130 [0.3094, 0.3165] | 0.3123 [0.3087, 0.3158] |
+| top-5 min param distance | 0.2380 [0.2335, 0.2425] | 0.2381 [0.2336, 0.2426] |
+| relevance at rank 1 / 5 / 50 / 100 (median) | 0.986 / 0.974 / 0.945 / 0.930 | 0.992 / 0.987 / 0.972 / 0.966 |
+
+References: random bank patch 0.401; true parameter 1-NN median 0.129 (Phase 3).
+
+Observations (diagnostic, not hypothesis results):
+- The two representations are practically indistinguishable on this diagnostic (overlapping CIs).
+- Audio-nearest patches sit far from the target in parameter space (≈0.31, between the parameter
+  1-NN 0.13 and a random patch 0.40): consistent with the many-to-one premise of C3.
+- Scale mismatch (guide §8.3) is confirmed: within a 100-candidate pool relevance spans only
+  ≈0.06 (mfcc26) / ≈0.03 (logmel) at the median, while parameter similarity spans ≈0–1. With
+  `relevance_scaling: none`, even λ ≈ 0.9 may let the diversity term dominate. Whether to add
+  λ values between 0.95 and 1.0 to the grid is an open question for the user before Phase 7.
+
+Status: features and checks recorded; primary representation and λ grid are the user's decisions.
