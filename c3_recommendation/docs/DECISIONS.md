@@ -52,3 +52,50 @@ For scripts and `python -m c3.cli`, install once in editable mode:
 installing.
 
 Status: chosen by Claude Code (guide lets the implementer pick); documented in RUNBOOK later.
+
+## D-006 — Meaning of `.run.lock` (2026-10-14, Phase 5)
+
+Conflict with the build guide (rule R2 / Phase 5 gate condition "`.run.lock` does not exist"):
+`generation/generate_corpus.py:exclusive_run` never deletes `.run.lock`; it holds a 1-byte OS
+lock on it (msvcrt / fcntl) only while writing. The file is permanent after the first run.
+
+Rule used instead: generation counts as running only while that OS lock is held.
+`c3.audio_io.generation_running()` probes the lock read-only (open `rb`, non-blocking lock,
+immediate unlock; nothing is written). Completion additionally requires `summary.json`
+count = 131,072 (gate check 2).
+
+Status: confirmed by user 2026-10-14.
+
+## D-007 — Phase order changed: audio gate before Phases 2–4 (2026-10-14)
+
+The user's corpus finished before Phase 2. Phase 5 (audio gate) runs now; Phases 2–4 then run
+with `data.source: corpus_v4`. Parameters are identical (gate check 5), so splits are the same
+under either source.
+
+Status: confirmed by user 2026-10-14.
+
+## D-008 — Gate evidence and audio reading (2026-10-14, Phase 5)
+
+- Primary equality proof is the team's own full comparison,
+  `generation.generate_corpus --count 131072 --verify-reference reference/full_waveform_reference.json`,
+  which re-verifies every row (Vital control values, raw file hashes, derived processed audio)
+  and compares all raw + processed sample hashes. Its saved log is gate check 8.
+- `c3.audio_io` re-implements DC-on-read independently from `recipe.json` (SOS coefficients,
+  one pass, float64, then float32 with signed-zero subnormals) instead of importing
+  `generation/`. Gate check 7 proves it bit-exact against the generator's
+  `processed_samples_sha256` on 50 seeded random samples.
+- External queries (`load_external_audio`): channel-mean downmix → `scipy.signal.resample_poly`
+  to 44.1 kHz → trim or zero-pad at the end to 132,300 samples → the same DC policy. No peak or
+  loudness normalisation (the corpus has none). librosa is not needed for this step.
+
+Status: proposed by Claude Code; user agreed to the gate design 2026-10-14.
+
+## D-009 — Data source switched to corpus_v4 (2026-10-14, Phase 5)
+
+The audio gate passed all 8 checks (`outputs/v4/audio_gate/gate_report.json`), including the
+official `--verify-reference` comparison (log line "PASS: every raw and processed waveform
+matches the shared reference."). `data.source` is now `corpus_v4`: parameters come from
+`data/raw/corpus_v4/manifest.parquet` (identical to the reference tables) and audio from the
+raw masters with DC-on-read. `ReferenceSource` stays available for parameter-only work.
+
+Status: confirmed by user 2026-10-14 (agreed to switch once the gate passes).
