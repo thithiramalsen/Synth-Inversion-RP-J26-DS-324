@@ -12,7 +12,7 @@ paths:
   outputs_dir: c3_recommendation/outputs/v4
 
 data:
-  source: reference                             # reference | corpus_v4   (switch after Phase 5 gate)
+  source: corpus_v4                             # reference | corpus_v4   (switched after Phase 5 gate passed, D-009)
   id_column: sample_id
   index_column: sample_index                    # integer 0..131071; use for ordering, not the string ID
   parameter_columns:                            # schema order from parameter_order in the dataset config
