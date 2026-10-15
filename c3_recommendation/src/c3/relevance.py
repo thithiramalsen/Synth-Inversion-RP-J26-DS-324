@@ -147,6 +147,8 @@ class FeatureCosineRelevance:
         array, ids, meta = load_feature_cache(features_dir, representation)
         settings = FeatureSettings(**meta["settings"])
         return cls(representation, array, ids, extractor=FeatureExtractor(settings))
+    
+#Fingerprints are standardised with bank statistics only, so practice and exam sounds never influence the scale.
 
     def fit(self, bank_ids: Sequence[str]) -> None:
         self.bank_ids = list(bank_ids)

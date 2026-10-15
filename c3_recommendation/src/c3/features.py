@@ -105,7 +105,8 @@ class FeatureExtractor:
         frames = np.lib.stride_tricks.sliding_window_view(padded, n_fft)[::hop]
         spectrum = np.fft.rfft(frames * self.window, n=n_fft, axis=1)
         return np.square(np.abs(spectrum) / self.power_scale)
-
+    
+#sound fingerprint - one spectrum per sounds give both fingerprint ,MFCC 26 is the exact pilott formula"""
     def extract(self, audio: np.ndarray, sample_rate: int) -> dict[str, np.ndarray]:
         if sample_rate != self.settings.sample_rate:
             raise ValueError(f"expected {self.settings.sample_rate} Hz audio, got {sample_rate}")

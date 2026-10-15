@@ -40,7 +40,7 @@ def pool_from_scores(scores: np.ndarray, candidate_ids: Sequence[str], N: int) -
         "audio_rank": np.arange(1, len(order) + 1),
     })
 
-
+#only sounds decides the shortlists a sound never recommends itself 
 def build_pool(relevance_fn: RelevanceFunction, target_id: str, bank_ids: Sequence[str], N: int) -> pd.DataFrame:
     """Pool for an in-dataset target. The target must not be in the searchable bank (R7)."""
     bank_ids = list(bank_ids)
