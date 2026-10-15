@@ -30,6 +30,9 @@ button { cursor: pointer; }
 button:disabled { opacity: .45; cursor: not-allowed; }
 :is(button, input, select, textarea, a, summary):focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 a { color: var(--accent); }
+/* Keep fields the browser scrolls to (validation, focus) clear of the sticky header and player. */
+:is(input, select, textarea, button, fieldset) { scroll-margin-top: 140px; scroll-margin-bottom: 40px; }
+.rating-card :is(input, button, fieldset) { scroll-margin-top: 260px; }
 
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); border-bottom: 1px solid var(--line);
   padding-block: 14px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }

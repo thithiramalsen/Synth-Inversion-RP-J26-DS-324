@@ -61,8 +61,17 @@ def parse_args():
                    help="omit the abandoned and withdrawn example sessions")
     p.add_argument("--start-date", default="2026-11-02T09:00:00+00:00",
                    help="fictional first session time (ISO 8601)")
+    p.add_argument("--study-id", default=SIM_STUDY_ID)
+    p.add_argument("--generator-version", default=GENERATOR_VERSION)
+    p.add_argument("--file-prefix", default="c1_pilot", help="responses file name prefix")
+    p.add_argument("--truth-reference", type=Path, default=None,
+                   help="simulation_ground_truth.csv of an earlier simulation; shared sounds keep their truth")
     p.add_argument("--overwrite", action="store_true")
-    return p.parse_args()
+    args = p.parse_args()
+    for name in ("bundle", "config", "output_dir", "truth_reference"):
+        if getattr(args, name) is not None:
+            setattr(args, name, getattr(args, name).resolve())
+    return args
 
 
 def sha256_file(path: Path) -> str:
@@ -130,29 +139,49 @@ def zscore(values, ref):
     return (np.asarray(values, float) - ref.mean()) / ref.std(ddof=0)
 
 
-def latent_means(features: dict[str, dict], study_ids: list[str], rng) -> dict[str, dict]:
-    """Artificial rule: proxy z-scores -> descriptor means on the 1-7 scale."""
-    ids = list(features)
-    col = lambda k: np.array([features[s][k] for s in ids])
-    study_mask = np.array([s in study_ids for s in ids])
+PROXY_KEYS = ("log2_centroid", "am_index", "attack_s", "held_drop_db", "tail_rel_db")
 
-    def z(raw):
-        return zscore(raw, raw[study_mask])
 
-    raw = dict(
-        brightness=z(col("log2_centroid")),
-        roughness=z(np.log(col("am_index") + 1e-3)),
-        percussiveness=0.5 * z(-np.log(col("attack_s"))) + 0.5 * z(col("held_drop_db")),
-        sustainedness=0.7 * z(-col("held_drop_db")) + 0.3 * z(col("tail_rel_db")),
+def _combined_proxies(cols: dict, ref: dict) -> dict:
+    """Descriptor proxies for `cols`, with every inner z-score relative to `ref`."""
+    z = lambda key, f=lambda x: x: zscore(f(cols[key]), f(ref[key]))
+    return dict(
+        brightness=z("log2_centroid"),
+        roughness=z("am_index", lambda x: np.log(x + 1e-3)),
+        percussiveness=0.5 * z("attack_s", lambda x: -np.log(x)) + 0.5 * z("held_drop_db"),
+        sustainedness=0.7 * z("held_drop_db", lambda x: -x) + 0.3 * z("tail_rel_db"),
     )
+
+
+def latent_means(features: dict[str, dict], study_ids: list[str], rng, sources=None, reference=None) -> dict[str, dict]:
+    """Artificial rule: proxy z-scores -> descriptor means on the 1-7 scale.
+
+    Without `reference`, z-scores are relative to this study's sounds (the pilot
+    simulation). With `reference` (rows of an earlier simulation_ground_truth.csv),
+    the scale is anchored to that study's sounds and any sound sharing a source ID
+    keeps its earlier per-sound effect, so the same sound has the same "truth".
+    """
+    ids = list(features)
+    cols = {k: np.array([features[s][k] for s in ids], float) for k in PROXY_KEYS}
+    study_mask = np.array([s in study_ids for s in ids])
+    if reference is None:
+        ref = {k: v[study_mask] for k, v in cols.items()}
+    else:
+        ref = {k: np.array([float(r[k]) for r in reference if r["role"] == "study"]) for k in PROXY_KEYS}
+    current, ref_comb = _combined_proxies(cols, ref), _combined_proxies(ref, ref)
+    known = {r["source_sample_id"]: r for r in reference or []}
     out = {s: {} for s in ids}
-    for trait, values in raw.items():
-        values = zscore(values, values[study_mask])  # re-standardize the combined proxies
+    for trait, values in current.items():
+        values = zscore(values, ref_comb[trait])  # re-standardize the combined proxies
         sound_effect = rng.normal(0, SOUND_EFFECT_SD, len(ids))
         for i, s in enumerate(ids):
             proxy_mean = 4 + LATENT_SPREAD * values[i]
+            effect = sound_effect[i]
+            prior = known.get(sources[s]) if sources else None
+            if prior is not None:
+                effect = float(prior[f"{trait}_true_mean"]) - float(prior[f"{trait}_proxy_mean"])
             out[s][f"{trait}_proxy_mean"] = float(np.clip(proxy_mean, 1.3, 6.7))
-            out[s][f"{trait}_true_mean"] = float(np.clip(proxy_mean + sound_effect[i], 1.2, 6.8))
+            out[s][f"{trait}_true_mean"] = float(np.clip(proxy_mean + effect, 1.2, 6.8))
     return out
 
 
@@ -280,6 +309,21 @@ EXPORT_COLUMNS = ["participant_id", "participant_label", "session_id", "study_id
                   "source_sample_id", "label_source", "generator_version", "seed"]
 
 
+def _repeat_summary(included):
+    """Within-listener test-retest from hidden repeats (empty when the design has none)."""
+    by_key = {(r["session_id"], r["presentation_id"]): r for r in included}
+    diffs = []
+    for r in included:
+        if r["kind"] != "repeat":
+            continue
+        first = by_key[(r["session_id"], r["repeat_of"])]
+        diffs += [abs(r[t] - first[t]) for t in TRAITS if r[t] != "unclear" and first[t] != "unclear"]
+    if not diffs:
+        return None
+    d = np.array(diffs)
+    return dict(pairs=len(d), median=float(np.median(d)), within_one=float(np.mean(d <= 1)))
+
+
 def write_csv(path: Path, rows: list[dict], columns: list[str]):
     with path.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=columns)
@@ -315,7 +359,12 @@ def main():
             raise ValueError(f"Audio hash mismatch for {sid}")
         audio, sr = sf.read(path, dtype="float64")
         features[sid] = proxy_features(audio, sr)
-    latent = latent_means(features, study_ids, rng)
+    reference = None
+    if args.truth_reference:
+        with args.truth_reference.open(newline="", encoding="utf-8") as f:
+            reference = list(csv.DictReader(f))
+    sources = {s: samples[s]["source_sample_id"] for s in samples}
+    latent = latent_means(features, study_ids, rng, sources, reference)
     mus = {s: {t: latent[s][f"{t}_true_mean"] for t in TRAITS} for s in latent}
 
     # Completed sessions use blocks in issue order; optional failures use the next blocks.
@@ -344,7 +393,7 @@ def main():
         include = s["phase"] == "complete" and not s["withdrawn_at"] and trial["kind"] != "practice"
         export.append(dict(
             participant_id=s["participant_id"], participant_label=f"Listener {s['listener_number']:03d}",
-            session_id=s["session_id"], study_id=SIM_STUDY_ID, bundle_hash=bundle_hash, protocol_hash=protocol_hash,
+            session_id=s["session_id"], study_id=args.study_id, bundle_hash=bundle_hash, protocol_hash=protocol_hash,
             descriptor_ids=json.dumps(list(TRAITS)), assignment_id=s["assignment_id"],
             presentation_id=trial["presentation_id"], sample_id=trial["sample_id"], kind=trial["kind"],
             repeat_of=trial["repeat_of"] or "", trial_order=row["order"], phase=s["phase"], analysis_include=include,
@@ -355,23 +404,24 @@ def main():
             **{f"{t}_first": row["first"][t] for t in TRAITS}, comment_first="",
             revision_count=len(row["revisions"]), corrections_json=json.dumps(row["revisions"]),
             source_sample_id=samples[trial["sample_id"]]["source_sample_id"],
-            label_source=LABEL_SOURCE, generator_version=GENERATOR_VERSION, seed=args.seed))
-    write_csv(out / "c1_pilot_responses_SIMULATED.csv", export, EXPORT_COLUMNS)
+            label_source=LABEL_SOURCE, generator_version=args.generator_version, seed=args.seed))
+    write_csv(out / f"{args.file_prefix}_responses_SIMULATED.csv", export, EXPORT_COLUMNS)
 
     session_cols = ["participant_id", "participant_label", "session_id", "study_id", "bundle_hash", "protocol_hash",
                     "assignment_id", "phase", "current_index", "started_at", "completed_at", "withdrawn_at",
                     "entry_json", "screen_answers", "feedback_json", "simulated_fate", "label_source", "seed"]
     write_csv(out / "c1_sessions_SIMULATED.csv",
-              [dict(s, participant_label=f"Listener {s['listener_number']:03d}", study_id=SIM_STUDY_ID,
+              [dict(s, participant_label=f"Listener {s['listener_number']:03d}", study_id=args.study_id,
                     bundle_hash=bundle_hash, protocol_hash=protocol_hash, simulated_fate=s["fate"],
                     label_source=LABEL_SOURCE, seed=args.seed) for s in sessions], session_cols)
 
     # Per-sound targets from included study ratings (unclear = missing).
     included = [r for r in export if r["analysis_include"]]
+    primary = [r for r in included if r["kind"] == "primary"]  # hidden repeats are not extra listeners
     target_rows = []
     for sid in study_ids:
         row = dict(sample_id=sid, source_sample_id=samples[sid]["source_sample_id"])
-        mine = [r for r in included if r["sample_id"] == sid]
+        mine = [r for r in primary if r["sample_id"] == sid]
         row["listener_count"] = len(mine)
         for t in TRAITS:
             vals = np.array([r[t] for r in mine if r[t] != "unclear"], float)
@@ -379,7 +429,7 @@ def main():
                         f"{t}_median": float(np.median(vals)) if len(vals) else "",
                         f"{t}_sd": round(vals.std(ddof=1), 4) if len(vals) > 1 else "",
                         f"{t}_n_valid": len(vals), f"{t}_n_unclear": len(mine) - len(vals)})
-        row.update(label_source=LABEL_SOURCE, generator_version=GENERATOR_VERSION, seed=args.seed)
+        row.update(label_source=LABEL_SOURCE, generator_version=args.generator_version, seed=args.seed)
         target_rows.append(row)
     write_csv(out / "c1_sound_targets_SIMULATED.csv", target_rows, list(target_rows[0]))
 
@@ -400,18 +450,20 @@ def main():
     write_csv(out / "simulation_listeners.csv", listener_rows, list(listener_rows[0]))
 
     counts = {}
-    for r in included:
+    for r in primary:
         counts[r["sample_id"]] = counts.get(r["sample_id"], 0) + 1
     summary = dict(
         WARNING="SIMULATED DATA. No human ratings. Engineering fixture only; not perceptual evidence. "
                 "Never merge with approved human responses or count as participants.",
-        label_source=LABEL_SOURCE, generator_version=GENERATOR_VERSION, seed=args.seed, study_id=SIM_STUDY_ID,
+        label_source=LABEL_SOURCE, generator_version=args.generator_version, seed=args.seed, study_id=args.study_id,
         created_utc=iso(datetime.now(timezone.utc)), protocol_version=cfg["protocol_version"],
         bundle=str(args.bundle.relative_to(ROOT)), bundle_sha256=bundle_hash,
         protocol=str(args.config.relative_to(ROOT)), protocol_sha256=protocol_hash,
         completed_sessions=sum(s["fate"] == "complete" for s in sessions),
         excluded_sessions={s["session_id"]: s["fate"] for s in sessions if s["fate"] != "complete"},
-        included_study_evaluations=len(included), unique_study_sounds=len(counts),
+        included_study_evaluations=len(primary), included_hidden_repeats=len(included) - len(primary),
+        repeat_abs_difference=_repeat_summary(included),
+        truth_reference=str(args.truth_reference.relative_to(ROOT)) if args.truth_reference else None, unique_study_sounds=len(counts),
         listeners_per_sound=sorted(set(counts.values())),
         unclear_fraction={t: round(sum(r[t] == "unclear" for r in included) / len(included), 4) for t in TRAITS},
         corrections=len(corrections),
