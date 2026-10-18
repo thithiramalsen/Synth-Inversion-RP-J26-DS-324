@@ -3,8 +3,9 @@ import { after, before, test } from 'node:test'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { createServer } from 'vite'
+import { readFileSync } from 'node:fs'
 
-let server, PilotApp, BulkInvitationDownload, InvitationDownloads, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
+let server, PilotApp, BulkInvitationDownload, InvitationDownloads, ExperienceQuestions, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
 const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
 
@@ -14,6 +15,7 @@ before(async () => {
   const c1 = await server.ssrLoadModule('/src/PilotApp.jsx')
   PilotApp = c1.default; BulkInvitationDownload = c1.BulkInvitationDownload
   InvitationDownloads = (await server.ssrLoadModule('/src/InvitationDownloads.jsx')).default
+  ExperienceQuestions = (await server.ssrLoadModule('/src/ExperienceQuestions.jsx')).default
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
   C4App = c4.default; C4Admin = c4.C4Admin; ComparisonPlayer = c4.ComparisonPlayer
   C4BulkInvitationDownload = c4.C4BulkInvitationDownload
@@ -86,6 +88,21 @@ test('invitation download controls offer a fillable CSV and JSON backup', () => 
   assert.match(html, /blank participant name, date sent and notes columns/)
   assert.match(html, /Names are not uploaded to the study/)
   assert.match(html, /same displayed codes without replacing them/)
+})
+
+test('experience tags are accessible checkboxes with optional details in both studies', () => {
+  const options = JSON.parse(readFileSync(new URL('../../config/experience_tags_v1.json', import.meta.url), 'utf8'))
+  for (const name of ['c1_review_20_v1', 'c4_review_v1']) {
+    const cfg = { ...JSON.parse(readFileSync(new URL(`../../config/${name}.json`, import.meta.url), 'utf8')), experience_selection: options }
+    const values = { experience_selection: { version: options.version, tool_ids: ['piano_keyboard'], example_ids: ['played_piece'], tools_other: '', example_other: '' } }
+    const html = renderToString(React.createElement(ExperienceQuestions, { cfg, values, onChange: () => {}, disabled: false }))
+    assert.equal((html.match(/type="checkbox"/g) || []).length, options.tools.length + options.examples.length)
+    assert.equal((html.match(/checked=""/g) || []).length, 2)
+    assert.match(html, /Other instruments \/ tools or details \(optional\)/)
+    assert.match(html, /Another example or extra details \(optional\)/)
+    assert.doesNotMatch(html, /required=""/)
+    assert.match(html, /Select one or more examples you have actually done/)
+  }
 })
 
 test('C4 retains full-listen checks when its player remounts after a pause', () => {

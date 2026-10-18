@@ -310,6 +310,25 @@ class C4PilotTests(unittest.TestCase):
         self.assertFalse(self.client.get('/api/c4-pilot/status').json()['ready'])
         self.assertEqual(self.client.post('/api/c4-pilot/sessions',json=self.entry).status_code,403)
 
+    def test_tagged_entry_uses_same_catalogue_and_exports_choices(self):
+        cfg = self.client.get('/api/c4-pilot/status').json()['config']
+        self.assertEqual(cfg['experience_selection']['version'], 'experience_tags_v1')
+        self.assertEqual(cfg['protocol_version'], 'c4_review_2026-10-19_tags_v2')
+        self.start()
+        code = self.client.post('/api/c4-pilot/admin/replace-unused-invitations', headers=self.admin,
+                                json=dict(confirm_replace_unused=True)).json()['invitations'][0]['invitation']
+        entry = dict(self.entry, invitation=code, tools='', example='', experience_selection=dict(
+            version='experience_tags_v1', tool_ids=['bass', 'singing'], example_ids=['sang_song'], tools_other='', example_other=''))
+        invalid = {**entry, 'experience_selection': {**entry['experience_selection'], 'tool_ids': ['unknown']}}
+        self.assertEqual(self.client.post('/api/c4-pilot/sessions', json=invalid).status_code, 422)
+        response = self.client.post('/api/c4-pilot/sessions', json=entry)
+        self.assertEqual(response.status_code, 200, response.text)
+        exported = list(csv.DictReader(io.StringIO(self.client.get('/api/c4-pilot/admin/sessions', headers=self.admin).text)))
+        saved = next(json.loads(row['entry_json']) for row in exported if row['session_id'] == response.json()['session_id'])
+        self.assertEqual(saved['experience_selection'], entry['experience_selection'])
+        self.assertEqual(saved['tools'], 'Bass guitar; Singing / vocals')
+        self.assertEqual(saved['example'], 'Practised, performed or recorded a song with my voice')
+
 
 class C4DesignTests(unittest.TestCase):
     def test_reproducible_distinct_counterbalanced_and_separated(self):
