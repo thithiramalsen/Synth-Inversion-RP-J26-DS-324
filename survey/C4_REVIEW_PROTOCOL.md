@@ -39,6 +39,15 @@ for C1, C4 and researcher accounts are different.
 - If all assignments already have invitations and the download is lost, select
   **Replace lost code** on an assignment marked **Code issued · not started**.
   Enter a reason and generate the replacement. Its code is shown and downloaded.
+- **Replace unused codes and download all** replaces every unused C4 code and
+  creates any missing invitations in one private download,
+  `private-c4-unused-invitations.json`. Previous unused codes stop working,
+  including any already sent to people who have not started. Every assignment
+  with a started session is skipped, including completed, withdrawn and failed
+  screening sessions; their codes, progress and responses remain untouched.
+  C1 invitations are unaffected. The download lists the skipped assignments.
+  Save the file privately; **Download these invitations again** saves the same
+  displayed codes without replacing them again. This creates codes, not sessions.
 - **Review replacement** on a started assignment requires acknowledging that
   its current session closes. Saved answers remain in the audit. Completion
   protection for any future formal study remains enforced by the backend.

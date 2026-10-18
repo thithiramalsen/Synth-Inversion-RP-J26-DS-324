@@ -65,6 +65,26 @@ and stay excluded from research analysis. Supervisor approval is still pending.
 
 This remote restart/backup check has **not** been completed by local unit tests.
 
+## Recovering a lost C1 invitation download
+
+At `/pilot/admin`, **Replace unused codes and download all** creates one private
+JSON download (`private-c1-unused-invitations.json`) with each assignment ID and
+its new invitation. Existing unused codes stop working, including codes already
+sent to someone who has not started. Send the replacements to those people.
+Missing codes are also created. Every assignment linked to a started session is
+skipped, regardless of whether it is in progress, completed, withdrawn or failed
+screening; existing sessions and responses are not changed. The download lists
+the skipped assignments. No participant sessions are created by this action.
+
+Only hashes are retained on the server, so old codes cannot be recovered. Save
+the download privately; **Download these invitations again** saves the same new
+codes while they are still displayed, without replacing them another time.
+**Create missing invitations** still only issues codes for slots with no active
+invitation, and the individual replacement form still works as before. Bulk
+replacement is transactional and uses the same database lock as participant
+entry, so a concurrent entry either claims its slot first and is skipped, or
+finds that its old unused code was replaced.
+
 ## Future updates
 
 Make and test changes, then commit and push to `c1-pilot-deployment`. Render's

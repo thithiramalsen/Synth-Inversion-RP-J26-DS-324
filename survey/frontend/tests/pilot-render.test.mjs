@@ -4,16 +4,18 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { createServer } from 'vite'
 
-let server, PilotApp, C4App, C4Admin, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
+let server, PilotApp, BulkInvitationDownload, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
 const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
   server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
-  PilotApp = (await server.ssrLoadModule('/src/PilotApp.jsx')).default
+  const c1 = await server.ssrLoadModule('/src/PilotApp.jsx')
+  PilotApp = c1.default; BulkInvitationDownload = c1.BulkInvitationDownload
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
   C4App = c4.default; C4Admin = c4.C4Admin; ComparisonPlayer = c4.ComparisonPlayer
+  C4BulkInvitationDownload = c4.C4BulkInvitationDownload
   C4InvitationAssignments = c4.C4InvitationAssignments
   ComparisonQuestions = c4.ComparisonQuestions
 })
@@ -53,6 +55,27 @@ test('C4 review, researcher login and triple player render independently', () =>
   assert.match(html,/Play.*Reference/)
   assert.match(html,/Play.*Sound A/)
   assert.match(html,/Play.*Sound B/)
+})
+
+test('C1 bulk invitation download explains replacement and protects started sessions', () => {
+  const html = renderToString(React.createElement(BulkInvitationDownload, { busy: false, onDownload: () => {} }))
+  assert.match(html, /Replace unused codes and download all/)
+  assert.match(html, /Previously shared unused codes will stop working/)
+  assert.match(html, /Every assignment with a started session is skipped/)
+  assert.match(html, /does not create participant sessions/)
+  const busy = renderToString(React.createElement(BulkInvitationDownload, { busy: true, onDownload: () => {} }))
+  assert.match(busy, /<button[^>]*disabled=""[^>]*>Replace unused codes and download all/)
+})
+
+test('C4 bulk invitation download matches C1 and identifies C4 assignments', () => {
+  const html = renderToString(React.createElement(C4BulkInvitationDownload, { busy: false, onDownload: () => {} }))
+  assert.match(html, /Replace unused codes and download all/)
+  assert.match(html, /Previously shared unused codes will stop working/)
+  assert.match(html, /Every assignment with a started session is skipped/)
+  assert.match(html, /labelled with its C4 assignment/)
+  assert.match(html, /does not create participant sessions/)
+  const busy = renderToString(React.createElement(C4BulkInvitationDownload, { busy: true, onDownload: () => {} }))
+  assert.match(busy, /<button[^>]*disabled=""[^>]*>Replace unused codes and download all/)
 })
 
 test('C4 retains full-listen checks when its player remounts after a pause', () => {
