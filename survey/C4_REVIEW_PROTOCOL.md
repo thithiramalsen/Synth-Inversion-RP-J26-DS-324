@@ -32,7 +32,7 @@ Each assignment is one listener's fixed set of comparisons. Invitation codes
 for C1, C4 and researcher accounts are different.
 
 - **Create participant invitations** issues codes only for assignments without
-  an active invitation. Save `private-c4-invitations.json`; codes are displayed
+  an active invitation. Save `private-c4-invitations.csv`; codes are displayed
   when created and cannot be retrieved again after leaving the page.
 - An empty sessions table means nobody has started, not that no invitations were
   issued. The assignment table includes codes issued to unused assignments.
@@ -40,14 +40,21 @@ for C1, C4 and researcher accounts are different.
   **Replace lost code** on an assignment marked **Code issued · not started**.
   Enter a reason and generate the replacement. Its code is shown and downloaded.
 - **Replace unused codes and download all** replaces every unused C4 code and
-  creates any missing invitations in one private download,
-  `private-c4-unused-invitations.json`. Previous unused codes stop working,
+  creates any missing invitations in one private CSV download,
+  `private-c4-unused-invitations.csv`. Previous unused codes stop working,
   including any already sent to people who have not started. Every assignment
   with a started session is skipped, including completed, withdrawn and failed
   screening sessions; their codes, progress and responses remain untouched.
-  C1 invitations are unaffected. The download lists the skipped assignments.
-  Save the file privately; **Download these invitations again** saves the same
-  displayed codes without replacing them again. This creates codes, not sessions.
+  C1 invitations are unaffected. The page lists the skipped assignments.
+  Save the file privately; **Download CSV to fill in names** saves the same
+  displayed codes without replacing them again. **Download JSON backup** remains
+  available. This creates codes, not sessions.
+- CSVs include `participant_name`, `study`, `assignment_id`, `invitation_code`,
+  `date_sent` and `notes`. Names, dates and notes start blank for you to fill in
+  locally while assigning invitations; those edits are not uploaded. Downloading
+  again gives a fresh blank tracking sheet with the same codes, not your saved
+  edits. Keep your completed copy private. Individual replacement invitations
+  also download as CSV automatically.
 - **Review replacement** on a started assignment requires acknowledging that
   its current session closes. Saved answers remain in the audit. Completion
   protection for any future formal study remains enforced by the backend.

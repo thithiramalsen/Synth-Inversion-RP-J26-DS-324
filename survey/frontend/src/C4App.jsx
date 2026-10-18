@@ -1,4 +1,6 @@
 import { SiteHeader } from './SiteNavigation'
+import InvitationDownloads from './InvitationDownloads'
+import { invitationCsv } from './invitationCsv'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
 import './c4.css'
@@ -290,7 +292,7 @@ export function C4BulkInvitationDownload({ busy, onDownload }) {
     <h2>Get unused invitations in one file</h2>
     <p>If you lost the original download, replace all unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions.</p>
     <button type="button" className="p-secondary" disabled={busy} onClick={onDownload}>Replace unused codes and download all</button>
-    <p className="p-muted">Save the private JSON file. Each code is labelled with its C4 assignment. This does not create participant sessions.</p>
+    <p className="p-muted">Save the private CSV file and fill in names as you assign codes. Each code is labelled with its C4 assignment. This does not create participant sessions.</p>
   </section>
 }
 
@@ -342,14 +344,14 @@ export function C4Admin() {
     const result = await request('/admin/invitations', { body: {} })
     setSkippedAssignments(null)
     setIssued(result.invitations)
-    if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-c4-invitations.json', 'application/json')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C4'), 'private-c4-invitations.csv', 'text/csv;charset=utf-8')
     setData(await request('/admin/summary'))
   }
   async function replaceInvitation() {
     const result = await request('/admin/replace-invitation', { body: replacement })
     setSkippedAssignments(null)
     setIssued([result])
-    download(JSON.stringify(result, null, 2), 'private-c4-replacement-invitation.json', 'application/json')
+    download(invitationCsv([result], 'C4'), 'private-c4-replacement-invitation.csv', 'text/csv;charset=utf-8')
     setReplacement({ assignment_id: '', reason: '' })
     setReplaceAcknowledged(false)
     setData(await request('/admin/summary'))
@@ -358,7 +360,7 @@ export function C4Admin() {
     const result = await request('/admin/replace-unused-invitations', { body: { confirm_replace_unused: true } })
     setIssued(result.invitations)
     setSkippedAssignments(result.skipped_assignments)
-    if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-c4-unused-invitations.json', 'application/json')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C4'), 'private-c4-unused-invitations.csv', 'text/csv;charset=utf-8')
     setData(await request('/admin/summary'))
   }
   function selectReplacement(assignment_id) {
@@ -381,7 +383,7 @@ export function C4Admin() {
     <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>Manage C4 invitations and sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={locked} onClick={() => act(async () => setData(await request('/admin/summary')))}>{locked ? 'Working…' : 'Refresh invitations and sessions'}</button><button className="p-secondary" disabled={locked} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setSkippedAssignments(null); setAccountInvite(null); setReplacement({ assignment_id: '', reason: '' }); setReplaceAcknowledged(false) })}>Sign out</button></div>{loading && <p role="status">Loading participant assignments…</p>}</section>
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
       <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unused assignments remain' : 'All assignments already have invitations'}</h2>
-      {issued.length ? <><p>Save the downloaded file before leaving this page. Copy only the invitation code to the participant and send them to <a href="/c4">the C4 study</a>.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<button type="button" className="p-secondary" onClick={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-c4-invitations.json', 'application/json')}>Download these invitations again</button></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below for one file, or choose “Replace lost code” for an individual unused assignment. Creating invitations does not reissue existing codes.</p>}
+      {issued.length ? <><p>Save the downloaded CSV before leaving this page and fill in names as you assign codes. Copy only the invitation code to the participant and send them to <a href="/c4">the C4 study</a>.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C4'), 'private-c4-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-c4-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below for one file, or choose “Replace lost code” for an individual unused assignment. Creating invitations does not reissue existing codes.</p>}
       {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} started assignments skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
     </section>}
     <C4BulkInvitationDownload busy={locked} onDownload={() => act(downloadUnusedInvitations)} />

@@ -1,4 +1,6 @@
 import { SiteHeader } from './SiteNavigation'
+import InvitationDownloads from './InvitationDownloads'
+import { invitationCsv } from './invitationCsv'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
 
@@ -236,7 +238,7 @@ export function BulkInvitationDownload({ busy, onDownload }) {
     <h2>Get unused invitations in one file</h2>
     <p>If you lost the original download, replace all unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions.</p>
     <button type="button" className="p-secondary" disabled={busy} onClick={onDownload}>Replace unused codes and download all</button>
-    <p className="p-muted">Save the private JSON file. Each code is labelled with its block. This does not create participant sessions.</p>
+    <p className="p-muted">Save the private CSV file and fill in names as you assign codes. Each code is labelled with its block. This does not create participant sessions.</p>
   </section>
 }
 
@@ -274,13 +276,13 @@ export function PilotAdmin() {
     const result = await request('/admin/invitations', { body: {} })
     setSkippedAssignments(null)
     setIssued(result.invitations)
-    if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-invitations.json', 'application/json')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1'), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')
   }
   async function replaceInvitation() {
     const result = await request('/admin/replace-invitation', { body: replacement })
     setIssued([result])
     setSkippedAssignments(null)
-    download(JSON.stringify(result, null, 2), 'private-replacement-invitation.json', 'application/json')
+    download(invitationCsv([result], 'C1'), 'private-c1-replacement-invitation.csv', 'text/csv;charset=utf-8')
     setReplacement({ assignment_id: '', reason: '' })
     setData(await request('/admin/summary'))
   }
@@ -288,7 +290,7 @@ export function PilotAdmin() {
     const result = await request('/admin/replace-unused-invitations', { body: { confirm_replace_unused: true } })
     setIssued(result.invitations)
     setSkippedAssignments(result.skipped_assignments)
-    if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-c1-unused-invitations.json', 'application/json')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1'), 'private-c1-unused-invitations.csv', 'text/csv;charset=utf-8')
     setData(await request('/admin/summary'))
   }
   if (!authenticated) return <div className="pilot-app"><SiteHeader current="c1-admin" researcher /><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
@@ -311,7 +313,7 @@ export function PilotAdmin() {
     </section>
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
       <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unused assignments remain' : 'All assignments already have invitations'}</h2>
-      {issued.length ? <><p>The codes are shown here and downloaded as JSON. Copy only an invitation code to its participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<button type="button" className="p-secondary" onClick={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')}>Download these invitations again</button></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below if you lost the original file. Creating missing invitations does not reissue existing codes.</p>}
+      {issued.length ? <><p>The codes are shown here and downloaded as a CSV with blank names. Copy only an invitation code to its participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C1'), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below if you lost the original file. Creating missing invitations does not reissue existing codes.</p>}
       {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} started assignments skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
     </section>}
     <BulkInvitationDownload busy={busy} onDownload={() => act(downloadUnusedInvitations)} />
