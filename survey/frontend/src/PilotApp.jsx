@@ -2,6 +2,7 @@ import { SiteHeader } from './SiteNavigation'
 import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
+import PreviousNavigation from './PreviousNavigation'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
@@ -144,11 +145,14 @@ export default function PilotApp() {
   const [interval, setInterval] = useState(''), [startedAt, setStartedAt] = useState('')
   const [paused, setPaused] = useState(false), [withdrawPrompt, setWithdrawPrompt] = useState(false)
   const [feedback, setFeedback] = useState({ clarity: '', length: '', comment: '' })
+  const pendingDraft = useRef(null)
 
   async function load(active = session) {
     if (!active) return
     const next = await request(`/sessions/${active.session_id}`, { session: active })
-    setStep(next); setRatings(next.phase === 'correction' ? { ...blankRatings(next.config.descriptors), ...next.saved_answers } : blankRatings(next.config.descriptors)); setInterval(''); setPlays(0); setCompleted(0); setStartedAt(next.server_time)
+    const draft = next.phase === 'rating' && pendingDraft.current?.presentation_id === next.presentation_id ? pendingDraft.current : null
+    setStep(next); setRatings(next.phase === 'correction' ? { ...blankRatings(next.config.descriptors), ...next.saved_answers } : draft?.ratings || blankRatings(next.config.descriptors)); setInterval(''); setPlays(0); setCompleted(0); setStartedAt(next.server_time)
+    if (draft) pendingDraft.current = null
   }
   useEffect(() => {
     request('/status').then(setStatus).catch(e => setError(e.message))
@@ -165,6 +169,7 @@ export default function PilotApp() {
   }
   async function openPrevious() {
     await action(async () => {
+      if (step.phase === 'rating') pendingDraft.current = { presentation_id: step.presentation_id, ratings: { ...ratings } }
       await request(`/sessions/${session.session_id}/previous`, { session, body: { current_index: step.current_index } })
       await load()
     })
@@ -196,6 +201,7 @@ export default function PilotApp() {
       </> : !step ? <p role="status">Restoring your session…</p> : <>
         <div className="p-session-bar"><span className="p-listener-label">{step.participant_label}</span>{!end && <button onClick={() => setPaused(!paused)}>{paused ? 'Resume' : 'Pause'}</button>}</div>
         {withdrawPrompt ? <section className="p-card"><h1>Withdraw this session?</h1><p>Your responses will be marked as withdrawn and excluded from analysis.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => action(async () => { await submit('withdraw', {}); setWithdrawPrompt(false) })}>Withdraw my responses</button><button className="p-secondary" onClick={() => setWithdrawPrompt(false)}>Keep my session</button></div></section> : paused ? <section className="p-card"><h1>Take your time.</h1><p>Your saved responses are safe. Resume when you are ready to listen in a quiet place.</p><button className="p-primary" onClick={() => setPaused(false)}>Resume listening</button></section> : <>
+          <PreviousNavigation step={step} busy={busy} unit="sound" onPrevious={openPrevious} />
           {phase === 'volume' && <><p className="p-eyebrow">SETUP · 1 OF 2</p><h1>Find a comfortable level.</h1><p className="p-lede">Start with a low device volume, play the tone and adjust it to a comfortable level. Keep that setting for the rest of the session.</p></>}
           {phase === 'headphones' && <><p className="p-eyebrow">SETUP · 2 OF 2</p><h1>A quick headphone check.</h1><p className="p-lede">You will hear three tones. Which is the quietest? Listen to all three before choosing.</p><p className="p-muted">Check {step.screen_number} of 6</p></>}
           {phase === 'rating' && <><div className="p-trial-heading"><div><p className="p-eyebrow">{step.practice ? 'GET FAMILIAR WITH THE QUESTIONS' : 'LISTEN · DESCRIBE · CONTINUE'}</p><h1>{step.practice ? 'Practice' : 'Sound'} {String(step.display_number).padStart(2, '0')}<span> / {step.display_total}</span></h1></div></div>
@@ -205,7 +211,6 @@ export default function PilotApp() {
           {playable && <Player key={step.presentation_id || step.audio_id} session={session} audioId={step.audio_id} presentationId={cfg.navigation_policy === 'previous_before_next_play_v1' ? step.presentation_id : undefined} label={phase === 'volume' ? 'Volume reference' : phase === 'headphones' ? `Headphone check ${step.screen_number} of 6` : `${step.practice ? 'Practice' : 'Sound'} ${String(step.display_number).padStart(2, '0')} / ${step.display_total}`} disabled={busy} onStart={() => setStep(s => ({ ...s, can_correct_previous: false }))} onPlay={() => setPlays(n => n + 1)} onEnd={() => setCompleted(n => n + 1)} onError={setError} />}
           {phase === 'volume' && <button className="p-primary" disabled={busy || !completed} onClick={() => action(() => submit('volume', { completed_plays: completed }))}>This level is comfortable →</button>}
           {phase === 'headphones' && <section className="p-card"><fieldset><legend>Which tone was quietest?</legend><div className="p-intervals">{[1, 2, 3].map(n => <button key={n} type="button" className={interval === n ? 'selected' : ''} aria-pressed={interval === n} onClick={() => setInterval(n)}>{['First', 'Second', 'Third'][n - 1]}</button>)}</div></fieldset><button className="p-primary" disabled={busy || !completed || !interval} onClick={() => action(() => submit('headphones', { screen_number: step.screen_number, interval, completed_plays: completed }))}>Continue →</button></section>}
-          {step.can_correct_previous && <div className="p-previous-row"><button type="button" className="p-secondary" disabled={busy} onClick={openPrevious}>← Correct previous sound</button><span>You can correct the previous response until you select “Start this sound” for the next clip.</span></div>}
           {phase === 'rating' && <><form onSubmit={e => { e.preventDefault(); action(() => submit('ratings', { presentation_id: step.presentation_id, answers: ratings, play_count: plays, completed_plays: completed, started_at: startedAt })) }}>
             <p className="p-scale-help">1 means “not at all”; 7 means “very”. Use “cannot judge” if you are unsure what a term means.</p>
             <section className="p-card p-rating-card">{cfg.descriptors.map(d => <Scale key={d.id} descriptor={d} value={ratings[d.id]} onChange={value => setRatings(r => ({ ...r, [d.id]: value }))} />)}</section>
@@ -218,7 +223,7 @@ export default function PilotApp() {
             <p className="p-scale-help">1 means “not at all”; 7 means “very”. Use “cannot judge” if you are unsure what a term means.</p>
             <section className="p-card p-rating-card">{cfg.descriptors.map(d => <Scale key={d.id} descriptor={d} value={ratings[d.id]} onChange={value => setRatings(r => ({ ...r, [d.id]: value }))} />)}</section>
             <label className="p-comment">Anything unclear? <span>Optional</span><textarea maxLength="1000" rows="2" value={ratings.comment} onChange={e => setRatings(r => ({ ...r, comment: e.target.value }))} /></label>
-            <div className="p-actions"><button type="submit" className="p-primary" disabled={busy || !allRated(cfg.descriptors, ratings)}>{busy ? 'Saving…' : 'Save correction'}</button><button type="button" className="p-secondary" disabled={busy} onClick={cancelCorrection}>Cancel correction</button></div>
+            <div className="p-actions"><button type="button" className="p-secondary" disabled={busy} onClick={cancelCorrection}>Return without changes →</button><button type="submit" className="p-primary" disabled={busy || !allRated(cfg.descriptors, ratings)}>{busy ? 'Saving…' : 'Save correction and continue →'}</button></div>
           </form>}
           {phase === 'break' && <section className="p-card"><p className="p-eyebrow">HALFWAY THROUGH</p><h1>A moment to rest.</h1><p>You have completed half the rated presentations. Take a short break, then continue with the same listening setup and volume.</p><button className="p-primary" disabled={busy} onClick={() => action(() => submit('continue', {}))}>Continue listening →</button></section>}
           {phase === 'feedback' && <form className="p-card" onSubmit={e => { e.preventDefault(); action(() => submit('feedback', feedback)) }}><p className="p-eyebrow">ONE LAST THING</p><h1>How was the experience?</h1>

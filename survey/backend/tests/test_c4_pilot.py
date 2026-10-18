@@ -313,7 +313,7 @@ class C4PilotTests(unittest.TestCase):
     def test_tagged_entry_uses_same_catalogue_and_exports_choices(self):
         cfg = self.client.get('/api/c4-pilot/status').json()['config']
         self.assertEqual(cfg['experience_selection']['version'], 'experience_tags_v1')
-        self.assertEqual(cfg['protocol_version'], 'c4_review_2026-10-19_tags_v2')
+        self.assertEqual(cfg['protocol_version'], 'c4_review_2026-10-19_navigation_v3')
         self.start()
         code = self.client.post('/api/c4-pilot/admin/replace-unused-invitations', headers=self.admin,
                                 json=dict(confirm_replace_unused=True)).json()['invitations'][0]['invitation']
@@ -328,6 +328,113 @@ class C4PilotTests(unittest.TestCase):
         self.assertEqual(saved['experience_selection'], entry['experience_selection'])
         self.assertEqual(saved['tools'], 'Bass guitar; Singing / vocals')
         self.assertEqual(saved['example'], 'Practised, performed or recorded a song with my voice')
+
+    def test_previous_correction_preserves_original_and_exports_canonical_revisions(self):
+        self.start(); self.setup_audio()
+        first = self.state()
+        self.assertFalse(first['can_correct_previous'])
+        self.expose(first)
+        self.assertEqual(self.post('ratings', self.body(first)).status_code, 200)
+        current = self.state()
+        self.assertTrue(current['can_correct_previous'])
+        self.assertEqual(self.post('previous', {'current_index': current['current_index']}).status_code, 200)
+        correction = self.state()
+        self.assertEqual(correction['phase'], 'correction')
+        self.assertEqual(correction['presentation_id'], first['presentation_id'])
+        self.assertEqual(correction['saved_answers']['choice'], 'candidate_a')
+        self.assertEqual(self.state()['correction_token'], correction['correction_token'])
+        # Correction may replay only its own three sounds, never the next comparison.
+        self.expose(correction)
+        self.assertEqual(self.post('playback/'+current['presentation_id']+'/reference', {}).status_code, 409)
+        self.assertEqual(self.post('ratings', self.body(current)).status_code, 409)
+        revised = self.body(correction, 'candidate_b')
+        revised['correction_token'] = correction['correction_token']
+        revised['play_counts'] = dict.fromkeys(ROLES, 0)
+        revised['completed_counts'] = dict.fromkeys(ROLES, 0)
+        self.assertEqual(self.post('previous/save', revised).status_code, 200)
+        self.assertEqual(self.post('previous/save', revised).status_code, 409)
+        self.assertEqual(self.state()['presentation_id'], current['presentation_id'])
+        with database.get_connection() as db:
+            original = db.execute('SELECT * FROM c4_ratings WHERE presentation_id=?', (first['presentation_id'],)).fetchone()
+            self.assertEqual(json.loads(original['answers_json'])['choice'], 'candidate_a')
+            expected_id = json.loads(original['triplet_json'])['candidate_b']
+        rows = list(csv.DictReader(io.StringIO(self.client.get('/api/c4-pilot/admin/export', headers=self.admin).text)))
+        self.assertEqual(rows[0]['choice_first'], 'candidate_a')
+        self.assertEqual(rows[0]['choice'], 'candidate_b')
+        self.assertEqual(rows[0]['chosen_sample_id'], expected_id)
+        self.assertEqual(rows[0]['revision_count'], '1')
+        self.assertEqual(json.loads(json.loads(rows[0]['corrections_json'])[0]['answers_json'])['chosen_sample_id'], expected_id)
+        # Reopen the latest answer, then cancel without creating another revision.
+        self.assertEqual(self.post('previous', {'current_index': current['current_index']}).status_code, 200)
+        reopened = self.state()
+        self.assertEqual(reopened['saved_answers']['choice'], 'candidate_b')
+        self.assertEqual(self.post('previous/cancel', {'correction_token': 'wrong-token'}).status_code, 409)
+        self.assertEqual(self.post('previous/cancel', {'correction_token': reopened['correction_token']}).status_code, 200)
+        self.assertTrue(self.state()['can_correct_previous'])
+
+    def test_previous_locks_on_any_next_clip_and_rejects_invalid_corrections(self):
+        self.start(); self.setup_audio()
+        first = self.state(); self.expose(first)
+        self.post('ratings', self.body(first))
+        current = self.state()
+        self.assertEqual(self.client.post(self.base+'/previous', json={'current_index': current['current_index']}).status_code, 401)
+        self.assertEqual(self.post('previous', {'current_index': 99}).status_code, 409)
+        self.assertEqual(self.post('previous', {'current_index': current['current_index']}).status_code, 200)
+        correction = self.state()
+        revised = dict(self.body(correction), correction_token=correction['correction_token'])
+        for update in ({'presentation_id': current['presentation_id']}, {'correction_token': 'wrong'}):
+            self.assertEqual(self.post('previous/save', {**revised, **update}).status_code, 409)
+        revised['answers']['confidence'] = None
+        self.assertEqual(self.post('previous/save', revised).status_code, 422)
+        revised = dict(self.body(correction, 'cannot_decide'), correction_token=correction['correction_token'],
+                       play_counts=dict.fromkeys(ROLES, 0), completed_counts=dict.fromkeys(ROLES, 0))
+        self.assertEqual(self.post('previous/save', revised).status_code, 200)
+        # A GET/prefetch does not claim audio. Any explicitly requested role locks Previous.
+        path = self.base+'/playback/'+current['presentation_id']+'/candidate_b'
+        self.assertEqual(self.client.get(path, headers=self.headers).status_code, 405)
+        self.assertTrue(self.state()['can_correct_previous'])
+        self.assertEqual(self.client.post(path, headers=self.headers).status_code, 200)
+        self.assertFalse(self.state()['can_correct_previous'])
+        self.assertFalse(self.state()['can_correct_previous'])
+        self.assertEqual(self.post('previous', {'current_index': current['current_index']}).status_code, 409)
+        self.assertEqual(self.post('playback/'+first['presentation_id']+'/reference', {}).status_code, 409)
+
+    def test_previous_at_break_feedback_and_old_protocol_boundaries(self):
+        self.start(); self.setup_audio()
+        for _ in range(14):
+            state = self.state()
+            if state['phase'] == 'break':
+                self.assertTrue(state['can_correct_previous'])
+                self.post('previous', {'current_index': state['current_index']})
+                correction = self.state()
+                self.assertEqual(self.post('continue', {}).status_code, 409)
+                self.post('previous/cancel', {'correction_token': correction['correction_token']})
+                self.post('continue', {})
+                state = self.state()
+            self.expose(state)
+            self.assertEqual(self.post('ratings', self.body(state)).status_code, 200)
+        state = self.state()
+        self.assertEqual(state['phase'], 'feedback')
+        self.assertTrue(state['can_correct_previous'])
+        self.post('previous', {'current_index': state['current_index']})
+        correction = self.state()
+        feedback = dict(clarity='Clear', length='About right')
+        self.assertEqual(self.post('feedback', feedback).status_code, 409)
+        revised = dict(self.body(correction), correction_token=correction['correction_token'])
+        self.assertEqual(self.post('previous/save', revised).status_code, 200)
+        self.assertEqual(self.post('feedback', feedback).status_code, 200)
+        self.assertFalse(self.state()['can_correct_previous'])
+        self.assertEqual(self.post('previous', {'current_index': state['current_index']}).status_code, 409)
+        # An older snapshot keeps forward-only navigation after deployment.
+        cfg = c4_pilot.config(); cfg.pop('navigation_policy')
+        code = self.client.post('/api/c4-pilot/admin/replace-unused-invitations', headers=self.admin,
+                                json=dict(confirm_replace_unused=True)).json()['invitations'][0]['invitation']
+        with patch.object(c4_pilot, 'config', return_value=cfg):
+            self.start(invitation=code)
+        self.setup_audio(); first = self.state(); self.expose(first)
+        self.post('ratings', self.body(first))
+        self.assertFalse(self.state()['can_correct_previous'])
+        self.assertEqual(self.post('previous', {'current_index': self.state()['current_index']}).status_code, 409)
 
 
 class C4DesignTests(unittest.TestCase):

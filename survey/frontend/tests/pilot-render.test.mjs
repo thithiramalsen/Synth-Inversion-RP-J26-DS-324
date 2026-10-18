@@ -5,7 +5,7 @@ import { renderToString } from 'react-dom/server'
 import { createServer } from 'vite'
 import { readFileSync } from 'node:fs'
 
-let server, PilotApp, BulkInvitationDownload, InvitationDownloads, ExperienceQuestions, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
+let server, PilotApp, BulkInvitationDownload, InvitationDownloads, ExperienceQuestions, PreviousNavigation, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
 const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
 
@@ -16,6 +16,7 @@ before(async () => {
   PilotApp = c1.default; BulkInvitationDownload = c1.BulkInvitationDownload
   InvitationDownloads = (await server.ssrLoadModule('/src/InvitationDownloads.jsx')).default
   ExperienceQuestions = (await server.ssrLoadModule('/src/ExperienceQuestions.jsx')).default
+  PreviousNavigation = (await server.ssrLoadModule('/src/PreviousNavigation.jsx')).default
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
   C4App = c4.default; C4Admin = c4.C4Admin; ComparisonPlayer = c4.ComparisonPlayer
   C4BulkInvitationDownload = c4.C4BulkInvitationDownload
@@ -103,6 +104,32 @@ test('experience tags are accessible checkboxes with optional details in both st
     assert.doesNotMatch(html, /required=""/)
     assert.match(html, /Select one or more examples you have actually done/)
   }
+})
+
+test('Previous remains visible with an explanation when first, locked or unavailable', () => {
+  for (const unit of ['sound', 'comparison']) {
+    const base = { phase: 'rating', current_index: 1, config: { navigation_policy: 'previous_before_next_play_v1' } }
+    const render = step => renderToString(React.createElement(PreviousNavigation, { step, unit, onPrevious: () => {}, busy: false }))
+    assert.match(render({ ...base, can_correct_previous: true }), /← Previous<\/button>/)
+    assert.match(render({ ...base, can_correct_previous: true }), /Original answers are kept/)
+    const locked = render({ ...base, can_correct_previous: false })
+    assert.match(locked, /disabled=""/)
+    assert.match(locked, /already started/)
+    assert.match(render({ ...base, current_index: 0 }), /there is no previous response/)
+    assert.match(render({ ...base, config: {} }), /original forward-only/)
+    assert.equal(render({ ...base, phase: 'correction' }), '')
+  }
+})
+
+test('C4 correction player offers all three original clips without requiring replay', () => {
+  const html = renderToString(React.createElement(ComparisonPlayer, {
+    session: { session_id: 'test', token: 'test' }, step: { phase: 'correction' }, onCounts: () => {}, onError: () => {},
+  }))
+  assert.equal((html.match(/<audio/g)||[]).length, 1)
+  assert.match(html, /Replaying the clips is optional/)
+  assert.match(html, /Play.*Reference/)
+  assert.match(html, /Play.*Sound A/)
+  assert.match(html, /Play.*Sound B/)
 })
 
 test('C4 retains full-listen checks when its player remounts after a pause', () => {

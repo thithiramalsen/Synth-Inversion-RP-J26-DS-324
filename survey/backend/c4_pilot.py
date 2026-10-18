@@ -21,6 +21,7 @@ from security import require_admin
 
 ROOT = Path(__file__).resolve().parents[2]
 router = APIRouter(prefix="/api/c4-pilot")
+CORRECTION_POLICY = 'previous_before_next_play_v1'
 
 
 def now():
@@ -87,11 +88,45 @@ def initialize_pilot_database():
             session_id TEXT NOT NULL, presentation_id TEXT NOT NULL, role TEXT NOT NULL, opened_at TEXT NOT NULL,
             UNIQUE(session_id,presentation_id,role)
         );
+        CREATE TABLE IF NOT EXISTS c4_navigation (
+            session_id TEXT PRIMARY KEY, correction_index INTEGER, correction_token TEXT
+        );
+        CREATE TABLE IF NOT EXISTS c4_rating_corrections (
+            correction_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id TEXT NOT NULL, presentation_id TEXT NOT NULL, answers_json TEXT NOT NULL,
+            play_counts_json TEXT NOT NULL, completed_counts_json TEXT NOT NULL,
+            started_at TEXT NOT NULL, submitted_at TEXT NOT NULL
+        );
         ''')
 
 
 def listener_label(number):
     return f"Listener {number:03d}"
+
+
+def corrections_enabled(row):
+    return json.loads(row['protocol_snapshot']).get('navigation_policy') == CORRECTION_POLICY
+
+
+def active_correction(db, session_id):
+    return db.execute('SELECT * FROM c4_navigation WHERE session_id=? AND correction_index IS NOT NULL', (session_id,)).fetchone()
+
+
+def require_no_correction(db, session_id):
+    if active_correction(db, session_id):
+        raise HTTPException(409, 'Save or cancel the current correction first')
+
+
+def can_correct(db, row):
+    if (not corrections_enabled(row) or row['phase'] not in ('rating', 'break', 'feedback')
+            or row['current_index'] == 0 or active_correction(db, row['session_id'])):
+        return False
+    trials = json.loads(row['trial_order'])
+    if row['current_index'] < len(trials):
+        current = trials[row['current_index']]['presentation_id']
+        if db.execute('SELECT 1 FROM c4_exposures WHERE session_id=? AND presentation_id=?', (row['session_id'], current)).fetchone():
+            return False
+    return True
 
 
 def launch_issues(bundle, cfg):
@@ -214,6 +249,19 @@ def state(session_id: str, authorization: str = Header(default="")):
                       index=row["current_index"], total=len(trials),
                       display_number=row["current_index"]+1 if practice else row["current_index"]-1,
                       display_total=2 if practice else len(trials)-2)
+    with get_connection() as db:
+        result['can_correct_previous'] = can_correct(db, row)
+        correction = active_correction(db, session_id)
+        if correction and row['phase'] in ('rating', 'break', 'feedback'):
+            trial = json.loads(row['trial_order'])[correction['correction_index']]
+            original = db.execute('SELECT answers_json FROM c4_ratings WHERE session_id=? AND presentation_id=?', (session_id, trial['presentation_id'])).fetchone()
+            latest = db.execute('SELECT answers_json FROM c4_rating_corrections WHERE session_id=? AND presentation_id=? ORDER BY correction_id DESC LIMIT 1', (session_id, trial['presentation_id'])).fetchone()
+            answers = json.loads((latest or original)['answers_json'])
+            result.update(phase='correction', presentation_id=trial['presentation_id'], practice=trial['kind'] == 'practice',
+                          correction_token=correction['correction_token'],
+                          saved_answers={key: answers[key] for key in ('choice', 'confidence', 'comment')},
+                          display_number=correction['correction_index']+1 if trial['kind'] == 'practice' else correction['correction_index']-1,
+                          display_total=2 if trial['kind'] == 'practice' else result['total_presentations']-2)
     return result
 
 
@@ -243,9 +291,11 @@ def presentation_playback(session_id: str, presentation_id: str,
     with get_connection() as db:
         db.execute("BEGIN IMMEDIATE")
         row = db.execute("SELECT * FROM c4_sessions WHERE session_id=?", (session_id,)).fetchone()
-        if row["phase"] != "rating":
+        correction = active_correction(db, session_id)
+        if row['phase'] not in ('rating', 'break', 'feedback') or (correction is None and row['phase'] != 'rating'):
             raise HTTPException(409, "No comparison is available at this step")
-        trial = json.loads(row["trial_order"])[row["current_index"]]
+        index = correction['correction_index'] if correction else row['current_index']
+        trial = json.loads(row["trial_order"])[index]
         if trial["presentation_id"] != presentation_id:
             raise HTTPException(409, "Only the current comparison can be played")
         asset = bundle["samples"][trial[role]]
@@ -256,6 +306,24 @@ def presentation_playback(session_id: str, presentation_id: str,
 
 class Played(StrictBody):
     completed_plays: int = Field(ge=1, le=1000)
+
+
+class PreviousRequest(StrictBody):
+    current_index: int = Field(ge=1)
+
+
+@router.post('/sessions/{session_id}/previous')
+def previous(session_id: str, body: PreviousRequest, authorization: str = Header(default='')):
+    context(session_id, authorization)
+    with get_connection() as db:
+        db.execute('BEGIN IMMEDIATE')
+        row = db.execute('SELECT * FROM c4_sessions WHERE session_id=?', (session_id,)).fetchone()
+        if row['current_index'] != body.current_index or not can_correct(db, row):
+            raise HTTPException(409, 'The previous response can no longer be reopened')
+        db.execute('''INSERT INTO c4_navigation VALUES (?,?,?) ON CONFLICT(session_id)
+                      DO UPDATE SET correction_index=excluded.correction_index,correction_token=excluded.correction_token''',
+                   (session_id, row['current_index']-1, secrets.token_urlsafe(18)))
+    return {'opened': True}
 
 
 @router.post("/sessions/{session_id}/volume")
@@ -312,6 +380,69 @@ class RatingBody(StrictBody):
     started_at: datetime
 
 
+class CorrectionCounts(StrictBody):
+    reference: int = Field(strict=True, ge=0, le=1000)
+    candidate_a: int = Field(strict=True, ge=0, le=1000)
+    candidate_b: int = Field(strict=True, ge=0, le=1000)
+
+
+class CorrectionToken(StrictBody):
+    correction_token: str
+
+
+class CorrectionBody(CorrectionToken):
+    presentation_id: str
+    answers: Answers
+    play_counts: CorrectionCounts
+    completed_counts: CorrectionCounts
+    started_at: datetime
+
+
+def checked_correction(db, session_id, token):
+    row = db.execute('SELECT * FROM c4_sessions WHERE session_id=?', (session_id,)).fetchone()
+    correction = active_correction(db, session_id)
+    if (not corrections_enabled(row) or row['phase'] not in ('rating', 'break', 'feedback') or not correction
+            or not secrets.compare_digest(correction['correction_token'], token)):
+        raise HTTPException(409, 'This correction is no longer current')
+    return row, correction
+
+
+@router.post('/sessions/{session_id}/previous/cancel')
+def cancel_correction(session_id: str, body: CorrectionToken, authorization: str = Header(default='')):
+    context(session_id, authorization)
+    with get_connection() as db:
+        db.execute('BEGIN IMMEDIATE')
+        checked_correction(db, session_id, body.correction_token)
+        db.execute('UPDATE c4_navigation SET correction_index=NULL,correction_token=NULL WHERE session_id=?', (session_id,))
+    return {'cancelled': True}
+
+
+@router.post('/sessions/{session_id}/previous/save')
+def save_correction(session_id: str, body: CorrectionBody, authorization: str = Header(default='')):
+    context(session_id, authorization)
+    if (body.answers.choice == 'cannot_decide') != (body.answers.confidence is None):
+        raise HTTPException(422, 'Choose confidence for A or B; leave it empty for cannot decide')
+    plays, completed = body.play_counts.model_dump(), body.completed_counts.model_dump()
+    if any(completed[role] > plays[role] for role in plays):
+        raise HTTPException(422, 'Invalid playback counts')
+    if body.started_at.tzinfo is None or body.started_at > datetime.now(timezone.utc):
+        raise HTTPException(422, 'Invalid correction start time')
+    with get_connection() as db:
+        db.execute('BEGIN IMMEDIATE')
+        row, correction = checked_correction(db, session_id, body.correction_token)
+        trial = json.loads(row['trial_order'])[correction['correction_index']]
+        if trial['presentation_id'] != body.presentation_id:
+            raise HTTPException(409, 'This comparison is not the active correction')
+        values = body.answers.model_dump()
+        values['chosen_sample_id'] = trial[values['choice']] if values['choice'] != 'cannot_decide' else None
+        db.execute('''INSERT INTO c4_rating_corrections
+                      (session_id,presentation_id,answers_json,play_counts_json,completed_counts_json,started_at,submitted_at)
+                      VALUES (?,?,?,?,?,?,?)''',
+                   (session_id, body.presentation_id, json.dumps(values), json.dumps(plays), json.dumps(completed), body.started_at.isoformat(), now()))
+        db.execute('UPDATE c4_navigation SET correction_index=NULL,correction_token=NULL WHERE session_id=?', (session_id,))
+    return {'saved': True}
+
+
 @router.post("/sessions/{session_id}/ratings")
 def rating(session_id: str, body: RatingBody, authorization: str = Header(default="")):
     context(session_id, authorization)
@@ -326,6 +457,7 @@ def rating(session_id: str, body: RatingBody, authorization: str = Header(defaul
         db.execute("BEGIN IMMEDIATE")
         row = db.execute("SELECT * FROM c4_sessions WHERE session_id=?", (session_id,)).fetchone()
         trials = json.loads(row["trial_order"])
+        require_no_correction(db, session_id)
         if row["phase"] != "rating" or trials[row["current_index"]]["presentation_id"] != body.presentation_id:
             raise HTTPException(409, "This comparison is no longer current")
         exposed = db.execute("SELECT role FROM c4_exposures WHERE session_id=? AND presentation_id=?", (session_id, body.presentation_id)).fetchall()
@@ -349,6 +481,7 @@ def continue_after_break(session_id: str, authorization: str = Header(default=""
     context(session_id, authorization)
     with get_connection() as db:
         db.execute("BEGIN IMMEDIATE")
+        require_no_correction(db, session_id)
         changed = db.execute("UPDATE c4_sessions SET phase='rating',break_done=1 WHERE session_id=? AND phase='break'", (session_id,)).rowcount
     if not changed:
         raise HTTPException(409, "No break is pending")
@@ -366,6 +499,7 @@ def feedback(session_id: str, body: Feedback, authorization: str = Header(defaul
     context(session_id, authorization)
     with get_connection() as db:
         db.execute("BEGIN IMMEDIATE")
+        require_no_correction(db, session_id)
         changed = db.execute("UPDATE c4_sessions SET phase='complete',completed_at=?,feedback_json=? WHERE session_id=? AND phase='feedback'",
                              (now(), json.dumps(body.model_dump()), session_id)).rowcount
     if not changed:
@@ -515,17 +649,26 @@ def summary():
 def export():
     with get_connection() as db:
         rows = db.execute("SELECT r.*,s.participant_id,s.study_id,s.bundle_hash,s.protocol_hash,s.assignment_id,s.phase,s.withdrawn_at,s.completed_at FROM c4_ratings r JOIN c4_sessions s USING(session_id) ORDER BY s.started_at,r.trial_order").fetchall()
+        corrections = db.execute('SELECT * FROM c4_rating_corrections ORDER BY correction_id').fetchall()
+    correction_map = {}
+    for item in corrections:
+        correction_map.setdefault((item['session_id'], item['presentation_id']), []).append(dict(item))
     columns = ["participant_id", "session_id", "study_id", "bundle_hash", "protocol_hash", "assignment_id",
                "presentation_id", "triplet_id", "reference", "candidate_a", "candidate_b", "kind", "repeat_of", "trial_order",
                "choice", "chosen_sample_id", "confidence", "comment", "play_count", "completed_plays", "started_at", "submitted_at",
-               "phase", "completed_at", "withdrawn_at", "analysis_include"]
+               "phase", "completed_at", "withdrawn_at", "analysis_include",
+               "choice_first", "chosen_sample_id_first", "confidence_first", "comment_first", "revision_count", "corrections_json"]
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=columns)
     writer.writeheader()
     for item in rows:
         row = dict(item)
         row.update(json.loads(row["triplet_json"]))
-        row.update(json.loads(row["answers_json"]))
+        first = json.loads(row['answers_json'])
+        revisions = correction_map.get((row['session_id'], row['presentation_id']), [])
+        row.update({key+'_first': value for key, value in first.items()})
+        row.update(json.loads(revisions[-1]['answers_json']) if revisions else first)
+        row.update(revision_count=len(revisions), corrections_json=json.dumps(revisions))
         row["analysis_include"] = False  # All sessions in this release are interface reviews.
         writer.writerow({k: safe_cell(row.get(k, "")) for k in columns})
     return StreamingResponse(iter([output.getvalue()]), media_type="text/csv",

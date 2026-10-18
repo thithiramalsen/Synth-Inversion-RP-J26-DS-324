@@ -36,7 +36,8 @@ readable summaries are stored in each session's `entry_json`. The full choice
 catalogue is included in the protocol snapshot for new entries. Existing
 sessions keep their saved questions and answers; older text-only entry remains
 supported. New C4 entries use `c4_review_2026-10-19_tags_v2`, and new C1 review
-entries use `c1_pilot_2026-10-19_20unique_tags_v2`.
+entries use `c1_pilot_2026-10-19_20unique_tags_v2`. The later C4 navigation update
+uses `c4_review_2026-10-19_navigation_v3` for new sessions.
 
 Open `/c4/admin` and sign in with the same researcher account used for C1.
 The updated panel loads invitation assignments and sessions automatically.
@@ -94,8 +95,29 @@ page still requires listening again to the current comparison.
 Play counts now follow native media play events, including resumes, as in C1.
 Completion and play counts are browser-reported interaction checks, not proof of
 human attention. The shared player stays visible while scrolling.
-Answers may be changed before saving; previous-comparison correction is not in
-this version. C1's existing correction policy is unchanged.
+Both surveys show **Previous** and **Save and continue** consistently. Previous
+stays visible but disabled on the first presentation or after the current
+presentation starts, with a reason shown. C1's correction policy is unchanged.
+New C4 sessions use `previous_before_next_play_v1`: the immediately previous
+comparison can be reopened before any clip from the next comparison is requested.
+There is no multi-comparison browsing or skipping unanswered comparisons.
+Corrections are also available at the halfway break and before final feedback
+submission. During correction the previous choice/confidence/comment are loaded;
+replaying those same three clips is optional. **Return without changes** cancels,
+and **Save correction and continue** appends a revision before returning to the
+current step. Unsaved answers on that step are retained during this navigation
+in the current tab; refreshing can still lose an unsaved draft.
+
+The server records exposure and correction state, so a reload does not unlock a
+response after the next comparison starts. Starting a future clip, submitting a
+future answer or passing a break/feedback step is blocked during a correction.
+Original rating rows remain unchanged. Exports show the latest answers plus
+`choice_first`, `chosen_sample_id_first`, `confidence_first`, `comment_first`,
+`revision_count` and the complete `corrections_json` audit, including correction
+playback counts and timestamps. Original playback counts retain their original
+meaning. Any consistency analysis of C4 repeats should distinguish first answers
+from corrected answers. Older C4 sessions retain forward-only navigation from
+their saved protocol and show that limitation explicitly.
 
 ## Stimuli and assignments
 
