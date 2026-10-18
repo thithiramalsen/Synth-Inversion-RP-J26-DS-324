@@ -59,3 +59,7 @@ reference/full_waveform_reference.json
 reference/reference_recipe.json
 reference/reference_summary.json
 reference/corpus_verification.json
+
+# Generated ethics submission documents and working files
+/output/ethics/
+/tmp/ethics_pack_2026_10_15/

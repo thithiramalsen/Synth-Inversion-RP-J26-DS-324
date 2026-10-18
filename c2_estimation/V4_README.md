@@ -1,7 +1,9 @@
 # C2 v4 implementation and runbook
 
-Status: 14 October 2026. The development milestone and **full deterministic
-baseline are complete**. The reliability-calibration study is still in progress.
+Status: 14 October 2026. **Full deterministic baseline, three-member ensemble and
+development reliability calibration are complete**. The per-control results audit,
+256-clip perturbation-step study and local saved-results viewer are also complete.
+See [VALIDATION_RESULTS.md](VALIDATION_RESULTS.md) and [DEMO.md](DEMO.md).
 Nothing here regenerates the corpus. See [FULL_BASELINE_RESULTS.md](FULL_BASELINE_RESULTS.md).
 Saved EDA/audit evidence is indexed in [RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.md).
 
@@ -28,19 +30,31 @@ Saved EDA/audit evidence is indexed in [RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.
   controls; macro z MAE .184187 -> .126339. Updated audio example for the same clip.
 - A 10-figure EDA pack with plotted tables, parameter distributions, split balance,
   training correlation, training audio QA and all-control validation error analysis.
-- Independent Gaussian-head ensemble training, mixture-moment decomposition and
-  interrupted/resumed prediction reproducibility (synthetic checks; full fit running).
+- Three independent Gaussian-head CNNs, each trained for 60 epochs; selected
+  epochs 57/59/58, exact checkpoint reload, and saved mixture-moment decomposition.
+- Ensemble evidence pack (11 figures), frozen 128-clip training-smoke and
+  2,048-clip calibration predictions; completed smoke diagnostics with four audits.
 - Frozen non-test subset prediction, resumable forward-diagnostic cases and
   calibration/ablation implementation. Batch-core checks reproduce the saved real
   example's R and all 13 sensitivities exactly within the declared numeric tolerance.
 - Saved synthetic implementation checks: 34 CPU-suite checks (two CUDA-only skips),
   plus those two CUDA checks passed separately; logs/counts/source hashes are saved.
+- Completed 2,048 calibration and 512 reliability-validation diagnostics, with
+  four renderer audits per partition; fitted all five baselines at three tolerances.
+- Per-control recovery/ranking audit, matched coverage comparisons and 2,000 paired
+  whole-audio bootstrap replicates; explicit conditional-sensitivity comparison.
+- Fixed 256-calibration-clip step study at .01/.02/.05: reused 256 baseline cases,
+  measured 512 additional cases and passed eight additional renderer audits.
+- Local-only saved-results viewer with six preassigned validation examples and
+  real audio for all 13 controls' minus/plus perturbations; no live inference.
+- Latest CPU suite: 43 tests discovered, 41 passed and two CUDA-only skips, saved
+  under `verification_validation_viewer_v1/`; browser playback/controls verified.
 
 ## Not yet completed
 
-- Completed full-data 3-member ensemble results and frozen ensemble predictions.
-- Full 128-clip diagnostic smoke batch and bounded 2,048/512/1,024 reliability study.
-- Measured real-data calibrators, ablations, bootstrap intervals and final threshold policy.
+- Live audio upload/inference interface and downloadable predicted Vital patch.
+  The current browser interface replays saved examples; see [DEMO.md](DEMO.md).
+- Final method locking and any decision/abstention threshold policy.
 - Final untouched-test evaluation and the later exploratory human usefulness study.
 
 Do not describe the first deterministic checkpoint as calibrated or assign it q values.
@@ -142,9 +156,9 @@ the real `--resume` path without changing its predictions.
 ```
 
 Full scope is 98,304 train + 4,096 inverse-validation clips, requiring about 6.3 GiB
-of float32 feature storage. Check disk/compute budget before launch. Calibration,
-reliability-validation and test feature extraction will be added with the later
-frozen ensemble workflow, not pulled into baseline fitting.
+of float32 feature storage. Check disk/compute budget before launch. Calibration
+and reliability-validation are processed separately by the frozen ensemble
+workflow, not pulled into baseline fitting. Test extraction remains excluded.
 
 The comparison aligns the same 512 inverse-validation IDs and checks identical
 ground-truth readbacks. This avoids comparing the development model's 512-clip
@@ -183,11 +197,12 @@ the full run only with the identical command plus `--resume`.
 .\venv\Scripts\python.exe -B -m c2_estimation.v4.run_development --ensemble data/processed/c2_v4/ensemble_full_v1 --output data/processed/c2_v4/development_uncertainty_v1 --workers 4 --wait-minutes 120
 ```
 
-The evidence directory already exists; choose a new name to rebuild it. The ensemble
-command is **already running**. Do not launch another writer into `ensemble_full_v1`.
-If training stops, first confirm the old process is no longer running, then repeat
-the identical ensemble command with `--resume`. The workflow does not start another
-training job. It waits up to 120 minutes for the already-running ensemble, then
+The evidence directory and completed ensemble already exist; these commands record
+how they were produced. Do not launch another writer into `ensemble_full_v1`.
+All three models are saved, so this workflow resume does not retrain them. For an
+interrupted training run, first confirm no old writer remains, then repeat its
+identical ensemble command with `--resume`. The workflow reuses verified completed
+stages (or waits up to 120 minutes if ensemble training is still in progress), then
 performs these stages in order:
 
 1. Save ensemble EDA, including raw variance vs squared-error plots.
@@ -214,6 +229,59 @@ Forward-render timing is measured in stage logs, not assumed from CNN speed.
 Four CPU workers bound parallel rendering. No second multi-gigabyte feature cache
 is created, and perturbation waveforms are streamed rather than saved in bulk.
 
+### Live progress and saved models
+
+The development workflow finished at **2026-10-14 06:49:57 UTC**. All listed stages
+are complete; no training or calibration job needs to remain running to use the
+saved-results viewer. The following commands are for inspecting saved logs or
+monitoring a future explicitly launched run, not evidence of a currently active job.
+
+The workflow was resumed from **994/2,048 saved calibration cases** on 14 October
+2026. New case counts were observed after restart; saved models and completed
+smoke diagnostics were reused. This is a dated restart record, not a live count.
+
+From the repository root in VS Code's PowerShell terminal, follow a calibration
+diagnostic log during an active run:
+
+```powershell
+Get-Content data/processed/c2_v4/development_uncertainty_v1/logs/diagnose_calibration.log -Tail 10 -Wait
+```
+
+`Ctrl+C` stops this viewer only. It does not stop the workflow running in another
+terminal/session. Once calibration diagnostics finish, follow
+`logs/diagnose_reliability-validation.log` instead. Inspect the current stage with:
+
+```powershell
+Get-Content data/processed/c2_v4/development_uncertainty_v1/status.json
+```
+
+`status.json` is updated at stage boundaries, not per clip. Its `running` value can
+remain stale after an interruption; advancing log counts/new case files demonstrate
+progress. Only the terminal exit result or final completion status confirms that
+the workflow has finished. To resume after confirming the previous writer stopped,
+rerun the identical `run_development` command above. Do not delete partial cases.
+
+Saved checkpoints, relative to `data/processed/c2_v4/`:
+
+| Model | Best checkpoint |
+|---|---|
+| Deterministic baseline | `baseline_full_v1/best_model.pt` |
+| Ensemble member 0 | `ensemble_full_v1/member_00/best_model.pt` |
+| Ensemble member 1 | `ensemble_full_v1/member_01/best_model.pt` |
+| Ensemble member 2 | `ensemble_full_v1/member_02/best_model.pt` |
+
+Each model directory also has `last_model.pt` for training resume. The ensemble
+uses all three best checkpoints together, not just the last-trained member.
+Keep run configs, preprocessing/protocol metadata and checksums with the weights.
+These generated artifacts are ignored by Git and need a separate backup.
+
+Measured ensemble inverse-validation macro z MAE is **.127991**, compared with
+**.126112** for the deterministic baseline on the same 4,096 clips. Point accuracy
+therefore did not improve in this run. Development macro Brier is **.116267** for
+g(U), **.115572** for g(U,R) and **.115385** for g(U,S,R). The full-minus-g(U,R)
+paired 95% interval includes zero; sensitivity's extra benefit is not established.
+See [VALIDATION_RESULTS.md](VALIDATION_RESULTS.md). No held-out test has been evaluated.
+
 For an individual stage after ensemble completion:
 
 ```powershell
@@ -237,7 +305,7 @@ use the observed constant probability and have undefined ranking metrics.
 
 These are **development** scores: reliability-validation selects C, so its reported
 scores and bootstrap intervals are not final unbiased test evidence. Delta remains
-.02; perturbation-step alternatives, method locking and final test come later.
+.02 after the bounded step-size study; method locking and final test come later.
 The workflow will not invent q before fitting, label R as percent similarity,
 modify theta-hat during diagnostics or infer a universal sound-similarity threshold.
 
@@ -248,6 +316,27 @@ To save reproducibility checks again, use fresh output names:
 .\.venv-c2\Scripts\python.exe -B -m c2_estimation.v4.verification --gpu-only --output data/processed/c2_v4/verification_gpu_new
 .\venv\Scripts\python.exe -B -m c2_estimation.v4.verify_forward_batch --run data/processed/c2_v4/baseline_full_v1 --example data/processed/c2_v4/worked_example_full_v1 --output data/processed/c2_v4/forward_batch_check_new --workers 2
 ```
+
+## Results audit, step-size study and saved-results viewer
+
+These commands produced the completed artifacts. Audit/viewer builds require fresh
+output directories; do not overwrite the measured copies. The step-size command
+supports verified resume with identical sources/settings and verifies a completed
+run without rerendering. Do not run concurrent writers.
+
+```powershell
+.\venv\Scripts\python.exe -B -m c2_estimation.v4.audit_results --output data/processed/c2_v4/results_audit_v1 --bootstrap 2000
+.\venv\Scripts\python.exe -B -m c2_estimation.v4.stability --output data/processed/c2_v4/step_stability_v1 --workers 4
+.\venv\Scripts\python.exe -B -m c2_estimation.v4.build_viewer --output data/processed/c2_v4/viewer_v1 --examples 6
+.\venv\Scripts\python.exe -B -m c2_estimation.v4.verification --output data/processed/c2_v4/verification_validation_viewer_v1
+```
+
+The study selects the first 256 preassigned calibration diagnostic ranks, never
+examples selected by outcome. Models, delivered parameters, calibrators and default
+.02 remain unchanged. Audio renders are streamed rather than stored for the study;
+the viewer separately saves only its six examples' playback files. Full commands,
+launch instructions and interpretation are in [DEMO.md](DEMO.md) and
+[VALIDATION_RESULTS.md](VALIDATION_RESULTS.md).
 
 ## Measured development result
 
