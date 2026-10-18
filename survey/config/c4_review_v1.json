@@ -1,5 +1,6 @@
 {
-  "protocol_version": "c4_review_2026-10-19_tags_v2",
+  "protocol_version": "c4_review_2026-10-19_navigation_v3",
+  "navigation_policy": "previous_before_next_play_v1",
   "experience_entry_format": "experience_tags_v1",
   "title": "Which sound is closer?",
   "description": "Compare overall timbre using a reference and two candidates.",

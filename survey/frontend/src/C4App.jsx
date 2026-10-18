@@ -2,6 +2,7 @@ import { SiteHeader } from './SiteNavigation'
 import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
+import PreviousNavigation from './PreviousNavigation'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
@@ -52,16 +53,17 @@ const ROLES = [['reference', 'Reference'], ['candidate_a', 'Sound A'], ['candida
 const zeroCounts = () => ({ reference: 0, candidate_a: 0, candidate_b: 0 })
 
 // C1-style native controls, with one audio element shared by Reference/A/B.
-export function ComparisonPlayer({ session, step, busy, onCounts, onError, initialCounts }) {
+export function ComparisonPlayer({ session, step, busy, onCounts, onError, initialCounts, onStart }) {
   const audio = useRef(null), urls = useRef({}), sequence = useRef(0), active = useRef(null), pending = useRef(null)
   const counts = useRef({ plays: { ...zeroCounts(), ...initialCounts?.plays }, completed: { ...zeroCounts(), ...initialCounts?.completed } })
   const [selected, setSelected] = useState(''), [playing, setPlaying] = useState(false), [loading, setLoading] = useState(false)
   const [source, setSource] = useState(''), [loadError, setLoadError] = useState(''), [hint, setHint] = useState('')
   const [finished, setFinished] = useState(() => ({ ...zeroCounts(), ...initialCounts?.completed }))
-  const roles = step.phase === 'rating' ? ROLES : [['setup', step.phase === 'volume' ? 'Volume reference' : 'Headphone check']]
+  const comparison = ['rating', 'correction'].includes(step.phase)
+  const roles = comparison ? ROLES : [['setup', step.phase === 'volume' ? 'Volume reference' : 'Headphone check']]
   const selectedLabel = roles.find(([role]) => role === selected)?.[1]
   useEffect(() => {
-    if (step.phase !== 'rating') prepare('setup', false)
+    if (!comparison) prepare('setup', false)
     return () => {
       sequence.current++; pending.current?.abort(); audio.current?.pause()
       Object.values(urls.current).forEach(URL.revokeObjectURL); urls.current = {}
@@ -69,15 +71,16 @@ export function ComparisonPlayer({ session, step, busy, onCounts, onError, initi
   }, [])
   function reportCounts() { onCounts({ plays: { ...counts.current.plays }, completed: { ...counts.current.completed } }) }
   async function prepare(role, autoplay = true) {
+    if (comparison) onStart?.()
     const attempt = ++sequence.current
     pending.current?.abort(); pending.current = new AbortController()
     audio.current?.pause(); active.current = null; setPlaying(false); setSelected(role)
     setSource(''); setLoadError(''); setHint(''); setLoading(true)
     try {
       if (!urls.current[role]) {
-        const path = step.phase === 'rating' ? `playback/${step.presentation_id}/${role}` : `audio/${step.audio_id}`
+        const path = comparison ? `playback/${step.presentation_id}/${role}` : `audio/${step.audio_id}`
         const response = await fetch(`${API}/api/c4-pilot/sessions/${session.session_id}/${path}`, {
-          method: step.phase === 'rating' ? 'POST' : 'GET', headers: { Authorization: `Bearer ${session.token}` }, signal: pending.current.signal,
+          method: comparison ? 'POST' : 'GET', headers: { Authorization: `Bearer ${session.token}` }, signal: pending.current.signal,
         })
         if (!response.ok) throw new Error('Could not load this clip. Please try again.')
         const blob = await response.blob()
@@ -128,12 +131,12 @@ export function ComparisonPlayer({ session, step, busy, onCounts, onError, initi
   }
   function retry() {
     if (urls.current[selected]) { URL.revokeObjectURL(urls.current[selected]); delete urls.current[selected] }
-    onError(''); prepare(selected, step.phase === 'rating')
+    onError(''); prepare(selected, comparison)
   }
-  return <section className="p-player c4-player" role="region" aria-label={step.phase === 'rating' ? 'Comparison playback' : 'Current sound player'}>
+  return <section className="p-player c4-player" role="region" aria-label={comparison ? 'Comparison playback' : 'Current sound player'}>
     <span className="p-listen-icon" aria-hidden="true">♫</span>
-    <div><strong>{selectedLabel || 'Listen to the three sounds'}</strong><p>{step.phase === 'rating' ? 'Play Reference, Sound A and Sound B fully. Replay whenever you need.' : 'Play the full clip. Replay whenever you need.'}</p>
-      {step.phase === 'rating' && <div className="c4-play-buttons" aria-label="Choose a sound to play">{roles.map(([role, label]) => <button type="button" key={role} disabled={busy || loading}
+    <div><strong>{selectedLabel || 'Listen to the three sounds'}</strong><p>{comparison ? step.phase === 'correction' ? 'Your previous answer is loaded. Replaying the clips is optional.' : 'Play Reference, Sound A and Sound B fully. Replay whenever you need.' : 'Play the full clip. Replay whenever you need.'}</p>
+      {comparison && <div className="c4-play-buttons" aria-label="Choose a sound to play">{roles.map(([role, label]) => <button type="button" key={role} disabled={busy || loading}
         aria-pressed={selected === role} className={selected === role ? 'p-primary' : 'p-secondary'} onClick={() => prepare(role)}>
         Play {label}{finished[role] ? ' ✓' : ''}
       </button>)}</div>}
@@ -141,7 +144,7 @@ export function ComparisonPlayer({ session, step, busy, onCounts, onError, initi
       {loadError && <><p>{loadError}</p><button type="button" className="p-secondary" disabled={busy} onClick={retry}>Try loading audio again</button></>}
       <audio ref={audio} hidden={!source || loading || Boolean(loadError)} controls controlsList="nodownload noplaybackrate" aria-label={`Audio controls for ${selectedLabel || 'current sound'}`}
         onPlay={started} onPause={() => setPlaying(false)} onEnded={ended} onError={mediaError} />
-      {source && !loadError && <p className="c4-listen-status" role="status">{playing ? `Playing ${selectedLabel}` : hint || `${selectedLabel} ready to play`}{step.phase === 'rating' ? ` · ${ROLES.filter(([role]) => finished[role] > 0).length} of 3 clips listened to fully` : ''}</p>}
+      {source && !loadError && <p className="c4-listen-status" role="status">{playing ? `Playing ${selectedLabel}` : hint || `${selectedLabel} ready to play`}{comparison ? ` · ${ROLES.filter(([role]) => finished[role] > 0).length} of 3 clips listened to fully` : ''}</p>}
     </div>
   </section>
 }
@@ -167,11 +170,14 @@ export default function C4App() {
   const [counts, setCounts] = useState({ plays: zeroCounts(), completed: zeroCounts() })
   const [answer, setAnswer] = useState({ choice: '', confidence: null, comment: '' }), [interval, setInterval] = useState('')
   const [feedback, setFeedback] = useState({ clarity: '', length: '', comment: '' })
+  const pendingDraft = useRef(null)
   const [paused, setPaused] = useState(false), [withdraw, setWithdraw] = useState(false)
   async function load(active = session) {
     const next = await request(`/sessions/${active.session_id}`, { session: active })
-    setStep(next); setCounts({ plays: zeroCounts(), completed: zeroCounts() }); setInterval('')
-    setAnswer({ choice: '', confidence: null, comment: '' })
+    const draft = next.phase === 'rating' && pendingDraft.current?.presentation_id === next.presentation_id ? pendingDraft.current : null
+    setStep(next); setCounts(draft?.counts || { plays: zeroCounts(), completed: zeroCounts() }); setInterval('')
+    setAnswer(next.phase === 'correction' ? next.saved_answers : draft?.answer || { choice: '', confidence: null, comment: '' })
+    if (draft) pendingDraft.current = null
   }
   useEffect(() => {
     request('/status').then(setStatus).catch(e => setError(e.message))
@@ -181,10 +187,16 @@ export default function C4App() {
   async function submit(path, body) {
     await request(`/sessions/${session.session_id}/${path}`, { session, body }); await load(); window.scrollTo(0, 0)
   }
+  async function openPrevious() {
+    await act(async () => {
+      if (step.phase === 'rating') pendingDraft.current = { presentation_id: step.presentation_id, answer: { ...answer }, counts }
+      await submit('previous', { current_index: step.current_index })
+    })
+  }
   function reset() { localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false) }
   const phase = step?.phase, cfg = step?.config || status?.config
   const end = ['complete', 'screen_failed', 'withdrawn', 'replaced'].includes(phase)
-  const playable = ['volume', 'headphones', 'rating'].includes(phase)
+  const playable = ['volume', 'headphones', 'rating', 'correction'].includes(phase)
   const allPlayed = ROLES.every(([role]) => counts.completed[role] > 0)
   const progress = phase === 'rating' && !step.practice ? Math.round((step.display_number - 1) / step.display_total * 100) : 0
   function pause() { setPaused(v => !v) }
@@ -204,18 +216,19 @@ export default function C4App() {
         {withdraw ? <section className="p-card"><h1>Withdraw this session?</h1><p>Your responses will be marked as withdrawn and excluded from analysis.</p><div className="p-actions"><button disabled={busy} className="p-primary" onClick={() => act(async () => { await submit('withdraw', {}); setWithdraw(false) })}>Withdraw my responses</button><button className="p-secondary" onClick={() => setWithdraw(false)}>Keep my session</button></div></section>
         : paused ? <section className="p-card"><h1>Take your time.</h1><p>Your saved responses are safe. Resume when you are ready to listen in a quiet place. Clips already listened to fully remain checked.</p><button className="p-primary" onClick={pause}>Resume listening</button></section>
         : <>
+          <PreviousNavigation step={step} busy={busy} unit="comparison" onPrevious={openPrevious} />
           {phase === 'volume' && <><p className="p-eyebrow">SETUP · 1 OF 2</p><h1>Find a comfortable level.</h1><p className="p-lede">Start with a low device volume, play the tone and adjust it to a comfortable level. Keep that setting for the rest of the session.</p></>}
           {phase === 'headphones' && <><p className="p-eyebrow">SETUP · 2 OF 2</p><h1>A quick headphone check.</h1><p className="p-lede">You will hear three tones. Which is the quietest? Listen to all three before choosing.</p><p className="p-muted">Check {step.screen_number} of 6</p></>}
-          {phase === 'rating' && <><div className="p-trial-heading"><div><p className="p-eyebrow">{step.practice ? 'GET FAMILIAR WITH THE QUESTIONS' : 'LISTEN · COMPARE · CONTINUE'}</p><h1>{step.practice ? 'Practice' : 'Comparison'} {String(step.display_number).padStart(2, '0')}<span> / {step.display_total}</span></h1></div></div>
+          {['rating', 'correction'].includes(phase) && <><div className="p-trial-heading"><div><p className="p-eyebrow">{phase === 'correction' ? 'CORRECT PREVIOUS RESPONSE' : step.practice ? 'GET FAMILIAR WITH THE QUESTIONS' : 'LISTEN · COMPARE · CONTINUE'}</p><h1>{step.practice ? 'Practice' : 'Comparison'} {String(step.display_number).padStart(2, '0')}<span> / {step.display_total}</span></h1></div></div>
             {!step.practice && <div className="p-progress"><span style={{ width: `${progress}%` }} /></div>}
-            <p className="p-lede">{step.practice ? 'Try the comparison below. These practice responses are saved separately and are not included in the analysis.' : 'Which candidate has a more similar overall timbre to the reference? Consider its tone and how it changes over time. Avoid choosing solely by loudness.'}</p></>}
-          {playable && <ComparisonPlayer key={`${step.presentation_id || step.audio_id}-${step.server_time}`} session={session} step={step} busy={busy} initialCounts={counts} onCounts={setCounts} onError={setError} />}
+            <p className="p-lede">{phase === 'correction' ? 'Update your previous answer below. Replaying the sounds is optional. Your original answer stays in the audit log.' : step.practice ? 'Try the comparison below. These practice responses are saved separately and are not included in the analysis.' : 'Which candidate has a more similar overall timbre to the reference? Consider its tone and how it changes over time. Avoid choosing solely by loudness.'}</p></>}
+          {playable && <ComparisonPlayer key={`${step.presentation_id || step.audio_id}-${step.server_time}`} session={session} step={step} busy={busy} initialCounts={counts} onCounts={setCounts} onError={setError} onStart={() => setStep(s => ({ ...s, can_correct_previous: false }))} />}
           {phase === 'volume' && <button className="p-primary" disabled={busy || !counts.completed.setup} onClick={() => act(() => submit('volume', { completed_plays: counts.completed.setup }))}>This level is comfortable →</button>}
           {phase === 'headphones' && <section className="p-card"><fieldset><legend>Which tone was quietest?</legend><div className="p-intervals">{[1,2,3].map(n => <button type="button" key={n} className={interval === n ? 'selected' : ''} aria-pressed={interval === n} onClick={() => setInterval(n)}>{['First','Second','Third'][n-1]}</button>)}</div></fieldset><button className="p-primary" disabled={busy || !interval || !counts.completed.setup} onClick={() => act(() => submit('headphones', { interval, screen_number: step.screen_number, completed_plays: counts.completed.setup }))}>Continue →</button></section>}
-          {phase === 'rating' && <form onSubmit={e => { e.preventDefault(); act(() => submit('ratings', { presentation_id: step.presentation_id, answers: answer, play_counts: counts.plays, completed_counts: counts.completed, started_at: step.server_time })) }}>
+          {['rating', 'correction'].includes(phase) && <form onSubmit={e => { e.preventDefault(); act(() => submit(phase === 'correction' ? 'previous/save' : 'ratings', { ...(phase === 'correction' ? { correction_token: step.correction_token } : {}), presentation_id: step.presentation_id, answers: answer, play_counts: counts.plays, completed_counts: counts.completed, started_at: step.server_time })) }}>
             <ComparisonQuestions answer={answer} onChange={setAnswer} />
             <label className="p-comment">Anything unclear? <span>Optional</span><textarea maxLength="1000" rows="2" value={answer.comment} onChange={e => setAnswer(a => ({ ...a, comment: e.target.value }))} /></label>
-            <div className="p-save-row"><span>{allPlayed ? 'All three clips played fully ✓' : 'Play all three clips fully to continue.'}</span><button className="p-primary" disabled={busy || !allPlayed || !answer.choice || (answer.choice !== 'cannot_decide' && !answer.confidence)}>{busy ? 'Saving…' : 'Save and continue →'}</button></div>
+            <div className="p-save-row"><span>{phase === 'correction' ? 'Replaying is optional when correcting a saved answer.' : allPlayed ? 'All three clips played fully ✓' : 'Play all three clips fully to continue.'}</span><div className="p-actions">{phase === 'correction' && <button type="button" className="p-secondary" disabled={busy} onClick={() => act(() => submit('previous/cancel', { correction_token: step.correction_token }))}>Return without changes →</button>}<button className="p-primary" disabled={busy || (phase !== 'correction' && !allPlayed) || !answer.choice || (answer.choice !== 'cannot_decide' && !answer.confidence)}>{busy ? 'Saving…' : phase === 'correction' ? 'Save correction and continue →' : 'Save and continue →'}</button></div></div>
           </form>}
           {phase === 'break' && <section className="p-card"><p className="p-eyebrow">HALFWAY THROUGH</p><h1>A moment to rest.</h1><p>You have completed half the review comparisons. Take a short break, then continue with the same listening setup and volume.</p><button disabled={busy} className="p-primary" onClick={() => act(() => submit('continue', {}))}>Continue listening →</button></section>}
           {phase === 'feedback' && <form className="p-card" onSubmit={e => { e.preventDefault(); act(() => submit('feedback', feedback)) }}><p className="p-eyebrow">ONE LAST THING</p><h1>How was the experience?</h1>
