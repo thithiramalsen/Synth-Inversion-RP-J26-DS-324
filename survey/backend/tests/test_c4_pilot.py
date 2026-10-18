@@ -176,6 +176,85 @@ class C4PilotTests(unittest.TestCase):
             self.assertEqual(self.client.get('/api/c4-pilot/status').status_code,200)
             self.assertEqual(self.client.get('/api/studies').status_code,404)
 
+    def test_bulk_unused_download_protects_started_sessions_responses_and_c1(self):
+        endpoint = '/api/c4-pilot/admin/replace-unused-invitations'
+        body = dict(confirm_replace_unused=True)
+        self.assertEqual(self.client.post(endpoint, json=body).status_code, 401)
+        for invalid in ({}, {'confirm_replace_unused': False}):
+            self.assertEqual(self.client.post(endpoint, headers=self.admin, json=invalid).status_code, 422)
+        original = self.client.post('/api/c4-pilot/admin/invitations', headers=self.admin, json={}).json()['invitations']
+        for item, phase in zip(original[:4], ['rating', 'complete', 'withdrawn', 'screen_failed']):
+            session = self.start(invitation=item['invitation'])
+            if phase == 'rating':
+                self.setup_audio()
+                state = self.state()
+                self.expose(state)
+                self.assertEqual(self.post('ratings', self.body(state)).status_code, 200)
+            with database.get_connection() as db:
+                db.execute('UPDATE c4_sessions SET phase=? WHERE session_id=?', (phase, session['session_id']))
+        with database.get_connection() as db:
+            sessions = [dict(row) for row in db.execute('SELECT * FROM c4_sessions ORDER BY session_id').fetchall()]
+            protected = [dict(row) for row in db.execute('SELECT * FROM c4_invites WHERE session_id IS NOT NULL ORDER BY assignment_id').fetchall()]
+            ratings = [dict(row) for row in db.execute('SELECT * FROM c4_ratings').fetchall()]
+            self.assertEqual(len(ratings), 1)
+            db.execute('INSERT INTO c4_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)',
+                       ('other-bundle-hash', 'other-bundle', original[4]['assignment_id'], 'fixture'))
+            db.execute('INSERT INTO c1_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)',
+                       ('c1-test-hash', 'c1-test-bundle', 'block_01', 'fixture'))
+            c1_invites = [dict(row) for row in db.execute('SELECT * FROM c1_invites ORDER BY invite_hash').fetchall()]
+        response = self.client.post(endpoint, headers=self.admin, json=body)
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.headers['cache-control'], 'no-store')
+        result = response.json()
+        self.assertEqual(result['skipped_assignments'], [item['assignment_id'] for item in original[:4]])
+        self.assertEqual([item['assignment_id'] for item in result['invitations']], [item['assignment_id'] for item in original[4:]])
+        self.assertEqual(result['replaced_count'], len(original)-4)
+        self.assertEqual(result['created_count'], 0)
+        with database.get_connection() as db:
+            self.assertEqual(sessions, [dict(row) for row in db.execute('SELECT * FROM c4_sessions ORDER BY session_id').fetchall()])
+            self.assertEqual(protected, [dict(row) for row in db.execute('SELECT * FROM c4_invites WHERE session_id IS NOT NULL ORDER BY assignment_id').fetchall()])
+            self.assertEqual(ratings, [dict(row) for row in db.execute('SELECT * FROM c4_ratings').fetchall()])
+            self.assertEqual(c1_invites, [dict(row) for row in db.execute('SELECT * FROM c1_invites ORDER BY invite_hash').fetchall()])
+            self.assertIsNone(db.execute("SELECT retired_at FROM c4_invites WHERE bundle_hash='other-bundle'").fetchone()['retired_at'])
+        expired_entry = dict(self.entry, invitation=original[4]['invitation'])
+        self.assertEqual(self.client.post('/api/c4-pilot/sessions', json=expired_entry).status_code, 403)
+        fresh = result['invitations'][0]
+        session = self.start(invitation=fresh['invitation'])
+        with database.get_connection() as db:
+            actual = db.execute('SELECT assignment_id FROM c4_sessions WHERE session_id=?', (session['session_id'],)).fetchone()
+            self.assertEqual(actual['assignment_id'], fresh['assignment_id'])
+
+    def test_bulk_unused_download_creates_missing_codes_and_skips_all_claimed_slots(self):
+        endpoint = '/api/c4-pilot/admin/replace-unused-invitations'
+        body = dict(confirm_replace_unused=True)
+        response = self.client.post(endpoint, headers=self.admin, json=body)
+        self.assertEqual(response.status_code, 200, response.text)
+        result = response.json()
+        self.assertEqual(result['created_count'], len(self.bundle['assignments']))
+        self.assertEqual(result['replaced_count'], 0)
+        for item in result['invitations']:
+            self.start(invitation=item['invitation'])
+        with database.get_connection() as db:
+            before = [dict(row) for row in db.execute('SELECT * FROM c4_invites ORDER BY assignment_id').fetchall()]
+        result = self.client.post(endpoint, headers=self.admin, json=body).json()
+        self.assertEqual(result['invitations'], [])
+        self.assertEqual(result['created_count'], 0)
+        self.assertEqual(result['replaced_count'], 0)
+        self.assertEqual(len(result['skipped_assignments']), len(self.bundle['assignments']))
+        with database.get_connection() as db:
+            self.assertEqual(before, [dict(row) for row in db.execute('SELECT * FROM c4_invites ORDER BY assignment_id').fetchall()])
+
+    def test_bulk_unused_download_rolls_back_partial_failure(self):
+        self.client.post('/api/c4-pilot/admin/invitations', headers=self.admin, json={})
+        with database.get_connection() as db:
+            before = [dict(row) for row in db.execute('SELECT * FROM c4_invites ORDER BY assignment_id').fetchall()]
+        with patch.object(c4_pilot.secrets, 'token_urlsafe', side_effect=['test-code-only', RuntimeError('simulated failure')]):
+            with self.assertRaisesRegex(RuntimeError, 'simulated failure'):
+                self.client.post('/api/c4-pilot/admin/replace-unused-invitations', headers=self.admin,
+                                 json=dict(confirm_replace_unused=True))
+        with database.get_connection() as db:
+            self.assertEqual(before, [dict(row) for row in db.execute('SELECT * FROM c4_invites ORDER BY assignment_id').fetchall()])
+
     def test_complete_resume_export_withdraw_and_replacement(self):
         self.start(); self.setup_audio()
         for index in range(14):

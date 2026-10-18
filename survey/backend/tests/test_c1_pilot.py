@@ -264,6 +264,91 @@ class C1PilotTests(unittest.TestCase):
         self.assertEqual(self.state()['phase'],'screen_failed')
         self.assertEqual(self.client.post(self.base+'/ratings',headers=self.headers,json=body).status_code,409)
 
+    def test_bulk_unused_invitation_download_protects_started_assignments(self):
+        endpoint = '/api/c1-pilot/admin/replace-unused-invitations'
+        body = dict(confirm_replace_unused=True)
+        self.assertEqual(self.client.post(endpoint, json=body).status_code, 401)
+        for invalid in ({}, {'confirm_replace_unused': False}):
+            self.assertEqual(self.client.post(endpoint, headers=self.admin, json=invalid).status_code, 422)
+        original = self.client.post('/api/c1-pilot/admin/invitations', headers=self.admin, json={}).json()['invitations']
+        # Protect all started sessions, irrespective of progress or final status.
+        for item, phase in zip(original[:3], ['rating', 'complete', 'withdrawn']):
+            result = self.client.post('/api/c1-pilot/sessions', json=self.entry(item['invitation']))
+            self.assertEqual(result.status_code, 200, result.text)
+            if phase == 'rating':
+                self.session = result.json()
+                self.base = f"/api/c1-pilot/sessions/{self.session['session_id']}"
+                self.headers = {'Authorization': f"Bearer {self.session['token']}"}
+                self.setup_audio()
+                current = self.state()
+                self.client.post(f"{self.base}/playback/{current['presentation_id']}", headers=self.headers)
+                saved = self.client.post(self.base+'/ratings', headers=self.headers, json=self.rating_body(current))
+                self.assertEqual(saved.status_code, 200, saved.text)
+            with database.get_connection() as db:
+                db.execute('UPDATE c1_sessions SET phase=? WHERE session_id=?', (phase, result.json()['session_id']))
+        with database.get_connection() as db:
+            before = [dict(row) for row in db.execute('SELECT * FROM c1_sessions ORDER BY session_id').fetchall()]
+            protected = [dict(row) for row in db.execute('SELECT * FROM c1_invites WHERE session_id IS NOT NULL ORDER BY assignment_id').fetchall()]
+            ratings = [dict(row) for row in db.execute('SELECT * FROM c1_ratings').fetchall()]
+            self.assertEqual(len(ratings), 1)
+            # Another bundle's invitation must not be modified.
+            db.execute('INSERT INTO c1_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)',
+                       ('other-bundle-hash', 'other-bundle', original[3]['assignment_id'], 'fixture'))
+        response = self.client.post(endpoint, headers=self.admin, json=body)
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.headers['cache-control'], 'no-store')
+        result = response.json()
+        self.assertEqual(result['skipped_assignments'], [item['assignment_id'] for item in original[:3]])
+        self.assertEqual(len(result['invitations']), len(original)-3)
+        self.assertEqual(result['replaced_count'], len(original)-3)
+        self.assertEqual(result['created_count'], 0)
+        self.assertEqual([item['assignment_id'] for item in result['invitations']], [item['assignment_id'] for item in original[3:]])
+        with database.get_connection() as db:
+            self.assertEqual(before, [dict(row) for row in db.execute('SELECT * FROM c1_sessions ORDER BY session_id').fetchall()])
+            self.assertEqual(protected, [dict(row) for row in db.execute('SELECT * FROM c1_invites WHERE session_id IS NOT NULL ORDER BY assignment_id').fetchall()])
+            self.assertIsNone(db.execute("SELECT retired_at FROM c1_invites WHERE bundle_hash='other-bundle'").fetchone()['retired_at'])
+            self.assertEqual(ratings, [dict(row) for row in db.execute('SELECT * FROM c1_ratings').fetchall()])
+        # Old unclaimed codes stop working; the new codes still enter the correct block.
+        self.assertEqual(self.client.post('/api/c1-pilot/sessions', json=self.entry(original[3]['invitation'])).status_code, 403)
+        fresh = result['invitations'][0]
+        started = self.client.post('/api/c1-pilot/sessions', json=self.entry(fresh['invitation']))
+        self.assertEqual(started.status_code, 200, started.text)
+        with database.get_connection() as db:
+            row = db.execute('SELECT assignment_id FROM c1_sessions WHERE session_id=?', (started.json()['session_id'],)).fetchone()
+            self.assertEqual(row['assignment_id'], fresh['assignment_id'])
+
+    def test_bulk_unused_download_creates_missing_codes_and_skips_every_started_slot(self):
+        endpoint = '/api/c1-pilot/admin/replace-unused-invitations'
+        body = dict(confirm_replace_unused=True)
+        response = self.client.post(endpoint, headers=self.admin, json=body)
+        self.assertEqual(response.status_code, 200, response.text)
+        result = response.json()
+        self.assertEqual(result['created_count'], len(self.bundle['assignments']))
+        self.assertEqual(result['replaced_count'], 0)
+        for item in result['invitations']:
+            started = self.client.post('/api/c1-pilot/sessions', json=self.entry(item['invitation']))
+            self.assertEqual(started.status_code, 200, started.text)
+        with database.get_connection() as db:
+            before = [dict(row) for row in db.execute('SELECT * FROM c1_invites ORDER BY assignment_id').fetchall()]
+        result = self.client.post(endpoint, headers=self.admin, json=body).json()
+        self.assertEqual(result['invitations'], [])
+        self.assertEqual(result['created_count'], 0)
+        self.assertEqual(result['replaced_count'], 0)
+        self.assertEqual(len(result['skipped_assignments']), len(self.bundle['assignments']))
+        with database.get_connection() as db:
+            self.assertEqual(before, [dict(row) for row in db.execute('SELECT * FROM c1_invites ORDER BY assignment_id').fetchall()])
+
+    def test_bulk_unused_download_rolls_back_partial_failure(self):
+        self.client.post('/api/c1-pilot/admin/invitations', headers=self.admin, json={})
+        with database.get_connection() as db:
+            before = [dict(row) for row in db.execute('SELECT * FROM c1_invites ORDER BY assignment_id').fetchall()]
+        with patch('c1_pilot.secrets.token_urlsafe', side_effect=['test-code-only', RuntimeError('simulated failure')]):
+            with self.assertRaisesRegex(RuntimeError, 'simulated failure'):
+                self.client.post('/api/c1-pilot/admin/replace-unused-invitations', headers=self.admin,
+                                 json=dict(confirm_replace_unused=True))
+        with database.get_connection() as db:
+            self.assertEqual(before, [dict(row) for row in db.execute('SELECT * FROM c1_invites ORDER BY assignment_id').fetchall()])
+
     def test_changed_bundle_rejected_protocol_snapshotted_and_audio_verified(self):
         self.start()
         cfg=json.loads(self.config_path.read_text()); cfg['title']='Changed title'; self.config_path.write_text(json.dumps(cfg))

@@ -231,6 +231,15 @@ export default function PilotApp() {
     </main><footer className="p-footer">Synth Inversion Research · C1 listening pilot</footer></div>
 }
 
+export function BulkInvitationDownload({ busy, onDownload }) {
+  return <section className="p-card" aria-label="Download unused participant invitations">
+    <h2>Get unused invitations in one file</h2>
+    <p>If you lost the original download, replace all unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions.</p>
+    <button type="button" className="p-secondary" disabled={busy} onClick={onDownload}>Replace unused codes and download all</button>
+    <p className="p-muted">Save the private JSON file. Each code is labelled with its block. This does not create participant sessions.</p>
+  </section>
+}
+
 export function PilotAdmin() {
   const [authenticated, setAuthenticated] = useState(false), [credentials, setCredentials] = useState({ username: '', password: '' })
   const [data, setData] = useState(null), [error, setError] = useState('')
@@ -238,6 +247,7 @@ export function PilotAdmin() {
   const [accountInvite, setAccountInvite] = useState(null)
   const [replacement, setReplacement] = useState({ assignment_id: '', reason: '' })
   const [busy, setBusy] = useState(false), [issued, setIssued] = useState(null)
+  const [skippedAssignments, setSkippedAssignments] = useState(null)
   async function act(fn) { setError(''); setBusy(true); try { await fn() } catch (e) { setError(e.message) } finally { setBusy(false) } }
   useEffect(() => { fetch(`${API}/api/researcher/session`, { credentials: 'include' }).then(r => setAuthenticated(r.ok)).catch(() => {}) }, [])
   async function researcherRequest(path, body) {
@@ -262,14 +272,23 @@ export function PilotAdmin() {
   }
   async function createMissing() {
     const result = await request('/admin/invitations', { body: {} })
+    setSkippedAssignments(null)
     setIssued(result.invitations)
     if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-invitations.json', 'application/json')
   }
   async function replaceInvitation() {
     const result = await request('/admin/replace-invitation', { body: replacement })
     setIssued([result])
+    setSkippedAssignments(null)
     download(JSON.stringify(result, null, 2), 'private-replacement-invitation.json', 'application/json')
     setReplacement({ assignment_id: '', reason: '' })
+    setData(await request('/admin/summary'))
+  }
+  async function downloadUnusedInvitations() {
+    const result = await request('/admin/replace-unused-invitations', { body: { confirm_replace_unused: true } })
+    setIssued(result.invitations)
+    setSkippedAssignments(result.skipped_assignments)
+    if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-c1-unused-invitations.json', 'application/json')
     setData(await request('/admin/summary'))
   }
   if (!authenticated) return <div className="pilot-app"><SiteHeader current="c1-admin" researcher /><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
@@ -291,9 +310,11 @@ export function PilotAdmin() {
       {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}
     </section>
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
-      <h2 role="status">{issued.length ? 'New invitation ready' : 'All assignments already have invitations'}</h2>
-      {issued.length ? <><p>The code is shown here and downloaded as JSON. Copy only the invitation code to the participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<button type="button" className="p-secondary" onClick={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')}>Download these invitations again</button></> : <p>Use “Generate a replacement invitation” below to replace a lost or used code. Creating missing invitations does not reissue existing codes.</p>}
+      <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unused assignments remain' : 'All assignments already have invitations'}</h2>
+      {issued.length ? <><p>The codes are shown here and downloaded as JSON. Copy only an invitation code to its participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<button type="button" className="p-secondary" onClick={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')}>Download these invitations again</button></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below if you lost the original file. Creating missing invitations does not reissue existing codes.</p>}
+      {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} started assignments skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
     </section>}
+    <BulkInvitationDownload busy={busy} onDownload={() => act(downloadUnusedInvitations)} />
     {data && <><section className="p-card"><h2>{data.completed} completed sessions</h2><p>Create missing invitations fills assignments without a code. To start an assignment again, use the replacement form below.</p><div className="p-actions"><button className="p-secondary" disabled={busy} onClick={() => act(createMissing)}>Create missing invitations</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('export', 'c1-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('sessions', 'c1-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th><th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td><td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section>
       <form className="p-card" onSubmit={e => { e.preventDefault(); act(replaceInvitation) }}><h2>Generate a replacement invitation</h2><p>This retires the previous code and closes its session, preserving responses in the audit log. Completed research assignments cannot be replaced; rehearsal assignments can.</p><label>Assignment ID<input required disabled={busy} value={replacement.assignment_id} onChange={e => setReplacement(r => ({ ...r, assignment_id: e.target.value }))} placeholder="For example, block_01 or rehearsal" /></label><label>Reason<textarea required disabled={busy} minLength="10" maxLength="500" value={replacement.reason} onChange={e => setReplacement(r => ({ ...r, reason: e.target.value }))} placeholder="For example: Repeat the full interface rehearsal." /></label><button className="p-secondary" disabled={busy}>{busy ? 'Working…' : 'Generate replacement code'}</button></form></>}
   </main></div>

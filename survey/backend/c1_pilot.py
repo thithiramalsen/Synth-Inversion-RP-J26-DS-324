@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Response
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -556,6 +556,46 @@ def issue_invitations():
 class ReplaceInvitation(StrictBody):
     assignment_id: str
     reason: str = Field(min_length=10, max_length=500)
+
+
+class ReplaceUnusedInvitations(StrictBody):
+    confirm_replace_unused: Literal[True]
+
+
+@router.post("/admin/replace-unused-invitations", dependencies=[Depends(require_admin)])
+def replace_unused_invitations(body: ReplaceUnusedInvitations, response: Response):
+    """Recover a lost invitation download without interrupting any claimed slot."""
+    bundle, checksum = load_bundle()
+    issued, skipped = [], []
+    replaced = 0
+    with get_connection() as db:
+        # Uses the same lock as invitation claims, including on PostgreSQL.
+        db.execute("BEGIN IMMEDIATE")
+        for block in bundle["assignments"]:
+            assignment_id = block["assignment_id"]
+            existing = db.execute(
+                "SELECT * FROM c1_invites WHERE bundle_hash=? AND assignment_id=? AND retired_at IS NULL",
+                (checksum, assignment_id),
+            ).fetchall()
+            if any(row["session_id"] is not None for row in existing):
+                skipped.append(assignment_id)
+                continue
+            timestamp = now()
+            if existing:
+                db.execute(
+                    "UPDATE c1_invites SET retired_at=? WHERE bundle_hash=? AND assignment_id=? AND retired_at IS NULL",
+                    (timestamp, checksum, assignment_id),
+                )
+                replaced += 1
+            code = secrets.token_urlsafe(18)
+            db.execute("INSERT INTO c1_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)",
+                       (hashed(code), checksum, assignment_id, timestamp))
+            issued.append(dict(assignment_id=assignment_id, invitation=code))
+    response.headers["Cache-Control"] = "no-store"
+    return dict(bundle_hash=checksum, invitations=issued, skipped_assignments=skipped,
+                replaced_count=replaced, created_count=len(issued)-replaced,
+                note="Save these once; only hashes are retained. Previous unused codes are invalid. "
+                     "All assignments with a started session were left untouched. Do not publish.")
 
 
 @router.post("/admin/replace-invitation", dependencies=[Depends(require_admin)])
