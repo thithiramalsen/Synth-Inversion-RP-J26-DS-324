@@ -4,7 +4,7 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { createServer } from 'vite'
 
-let server, PilotApp, BulkInvitationDownload, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
+let server, PilotApp, BulkInvitationDownload, InvitationDownloads, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
 const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
 
@@ -13,6 +13,7 @@ before(async () => {
   server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
   const c1 = await server.ssrLoadModule('/src/PilotApp.jsx')
   PilotApp = c1.default; BulkInvitationDownload = c1.BulkInvitationDownload
+  InvitationDownloads = (await server.ssrLoadModule('/src/InvitationDownloads.jsx')).default
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
   C4App = c4.default; C4Admin = c4.C4Admin; ComparisonPlayer = c4.ComparisonPlayer
   C4BulkInvitationDownload = c4.C4BulkInvitationDownload
@@ -76,6 +77,15 @@ test('C4 bulk invitation download matches C1 and identifies C4 assignments', () 
   assert.match(html, /does not create participant sessions/)
   const busy = renderToString(React.createElement(C4BulkInvitationDownload, { busy: true, onDownload: () => {} }))
   assert.match(busy, /<button[^>]*disabled=""[^>]*>Replace unused codes and download all/)
+})
+
+test('invitation download controls offer a fillable CSV and JSON backup', () => {
+  const html = renderToString(React.createElement(InvitationDownloads, { onCsv: () => {}, onJson: () => {} }))
+  assert.match(html, /Download CSV to fill in names/)
+  assert.match(html, /Download JSON backup/)
+  assert.match(html, /blank participant name, date sent and notes columns/)
+  assert.match(html, /Names are not uploaded to the study/)
+  assert.match(html, /same displayed codes without replacing them/)
 })
 
 test('C4 retains full-listen checks when its player remounts after a pause', () => {
