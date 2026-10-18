@@ -1,6 +1,8 @@
 import { SiteHeader } from './SiteNavigation'
 import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
+import ExperienceQuestions from './ExperienceQuestions'
+import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
 
@@ -101,7 +103,7 @@ function Scale({ descriptor, value, onChange }) {
 }
 
 function Entry({ status, busy, onSubmit }) {
-  const [values, setValues] = useState({ invitation: '', activities: [], experience_months: '', recent_frequency: '', tools: '', example: '', adult: false, consent: false, headphones: false, quiet_environment: false, understands_language: false })
+  const [values, setValues] = useState({ invitation: '', activities: [], experience_months: '', recent_frequency: '', tools: '', example: '', experience_selection: emptyExperienceSelection(status.config), adult: false, consent: false, headphones: false, quiet_environment: false, understands_language: false })
   const change = (key, value) => setValues(v => ({ ...v, [key]: value }))
   const cfg = status.config
   return <form className="p-entry" onSubmit={e => { e.preventDefault(); onSubmit({ ...values, experience_months: Number(values.experience_months) }) }}>
@@ -125,14 +127,12 @@ function Entry({ status, busy, onSubmit }) {
       <fieldset className="p-activities"><legend>Which have you done? Select at least one.</legend>{cfg.eligibility.activities.map(activity => <label className="p-check" key={activity}><input type="checkbox" checked={values.activities.includes(activity)} onChange={e => change('activities', e.target.checked ? [...values.activities, activity] : values.activities.filter(a => a !== activity))} />{activity}</label>)}</fieldset>
       <div className="p-columns"><label>Approximately how many months?<input type="number" min="0" max="1200" required value={values.experience_months} onChange={e => change('experience_months', e.target.value)} /></label>
         <label>How often have you done this recently?<select required value={values.recent_frequency} onChange={e => change('recent_frequency', e.target.value)}><option value="">Choose frequency</option>{['Less than monthly', 'Monthly', 'Weekly', 'Daily'].map(f => <option key={f}>{f}</option>)}</select></label></div>
-      <label>{cfg.experience_tools_label || 'Which tools have you used?'}<input required minLength="2" maxLength="250" value={values.tools} onChange={e => change('tools', e.target.value)} placeholder={cfg.experience_tools_placeholder || 'For example, a DAW or synthesizer'} /></label>
-      <label>{cfg.experience_question.label}<textarea required minLength="20" maxLength="700" value={values.example} onChange={e => change('example', e.target.value)} rows="2" aria-describedby="experience-help" placeholder={cfg.experience_question.placeholder} /></label>
-      <p id="experience-help" className="p-muted">{cfg.experience_question.help}</p>
+      <ExperienceQuestions cfg={cfg} values={values} onChange={change} disabled={busy} />
     </section>
     <section className="p-card"><label>Invitation code<input required minLength="8" maxLength="150" autoComplete="off" value={values.invitation} onChange={e => change('invitation', e.target.value)} /></label>
       <p className="p-muted">Use the invitation supplied by the researcher. It starts one listening session.</p>
       <details className="p-resume-help"><summary>Can I close this tab and return later?</summary><p>{cfg.resume_instructions}</p></details>
-      <button className="p-primary" disabled={busy || !status.ready || !values.activities.length}>{busy ? 'Starting…' : 'Start listening setup'}<span aria-hidden="true">→</span></button>
+      <button className="p-primary" disabled={busy || !status.ready || !values.activities.length || !experienceReady(values, cfg)}>{busy ? 'Starting…' : 'Start listening setup'}<span aria-hidden="true">→</span></button>
     </section>
   </form>
 }

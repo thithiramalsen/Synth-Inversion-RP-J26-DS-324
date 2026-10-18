@@ -26,6 +26,18 @@ research responses.
 
 ## Researcher invitation workflow
 
+The C1 and C4 entry questions now share `experience_tags_v1`: selectable
+instruments/vocal activities/tools and practical-example tags, with optional
+"Other / details" fields. Choosing at least one relevant tag per group requires
+no typing. If no tags fit, a participant can describe another tool and example
+(the example needs at least 20 characters). These are self-reported experiences,
+not independently verified credentials. Structured IDs, optional comments and
+readable summaries are stored in each session's `entry_json`. The full choice
+catalogue is included in the protocol snapshot for new entries. Existing
+sessions keep their saved questions and answers; older text-only entry remains
+supported. New C4 entries use `c4_review_2026-10-19_tags_v2`, and new C1 review
+entries use `c1_pilot_2026-10-19_20unique_tags_v2`.
+
 Open `/c4/admin` and sign in with the same researcher account used for C1.
 The updated panel loads invitation assignments and sessions automatically.
 Each assignment is one listener's fixed set of comparisons. Invitation codes

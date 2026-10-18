@@ -16,6 +16,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from database import get_connection
+from experience import ExperienceEntry, experience_options
 from security import require_admin
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -38,7 +39,10 @@ def bundle_path():
 
 def config():
     path = Path(os.environ.get("SURVEY_C1_CONFIG", ROOT / "survey/config/c1_pilot_v1.json"))
-    return json.loads(path.read_text(encoding="utf-8"))
+    cfg = json.loads(path.read_text(encoding="utf-8"))
+    if cfg.get('experience_entry_format') == 'experience_tags_v1':
+        cfg['experience_selection'] = experience_options()
+    return cfg
 
 
 def load_bundle():
@@ -176,7 +180,7 @@ class StrictBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class Entry(StrictBody):
+class Entry(ExperienceEntry):
     invitation: str = Field(min_length=8, max_length=150)
     adult: Literal[True]
     consent: Literal[True]
@@ -186,8 +190,6 @@ class Entry(StrictBody):
     activities: list[Literal["Music production", "Sound design", "Synthesizer patch creation", "Instrument performance", "Singing"]] = Field(min_length=1, max_length=5)
     experience_months: int = Field(ge=0, le=1200)
     recent_frequency: Literal["Less than monthly", "Monthly", "Weekly", "Daily"]
-    tools: str = Field(min_length=2, max_length=250)
-    example: str = Field(min_length=20, max_length=700)
 
 
 def session_row(session_id, authorization):

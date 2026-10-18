@@ -360,6 +360,31 @@ class C1PilotTests(unittest.TestCase):
         self.bundle_path.write_text(self.bundle_path.read_text()+' ')
         self.assertEqual(self.client.get(self.base,headers=self.headers).status_code,409)
 
+    def test_tagged_entry_preserves_choices_details_and_protocol_snapshot(self):
+        cfg = json.loads(self.config_path.read_text())
+        cfg.update(experience_entry_format='experience_tags_v1', protocol_version='test-tags-v2')
+        self.config_path.write_text(json.dumps(cfg))
+        status = self.client.get('/api/c1-pilot/status').json()
+        self.assertEqual(status['config']['experience_selection']['version'], 'experience_tags_v1')
+        code = self.client.post('/api/c1-pilot/admin/invitations', headers=self.admin, json={}).json()['invitations'][0]['invitation']
+        entry = self.entry(code)
+        entry.update(tools='', example='', experience_selection=dict(version='experience_tags_v1',
+            tool_ids=['piano_keyboard', 'singing'], example_ids=['played_piece'], tools_other='Harmonica', example_other=''))
+        invalid = {**entry, 'experience_selection': {**entry['experience_selection'], 'example_ids': []}}
+        self.assertEqual(self.client.post('/api/c1-pilot/sessions', json=invalid).status_code, 422)
+        response = self.client.post('/api/c1-pilot/sessions', json=entry)
+        self.assertEqual(response.status_code, 200, response.text)
+        session = response.json()
+        cfg['protocol_version'] = 'changed-after-entry'
+        self.config_path.write_text(json.dumps(cfg))
+        state = self.client.get('/api/c1-pilot/sessions/'+session['session_id'], headers={'Authorization': 'Bearer '+session['token']}).json()
+        self.assertEqual(state['config']['protocol_version'], 'test-tags-v2')
+        exported = list(csv.DictReader(io.StringIO(self.client.get('/api/c1-pilot/admin/sessions', headers=self.admin).text)))
+        saved = json.loads(exported[0]['entry_json'])
+        self.assertEqual(saved['experience_selection'], entry['experience_selection'])
+        self.assertEqual(saved['tools'], 'Piano / keyboard; Singing / vocals; Harmonica')
+        self.assertEqual(saved['example'], 'Practised or performed a song on an instrument')
+
     def test_replacement_preserves_data_and_closes_previous_session(self):
         self.start(); self.setup_audio()
         current = self.state()
