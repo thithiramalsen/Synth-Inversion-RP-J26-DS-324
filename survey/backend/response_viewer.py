@@ -3,6 +3,7 @@ import json
 from typing import Literal
 
 from database import get_connection
+from c1_protocol import analysis_include as c1_analysis_include
 from c4_protocol import analysis_include as c4_analysis_include
 
 PhaseFilter = Literal['all', 'complete', 'in_progress', 'withdrawn', 'replaced', 'screen_failed']
@@ -56,8 +57,7 @@ def response_page(study, bundle_hash, *, offset, limit, listener_number, phase, 
                     assignment_id=row['assignment_id'], phase=row['phase'], presentation_id=row['presentation_id'],
                     trial_order=row['trial_order'], kind=row['kind'], revision_count=row['revision_count'],
                     protocol_version=json.loads(row['protocol_snapshot']).get('protocol_version', ''),
-                    analysis_include=study == 'C1' and row['phase'] == 'complete' and not row['withdrawn_at']
-                    and row['kind'] != 'practice' and row['study_id'] == 'c1_pilot_v1')
+                    analysis_include=c1_analysis_include(row) if study == 'C1' else c4_analysis_include(row))
         if study == 'C1':
             item.update(sample_id=row['sample_id'], ratings={key: rating_value(latest.get(key)) for key in DESCRIPTORS},
                         first_ratings={key: rating_value(first.get(key)) for key in DESCRIPTORS})

@@ -139,6 +139,12 @@ function Entry({ status, busy, onSubmit }) {
   </form>
 }
 
+export function C1StudyNotice({ rehearsal, config }) {
+  return <div className="p-rehearsal">{rehearsal
+    ? config?.review_notice || 'Rehearsal only · These responses are excluded from the research pilot.'
+    : config?.participant_notice || 'C1 listening study. Practice responses are excluded from research analysis.'}</div>
+}
+
 export default function PilotApp() {
   const [status, setStatus] = useState(null), [session, setSession] = useState(savedSession)
   const [step, setStep] = useState(null), [error, setError] = useState(''), [busy, setBusy] = useState(false)
@@ -185,17 +191,18 @@ export default function PilotApp() {
     localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false)
   }
   const cfg = step?.config || status?.config
+  const rehearsal = step?.rehearsal ?? status?.rehearsal
   const phase = step?.phase
   const playable = ['volume', 'headphones', 'rating', 'correction'].includes(phase)
   const end = ['complete', 'withdrawn', 'screen_failed', 'replaced'].includes(phase)
   const progress = phase === 'rating' && !step.practice ? Math.round((step.display_number - 1) / step.display_total * 100) : 0
-  return <div className="pilot-app"><SiteHeader current="c1" note={step?.rehearsal || status?.rehearsal ? 'C1 INTERFACE REVIEW' : 'C1 TIMBRE STUDY'} />
+  return <div className="pilot-app"><SiteHeader current="c1" note={rehearsal ? 'C1 INTERFACE REVIEW' : 'C1 TIMBRE STUDY'} />
     <ErrorNotice message={error} onDismiss={() => setError('')}>
       {session && <button type="button" onClick={() => action(() => load())}>Reload current step</button>}
       {status?.rehearsal && !step && <button type="button" onClick={leaveRehearsal}>Return to rehearsal entry</button>}
     </ErrorNotice>
     <main className="p-main">
-      {(step?.rehearsal || status?.rehearsal) && <div className="p-rehearsal">{cfg?.review_notice || 'Rehearsal only · These responses are excluded from the research pilot.'}</div>}
+      {cfg && <C1StudyNotice rehearsal={rehearsal} config={cfg} />}
       {!status ? <p role="status">Loading the study…</p> : !session ? <>
         {!status.ready && <div className="p-notice"><strong>The study is not open yet.</strong><p>You can read the information below. The researcher is completing preparation.</p></div>}
         <Entry status={status} busy={busy} onSubmit={values => action(async () => { const active = await request('/sessions', { body: values }); localStorage.setItem(KEY, JSON.stringify(active)); setSession(active); await load(active); window.scrollTo(0, 0) })} />
@@ -234,7 +241,9 @@ export default function PilotApp() {
           {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} sound responses have been saved, including practice. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No descriptor study responses are required.'}</p></section>}
         </>}
         {!['withdrawn', 'replaced'].includes(phase) && !withdrawPrompt && <button className="p-withdraw" onClick={() => setWithdrawPrompt(true)}>Withdraw this session</button>}
-        {step.rehearsal && end && <section className="p-card"><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={leaveRehearsal}>Use another rehearsal invitation</button></section>}
+        {step.rehearsal && end && <section className="p-card">{status?.rehearsal === false
+          ? <><p>This saved session belongs to the earlier rehearsal. To join the participant study, use a new participant invitation. Your rehearsal answers remain separate.</p><button className="p-primary" onClick={leaveRehearsal}>Open the participant study</button></>
+          : <><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={leaveRehearsal}>Use another rehearsal invitation</button></>}</section>}
       </>}
     </main><footer className="p-footer">Synth Inversion Research · C1 listening pilot</footer></div>
 }
@@ -258,6 +267,13 @@ export function PilotAdmin() {
   const [skippedAssignments, setSkippedAssignments] = useState(null)
   async function act(fn) { setError(''); setBusy(true); try { await fn() } catch (e) { setError(e.message) } finally { setBusy(false) } }
   useEffect(() => { fetch(`${API}/api/researcher/session`, { credentials: 'include' }).then(r => setAuthenticated(r.ok)).catch(() => {}) }, [])
+  useEffect(() => {
+    if (!authenticated) return
+    let active = true
+    request('/admin/summary').then(result => { if (active) setData(result) })
+      .catch(error => { if (active) setError(error.message) })
+    return () => { active = false }
+  }, [authenticated])
   async function researcherRequest(path, body) {
     const response = await fetch(`${API}/api/researcher${path}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     const result = await response.json().catch(() => ({}))
@@ -313,6 +329,7 @@ export function PilotAdmin() {
     <SiteHeader current="c1-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
     <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    {data && <section className="p-card"><h2>{data.rehearsal ? 'Rehearsal invitations' : 'Participant invitations'}</h2><p role="status"><strong>{data.rehearsal ? 'This is the rehearsal study.' : data.ready ? 'Participant collection is open.' : 'Participant entry is closed.'}</strong> {data.assignment_capacity} assignments are available in this version. {data.rehearsal ? 'Responses remain excluded.' : 'Create fresh participant codes below; previous rehearsal codes are separate.'}</p></section>}
     <ResponseViewer study="C1" apiBase={`${API}/api/c1-pilot`} onError={setError} />
     <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
       <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>

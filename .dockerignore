@@ -20,6 +20,7 @@
 !survey/deploy/start.py
 !survey/deploy/study/
 !survey/deploy/study/bundle.json
+!survey/deploy/study/c1_participant_bundle_v1.json
 !survey/deploy/study/audio/
 !survey/deploy/study/audio/*.wav
 

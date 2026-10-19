@@ -29,14 +29,14 @@ def main():
     if not os.environ.get('SURVEY_RESEARCHER_USERNAME') or '$' not in os.environ.get('SURVEY_RESEARCHER_PASSWORD_HASH', ''):
         raise RuntimeError('Set the researcher username and password hash in host secrets')
     os.environ.setdefault('SURVEY_REMOTE_MODE', '1')
-    os.environ.setdefault('SURVEY_C1_OPEN', '0')
+    os.environ.setdefault('SURVEY_C1_OPEN', '1')
     os.environ.setdefault('SURVEY_ALLOWED_ORIGINS', '')
-    os.environ.setdefault('SURVEY_C1_BUNDLE', str(ROOT/'survey/deploy/study/bundle.json'))
-    os.environ.setdefault('SURVEY_C1_CONFIG', str(ROOT/'survey/config/c1_review_20_v1.json'))
-    validate_assets(os.environ['SURVEY_C1_BUNDLE'])
+    os.environ.setdefault('SURVEY_C1_BUNDLE', str(ROOT/'survey/deploy/study/c1_participant_bundle_v1.json'))
+    os.environ.setdefault('SURVEY_C1_CONFIG', str(ROOT/'survey/config/c1_participants_v1.json'))
     sys.path.insert(0, str(ROOT/'survey/backend'))
-    from c4_pilot import known_bundle_paths
-    for path in known_bundle_paths():
+    from c1_pilot import known_bundle_paths as c1_bundle_paths
+    from c4_pilot import known_bundle_paths as c4_bundle_paths
+    for path in [*c1_bundle_paths(), *c4_bundle_paths()]:
         validate_assets(path)
     import uvicorn
     # Render's ingress supplies the public HTTPS scheme. This entry point runs

@@ -1,5 +1,11 @@
 # Persistent C1 review deployment
 
+**C1 participant collection — 19 October 2026:** C1 now uses a separate
+`study/c1_participant_bundle_v1.json` and `config/c1_participants_v1.json`, with
+`SURVEY_C1_OPEN=1`. See [the C1 participant guide](../C1_PARTICIPANT_DEPLOYMENT.md)
+for the three Render overrides, fresh invitation IDs and completed-only export
+rules. Old review notes and responses below remain historical and excluded.
+
 **C4 participant collection — 19 October 2026:** the active participant bundle is
 `study/c4_participant_bundle_v1.json`, with `config/c4_participants_v1.json` and
 `SURVEY_C4_OPEN=1`. Read the [participant deployment guide](../C4_PARTICIPANT_DEPLOYMENT.md)

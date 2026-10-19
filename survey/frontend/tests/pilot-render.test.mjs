@@ -8,6 +8,7 @@ import { readFileSync } from 'node:fs'
 let server, PilotApp, C1Admin, BulkInvitationDownload, InvitationDownloads, ExperienceQuestions, PreviousNavigation, ResponseTable, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
 const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
+let C1StudyNotice
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
@@ -15,6 +16,7 @@ before(async () => {
   const c1 = await server.ssrLoadModule('/src/PilotApp.jsx')
   PilotApp = c1.default; BulkInvitationDownload = c1.BulkInvitationDownload
   C1Admin = c1.PilotAdmin
+  C1StudyNotice = c1.C1StudyNotice
   InvitationDownloads = (await server.ssrLoadModule('/src/InvitationDownloads.jsx')).default
   ExperienceQuestions = (await server.ssrLoadModule('/src/ExperienceQuestions.jsx')).default
   PreviousNavigation = (await server.ssrLoadModule('/src/PreviousNavigation.jsx')).default
@@ -71,6 +73,16 @@ test('signed-out admin pages do not render the response viewer', () => {
     assert.match(html, /Sign in/)
     assert.doesNotMatch(html, /View saved responses/)
   }
+})
+
+test('C1 participant notice is distinct from historical rehearsal wording', () => {
+  const cfg = JSON.parse(readFileSync(new URL('../../config/c1_participants_v1.json', import.meta.url), 'utf8'))
+  const html = renderToString(React.createElement(C1StudyNotice, { rehearsal: false, config: cfg }))
+  assert.match(html, /C1 listening study/)
+  assert.match(html, /Completed study responses/)
+  assert.doesNotMatch(html, /Supervisor|rehearsal only|Awaiting approval/)
+  const old = renderToString(React.createElement(C1StudyNotice, { rehearsal: true, config: {} }))
+  assert.match(old, /Rehearsal only/)
 })
 
 test('response tables show saved ratings and corrections without private fields', () => {
