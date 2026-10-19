@@ -93,6 +93,21 @@ finds that its old unused code was replaced.
 
 ## Future updates
 
+Both researcher admin panels now offer **View saved responses**, with listener,
+session-status and trial-type filters, 25-row pages and manual refresh. The
+current-bundle view shows latest saved answers, original answers when corrected,
+friendly listener labels, assignment and stimulus IDs, and analysis/exclusion
+status. Practice/repeat and withdrawn/replaced rows remain explicitly labelled.
+These are response rows, not counts of independent participants.
+
+The `/api/c1-pilot/admin/responses` and `/api/c4-pilot/admin/responses` routes
+require the same researcher authentication as existing admin exports and return
+only an explicit allowlist. Entry/eligibility answers, free-text comments and
+feedback, contact details, timestamps, raw participant/session IDs, invitation
+codes and token/hash values are omitted server-side. Responses use
+`Cache-Control: private, no-store`; pagination is bounded to at most 100 rows per
+request. Existing private CSV exports retain their separate audit function.
+
 Make and test changes, then commit and push to `c1-pilot-deployment`. Render's
 `autoDeployTrigger: commit` rebuilds that branch; merely saving local files does
 not update the public website. Keep the same Neon connection string to retain

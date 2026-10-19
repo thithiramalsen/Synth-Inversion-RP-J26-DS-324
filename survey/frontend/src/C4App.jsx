@@ -3,6 +3,7 @@ import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
 import PreviousNavigation from './PreviousNavigation'
+import ResponseViewer from './ResponseViewer'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
@@ -394,6 +395,7 @@ export function C4Admin() {
     <SiteHeader current="c4-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
     <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>Manage C4 invitations and sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={locked} onClick={() => act(async () => setData(await request('/admin/summary')))}>{locked ? 'Working…' : 'Refresh invitations and sessions'}</button><button className="p-secondary" disabled={locked} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setSkippedAssignments(null); setAccountInvite(null); setReplacement({ assignment_id: '', reason: '' }); setReplaceAcknowledged(false) })}>Sign out</button></div>{loading && <p role="status">Loading participant assignments…</p>}</section>
+    <ResponseViewer study="C4" apiBase={`${API}/api/c4-pilot`} onError={setError} />
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
       <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unused assignments remain' : 'All assignments already have invitations'}</h2>
       {issued.length ? <><p>Save the downloaded CSV before leaving this page and fill in names as you assign codes. Copy only the invitation code to the participant and send them to <a href="/c4">the C4 study</a>.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C4'), 'private-c4-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-c4-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below for one file, or choose “Replace lost code” for an individual unused assignment. Creating invitations does not reissue existing codes.</p>}

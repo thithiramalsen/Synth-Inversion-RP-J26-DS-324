@@ -3,6 +3,7 @@ import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
 import PreviousNavigation from './PreviousNavigation'
+import ResponseViewer from './ResponseViewer'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
@@ -312,6 +313,7 @@ export function PilotAdmin() {
     <SiteHeader current="c1-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
     <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    <ResponseViewer study="C1" apiBase={`${API}/api/c1-pilot`} onError={setError} />
     <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
       <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
       {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}

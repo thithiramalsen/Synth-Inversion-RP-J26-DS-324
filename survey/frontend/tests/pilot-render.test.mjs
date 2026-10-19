@@ -5,7 +5,7 @@ import { renderToString } from 'react-dom/server'
 import { createServer } from 'vite'
 import { readFileSync } from 'node:fs'
 
-let server, PilotApp, BulkInvitationDownload, InvitationDownloads, ExperienceQuestions, PreviousNavigation, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
+let server, PilotApp, C1Admin, BulkInvitationDownload, InvitationDownloads, ExperienceQuestions, PreviousNavigation, ResponseTable, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
 const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
 
@@ -14,9 +14,11 @@ before(async () => {
   server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
   const c1 = await server.ssrLoadModule('/src/PilotApp.jsx')
   PilotApp = c1.default; BulkInvitationDownload = c1.BulkInvitationDownload
+  C1Admin = c1.PilotAdmin
   InvitationDownloads = (await server.ssrLoadModule('/src/InvitationDownloads.jsx')).default
   ExperienceQuestions = (await server.ssrLoadModule('/src/ExperienceQuestions.jsx')).default
   PreviousNavigation = (await server.ssrLoadModule('/src/PreviousNavigation.jsx')).default
+  ResponseTable = (await server.ssrLoadModule('/src/ResponseViewer.jsx')).ResponseTable
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
   C4App = c4.default; C4Admin = c4.C4Admin; ComparisonPlayer = c4.ComparisonPlayer
   C4BulkInvitationDownload = c4.C4BulkInvitationDownload
@@ -59,6 +61,34 @@ test('C4 review, researcher login and triple player render independently', () =>
   assert.match(html,/Play.*Reference/)
   assert.match(html,/Play.*Sound A/)
   assert.match(html,/Play.*Sound B/)
+})
+
+test('signed-out admin pages do not render the response viewer', () => {
+  for (const Admin of [C1Admin, C4Admin]) {
+    const html = renderToString(React.createElement(Admin))
+    assert.match(html, /Sign in/)
+    assert.doesNotMatch(html, /View saved responses/)
+  }
+})
+
+test('response tables show saved ratings and corrections without private fields', () => {
+  const base = { listener_number: 1, participant_label: 'Listener 001', assignment_id: 'block_01', presentation_id: 'practice_1',
+    trial_order: 1, kind: 'practice', phase: 'rating', analysis_include: false, revision_count: 1,
+    comment: 'PRIVATE_COMMENT', entry_json: 'PRIVATE_IDENTITY', session_id: 'PRIVATE_SESSION' }
+  const c1 = renderToString(React.createElement(ResponseTable, { study: 'C1', rows: [{ ...base, sample_id: 'sound_001',
+    ratings: { brightness: 7, roughness: 'unclear' }, first_ratings: { brightness: 4, roughness: 'unclear' } }] }))
+  assert.match(c1, /Listener 001/)
+  assert.match(c1, /Cannot judge/)
+  assert.match(c1, /Original answer/)
+  assert.match(c1, /Excluded/)
+  const c4 = renderToString(React.createElement(ResponseTable, { study: 'C4', rows: [{ ...base, triplet_id: 'triplet_01',
+    reference: 'ref_01', candidate_a: 'a_01', candidate_b: 'b_01',
+    answer: { choice: 'candidate_b', confidence: 4 }, first_answer: { choice: 'cannot_decide', confidence: null } }] }))
+  assert.match(c4, /Sound B · 4\/5 confidence/)
+  assert.match(c4, /Cannot decide/)
+  assert.match(c4, /triplet_01/)
+  for (const html of [c1, c4]) assert.doesNotMatch(html, /PRIVATE_/)
+  assert.match(renderToString(React.createElement(ResponseTable, { study: 'C1', rows: [] })), /No saved responses/)
 })
 
 test('C1 bulk invitation download explains replacement and protects started sessions', () => {
