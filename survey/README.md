@@ -1,5 +1,9 @@
 # Listening Survey
 
+**C4 participant release:** use the [participant deployment guide](C4_PARTICIPANT_DEPLOYMENT.md).
+The active participant version collects real research responses under a new study
+ID and fresh invitations. Historical review sessions retain their original status.
+
 React/Vite + FastAPI research listening instruments. Audio is served by the backend;
 WAV files are not bundled into React.
 

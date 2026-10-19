@@ -4,14 +4,14 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { createServer } from 'vite'
 
-let server, C4Workload, C4Break, C4DesignSummary
+let server, C4Workload, C4Break, C4DesignSummary, C4CollectionNotice, ComparisonQuestions
 const originalWindow = globalThis.window
 const render = (component, props) => renderToString(React.createElement(component, props)).replace(/<!-- -->/g, '')
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
   server = await createServer({ server: { middlewareMode: true, hmr: false }, resolve: { preserveSymlinks: true }, appType: 'custom' })
-  ;({ C4Workload, C4Break, C4DesignSummary } = await server.ssrLoadModule('/src/C4App.jsx'))
+  ;({ C4Workload, C4Break, C4DesignSummary, C4CollectionNotice, ComparisonQuestions } = await server.ssrLoadModule('/src/C4App.jsx'))
 })
 
 after(async () => {
@@ -35,6 +35,23 @@ test('C4 break displays saved-session progress instead of a fixed workload', () 
   const legacy = render(C4Break, { step: { rated_completed: 6, rated_total: 12 }, busy: true, onContinue() {} })
   assert.match(legacy, /completed 6 of 12 review comparisons/)
   assert.match(legacy, /<button[^>]*disabled=""/)
+})
+
+test('participant information uses study wording and explains decision certainty', () => {
+  const cfg = { collection_mode: 'participants', participant_notice: 'C4 listening study. Completed study responses are collected for research analysis.',
+    confidence_question: { label: 'How sure are you that your chosen sound is closer to the reference?', help: 'Rate how sure you are about your A/B choice, rather than how similar the sounds are.', low: 'Not sure', high: 'Very sure' } }
+  const notice = render(C4CollectionNotice, { config: cfg, rehearsal: false })
+  assert.match(notice, /collected for research analysis/)
+  assert.doesNotMatch(notice, /Supervisor|rehearsal|review/)
+  assert.match(render(C4CollectionNotice, { config: { review_notice: 'Supervisor review only' }, rehearsal: true }), /Supervisor review only/)
+  const workload = render(C4Workload, { status: { config: cfg, rated_presentations: 22 } })
+  assert.match(workload, /22 study comparisons/)
+  assert.doesNotMatch(workload, /review comparisons/)
+  const choice = render(ComparisonQuestions, { answer: { choice: 'candidate_a', confidence: 4 }, onChange() {}, confidenceQuestion: cfg.confidence_question })
+  assert.match(choice, /How sure are you that your chosen sound is closer/)
+  assert.match(choice, /rather than how similar the sounds are/)
+  assert.match(choice, /Very sure/)
+  assert.match(render(C4Break, { step: { rehearsal: false, rated_completed: 11, rated_total: 22 } }), /11 of 22 study comparisons/)
 })
 
 const data = {

@@ -17,6 +17,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from database import get_connection
+from c4_protocol import PARTICIPANT_STUDY_ID, PARTICIPANT_PROTOCOL_VERSION, REVIEW_STUDY_IDS, analysis_include
 from experience import ExperienceEntry, experience_options
 from response_viewer import KindFilter, PhaseFilter, response_page
 from security import require_admin
@@ -35,17 +36,19 @@ def hashed(value):
 
 
 def bundle_path():
-    return Path(os.environ.get("SURVEY_C4_BUNDLE", ROOT / "survey/deploy/study/c4_clap_bundle.json"))
+    return Path(os.environ.get("SURVEY_C4_BUNDLE", ROOT / "survey/deploy/study/c4_participant_bundle_v1.json"))
 
 
 def known_bundle_paths():
     """Only explicitly packaged/configured bundles may restore saved sessions."""
-    legacy = os.environ.get('SURVEY_C4_LEGACY_BUNDLES', str(ROOT / 'survey/deploy/study/c4_bundle.json'))
+    default_legacy = os.pathsep.join(str(ROOT / 'survey/deploy/study' / name)
+                                   for name in ('c4_bundle.json', 'c4_clap_bundle.json'))
+    legacy = os.environ.get('SURVEY_C4_LEGACY_BUNDLES', default_legacy)
     return list(dict.fromkeys([bundle_path().resolve(), *[Path(p).resolve() for p in legacy.split(os.pathsep) if p]]))
 
 
 def config():
-    path = Path(os.environ.get("SURVEY_C4_CONFIG", ROOT / "survey/config/c4_clap_v1.json"))
+    path = Path(os.environ.get("SURVEY_C4_CONFIG", ROOT / "survey/config/c4_participants_v1.json"))
     cfg = json.loads(path.read_text(encoding="utf-8"))
     if cfg.get('experience_entry_format') == 'experience_tags_v1':
         cfg['experience_selection'] = experience_options()
@@ -165,9 +168,10 @@ def can_correct(db, row):
 
 
 def launch_issues(bundle, cfg):
-    # This release implements review only. Formal C4 recruitment requires a new protocol.
-    if bundle.get('rehearsal') is not True or bundle.get('study_id') not in ('c4_review_v1', 'c4_clap_review_v1'):
-        return ['Only the versioned C4 review protocols are available']
+    participant = bundle.get('study_id') == PARTICIPANT_STUDY_ID and bundle.get('rehearsal') is False
+    review = bundle.get('study_id') in REVIEW_STUDY_IDS and bundle.get('rehearsal') is True
+    if not (participant or review):
+        return ['This C4 study version is not supported']
     if cfg.get('study_id', 'c4_review_v1') != bundle['study_id']:
         return ['C4 protocol and audio bundle versions do not match']
     for block in bundle['assignments']:
@@ -175,7 +179,16 @@ def launch_issues(bundle, cfg):
         if (any(counts[key] != cfg.get(key) for key in ('unique_comparisons', 'repeat_comparisons'))
                 or counts['practice_presentations'] != cfg.get('practice_comparisons')):
             return ['C4 assignment counts do not match the protocol']
-    return []
+    issues = []
+    if participant:
+        if cfg.get('collection_mode') != 'participants' or cfg.get('protocol_version') != PARTICIPANT_PROTOCOL_VERSION:
+            issues.append('C4 participant information and collection version do not match')
+        if os.environ.get('SURVEY_C4_OPEN', '1') != '1':
+            issues.append('Participant entry is currently closed')
+        for name in ('researcher_name', 'researcher_email', 'retention_statement', 'withdrawal_statement'):
+            if not cfg.get(name, '').strip():
+                issues.append(f'Complete {name.replace("_", " ")}')
+    return issues
 
 
 def checked_asset(relative, expected_hash, checksum):
@@ -717,6 +730,7 @@ def summary():
                   repeats_per_listener=counts['repeat_comparisons'], practice_per_listener=counts['practice_presentations'],
                   target_min=cfg.get('target_completed_min'), target_max=cfg.get('target_completed_max'))
     return dict(bundle_hash=checksum, study_id=bundle['study_id'], protocol_version=cfg['protocol_version'],
+                rehearsal=bundle['rehearsal'], ready=not launch_issues(bundle, cfg), issues=launch_issues(bundle, cfg),
                 design=design, coverage=coverage,
                 sessions=[dict(r, participant_label=listener_label(r["listener_number"])) for r in sessions],
                 completed=sum(r["phase"] == "complete" and not r["withdrawn_at"] for r in sessions),
@@ -727,7 +741,7 @@ def summary():
 @router.get("/admin/export", dependencies=[Depends(require_admin)])
 def export():
     with get_connection() as db:
-        rows = db.execute("SELECT r.*,s.participant_id,s.study_id,s.bundle_hash,s.protocol_hash,s.assignment_id,s.phase,s.withdrawn_at,s.completed_at FROM c4_ratings r JOIN c4_sessions s USING(session_id) ORDER BY s.started_at,r.trial_order").fetchall()
+        rows = db.execute("SELECT r.*,s.participant_id,s.study_id,s.bundle_hash,s.protocol_hash,s.assignment_id,s.phase,s.withdrawn_at,s.completed_at,s.protocol_snapshot FROM c4_ratings r JOIN c4_sessions s USING(session_id) ORDER BY s.started_at,r.trial_order").fetchall()
         corrections = db.execute('SELECT * FROM c4_rating_corrections ORDER BY correction_id').fetchall()
     correction_map = {}
     for item in corrections:
@@ -738,7 +752,7 @@ def export():
                "phase", "completed_at", "withdrawn_at", "analysis_include",
                "choice_first", "chosen_sample_id_first", "confidence_first", "comment_first", "revision_count", "corrections_json",
                "clap_similarity_a", "clap_similarity_b", "clap_nearer_sample_id",
-               "candidate_parameter_distance_a", "candidate_parameter_distance_b", "selection_method"]
+               "candidate_parameter_distance_a", "candidate_parameter_distance_b", "selection_method", "collection_mode"]
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=columns)
     writer.writeheader()
@@ -750,10 +764,11 @@ def export():
         row.update({key+'_first': value for key, value in first.items()})
         row.update(json.loads(revisions[-1]['answers_json']) if revisions else first)
         row.update(revision_count=len(revisions), corrections_json=json.dumps(revisions))
-        row["analysis_include"] = False  # All sessions in this release are interface reviews.
+        row['collection_mode'] = json.loads(row['protocol_snapshot']).get('collection_mode', 'review')
+        row['analysis_include'] = analysis_include(row)
         writer.writerow({k: safe_cell(row.get(k, "")) for k in columns})
     return StreamingResponse(iter([output.getvalue()]), media_type="text/csv",
-                             headers={"Content-Disposition": 'attachment; filename="c4_review_responses.csv"'})
+                             headers={"Content-Disposition": 'attachment; filename="c4_responses.csv"'})
 
 
 def safe_cell(value):

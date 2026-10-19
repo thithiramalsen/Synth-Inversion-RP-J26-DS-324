@@ -1,5 +1,9 @@
 # C4 - Human-aligned perceptual similarity prototype
 
+The participant release uses its own study ID and fresh invitations. See the
+[participant deployment guide](../survey/C4_PARTICIPANT_DEPLOYMENT.md) for the
+current collection settings and completed-response export rules.
+
 The current C4 survey is prepared with a **200-triplet real-audio CLAP bank**,
 20 unique comparisons plus two hidden repeats and two practices per listener,
 and 100 balanced assignments for a target of 50–100 completed listeners. See

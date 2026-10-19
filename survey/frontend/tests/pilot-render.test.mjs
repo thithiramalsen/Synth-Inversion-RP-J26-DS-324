@@ -50,7 +50,9 @@ for (const [name, saved] of [
 
 test('C4 review, researcher login and triple player render independently', () => {
   globalThis.localStorage = { getItem: () => null }
-  assert.match(renderToString(React.createElement(C4App)), /C4 SIMILARITY REVIEW/)
+  const initial = renderToString(React.createElement(C4App))
+  assert.match(initial, /C4 LISTENING STUDY/)
+  assert.doesNotMatch(initial, /Supervisor review only|excluded from research analysis/)
   assert.match(renderToString(React.createElement(C4Admin)), /Sign in/)
   const html = renderToString(React.createElement(ComparisonPlayer, {
     session: {session_id: 'test', token:'test'}, step: {phase:'rating'}, onCounts:()=>{}, onError:()=>{}

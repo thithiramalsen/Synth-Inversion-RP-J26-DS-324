@@ -1,0 +1,60 @@
+{
+  "protocol_version": "c4_participants_2026-10-19_v1",
+  "navigation_policy": "previous_before_next_play_v1",
+  "experience_entry_format": "experience_tags_v1",
+  "title": "Which sound is closer?",
+  "description": "Compare overall timbre using a reference and two candidates from the 200-comparison CLAP-selected sound bank.",
+  "information_version": "c4_participant_info_2026-10-19_v1",
+  "experience_question": {
+    "label": "Which of these have you done yourself?",
+    "help": "Select one or more examples you have actually done. Personal practice counts; it does not need to be released or professional work. Extra details are optional.",
+    "placeholder": "For example: I practised a song on piano and varied the touch to shape its tone."
+  },
+  "resume_instructions": "You may close this tab and return to the same study link using the same browser profile on the same device while the study is open. Avoid private/incognito mode and do not clear this site's data. Your invitation starts one session; it cannot restore a session in a different browser. Each saved response is kept; an unfinished answer may need to be entered again.",
+  "information": [
+    "This study investigates how people compare the sound character (timbre) of synthesizer sounds. Your judgments will help evaluate and develop an audio-similarity metric.",
+    "In each comparison, listen to a reference, Sound A and Sound B. Choose which candidate has a more similar overall sound character (timbre) to the reference. Consider both tone and how the sound changes over time. Do not choose solely because one is louder. There is no correct answer supplied by the researcher.",
+    "There are 2 practice comparisons followed by 22 study comparisons: 20 different comparisons and 2 repeated comparisons to check consistency. A break follows comparison 11. Allow approximately 15-20 minutes.",
+    "Play all three clips fully at least once. Replay in any order. Select I cannot decide if you cannot choose; this does not mean the sounds are identical. If you choose A or B, rate how sure you are about that choice from 1 (not sure) to 5 (very sure). This is certainty about your choice, not a rating of how similar the sounds are.",
+    "Participation is voluntary. Pause or stop at any time. Set a comfortable volume and stop if listening is uncomfortable. Your experience answers, choices, confidence, playback counts, times and feedback are saved under a participant code. Please do not enter names or identifying links. Hosting providers may keep technical access logs.",
+    "Participation is voluntary. You can stop or withdraw. Withdrawing excludes your saved responses from analysis; saved audit records are not immediately erased. The retention and withdrawal details are below."
+  ],
+  "eligibility": {
+    "minimum_age": 18,
+    "activities": [
+      "Music production",
+      "Sound design",
+      "Synthesizer patch creation",
+      "Instrument performance",
+      "Singing"
+    ],
+    "rule": "Adult volunteer with practical experience in music production, sound design, synth patch creation, instrumental performance or singing, supported by a brief example. Personal practice counts; passive music listening alone does not qualify.",
+    "supervisor_confirmed": false
+  },
+  "researcher_name": "Malsen N.G.T.",
+  "researcher_email": "it23203280@my.sliit.lk",
+  "supervisor_contact": "",
+  "retention_statement": "Responses are stored for research analysis and project assessment with access restricted to the research team. No automatic deletion date has been set. Contact the researcher with your listener code to ask about stored responses or request withdrawal.",
+  "institutional_review_status": "not_recorded",
+  "level_policy_listening_checked": false,
+  "rehearsal_completed": false,
+  "assignment_capacity": 100,
+  "break_after_rated": 11,
+  "experience_tools_label": "Which instruments, vocal activities or music tools have you used?",
+  "experience_tools_placeholder": "For example: piano, bass guitar, singing, a DAW or a synthesizer",
+  "unique_comparisons": 20,
+  "repeat_comparisons": 2,
+  "practice_comparisons": 2,
+  "study_id": "c4_clap_participants_v1",
+  "target_completed_min": 50,
+  "target_completed_max": 100,
+  "collection_mode": "participants",
+  "participant_notice": "C4 listening study. Completed study responses are collected for research analysis; practice responses are excluded.",
+  "confidence_question": {
+    "label": "How sure are you that your chosen sound is closer to the reference?",
+    "help": "Rate how sure you are about your A/B choice, rather than how similar the sounds are.",
+    "low": "Not sure",
+    "high": "Very sure"
+  },
+  "withdrawal_statement": "You may withdraw using this browser while you retain session access, or contact the researcher with your listener code. Withdrawn responses are excluded from analysis. Withdrawal does not immediately erase saved audit records."
+}
