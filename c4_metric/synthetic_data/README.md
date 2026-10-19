@@ -1,4 +1,10 @@
-# C4 synthetic rehearsal data from the real corpus
+# C4 real CLAP triplet bank and synthetic answer fixtures
+
+**The audio bank is real; the adjacent example answers are synthetic.** The
+current C4 survey packages these 200 real triplets separately, with 20 unique
+comparisons, two hidden repeats and two practices per listener. It saves new
+answers entered by listeners and never imports the simulated response/session
+CSVs. See the [current survey protocol](../../survey/C4_REVIEW_PROTOCOL.md).
 
 `generate_dummy_c4.py` uses the actual `restricted_bend_sustain_v4` corpus. It
 checks the 131,072-row manifest, samples a deterministic 1,024-sound subset, and
@@ -71,12 +77,12 @@ fails clearly.
   this set would be selection-conditioned. The proposal also calls for metric
   disagreement and near-tie cases plus held-out anchors; those require a frozen
   multi-metric selection plan and should be separate from a CLAP-only rehearsal.
-- The hosted C4 review flow is a supervisor rehearsal with two practice
-  comparisons and 12 review presentations (10 unique plus two repeats), plus
-  screening and feedback. This synthetic set follows the requested 20-comparison
-  main-survey shape; it is not an export from that 14-presentation review flow.
-  A formal 20-item study needs its own versioned protocol, assignments, consent
-  flow, and export.
+- The historical hosted review used two practice comparisons and 12 review
+  presentations (10 unique plus two repeats). The new `c4_clap_review_v1`
+  preparation has its own frozen bank, 100 balanced assignments, 20 unique plus
+  two repeats and two practices per person. These simulated CSVs are exports
+  from neither hosted version. The prepared app continues to identify review
+  responses separately from formal research collection.
 - The proposal PDF says the planned target dataset is 65,536 sounds; the current
   repository has a 131,072-render corpus. Align the report, dataset identifier,
   split and ethics materials with your supervisor before describing the final

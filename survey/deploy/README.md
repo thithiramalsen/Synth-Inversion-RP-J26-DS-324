@@ -1,5 +1,31 @@
 # Persistent C1 review deployment
 
+**C4 update — 19 October 2026:** the prepared deployment now defaults to
+`study/c4_clap_bundle.json` and `config/c4_clap_v1.json`: 200 real CLAP triplets,
+100 assignments, and 20 unique +2 hidden repeats +2 practice comparisons each.
+The target is 50–100 completed independent listeners. Issue codes in consecutive
+groups of ten so each completed group covers the complete bank once. The admin
+coverage panel reports actual completed judgments and gaps separately from the
+plan. Existing review sessions keep their unchanged historical bundle/config.
+This source update does not confirm a hosted deployment or formal-study launch.
+
+The Docker build copies the 600 already tracked source WAVs from
+`c4_metric/synthetic_data/stimuli/` into `study/clap_audio/`. No synthetic
+response CSVs are copied or imported. For local playback, materialize and verify:
+
+```powershell
+python -B -m survey.deploy.build_c4_clap
+python -B -m survey.deploy.build_c4_clap --check
+```
+
+The builder refuses to overwrite different bundle/audio bytes. Keep its frozen
+source provenance unchanged after responses exist; use a new version/path for
+future design changes. `SURVEY_C4_BUNDLE` and `SURVEY_C4_CONFIG` must refer to
+matching versions. Historical session lookup defaults to `study/c4_bundle.json`;
+additional retained bundles can be allowlisted in `SURVEY_C4_LEGACY_BUNDLES`
+(separate paths with the host platform's path separator). Startup verifies every
+registered bundle's playback assets. See the [C4 protocol](../C4_REVIEW_PROTOCOL.md).
+
 Updated 9 October 2026. **PostgreSQL verification passed:** the researcher ran
 all 23 integration tests against the configured test database using IPv4.
 The supplied final output reports `Ran 23 tests in 794.303s` and `OK`.

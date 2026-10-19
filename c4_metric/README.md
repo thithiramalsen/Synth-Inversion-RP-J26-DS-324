@@ -1,6 +1,13 @@
 # C4 - Human-aligned perceptual similarity prototype
 
-This folder contains the reproducible triplet selection and MFCC baseline used by the local C4 listening survey.
+The current C4 survey is prepared with a **200-triplet real-audio CLAP bank**,
+20 unique comparisons plus two hidden repeats and two practices per listener,
+and 100 balanced assignments for a target of 50–100 completed listeners. See
+the [current protocol](../survey/C4_REVIEW_PROTOCOL.md). The bank lives in
+`synthetic_data/clap_triplets.csv`; the adjacent synthetic response/session CSVs
+are separate software fixtures and are never imported as participant answers.
+
+The MFCC instructions below describe the historical local development prototype.
 
 ## 1. Generate the development triplets
 
@@ -40,5 +47,6 @@ This reports how often the simple MFCC-distance baseline agrees with the interna
 The separate [synthetic data guide](synthetic_data/README.md) documents a seeded
 sample from the 131,072-render corpus, CLAP-selected real sound triplets, and
 simulated responses for software rehearsal. Those response rows are synthetic;
-they are not survey submissions or research results. This does not replace or
-change the ten-triplet internal instrument above.
+they are not survey submissions or research results. The hosted survey now uses
+a separately frozen copy of the real sound bank. The ten-triplet internal
+instrument above remains historical.

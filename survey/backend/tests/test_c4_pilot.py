@@ -41,6 +41,8 @@ class C4PilotTests(unittest.TestCase):
         self.bundle_path = root/'bundle.json'
         self.bundle_path.write_text(json.dumps(self.bundle))
         scope = patch.dict(os.environ, SURVEY_C4_BUNDLE=str(self.bundle_path),
+                           SURVEY_C4_CONFIG=str(ROOT/'survey/config/c4_review_v1.json'),
+                           SURVEY_C4_LEGACY_BUNDLES='',
                            SURVEY_DATABASE_URL=getattr(self, 'postgres_test_url', ''), SURVEY_ADMIN_TOKEN=ADMIN)
         scope.start(); self.addCleanup(scope.stop)
         self.client = self.enterContext(TestClient(main.app))

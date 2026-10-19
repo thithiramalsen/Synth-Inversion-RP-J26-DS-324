@@ -11,7 +11,7 @@ const originalStorage = globalThis.localStorage
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
-  server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
+  server = await createServer({ server: { middlewareMode: true, hmr: false }, resolve: { preserveSymlinks: true }, appType: 'custom' })
   const c1 = await server.ssrLoadModule('/src/PilotApp.jsx')
   PilotApp = c1.default; BulkInvitationDownload = c1.BulkInvitationDownload
   C1Admin = c1.PilotAdmin

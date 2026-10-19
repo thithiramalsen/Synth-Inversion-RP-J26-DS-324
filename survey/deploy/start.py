@@ -34,8 +34,10 @@ def main():
     os.environ.setdefault('SURVEY_C1_BUNDLE', str(ROOT/'survey/deploy/study/bundle.json'))
     os.environ.setdefault('SURVEY_C1_CONFIG', str(ROOT/'survey/config/c1_review_20_v1.json'))
     validate_assets(os.environ['SURVEY_C1_BUNDLE'])
-    validate_assets(ROOT/'survey/deploy/study/c4_bundle.json')
     sys.path.insert(0, str(ROOT/'survey/backend'))
+    from c4_pilot import known_bundle_paths
+    for path in known_bundle_paths():
+        validate_assets(path)
     import uvicorn
     # Render's ingress supplies the public HTTPS scheme. This entry point runs
     # behind that proxy; local rehearsal continues to use run_rehearsal instead.
