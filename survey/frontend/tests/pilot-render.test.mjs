@@ -9,6 +9,7 @@ let server, PilotApp, C1Admin, BulkInvitationDownload, InvitationDownloads, Expe
 const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
 let C1StudyNotice
+let AssignmentNameRow
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
@@ -21,6 +22,7 @@ before(async () => {
   ExperienceQuestions = (await server.ssrLoadModule('/src/ExperienceQuestions.jsx')).default
   PreviousNavigation = (await server.ssrLoadModule('/src/PreviousNavigation.jsx')).default
   ResponseTable = (await server.ssrLoadModule('/src/ResponseViewer.jsx')).ResponseTable
+  AssignmentNameRow = (await server.ssrLoadModule('/src/AssignmentRoster.jsx')).AssignmentNameRow
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
   C4App = c4.default; C4Admin = c4.C4Admin; ComparisonPlayer = c4.ComparisonPlayer
   C4BulkInvitationDownload = c4.C4BulkInvitationDownload
@@ -126,12 +128,25 @@ test('C4 bulk invitation download matches C1 and identifies C4 assignments', () 
   assert.match(busy, /<button[^>]*disabled=""[^>]*>Replace unused codes and download all/)
 })
 
+test('assignment rows identify the listener and researcher without showing access codes', () => {
+  const html = renderToString(React.createElement(AssignmentNameRow, { row: { assignment_id: 'c1_participant_01', participant_name: 'Demo Musician', version: 2,
+    status: 'in_progress', participant_label: 'Listener 001', saved_presentations: 9, updated_by: 'demo-researcher', updated_at: null }, busy: false, onSave() {} }))
+  assert.match(html, /Name or nickname for c1_participant_01/)
+  assert.match(html, /value="Demo Musician"/)
+  assert.match(html, /Listener 001/)
+  assert.match(html, /demo-researcher/)
+  assert.match(html, /In progress/)
+  assert.match(html, /9<!-- --> saved/)
+  assert.doesNotMatch(html, /invitation_code|token_hash/)
+})
+
 test('invitation download controls offer a fillable CSV and JSON backup', () => {
   const html = renderToString(React.createElement(InvitationDownloads, { onCsv: () => {}, onJson: () => {} }))
   assert.match(html, /Download CSV to fill in names/)
   assert.match(html, /Download JSON backup/)
-  assert.match(html, /blank participant name, date sent and notes columns/)
-  assert.match(html, /Names are not uploaded to the study/)
+  assert.match(html, /includes saved assignment names when available/)
+  assert.match(html, /Edits to the downloaded CSV stay on your computer/)
+  assert.match(html, /shared assignment list above to save names for the team/)
   assert.match(html, /same displayed codes without replacing them/)
 })
 

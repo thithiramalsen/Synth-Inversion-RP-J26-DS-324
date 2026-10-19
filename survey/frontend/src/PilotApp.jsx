@@ -4,6 +4,7 @@ import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
 import PreviousNavigation from './PreviousNavigation'
 import ResponseViewer from './ResponseViewer'
+import AssignmentRoster from './AssignmentRoster.jsx'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
@@ -251,9 +252,9 @@ export default function PilotApp() {
 export function BulkInvitationDownload({ busy, onDownload }) {
   return <section className="p-card" aria-label="Download unused participant invitations">
     <h2>Get unused invitations in one file</h2>
-    <p>If you lost the original download, replace all unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions.</p>
+    <p>If you lost the original download, replace unassigned unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions. Slots with saved names are also skipped so another researcher’s assigned code stays valid. Check with teammates before regenerating codes: invitations sent without a saved name may still be replaced.</p>
     <button type="button" className="p-secondary" disabled={busy} onClick={onDownload}>Replace unused codes and download all</button>
-    <p className="p-muted">Save the private CSV file and fill in names as you assign codes. Each code is labelled with its block. This does not create participant sessions.</p>
+    <p className="p-muted">Save the private CSV file and use the shared assignment list to record names for the team. Each code is labelled with its block. This does not create participant sessions.</p>
   </section>
 }
 
@@ -265,6 +266,7 @@ export function PilotAdmin() {
   const [replacement, setReplacement] = useState({ assignment_id: '', reason: '' })
   const [busy, setBusy] = useState(false), [issued, setIssued] = useState(null)
   const [skippedAssignments, setSkippedAssignments] = useState(null)
+  const [rosterNames, setRosterNames] = useState([]), [rosterRefresh, setRosterRefresh] = useState(0)
   async function act(fn) { setError(''); setBusy(true); try { await fn() } catch (e) { setError(e.message) } finally { setBusy(false) } }
   useEffect(() => { fetch(`${API}/api/researcher/session`, { credentials: 'include' }).then(r => setAuthenticated(r.ok)).catch(() => {}) }, [])
   useEffect(() => {
@@ -298,22 +300,25 @@ export function PilotAdmin() {
     const result = await request('/admin/invitations', { body: {} })
     setSkippedAssignments(null)
     setIssued(result.invitations)
-    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1'), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1', rosterNames), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')
+    setData(await request('/admin/summary')); setRosterRefresh(value => value + 1)
   }
   async function replaceInvitation() {
     const result = await request('/admin/replace-invitation', { body: replacement })
     setIssued([result])
     setSkippedAssignments(null)
-    download(invitationCsv([result], 'C1'), 'private-c1-replacement-invitation.csv', 'text/csv;charset=utf-8')
+    download(invitationCsv([result], 'C1', rosterNames), 'private-c1-replacement-invitation.csv', 'text/csv;charset=utf-8')
     setReplacement({ assignment_id: '', reason: '' })
     setData(await request('/admin/summary'))
+    setRosterRefresh(value => value + 1)
   }
   async function downloadUnusedInvitations() {
     const result = await request('/admin/replace-unused-invitations', { body: { confirm_replace_unused: true } })
     setIssued(result.invitations)
     setSkippedAssignments(result.skipped_assignments)
-    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1'), 'private-c1-unused-invitations.csv', 'text/csv;charset=utf-8')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1', rosterNames), 'private-c1-unused-invitations.csv', 'text/csv;charset=utf-8')
     setData(await request('/admin/summary'))
+    setRosterRefresh(value => value + 1)
   }
   if (!authenticated) return <div className="pilot-app"><SiteHeader current="c1-admin" researcher /><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
     <p>For the research team. Study participants should <a href="/pilot">open the listening study</a>.</p>
@@ -328,17 +333,18 @@ export function PilotAdmin() {
   return <div className="pilot-app">
     <SiteHeader current="c1-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
-    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setRosterNames([]); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
     {data && <section className="p-card"><h2>{data.rehearsal ? 'Rehearsal invitations' : 'Participant invitations'}</h2><p role="status"><strong>{data.rehearsal ? 'This is the rehearsal study.' : data.ready ? 'Participant collection is open.' : 'Participant entry is closed.'}</strong> {data.assignment_capacity} assignments are available in this version. {data.rehearsal ? 'Responses remain excluded.' : 'Create fresh participant codes below; previous rehearsal codes are separate.'}</p></section>}
+    <AssignmentRoster study="C1" apiBase={`${API}/api/c1-pilot`} busy={busy} refreshKey={rosterRefresh} onError={setError} onRosterChange={setRosterNames} />
     <ResponseViewer study="C1" apiBase={`${API}/api/c1-pilot`} onError={setError} />
     <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
       <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
       {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}
     </section>
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
-      <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unused assignments remain' : 'All assignments already have invitations'}</h2>
-      {issued.length ? <><p>The codes are shown here and downloaded as a CSV with blank names. Copy only an invitation code to its participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C1'), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below if you lost the original file. Creating missing invitations does not reissue existing codes.</p>}
-      {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} started assignments skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
+      <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unassigned unused codes remain' : 'All assignments already have invitations'}</h2>
+      {issued.length ? <><p>The codes are shown here and downloaded as a CSV. Saved assignment names are included when available. Copy only an invitation code to its participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C1', rosterNames), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below if you lost the original file. Creating missing invitations does not reissue existing codes.</p>}
+      {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} assigned or started slots skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
     </section>}
     <BulkInvitationDownload busy={busy} onDownload={() => act(downloadUnusedInvitations)} />
     {data && <><section className="p-card"><h2>{data.completed} completed sessions</h2><p>Create missing invitations fills assignments without a code. To start an assignment again, use the replacement form below.</p><div className="p-actions"><button className="p-secondary" disabled={busy} onClick={() => act(createMissing)}>Create missing invitations</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('export', 'c1-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('sessions', 'c1-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th><th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td><td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section>

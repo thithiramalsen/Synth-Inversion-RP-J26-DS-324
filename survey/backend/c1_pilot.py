@@ -20,6 +20,7 @@ from c1_protocol import PARTICIPANT_STUDY_ID, PARTICIPANT_PROTOCOL_VERSION, anal
 from experience import ExperienceEntry, experience_options
 from response_viewer import KindFilter, PhaseFilter, response_page
 from security import require_admin
+from assignment_roster import AssignmentName, reserved_assignments, roster, save_name
 
 ROOT = Path(__file__).resolve().parents[2]
 router = APIRouter(prefix="/api/c1-pilot")
@@ -605,12 +606,18 @@ def replace_unused_invitations(body: ReplaceUnusedInvitations, response: Respons
     """Recover a lost invitation download without interrupting any claimed slot."""
     bundle, checksum = load_bundle()
     issued, skipped = [], []
+    reserved = []
     replaced = 0
     with get_connection() as db:
         # Uses the same lock as invitation claims, including on PostgreSQL.
         db.execute("BEGIN IMMEDIATE")
+        named = reserved_assignments(db, "c1", bundle, checksum)
         for block in bundle["assignments"]:
             assignment_id = block["assignment_id"]
+            if assignment_id in named:
+                skipped.append(assignment_id)
+                reserved.append(assignment_id)
+                continue
             existing = db.execute(
                 "SELECT * FROM c1_invites WHERE bundle_hash=? AND assignment_id=? AND retired_at IS NULL",
                 (checksum, assignment_id),
@@ -630,10 +637,10 @@ def replace_unused_invitations(body: ReplaceUnusedInvitations, response: Respons
                        (hashed(code), checksum, assignment_id, timestamp))
             issued.append(dict(assignment_id=assignment_id, invitation=code))
     response.headers["Cache-Control"] = "no-store"
-    return dict(bundle_hash=checksum, invitations=issued, skipped_assignments=skipped,
+    return dict(bundle_hash=checksum, invitations=issued, skipped_assignments=skipped, reserved_assignments=reserved,
                 replaced_count=replaced, created_count=len(issued)-replaced,
                 note="Save these once; only hashes are retained. Previous unused codes are invalid. "
-                     "All assignments with a started session were left untouched. Do not publish.")
+                     "Started sessions and assignments reserved with a name were left untouched. Do not publish.")
 
 
 @router.post("/admin/replace-invitation", dependencies=[Depends(require_admin)])
@@ -658,6 +665,20 @@ def replace_invitation(body: ReplaceInvitation):
         db.execute("INSERT INTO c1_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)",
                    (hashed(code), checksum, body.assignment_id, now()))
     return {"assignment_id": body.assignment_id, "invitation": code}
+
+
+@router.get("/admin/roster", dependencies=[Depends(require_admin)])
+def assignment_roster(response: Response):
+    bundle, checksum = load_bundle()
+    response.headers["Cache-Control"] = "private, no-store"
+    return roster("c1", bundle, checksum)
+
+
+@router.post("/admin/assignment-name")
+def assignment_name(body: AssignmentName, response: Response, actor: str = Depends(require_admin)):
+    bundle, checksum = load_bundle()
+    response.headers["Cache-Control"] = "private, no-store"
+    return save_name("c1", bundle, checksum, body, actor)
 
 
 @router.get("/admin/summary", dependencies=[Depends(require_admin)])

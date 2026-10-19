@@ -1,5 +1,10 @@
 # Persistent C1 review deployment
 
+**Shared assignment names — 19 October 2026:** C1 and C4 now have a private
+researcher assignment list with names/nicknames, recruiter attribution and
+conflict protection. Read the [shared assignment guide](../SHARED_ASSIGNMENTS.md).
+Save a name before sending an invitation; bulk code replacement skips named slots.
+
 **C1 participant collection — 19 October 2026:** C1 now uses a separate
 `study/c1_participant_bundle_v1.json` and `config/c1_participants_v1.json`, with
 `SURVEY_C1_OPEN=1`. See [the C1 participant guide](../C1_PARTICIPANT_DEPLOYMENT.md)
@@ -107,12 +112,13 @@ This remote restart/backup check has **not** been completed by local unit tests.
 
 At `/pilot/admin`, **Replace unused codes and download all** creates one private
 CSV download (`private-c1-unused-invitations.csv`) with each assignment ID and
-its new invitation. The `participant_name`, `date_sent` and `notes` columns are
-blank so you can fill them in locally as you distribute invitations. The `study`
-column identifies C1. Names entered in this file are not uploaded to the survey.
-Existing unused codes stop working, including codes already
-sent to someone who has not started. Send the replacements to those people.
-Missing codes are also created. Every assignment linked to a started session is
+its new invitation. Saved names are included when available; `date_sent` and
+`notes` remain blank. Spreadsheet edits stay local: save a name in the shared
+assignment list to make it visible to teammates. The `study` column identifies C1.
+Existing unassigned unused codes stop working, including codes sent without first
+saving a name. Coordinate with teammates before regenerating them.
+Slots with saved names are skipped and retain their existing codes. Missing codes
+for unnamed slots are also created. Every assignment linked to a started session is
 skipped, regardless of whether it is in progress, completed, withdrawn or failed
 screening; existing sessions and responses are not changed. The page lists
 the skipped assignments. No participant sessions are created by this action.
@@ -121,7 +127,8 @@ Only hashes are retained on the server, so old codes cannot be recovered. Save
 the download privately; **Download CSV to fill in names** saves the same new
 codes while they are still displayed, without replacing them another time.
 **Download JSON backup** preserves the earlier JSON option. Downloading again
-starts with blank name/tracking fields; it cannot recover your local edits.
+includes currently loaded shared assignment names when available; date sent and
+notes remain blank. It cannot recover your local spreadsheet edits.
 New and individual replacement invitations also download as CSV automatically.
 **Create missing invitations** still only issues codes for slots with no active
 invitation, and the individual replacement form still works as before. Bulk

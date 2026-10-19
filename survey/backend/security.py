@@ -113,12 +113,13 @@ def require_admin(
 ):
     if researcher_session:
         with get_connection() as db:
-            valid = db.execute("SELECT 1 FROM researcher_sessions WHERE token_hash = ? AND expires_at > ?",
+            valid = db.execute("SELECT username FROM researcher_sessions WHERE token_hash = ? AND expires_at > ?",
                                (token_hash(researcher_session), time.time())).fetchone()
         if valid:
-            return
+            return valid["username"]
     expected = os.environ.get("SURVEY_ADMIN_TOKEN", "")
     if len(expected) < 32:
         raise HTTPException(503, "Researcher access is not configured")
     if not secrets.compare_digest(authorization, f"Bearer {expected}"):
         raise HTTPException(401, "Researcher authentication required")
+    return "Admin token"

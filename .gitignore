@@ -38,6 +38,9 @@ data/manifests/*.parquet
 generation/test_renders/
 generation/*.wav
 
+# C3 v4 generated outputs (feature caches, per-target results, inspection dumps)
+c3_recommendation/outputs/v4/
+
 # Temporary files
 *.tmp
 *.log
