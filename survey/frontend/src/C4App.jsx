@@ -154,12 +154,12 @@ export function ComparisonQuestions({ answer, onChange }) {
     <fieldset className="p-scale"><legend>Which sounds closer to the reference?</legend><p>Choose the candidate with the more similar overall sound character.</p>
       <div className="p-ratings c4-choices" role="radiogroup" aria-label="Closer sound">{[['candidate_a', 'Sound A'], ['candidate_b', 'Sound B']].map(([value, label]) => <button type="button" key={value}
         role="radio" aria-checked={answer.choice === value} className={answer.choice === value ? 'selected' : ''} onClick={() => onChange(a => ({ ...a, choice: value, confidence: null }))}>{label}</button>)}</div>
-      <button type="button" className={`p-unclear ${answer.choice === 'cannot_decide' ? 'selected' : ''}`} aria-pressed={answer.choice === 'cannot_decide'} onClick={() => onChange(a => ({ ...a, choice: 'cannot_decide', confidence: null }))}>I cannot decide</button>
+      <button type="button" className={`p-unclear ${answer.choice === 'cannot_decide' ? 'selected' : ''}`} aria-pressed={answer.choice === 'cannot_decide'} onClick={() => onChange(a => ({ ...a, choice: 'cannot_decide', confidence: null }))}><span className="p-choice-check" aria-hidden="true">{answer.choice === 'cannot_decide' ? '✓' : ''}</span><span>I cannot decide</span></button>
       <p className="p-muted">“I cannot decide” records uncertainty, not equality.</p>
     </fieldset>
     {answer.choice && answer.choice !== 'cannot_decide' && <fieldset className="p-scale c4-confidence"><legend>How confident are you in this choice?</legend><p>1 means “not confident”; 5 means “very confident”.</p>
       <div className="p-ratings" role="radiogroup" aria-label="Confidence">{[1, 2, 3, 4, 5].map(n => <button type="button" key={n} role="radio" aria-checked={answer.confidence === n} aria-label={`Confidence: ${n}`} className={answer.confidence === n ? 'selected' : ''} onClick={() => onChange(a => ({ ...a, confidence: n }))}>{n}</button>)}</div>
-      <div className="p-anchors"><span>Not confident</span><span>Very confident</span></div>
+      <div className="p-anchors"><span><strong>1</strong> Not confident</span><span><strong>5</strong> Very confident</span></div>
     </fieldset>}
   </section>
 }

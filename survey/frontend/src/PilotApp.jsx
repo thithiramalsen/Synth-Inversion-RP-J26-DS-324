@@ -96,10 +96,10 @@ function Scale({ descriptor, value, onChange }) {
     <legend>{descriptor.label}</legend><p>{descriptor.definition}</p>
     <div className="p-ratings" role="radiogroup" aria-label={descriptor.label}>
       {[1, 2, 3, 4, 5, 6, 7].map(n => <button key={n} type="button" role="radio" aria-checked={value === n}
-        className={value === n ? 'selected' : ''} onClick={() => onChange(n)} aria-label={`${descriptor.label}: ${n}`}>{n}</button>)}
+        className={value === n ? 'selected' : ''} onClick={() => onChange(n)} aria-label={`${descriptor.label}: ${n}${n === 1 ? ' — Not at all' : n === 7 ? ' — Very' : ''}`}>{n}</button>)}
     </div>
-    <div className="p-anchors"><span>Not at all</span><span>Very</span></div>
-    <button type="button" className={`p-unclear ${value === 'unclear' ? 'selected' : ''}`} aria-pressed={value === 'unclear'} onClick={() => onChange('unclear')}>I cannot judge / the term is unclear</button>
+    <div className="p-anchors"><span><strong>1</strong> Not at all</span><span><strong>7</strong> Very</span></div>
+    <button type="button" className={`p-unclear ${value === 'unclear' ? 'selected' : ''}`} aria-pressed={value === 'unclear'} onClick={() => onChange('unclear')}><span className="p-choice-check" aria-hidden="true">{value === 'unclear' ? '✓' : ''}</span><span>I cannot judge / the term is unclear</span></button>
   </fieldset>
 }
 
