@@ -1,5 +1,6 @@
 {
-  "protocol_version": "c1_participants_2026-10-19_v1",
+  "protocol_version": "c1_participants_2026-10-19_v2_no_headphone_screen",
+  "headphone_screening_enabled": false,
   "study_id": "c1_20_participants_v1",
   "collection_mode": "participants",
   "experience_entry_format": "experience_tags_v1",
@@ -19,7 +20,7 @@
     {"id": "sustainedness", "label": "Sustainedness", "definition": "How strongly does this sound have a continuing, held quality after it begins?"}
   ],
   "scale": {"minimum": 1, "maximum": 7, "low_label": "Not at all", "high_label": "Very", "unclear_label": "I cannot judge / the term is unclear"},
-  "information_version": "c1_participant_info_2026-10-19_v1",
+  "information_version": "c1_participant_info_2026-10-19_v2",
   "experience_question": {
     "label": "Which of these have you done yourself?",
     "help": "Select one or more examples you have actually done. Personal practice counts; it does not need to be released or professional work. Extra details are optional.",
@@ -30,7 +31,7 @@
   "resume_instructions": "You may close this tab and return to the same study link using the same browser profile on the same device while the study is open. Avoid private/incognito mode and do not clear this site's data. Your invitation starts one session; it cannot restore a session in a different browser. Each saved response is kept; an unfinished answer may need to be entered again.",
   "information": [
     "This study investigates how people describe the sound character (timbre) of synthesizer sounds. Your judgments will help develop and evaluate models of perceived sound qualities.",
-    "You will listen to 20 different synthesizer sounds and rate four aspects of their character: brightness, roughness, percussiveness and sustainedness. There are 3 practice sounds first and a break after study sound 10. Allow approximately 10–15 minutes, depending on replays and breaks.",
+    "Set a comfortable listening volume, then complete 3 practice sounds. You will then listen to 20 different synthesizer sounds and rate four aspects of their character: brightness, roughness, percussiveness and sustainedness, with a break after study sound 10. Allow approximately 10–15 minutes, depending on replays and breaks.",
     "Play each sound fully at least once. For each quality, choose a rating from 1 (not at all) to 7 (very). Select I cannot judge / the term is unclear when you cannot make that judgment. There is no correct answer supplied by the researcher.",
     "You can correct the immediately previous response before starting the next sound. Your original answers and any corrections are retained. Use Save and continue to save each response. You cannot skip unanswered sounds.",
     "Participation is voluntary. Pause or stop at any time. Use headphones in a quiet place, set a comfortable volume and stop if listening becomes uncomfortable. Your experience answers, ratings, playback counts, times and feedback are saved under a participant code. Please do not enter names, email addresses or identifying links. Hosting providers may keep technical access logs.",

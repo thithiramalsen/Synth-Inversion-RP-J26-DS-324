@@ -1,4 +1,5 @@
 import { SiteHeader } from './SiteNavigation'
+import VolumeSetupHeading from './VolumeSetupHeading'
 import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
@@ -211,7 +212,7 @@ export default function PilotApp() {
         <div className="p-session-bar"><span className="p-listener-label">{step.participant_label}</span>{!end && <button onClick={() => setPaused(!paused)}>{paused ? 'Resume' : 'Pause'}</button>}</div>
         {withdrawPrompt ? <section className="p-card"><h1>Withdraw this session?</h1><p>Your responses will be marked as withdrawn and excluded from analysis.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => action(async () => { await submit('withdraw', {}); setWithdrawPrompt(false) })}>Withdraw my responses</button><button className="p-secondary" onClick={() => setWithdrawPrompt(false)}>Keep my session</button></div></section> : paused ? <section className="p-card"><h1>Take your time.</h1><p>Your saved responses are safe. Resume when you are ready to listen in a quiet place.</p><button className="p-primary" onClick={() => setPaused(false)}>Resume listening</button></section> : <>
           <PreviousNavigation step={step} busy={busy} unit="sound" onPrevious={openPrevious} />
-          {phase === 'volume' && <><p className="p-eyebrow">SETUP · 1 OF 2</p><h1>Find a comfortable level.</h1><p className="p-lede">Start with a low device volume, play the tone and adjust it to a comfortable level. Keep that setting for the rest of the session.</p></>}
+          {phase === 'volume' && <VolumeSetupHeading config={cfg} screeningEnabled={step.headphone_screening_enabled} />}
           {phase === 'headphones' && <><p className="p-eyebrow">SETUP · 2 OF 2</p><h1>A quick headphone check.</h1><p className="p-lede">You will hear three tones. Which is the quietest? Listen to all three before choosing.</p><p className="p-muted">Check {step.screen_number} of 6</p></>}
           {phase === 'rating' && <><div className="p-trial-heading"><div><p className="p-eyebrow">{step.practice ? 'GET FAMILIAR WITH THE QUESTIONS' : 'LISTEN · DESCRIBE · CONTINUE'}</p><h1>{step.practice ? 'Practice' : 'Sound'} {String(step.display_number).padStart(2, '0')}<span> / {step.display_total}</span></h1></div></div>
             {!step.practice && <div className="p-progress"><span style={{ width: `${progress}%` }} /></div>}

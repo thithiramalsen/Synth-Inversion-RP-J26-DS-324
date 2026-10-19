@@ -2,7 +2,8 @@
 import json
 
 PARTICIPANT_STUDY_ID = 'c1_20_participants_v1'
-PARTICIPANT_PROTOCOL_VERSION = 'c1_participants_2026-10-19_v1'
+PARTICIPANT_PROTOCOL_VERSION = 'c1_participants_2026-10-19_v2_no_headphone_screen'
+PARTICIPANT_PROTOCOL_VERSIONS = ('c1_participants_2026-10-19_v1', PARTICIPANT_PROTOCOL_VERSION)
 
 
 def analysis_include(row):
@@ -13,4 +14,4 @@ def analysis_include(row):
     return bool(retained and row['completed_at'] and row['study_id'] == PARTICIPANT_STUDY_ID
                 and protocol.get('study_id') == PARTICIPANT_STUDY_ID
                 and protocol.get('collection_mode') == 'participants'
-                and protocol.get('protocol_version') == PARTICIPANT_PROTOCOL_VERSION)
+                and protocol.get('protocol_version') in PARTICIPANT_PROTOCOL_VERSIONS)

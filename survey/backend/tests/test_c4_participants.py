@@ -82,6 +82,9 @@ class C4ParticipantTests(unittest.TestCase):
 
     def setup_audio(self, session):
         self.assertEqual(self.post(session, 'volume', {'completed_plays': 1}).status_code, 200)
+        if self.state(session)['phase'] == 'rating':
+            self.assertTrue(self.state(session)['practice'])
+            return
         for number in range(6):
             state = self.state(session)
             clip = next(c for c in session['fixture']['bundle']['headphones'] if c['screen_id'] == state['audio_id'])
@@ -115,6 +118,43 @@ class C4ParticipantTests(unittest.TestCase):
         response = self.client.get('/api/c4-pilot/admin/export', headers=self.admin)
         self.assertEqual(response.status_code, 200)
         return list(csv.DictReader(io.StringIO(response.text)))
+
+    def test_existing_participant_mid_screen_resumes_at_practice(self):
+        session = self.start()
+        with database.get_connection() as db:
+            row = db.execute('SELECT * FROM c4_sessions').fetchone()
+            protocol = json.loads(row['protocol_snapshot'])
+            protocol.pop('headphone_screening_enabled')
+            protocol['protocol_version'] = 'c4_participants_2026-10-19_v1'
+            snapshot = json.dumps(protocol, sort_keys=True)
+            answers = json.dumps([dict(screen_id='headphones_0', correct=False)])
+            db.execute("UPDATE c4_sessions SET phase='headphones',protocol_snapshot=?,protocol_hash=?,screen_answers=?",
+                       (snapshot, hashlib.sha256(snapshot.encode()).hexdigest(), answers))
+        state = self.state(session)
+        self.assertEqual(state['phase'], 'rating')
+        self.assertTrue(state['practice'])
+        self.assertFalse(state['headphone_screening_enabled'])
+        self.assertEqual(state['config']['protocol_version'], 'c4_participants_2026-10-19_v1')
+        with database.get_connection() as db:
+            saved = db.execute('SELECT * FROM c4_sessions').fetchone()
+        self.assertEqual(saved['protocol_snapshot'], snapshot)
+        self.assertEqual(saved['screen_answers'], answers)
+        self.assertEqual(json.loads(saved['entry_json'])['headphone_screening_change']['answered_questions'], 1)
+
+    def test_new_participant_goes_from_volume_directly_to_practice(self):
+        session = self.start()
+        self.assertEqual(self.post(session, 'volume', {'completed_plays': 0}).status_code, 422)
+        self.assertEqual(self.state(session)['phase'], 'volume')
+        self.setup_audio(session)
+        self.assertFalse(self.state(session)['headphone_screening_enabled'])
+        self.assertEqual(self.state(session)['display_number'], 1)
+        self.assertEqual(self.post(session, 'headphones', dict(screen_number=1, interval=1, completed_plays=1)).status_code, 409)
+        audio_id = session['fixture']['bundle']['headphones'][0]['screen_id']
+        self.assertEqual(self.client.get(session['base']+'/audio/'+audio_id, headers=session['headers']).status_code, 403)
+        with database.get_connection() as db:
+            row = db.execute('SELECT screen_order,screen_answers FROM c4_sessions').fetchone()
+        self.assertEqual(json.loads(row['screen_order']), [])
+        self.assertEqual(json.loads(row['screen_answers']), [])
 
     def test_participant_information_and_deliberate_close_switch(self):
         status = self.client.get('/api/c4-pilot/status').json()

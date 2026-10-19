@@ -1,4 +1,5 @@
 import { SiteHeader } from './SiteNavigation'
+import VolumeSetupHeading from './VolumeSetupHeading'
 import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
@@ -238,7 +239,7 @@ export default function C4App() {
         : paused ? <section className="p-card"><h1>Take your time.</h1><p>Your saved responses are safe. Resume when you are ready to listen in a quiet place. Clips already listened to fully remain checked.</p><button className="p-primary" onClick={pause}>Resume listening</button></section>
         : <>
           <PreviousNavigation step={step} busy={busy} unit="comparison" onPrevious={openPrevious} />
-          {phase === 'volume' && <><p className="p-eyebrow">SETUP · 1 OF 2</p><h1>Find a comfortable level.</h1><p className="p-lede">Start with a low device volume, play the tone and adjust it to a comfortable level. Keep that setting for the rest of the session.</p></>}
+          {phase === 'volume' && <VolumeSetupHeading config={cfg} screeningEnabled={step.headphone_screening_enabled} />}
           {phase === 'headphones' && <><p className="p-eyebrow">SETUP · 2 OF 2</p><h1>A quick headphone check.</h1><p className="p-lede">You will hear three tones. Which is the quietest? Listen to all three before choosing.</p><p className="p-muted">Check {step.screen_number} of 6</p></>}
           {['rating', 'correction'].includes(phase) && <><div className="p-trial-heading"><div><p className="p-eyebrow">{phase === 'correction' ? 'CORRECT PREVIOUS RESPONSE' : step.practice ? 'GET FAMILIAR WITH THE QUESTIONS' : 'LISTEN · COMPARE · CONTINUE'}</p><h1>{step.practice ? 'Practice' : 'Comparison'} {String(step.display_number).padStart(2, '0')}<span> / {step.display_total}</span></h1></div></div>
             {!step.practice && <div className="p-progress"><span style={{ width: `${progress}%` }} /></div>}

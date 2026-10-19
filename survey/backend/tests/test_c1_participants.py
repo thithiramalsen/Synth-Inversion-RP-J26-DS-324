@@ -68,6 +68,9 @@ class C1ParticipantTests(unittest.TestCase):
 
     def setup_audio(self):
         self.post('volume', {'completed_plays':1})
+        if self.state()['phase'] == 'rating':
+            self.assertTrue(self.state()['practice'])
+            return
         for number in range(1, 7):
             state = self.state()
             clip = next(item for item in self.review['headphones'] if item['screen_id'] == state['audio_id'])
@@ -90,6 +93,43 @@ class C1ParticipantTests(unittest.TestCase):
             else:
                 self.rate()
         self.assertEqual(self.post('feedback', dict(clarity='Clear', length='About right')).status_code, 200)
+
+    def test_existing_participant_mid_screen_resumes_at_practice(self):
+        self.start()
+        with database.get_connection() as db:
+            row = db.execute('SELECT * FROM c1_sessions').fetchone()
+            protocol = json.loads(row['protocol_snapshot'])
+            protocol.pop('headphone_screening_enabled')
+            protocol['protocol_version'] = 'c1_participants_2026-10-19_v1'
+            snapshot = json.dumps(protocol, sort_keys=True)
+            answers = json.dumps([dict(screen_id='headphones_0', correct=False)])
+            db.execute("UPDATE c1_sessions SET phase='headphones',protocol_snapshot=?,protocol_hash=?,screen_answers=?",
+                       (snapshot, hashlib.sha256(snapshot.encode()).hexdigest(), answers))
+        state = self.state()
+        self.assertEqual(state['phase'], 'rating')
+        self.assertTrue(state['practice'])
+        self.assertFalse(state['headphone_screening_enabled'])
+        self.assertEqual(state['config']['protocol_version'], 'c1_participants_2026-10-19_v1')
+        with database.get_connection() as db:
+            saved = db.execute('SELECT * FROM c1_sessions').fetchone()
+        self.assertEqual(saved['protocol_snapshot'], snapshot)
+        self.assertEqual(saved['screen_answers'], answers)
+        self.assertEqual(json.loads(saved['entry_json'])['headphone_screening_change']['answered_questions'], 1)
+
+    def test_new_participant_goes_from_volume_directly_to_practice(self):
+        self.start()
+        self.assertEqual(self.post('volume', {'completed_plays': 0}).status_code, 422)
+        self.assertEqual(self.state()['phase'], 'volume')
+        self.setup_audio()
+        self.assertFalse(self.state()['headphone_screening_enabled'])
+        self.assertEqual(self.state()['display_number'], 1)
+        self.assertEqual(self.post('headphones', dict(screen_number=1, interval=1, completed_plays=1)).status_code, 409)
+        audio_id = self.review['headphones'][0]['screen_id']
+        self.assertEqual(self.client.get(self.base+'/audio/'+audio_id, headers=self.headers).status_code, 403)
+        with database.get_connection() as db:
+            row = db.execute('SELECT screen_order,screen_answers FROM c1_sessions').fetchone()
+        self.assertEqual(json.loads(row['screen_order']), [])
+        self.assertEqual(json.loads(row['screen_answers']), [])
 
     def test_participant_information_ready_and_completed_only_exports(self):
         status = self.client.get('/api/c1-pilot/status').json()

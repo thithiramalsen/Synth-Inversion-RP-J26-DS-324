@@ -1,5 +1,9 @@
 # C4 participant collection
 
+The current participant protocol removes the six-question headphone screen.
+Listeners set a comfortable volume and go straight to practice. Headphones and
+a quiet place are still requested. Existing unused invitations remain valid.
+
 This version opens a separate C4 participant study. It uses the same frozen
 200-triplet real-audio CLAP bank and 100 balanced assignments: 20 unique
 comparisons, two hidden repeats and two practices per listener. Completed
@@ -56,6 +60,14 @@ or supervisor contact has been invented; the configuration records the review
 status as `not_recorded`.
 
 ## Exports and audits
+
+The active protocol is `c4_participants_2026-10-19_v2_no_headphone_screen`.
+The earlier participant v1 remains recognized for export eligibility. Participant
+sessions still at volume setup or partway through screening skip the screen on
+resume, with an audit in `entry_json.headphone_screening_change`. This preserves
+their original protocol and earlier screening answers. Completed, failed,
+withdrawn and replaced sessions are not reopened; historical reviews keep their
+original setup. Distinguish protocol versions and the audit when analyzing setup.
 
 The participant study uses its own immutable bundle hash, study ID, assignment
 IDs and frozen entry protocol. Reviews are not converted into participant data.
