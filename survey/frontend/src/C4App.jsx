@@ -150,7 +150,7 @@ export function ComparisonPlayer({ session, step, busy, onCounts, onError, initi
   </section>
 }
 
-export function ComparisonQuestions({ answer, onChange }) {
+export function ComparisonQuestions({ answer, onChange, confidenceQuestion }) {
   return <section className="p-card p-rating-card">
     <fieldset className="p-scale"><legend>Which sounds closer to the reference?</legend><p>Choose the candidate with the more similar overall sound character.</p>
       <div className="p-ratings c4-choices" role="radiogroup" aria-label="Closer sound">{[['candidate_a', 'Sound A'], ['candidate_b', 'Sound B']].map(([value, label]) => <button type="button" key={value}
@@ -158,9 +158,9 @@ export function ComparisonQuestions({ answer, onChange }) {
       <button type="button" className={`p-unclear ${answer.choice === 'cannot_decide' ? 'selected' : ''}`} aria-pressed={answer.choice === 'cannot_decide'} onClick={() => onChange(a => ({ ...a, choice: 'cannot_decide', confidence: null }))}><span className="p-choice-check" aria-hidden="true">{answer.choice === 'cannot_decide' ? '✓' : ''}</span><span>I cannot decide</span></button>
       <p className="p-muted">“I cannot decide” records uncertainty, not equality.</p>
     </fieldset>
-    {answer.choice && answer.choice !== 'cannot_decide' && <fieldset className="p-scale c4-confidence"><legend>How confident are you in this choice?</legend><p>1 means “not confident”; 5 means “very confident”.</p>
+    {answer.choice && answer.choice !== 'cannot_decide' && <fieldset className="p-scale c4-confidence"><legend>{confidenceQuestion?.label || 'How confident are you in this choice?'}</legend><p>{confidenceQuestion?.help || '1 means “not confident”; 5 means “very confident”.'}</p>
       <div className="p-ratings" role="radiogroup" aria-label="Confidence">{[1, 2, 3, 4, 5].map(n => <button type="button" key={n} role="radio" aria-checked={answer.confidence === n} aria-label={`Confidence: ${n}`} className={answer.confidence === n ? 'selected' : ''} onClick={() => onChange(a => ({ ...a, confidence: n }))}>{n}</button>)}</div>
-      <div className="p-anchors"><span><strong>1</strong> Not confident</span><span><strong>5</strong> Very confident</span></div>
+      <div className="p-anchors"><span><strong>1</strong> {confidenceQuestion?.low || 'Not confident'}</span><span><strong>5</strong> {confidenceQuestion?.high || 'Very confident'}</span></div>
     </fieldset>}
   </section>
 }
@@ -168,13 +168,19 @@ export function ComparisonQuestions({ answer, onChange }) {
 export function C4Workload({ status }) {
   const cfg = status.config || {}
   const practice = status.practice_presentations ?? cfg.practice_comparisons ?? 2
-  return <p>There are {practice} practice comparisons before the {status.rated_presentations} review comparisons. Choose a comfortable listening level and keep it consistent.</p>
+  return <p>There are {practice} practice comparisons before the {status.rated_presentations} {cfg.collection_mode === 'participants' ? 'study' : 'review'} comparisons. Choose a comfortable listening level and keep it consistent.</p>
+}
+
+export function C4CollectionNotice({ config, rehearsal }) {
+  return <div className={rehearsal ? 'p-rehearsal' : 'p-notice'}>{rehearsal
+    ? config?.review_notice || 'Supervisor review only. These responses are excluded from research analysis.'
+    : config?.participant_notice || 'C4 listening study. Practice responses are excluded from research analysis.'}</div>
 }
 
 export function C4Break({ step, busy, onContinue }) {
   const completed = step.rated_completed ?? 6
   const total = step.rated_total ?? 12
-  return <section className="p-card" aria-label="Listening break"><p className="p-eyebrow">LISTENING BREAK</p><h1>A moment to rest.</h1><p>You have completed {completed} of {total} review comparisons. Take a short break, then continue with the same listening setup and volume.</p><button disabled={busy} className="p-primary" onClick={onContinue}>Continue listening →</button></section>
+  return <section className="p-card" aria-label="Listening break"><p className="p-eyebrow">LISTENING BREAK</p><h1>A moment to rest.</h1><p>You have completed {completed} of {total} {step.rehearsal === false ? 'study' : 'review'} comparisons. Take a short break, then continue with the same listening setup and volume.</p><button disabled={busy} className="p-primary" onClick={onContinue}>Continue listening →</button></section>
 }
 
 export default function C4App() {
@@ -208,17 +214,18 @@ export default function C4App() {
   }
   function reset() { localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false) }
   const phase = step?.phase, cfg = step?.config || status?.config
+  const rehearsal = step?.rehearsal ?? status?.rehearsal ?? true
   const end = ['complete', 'screen_failed', 'withdrawn', 'replaced'].includes(phase)
   const playable = ['volume', 'headphones', 'rating', 'correction'].includes(phase)
   const allPlayed = ROLES.every(([role]) => counts.completed[role] > 0)
   const progress = phase === 'rating' && !step.practice ? Math.round((step.display_number - 1) / step.display_total * 100) : 0
   function pause() { setPaused(v => !v) }
-  return <div className="pilot-app"><SiteHeader current="c4" note="C4 SIMILARITY REVIEW" />
+  return <div className="pilot-app"><SiteHeader current="c4" note={!cfg ? 'C4 LISTENING STUDY' : rehearsal ? 'C4 SIMILARITY REVIEW' : 'C4 LISTENING STUDY'} />
     <ErrorNotice message={error} onDismiss={() => setError('')}>
       {session && <button onClick={() => act(() => load())}>Reload current step</button>}
-      {!step && <button onClick={reset}>Return to review entry</button>}
+      {!step && <button onClick={reset}>Return to study entry</button>}
     </ErrorNotice>
-    <main className="p-main"><div className="p-rehearsal">{cfg?.review_notice || 'Supervisor review only. Not open for research recruitment.'}</div>
+    <main className="p-main">{cfg && <C4CollectionNotice config={cfg} rehearsal={rehearsal} />}
       {!status ? <p role="status">Loading the study…</p> : !session ? <>
         {!status.ready && <div className="p-notice"><strong>The study is not open yet.</strong><p>You can read the information below. The researcher is completing preparation.</p></div>}
         <Entry status={status} busy={busy} onSubmit={entry => act(async () => {
@@ -239,7 +246,7 @@ export default function C4App() {
           {phase === 'volume' && <button className="p-primary" disabled={busy || !counts.completed.setup} onClick={() => act(() => submit('volume', { completed_plays: counts.completed.setup }))}>This level is comfortable →</button>}
           {phase === 'headphones' && <section className="p-card"><fieldset><legend>Which tone was quietest?</legend><div className="p-intervals">{[1,2,3].map(n => <button type="button" key={n} className={interval === n ? 'selected' : ''} aria-pressed={interval === n} onClick={() => setInterval(n)}>{['First','Second','Third'][n-1]}</button>)}</div></fieldset><button className="p-primary" disabled={busy || !interval || !counts.completed.setup} onClick={() => act(() => submit('headphones', { interval, screen_number: step.screen_number, completed_plays: counts.completed.setup }))}>Continue →</button></section>}
           {['rating', 'correction'].includes(phase) && <form onSubmit={e => { e.preventDefault(); act(() => submit(phase === 'correction' ? 'previous/save' : 'ratings', { ...(phase === 'correction' ? { correction_token: step.correction_token } : {}), presentation_id: step.presentation_id, answers: answer, play_counts: counts.plays, completed_counts: counts.completed, started_at: step.server_time })) }}>
-            <ComparisonQuestions answer={answer} onChange={setAnswer} />
+            <ComparisonQuestions answer={answer} onChange={setAnswer} confidenceQuestion={cfg.confidence_question} />
             <label className="p-comment">Anything unclear? <span>Optional</span><textarea maxLength="1000" rows="2" value={answer.comment} onChange={e => setAnswer(a => ({ ...a, comment: e.target.value }))} /></label>
             <div className="p-save-row"><span>{phase === 'correction' ? 'Replaying is optional when correcting a saved answer.' : allPlayed ? 'All three clips played fully ✓' : 'Play all three clips fully to continue.'}</span><div className="p-actions">{phase === 'correction' && <button type="button" className="p-secondary" disabled={busy} onClick={() => act(() => submit('previous/cancel', { correction_token: step.correction_token }))}>Return without changes →</button>}<button className="p-primary" disabled={busy || (phase !== 'correction' && !allPlayed) || !answer.choice || (answer.choice !== 'cannot_decide' && !answer.confidence)}>{busy ? 'Saving…' : phase === 'correction' ? 'Save correction and continue →' : 'Save and continue →'}</button></div></div>
           </form>}
@@ -251,9 +258,12 @@ export default function C4App() {
           {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} comparison responses have been saved, including practice. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No comparison study responses are required.'}</p></section>}
         </>}
         {!['withdrawn','replaced'].includes(phase) && !withdraw && <button className="p-withdraw" onClick={() => setWithdraw(true)}>Withdraw this session</button>}
-        {step.rehearsal && end && <section className="p-card"><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={reset}>Use another rehearsal invitation</button></section>}
+        {step.rehearsal && end && <section className="p-card">{status.config.collection_mode === 'participants'
+          ? <><p>This saved session belongs to the earlier review. To join the current participant study, use a new participant invitation. Your review answers remain separate.</p><button className="p-primary" onClick={reset}>Open the participant study</button></>
+          : <><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={reset}>Use another rehearsal invitation</button></>}
+        </section>}
       </>}
-    </main><footer className="p-footer">Synth Inversion Research · C4 similarity review</footer>
+    </main><footer className="p-footer">Synth Inversion Research · {cfg && rehearsal ? 'C4 similarity review' : 'C4 listening study'}{cfg?.researcher_email && <> · <a href={`mailto:${cfg.researcher_email}`}>Contact the researcher</a></>}</footer>
   </div>
 }
 
@@ -272,6 +282,7 @@ function Entry({ status, busy, onSubmit }) {
       {cfg.researcher_email && <p>Research contact: {cfg.researcher_name} · <a href={`mailto:${cfg.researcher_email}`}>{cfg.researcher_email}</a></p>}
       {cfg.supervisor_contact && <p>Supervisor contact: {cfg.supervisor_contact}</p>}
       {cfg.retention_statement && <p>{cfg.retention_statement}</p>}
+      {cfg.withdrawal_statement && <p>{cfg.withdrawal_statement}</p>}
       <label className="p-check"><input type="checkbox" required checked={values.consent} onChange={e => change('consent', e.target.checked)} />I have read this information and voluntarily agree to take part.</label>
     </section>
     <section className="p-card"><h2>Your listening setup</h2>
@@ -300,6 +311,9 @@ export function C4DesignSummary({ data }) {
   return <section className="p-card" aria-label="C4 study plan and coverage">
     <h2>Study plan and completed coverage</h2>
     <p>Active survey: <strong>{data.study_id}</strong>{data.protocol_version && <> · Protocol {data.protocol_version}</>}</p>
+    {data.rehearsal === false && <p role="status"><strong>{data.ready ? 'Participant collection is open.' : 'Participant entry is closed.'}</strong> New invitations belong to this participant study. Existing review invitations are separate.</p>}
+    {data.rehearsal === true && <p role="status">This is a review version. These responses remain excluded from research analysis.</p>}
+    {data.issues?.length > 0 && <ul>{data.issues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
     <p>{design.bank_triplets} triplets in the bank. Each listener receives {design.unique_per_listener} different comparisons, {design.repeats_per_listener} hidden repeats and {design.practice_per_listener} practice comparisons.</p>
     {design.target_min != null && design.target_max != null && <>
       <p><strong>Target:</strong> {design.target_min}–{design.target_max} completed independent listeners. Give each person one invitation and work through assignments in order.</p>
@@ -323,7 +337,7 @@ export function C4InvitationAssignments({ data, busy, onCreate, onReplace }) {
   return <section className="p-card" aria-label="C4 participant invitations">
     <h2>Participant invitations</h2>
     <p>These codes let listeners start <a href="/c4">the C4 survey</a>. C1 study codes and researcher account invitations are separate.</p>
-    <p className="p-muted">Each assignment is one listener’s set of comparisons. This version is for supervisor/interface review; responses remain excluded from research analysis.</p>
+    <p className="p-muted">Each assignment is one listener’s set of comparisons. {data.rehearsal === false ? 'Completed study comparisons are eligible for research analysis. Practice and withdrawn sessions are excluded.' : 'This version is for supervisor/interface review; responses remain excluded from research analysis.'}</p>
     <p>1. Create codes for available assignments. 2. Save the downloaded file. 3. Give each listener one code and the C4 study link.</p>
     <p role="status">{missing ?? '—'} of {data.assignment_capacity ?? rows.length} assignments need an invitation.</p>
     <button type="button" className="p-primary" disabled={busy || missing === 0} onClick={onCreate}>Create participant invitations{missing !== undefined ? ` (${missing})` : ''}</button>
@@ -331,7 +345,7 @@ export function C4InvitationAssignments({ data, busy, onCreate, onReplace }) {
     {missing === 0 && <p className="p-notice">All assignments already have codes. Creating invitations will not recover an earlier download; use a replacement for a lost code.</p>}
     <div className="p-table"><table><thead><tr><th>Assignment</th><th>Invitation / session status</th><th>Listener</th><th>Saved presentations</th><th>Action</th></tr></thead><tbody>
       {rows.map(row => <tr key={row.assignment_id}><td>{row.assignment_id}</td><td>{labels[row.status] || row.status}</td><td>{row.participant_label || 'Not started'}</td><td>{row.saved_presentations}</td><td>
-        {row.can_replace ? <button type="button" className="p-secondary" disabled={busy} onClick={() => onReplace(row.assignment_id)}>{row.status === 'issued' ? 'Replace lost code' : 'Review replacement'}</button> : row.status === 'missing' ? 'Create invitations above' : 'Replacement unavailable'}
+        {row.can_replace ? <button type="button" className="p-secondary" disabled={busy} onClick={() => onReplace(row.assignment_id)}>{row.status === 'issued' ? 'Replace lost code' : data.rehearsal === false ? 'Replace invitation' : 'Review replacement'}</button> : row.status === 'missing' ? 'Create invitations above' : 'Replacement unavailable'}
       </td></tr>)}
     </tbody></table></div>
   </section>

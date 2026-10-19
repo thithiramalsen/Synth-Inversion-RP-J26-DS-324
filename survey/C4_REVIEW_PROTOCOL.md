@@ -1,6 +1,10 @@
 # C4 CLAP survey preparation
 
-The active C4 survey is prepared around the user's stated C4 design: a frozen
+This document describes the retained review instrument. The new participant
+release is documented in [C4 participant deployment](C4_PARTICIPANT_DEPLOYMENT.md);
+it has a separate study ID, bundle and invitation set.
+
+The retained C4 review is prepared around the user's stated C4 design: a frozen
 bank of 200 CLAP-selected triplets, 20 different triplets per listener, two
 hidden repeats and two practice comparisons. The target is 50–100 independent
 listeners, with capacity for 100 assignments. This is a technical preparation

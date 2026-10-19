@@ -1,5 +1,11 @@
 # Persistent C1 review deployment
 
+**C4 participant collection — 19 October 2026:** the active participant bundle is
+`study/c4_participant_bundle_v1.json`, with `config/c4_participants_v1.json` and
+`SURVEY_C4_OPEN=1`. Read the [participant deployment guide](../C4_PARTICIPANT_DEPLOYMENT.md)
+for exact Render settings, fresh invitation IDs and export eligibility. The review
+deployment notes below remain historical; their records stay excluded.
+
 **C4 update — 19 October 2026:** the prepared deployment now defaults to
 `study/c4_clap_bundle.json` and `config/c4_clap_v1.json`: 200 real CLAP triplets,
 100 assignments, and 20 unique +2 hidden repeats +2 practice comparisons each.

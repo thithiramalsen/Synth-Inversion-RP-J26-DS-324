@@ -3,6 +3,7 @@ import json
 from typing import Literal
 
 from database import get_connection
+from c4_protocol import analysis_include as c4_analysis_include
 
 PhaseFilter = Literal['all', 'complete', 'in_progress', 'withdrawn', 'replaced', 'screen_failed']
 KindFilter = Literal['all', 'primary', 'practice', 'repeat']
@@ -38,7 +39,7 @@ def response_page(study, bundle_hash, *, offset, limit, listener_number, phase, 
     with get_connection() as db:
         total = db.execute('SELECT COUNT(*) '+joined, params).fetchone()[0]
         rows = db.execute(f'''SELECT r.presentation_id,r.kind,r.trial_order,r.answers_json,{stimulus},
-                                    s.assignment_id,s.phase,s.withdrawn_at,s.study_id,s.protocol_snapshot,l.listener_number,
+                                    s.assignment_id,s.phase,s.withdrawn_at,s.completed_at,s.study_id,s.protocol_snapshot,l.listener_number,
                              (SELECT COUNT(*) FROM {prefix}_rating_corrections c WHERE c.session_id=r.session_id
                               AND c.presentation_id=r.presentation_id) AS revision_count,
                              (SELECT c.answers_json FROM {prefix}_rating_corrections c WHERE c.session_id=r.session_id
@@ -61,6 +62,7 @@ def response_page(study, bundle_hash, *, offset, limit, listener_number, phase, 
             item.update(sample_id=row['sample_id'], ratings={key: rating_value(latest.get(key)) for key in DESCRIPTORS},
                         first_ratings={key: rating_value(first.get(key)) for key in DESCRIPTORS})
         else:
+            item['analysis_include'] = c4_analysis_include(row)
             trial = json.loads(row['triplet_json'])
             item.update(triplet_id=trial['triplet_id'], reference=trial['reference'],
                         candidate_a=trial['candidate_a'], candidate_b=trial['candidate_b'],
