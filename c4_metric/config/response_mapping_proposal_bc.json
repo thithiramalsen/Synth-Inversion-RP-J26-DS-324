@@ -1,0 +1,24 @@
+{
+  "description": "Example mapping for the proposal schema: target A, candidates B/C, and a B/C selected_candidate field.",
+  "columns": {
+    "participant_id": ["participant_id", "pseudonymous_participant_id"],
+    "comparison_id": ["comparison_id", "triplet_id"],
+    "presentation_id": ["presentation_id", "response_id", "comparison_id"],
+    "anchor_id": ["target_id", "anchor_id"],
+    "candidate_a_id": ["candidate_b_id", "candidate_b", "b_id"],
+    "candidate_b_id": ["candidate_c_id", "candidate_c", "c_id"],
+    "choice": ["selected_candidate", "choice"],
+    "chosen_id": ["chosen_sample_id", "selected_sample_id"],
+    "confidence": ["confidence"],
+    "analysis_include": ["analysis_include"],
+    "data_status": ["data_status"]
+  },
+  "choice_values": {
+    "B": "candidate_a",
+    "candidate_b": "candidate_a",
+    "C": "candidate_b",
+    "candidate_c": "candidate_b",
+    "cannot_decide": "uncertain",
+    "uncertain": "uncertain"
+  }
+}
