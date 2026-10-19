@@ -16,6 +16,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from database import get_connection
+from c1_protocol import PARTICIPANT_STUDY_ID, PARTICIPANT_PROTOCOL_VERSION, analysis_include
 from experience import ExperienceEntry, experience_options
 from response_viewer import KindFilter, PhaseFilter, response_page
 from security import require_admin
@@ -35,26 +36,44 @@ def hashed(value):
 
 
 def bundle_path():
-    return Path(os.environ.get("SURVEY_C1_BUNDLE", ROOT / "data/processed/c1_pilot_v1/bundle.json"))
+    return Path(os.environ.get("SURVEY_C1_BUNDLE", ROOT / "survey/deploy/study/c1_participant_bundle_v1.json"))
+
+
+def known_bundle_paths():
+    legacy = os.environ.get('SURVEY_C1_LEGACY_BUNDLES', str(ROOT / 'survey/deploy/study/bundle.json'))
+    return list(dict.fromkeys([bundle_path().resolve(), *[Path(path).resolve() for path in legacy.split(os.pathsep) if path]]))
 
 
 def config():
-    path = Path(os.environ.get("SURVEY_C1_CONFIG", ROOT / "survey/config/c1_pilot_v1.json"))
+    path = Path(os.environ.get("SURVEY_C1_CONFIG", ROOT / "survey/config/c1_participants_v1.json"))
     cfg = json.loads(path.read_text(encoding="utf-8"))
     if cfg.get('experience_entry_format') == 'experience_tags_v1':
         cfg['experience_selection'] = experience_options()
     return cfg
 
 
-def load_bundle():
-    path = bundle_path()
+def load_bundle(path=None):
+    path = Path(path) if path is not None else bundle_path()
     if not path.is_file():
         raise HTTPException(503, "The study audio has not been prepared yet")
     payload = path.read_bytes()
     data = json.loads(payload)
-    if data["rehearsal"] == (data["study_id"] == "c1_pilot_v1"):
+    if data["rehearsal"] == (data["study_id"] in ("c1_pilot_v1", PARTICIPANT_STUDY_ID)):
         raise HTTPException(409, "Rehearsal and production study IDs must be distinct")
     return data, hashlib.sha256(payload).hexdigest()
+
+
+def bundle_for_hash(checksum):
+    for path in known_bundle_paths():
+        if not path.is_file():
+            continue
+        try:
+            bundle, actual = load_bundle(path)
+        except (ValueError, OSError, HTTPException):
+            continue
+        if secrets.compare_digest(actual, checksum):
+            return bundle, path
+    raise HTTPException(409, 'The saved study audio bundle is unavailable or changed; contact the researcher')
 
 
 def initialize_pilot_database():
@@ -135,6 +154,24 @@ def can_correct(db, row):
 
 
 def launch_issues(bundle, cfg):
+    if bundle.get('study_id') == PARTICIPANT_STUDY_ID and bundle.get('rehearsal') is False:
+        issues = []
+        if (cfg.get('study_id') != PARTICIPANT_STUDY_ID or cfg.get('collection_mode') != 'participants'
+                or cfg.get('protocol_version') != PARTICIPANT_PROTOCOL_VERSION):
+            issues.append('C1 participant information and collection version do not match')
+        if os.environ.get('SURVEY_C1_OPEN', '1') != '1':
+            issues.append('Participant entry is currently closed')
+        for name in ('researcher_name', 'researcher_email', 'retention_statement', 'withdrawal_statement'):
+            if not cfg.get(name, '').strip():
+                issues.append(f'Complete {name.replace("_", " ")}')
+        for block in bundle['assignments']:
+            primary = [trial['sample_id'] for trial in block['trials'] if trial['kind'] == 'primary']
+            if (len(block['trials']) != 23 or len(primary) != 20 or len(set(primary)) != 20
+                    or sum(trial['kind'] == 'practice' for trial in block['trials']) != 3
+                    or cfg.get('unique_sounds_per_person') != 20 or cfg.get('break_after_rated') != 10):
+                issues.append('C1 assignment counts do not match the participant protocol')
+                break
+        return issues
     if bundle["rehearsal"]:
         return []
     issues = []
@@ -153,8 +190,9 @@ def launch_issues(bundle, cfg):
     return issues
 
 
-def checked_asset(relative, expected_hash):
-    root = bundle_path().resolve().parent
+def checked_asset(relative, expected_hash, checksum):
+    _, source_path = bundle_for_hash(checksum)
+    root = source_path.parent
     path = (root / relative).resolve()
     if not path.is_relative_to(root) or not path.is_file():
         raise HTTPException(409, "Study audio unavailable")
@@ -174,7 +212,7 @@ def status():
     except HTTPException as error:
         issues, total, rehearsal = [str(error.detail)], 39, False
     return dict(config=cfg, ready=not issues, issues=issues, total_presentations=total,
-                rated_presentations=total-3, rehearsal=rehearsal)
+                rated_presentations=total-3, rehearsal=rehearsal, study_id=cfg.get('study_id'))
 
 
 class StrictBody(BaseModel):
@@ -206,9 +244,7 @@ def session_row(session_id, authorization):
 
 def context(session_id, authorization):
     row = session_row(session_id, authorization)
-    bundle, checksum = load_bundle()
-    if row["bundle_hash"] != checksum:
-        raise HTTPException(409, "The audio bundle changed; this session cannot continue")
+    bundle, _ = bundle_for_hash(row['bundle_hash'])
     # A participant stays on the exact consent/question version they entered.
     return row, bundle
 
@@ -291,12 +327,12 @@ def audio(session_id: str, audio_id: str, authorization: str = Header(default=""
         raise HTTPException(403, "Session ended")
     if audio_id == "volume_reference":
         asset = bundle["calibration"]
-        path = checked_asset("audio/" + asset["path"], asset["sha256"])
+        path = checked_asset("audio/" + asset["path"], asset["sha256"], row['bundle_hash'])
     elif audio_id.startswith("headphones_"):
         asset = next((s for s in bundle["headphones"] if s["screen_id"] == audio_id), None)
         if asset is None:
             raise HTTPException(404, "Audio not found")
-        path = checked_asset("audio/" + asset["path"], asset["sha256"])
+        path = checked_asset("audio/" + asset["path"], asset["sha256"], row['bundle_hash'])
     else:
         if corrections_enabled(row):
             raise HTTPException(403, "Start this sound through its presentation playback control")
@@ -304,13 +340,13 @@ def audio(session_id: str, audio_id: str, authorization: str = Header(default=""
         if audio_id not in permitted:
             raise HTTPException(404, "Audio not assigned")
         asset = bundle["samples"][audio_id]
-        path = checked_asset(asset["playback_path"], asset["playback_sha256"])
+        path = checked_asset(asset["playback_path"], asset["playback_sha256"], row['bundle_hash'])
     return FileResponse(path, media_type="audio/wav", headers={"Cache-Control": "private, no-store"})
 
 
 @router.post("/sessions/{session_id}/playback/{presentation_id}")
 def presentation_playback(session_id: str, presentation_id: str, authorization: str = Header(default="")):
-    context(session_id, authorization)
+    _, bundle = context(session_id, authorization)
     with get_connection() as db:
         db.execute("BEGIN IMMEDIATE")
         row = db.execute("SELECT * FROM c1_sessions WHERE session_id=?", (session_id,)).fetchone()
@@ -323,9 +359,8 @@ def presentation_playback(session_id: str, presentation_id: str, authorization: 
         trial = json.loads(row["trial_order"])[index]
         if trial["presentation_id"] != presentation_id:
             raise HTTPException(409, "Only the current presentation can be played")
-        bundle, _ = load_bundle()
         asset = bundle["samples"][trial["sample_id"]]
-        path = checked_asset(asset["playback_path"], asset["playback_sha256"])
+        path = checked_asset(asset["playback_path"], asset["playback_sha256"], row['bundle_hash'])
         db.execute("INSERT INTO c1_exposures VALUES (?,?,?) ON CONFLICT DO NOTHING", (session_id, presentation_id, now()))
     return FileResponse(path, media_type="audio/wav", headers={"Cache-Control": "private, no-store"})
 
@@ -627,13 +662,16 @@ def replace_invitation(body: ReplaceInvitation):
 
 @router.get("/admin/summary", dependencies=[Depends(require_admin)])
 def summary():
-    _, checksum = load_bundle()
+    bundle, checksum = load_bundle()
+    issues = launch_issues(bundle, config())
     with get_connection() as db:
         sessions = db.execute('''SELECT participant_id,assignment_id,phase,current_index,started_at,completed_at,
                                 withdrawn_at,listener_number FROM c1_sessions JOIN c1_listener_labels USING(session_id)
                                 WHERE bundle_hash=?''', (checksum,)).fetchall()
     return dict(bundle_hash=checksum, sessions=[dict(r, participant_label=listener_label(r["listener_number"])) for r in sessions],
-                completed=sum(r["phase"] == "complete" and not r["withdrawn_at"] for r in sessions))
+                completed=sum(r["phase"] == "complete" and not r["withdrawn_at"] for r in sessions),
+                rehearsal=bundle['rehearsal'], study_id=bundle['study_id'], ready=not issues, issues=issues,
+                assignment_capacity=len(bundle['assignments']))
 
 
 @router.get("/admin/export", dependencies=[Depends(require_admin)])
@@ -652,7 +690,8 @@ def export():
                "presentation_id", "sample_id", "kind", "repeat_of", "trial_order", "phase", "analysis_include",
                "brightness", "roughness", "percussiveness", "sustainedness", "comment", "play_count", "completed_plays",
                "started_at", "submitted_at", "completed_at", "withdrawn_at", "entry_json", "screen_answers", "feedback_json",
-               "brightness_first", "roughness_first", "percussiveness_first", "sustainedness_first", "comment_first", "revision_count", "corrections_json"]
+               "brightness_first", "roughness_first", "percussiveness_first", "sustainedness_first", "comment_first", "revision_count", "corrections_json",
+               "protocol_version", "collection_mode", "target_ratings_per_sound"]
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=columns)
     writer.writeheader()
@@ -665,8 +704,10 @@ def export():
         revisions = correction_map.get((row["session_id"],row["presentation_id"]), [])
         row.update(json.loads(revisions[-1]["answers_json"]) if revisions else first_answers)
         row.update(revision_count=len(revisions),corrections_json=json.dumps(revisions))
-        row["analysis_include"] = (row["phase"] == "complete" and not row["withdrawn_at"]
-                                   and row["kind"] != "practice" and row["study_id"] == "c1_pilot_v1")
+        protocol = json.loads(row['protocol_snapshot'])
+        row.update(protocol_version=protocol.get('protocol_version', ''), collection_mode=protocol.get('collection_mode', ''),
+                   target_ratings_per_sound=protocol.get('target_ratings_per_sound', 8))
+        row['analysis_include'] = analysis_include(row)
         # A spreadsheet must not execute participant-entered text as formulas.
         writer.writerow({k: safe_cell(row.get(k, "")) for k in columns})
     return StreamingResponse(iter([output.getvalue()]), media_type="text/csv",
