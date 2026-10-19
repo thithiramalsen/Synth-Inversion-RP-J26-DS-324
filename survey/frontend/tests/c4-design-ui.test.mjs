@@ -89,3 +89,9 @@ test('C4 coverage reports the completed minimum and omits the new plan for legac
   assert.doesNotMatch(html, /remain below two/)
   assert.equal(render(C4DesignSummary, { data: { assignment_capacity: 16 } }), '')
 })
+
+test('participant admin coverage does not claim its responses are rehearsal-only', () => {
+  const html = render(C4DesignSummary, { data: { ...data, rehearsal: false, ready: true } })
+  assert.match(html, /Participant collection is open/)
+  assert.doesNotMatch(html, /Responses from this review are excluded|separate approved launch/)
+})

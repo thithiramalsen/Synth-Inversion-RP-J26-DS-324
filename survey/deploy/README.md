@@ -1,5 +1,11 @@
 # Persistent C1 review deployment
 
+**Invitation codes in shared assignments — 19 October 2026:** current codes can
+now be viewed/copied, created and replaced beside the name. New codes are stored
+encrypted; legacy hash-only codes remain usable but cannot be displayed. Preserve
+the existing `SURVEY_ADMIN_TOKEN`, which supplies the default encryption key.
+See the [shared assignment guide](../SHARED_ASSIGNMENTS.md) for details.
+
 **Shared assignment names — 19 October 2026:** C1 and C4 now have a private
 researcher assignment list with names/nicknames, recruiter attribution and
 conflict protection. Read the [shared assignment guide](../SHARED_ASSIGNMENTS.md).
@@ -123,13 +129,15 @@ skipped, regardless of whether it is in progress, completed, withdrawn or failed
 screening; existing sessions and responses are not changed. The page lists
 the skipped assignments. No participant sessions are created by this action.
 
-Only hashes are retained on the server, so old codes cannot be recovered. Save
+Codes created before encrypted storage have only hashes, so those old codes cannot
+be recovered. New codes are available to researchers in the shared list. Save
 the download privately; **Download CSV to fill in names** saves the same new
 codes while they are still displayed, without replacing them another time.
 **Download JSON backup** preserves the earlier JSON option. Downloading again
 includes currently loaded shared assignment names when available; date sent and
 notes remain blank. It cannot recover your local spreadsheet edits.
-New and individual replacement invitations also download as CSV automatically.
+Bulk-created invitations download as CSV automatically. Individual code changes
+appear immediately in the shared list, whose private CSV includes visible codes.
 **Create missing invitations** still only issues codes for slots with no active
 invitation, and the individual replacement form still works as before. Bulk
 replacement is transactional and uses the same database lock as participant

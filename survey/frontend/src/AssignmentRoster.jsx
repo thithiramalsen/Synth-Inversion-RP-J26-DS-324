@@ -1,7 +1,44 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { assignmentRosterCsv, assignmentStatus, filterAssignments } from './assignmentRosterData.js'
 
-export function AssignmentNameRow({ row, busy, onSave }) {
+export function AssignmentInvitationControls({ row, busy, onChange }) {
+  const [open, setOpen] = useState(false), [reason, setReason] = useState(''), [confirmed, setConfirmed] = useState(false)
+  const [saving, setSaving] = useState(false), [error, setError] = useState(''), [copied, setCopied] = useState(false)
+  const active = row.invitation_version != null
+  const protectedSlot = active && row.can_replace_invitation === false
+  useEffect(() => { setCopied(false) }, [row.invitation])
+  async function change(event) {
+    event.preventDefault(); setSaving(true); setError('')
+    try {
+      await onChange(row, active ? reason : 'Create the first code for this assignment', confirmed)
+      setOpen(false); setReason(''); setConfirmed(false)
+    } catch (failure) { setError(failure.message) } finally { setSaving(false) }
+  }
+  async function copy() {
+    try { await navigator.clipboard.writeText(row.invitation); setCopied(true); setError('') }
+    catch { setError('Select the code above and copy it manually.') }
+  }
+  return <div className="p-assignment-invitation">
+    {row.invitation ? <><label>Invitation code for {row.assignment_id}<input readOnly autoComplete="off" spellCheck="false" value={row.invitation} onFocus={event => event.target.select()} /></label>
+      <button type="button" className="p-secondary" disabled={busy || saving} onClick={copy}>{copied ? 'Copied ✓' : 'Copy code'}</button>
+    </> : <p className="p-muted">{!active ? 'No invitation code yet.' : row.invitation_status === 'legacy_unavailable'
+      ? 'This older code was stored as a hash, so it cannot be displayed. Replace it here if a new code is needed.'
+      : 'This code cannot be decrypted with the current server key. Contact the site maintainer, or replace it if needed.'}</p>}
+    {!open && !protectedSlot && <button type="button" className="p-secondary" disabled={busy || saving} onClick={() => { setOpen(true); setError('') }}>{active ? 'Replace code' : 'Create code'}</button>}
+    {protectedSlot && <p className="p-muted">Completed research session · replacement locked.</p>}
+    {open && <form className="p-code-replacement" onSubmit={change}>
+      <strong>{active ? 'Replace this invitation?' : 'Create an invitation?'}</strong>
+      <p className="p-muted">{active ? 'The old code will stop working. The saved name stays attached to this assignment.' : 'This creates a code for this slot and keeps the saved name.'}</p>
+      {active && <label>Reason for replacing {row.assignment_id}<textarea required minLength="10" maxLength="500" disabled={busy || saving} value={reason} onChange={event => setReason(event.target.value)} /></label>}
+      {row.has_started_session && <label className="p-check"><input type="checkbox" required disabled={busy || saving} checked={confirmed} onChange={event => setConfirmed(event.target.checked)} />Close {row.participant_label || 'the existing listener'}’s current session and preserve its saved answers.</label>}
+      <div className="p-actions"><button type="submit" className="p-primary" disabled={busy || saving || (active && reason.trim().length < 10) || (row.has_started_session && !confirmed)}>{saving ? 'Working…' : active ? 'Replace code now' : 'Create code now'}</button>
+        <button type="button" className="p-secondary" disabled={saving} onClick={() => { setOpen(false); setReason(''); setConfirmed(false); setError('') }}>Cancel</button></div>
+    </form>}
+    {error && <p className="p-roster-conflict" role="alert">{error}</p>}
+  </div>
+}
+
+export function AssignmentNameRow({ row, busy, onSave, onInvitationChange }) {
   const [draft, setDraft] = useState(row.participant_name || '')
   const [base, setBase] = useState({ name: row.participant_name || '', version: row.version })
   const [saving, setSaving] = useState(false), [error, setError] = useState('')
@@ -34,13 +71,15 @@ export function AssignmentNameRow({ row, busy, onSave }) {
         {dirty && <button type="button" className="p-secondary" disabled={saving} onClick={useLatest}>{stale ? 'Use latest assignment' : 'Cancel edit'}</button>}</div>
       {stale && <p className="p-roster-conflict" role="alert">Another researcher updated this slot to {row.participant_name ? `“${row.participant_name}”` : 'unassigned'}. Use the latest assignment before editing.</p>}
       {error && <p className="p-roster-conflict" role="alert">{error}</p>}
-    </form></td>
+    </form><AssignmentInvitationControls key={row.invitation_version || 'no-code'} row={row} busy={busy || saving || dirty} onChange={onInvitationChange} />
+      {dirty && <p className="p-muted">Save or cancel the name edit before changing its code.</p>}
+    </td>
     <td><span className={`p-assignment-status ${row.participant_name ? 'p-assignment-reserved' : ''}`}>{row.participant_name ? 'Assigned' : 'Unassigned'}</span><br />{assignmentStatus[row.status] || row.status}<br /><span className="p-muted">{row.saved_presentations || 0} saved</span></td>
     <td>{row.updated_by || '—'}{row.updated_at && <><br /><span className="p-muted">{new Date(row.updated_at).toLocaleString()}</span></>}</td>
   </tr>
 }
 
-export default function AssignmentRoster({ study, apiBase, busy = false, refreshKey = 0, onError, onRosterChange }) {
+export default function AssignmentRoster({ study, apiBase, busy = false, refreshKey = 0, onError, onRosterChange, onInvitationChange }) {
   const [data, setData] = useState(null), [loading, setLoading] = useState(false)
   const [search, setSearch] = useState(''), [filter, setFilter] = useState('all'), [page, setPage] = useState(0)
   const [notice, setNotice] = useState(''), [saving, setSaving] = useState(false)
@@ -65,6 +104,12 @@ export default function AssignmentRoster({ study, apiBase, busy = false, refresh
     window.addEventListener('focus', refresh)
     return () => { mounted.current = false; sequence.current++; clearInterval(interval); window.removeEventListener('focus', refresh) }
   }, [load, refreshKey])
+  function acceptAssignment(assignment) {
+    sequence.current++
+    const current = dataRef.current || data
+    const assignments = current.assignments.map(row => row.assignment_id === assignment.assignment_id ? assignment : row)
+    setData({ ...current, assignments }); onRosterChange?.(assignments); setLoading(false)
+  }
   async function save(assignment_id, participant_name, expected_version) {
     setSaving(true); setNotice('')
     try {
@@ -76,12 +121,22 @@ export default function AssignmentRoster({ study, apiBase, busy = false, refresh
         throw new Error(typeof result.detail === 'string' ? result.detail : 'The name could not be saved. Refresh and try again.')
       }
       // Apply the committed result even if a later network refresh fails.
-      sequence.current++
-      const current = dataRef.current || data
-      const assignments = current.assignments.map(row => row.assignment_id === result.assignment.assignment_id ? result.assignment : row)
-      setData({ ...current, assignments }); onRosterChange?.(assignments); setLoading(false)
+      acceptAssignment(result.assignment)
       setNotice(`${assignment_id}: ${participant_name ? 'name saved for the team' : 'name cleared'}.`)
       return result.assignment
+    } catch (failure) { onError(failure.message); throw failure } finally { setSaving(false) }
+  }
+  async function changeInvitation(row, reason, confirm_session_close) {
+    setSaving(true); setNotice('')
+    try {
+      const response = await fetch(`${apiBase}/admin/assignment-invitation`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bundle_hash: data.bundle_hash, assignment_id: row.assignment_id, expected_version: row.version,
+          expected_invitation: row.invitation_version, reason, confirm_session_close }) })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) { await load(); throw new Error(typeof result.detail === 'string' ? result.detail : 'The invitation could not be changed. Refresh and try again.') }
+      acceptAssignment(result.assignment)
+      setNotice(`${row.assignment_id}: ${row.invitation_version ? 'replacement' : 'new'} code ready. Copy the current code below.`)
+      onInvitationChange?.(result.assignment)
     } catch (failure) { onError(failure.message); throw failure } finally { setSaving(false) }
   }
   function download() {
@@ -103,15 +158,15 @@ export default function AssignmentRoster({ study, apiBase, busy = false, refresh
       <div className="p-roster-filters"><label>Find a participant or assignment<input type="search" value={search} onChange={event => { setSearch(event.target.value); setPage(0) }} placeholder="Name, assignment or researcher" /></label>
         <label>Show<select value={filter} onChange={event => { setFilter(event.target.value); setPage(0) }}><option value="all">All slots</option><option value="unassigned">Unassigned · not started</option><option value="assigned">Names assigned</option><option value="started">Sessions started</option></select></label></div>
       <p className="p-muted">{data.assignments.filter(row => row.participant_name).length} named assignments · {data.assignments.length} slots. Assigned slots are skipped when replacing unused codes in bulk.</p>
-      <div className="p-table"><table><caption>{study} shared participant assignments</caption><thead><tr><th>Assignment / listener</th><th>Participant name or nickname</th><th>Status</th><th>Last updated by</th></tr></thead><tbody>
-        {rows.slice(currentPage * 20, currentPage * 20 + 20).map(row => <AssignmentNameRow key={`${data.bundle_hash}:${row.assignment_id}`} row={row} busy={busy || saving} onSave={save} />)}
+      <div className="p-table"><table><caption>{study} shared participant assignments</caption><thead><tr><th>Assignment / listener</th><th>Participant name or nickname</th><th>Status</th><th>Name updated by</th></tr></thead><tbody>
+        {rows.slice(currentPage * 20, currentPage * 20 + 20).map(row => <AssignmentNameRow key={`${data.bundle_hash}:${row.assignment_id}`} row={row} busy={busy || saving} onSave={save} onInvitationChange={changeInvitation} />)}
       </tbody></table></div>
       {!rows.length && <p role="status">No assignments match this filter.</p>}
       <div className="p-response-controls"><span>{rows.length ? `${currentPage * 20 + 1}–${Math.min(currentPage * 20 + 20, rows.length)} of ${rows.length} slots` : '0 slots'}</span><div className="p-actions">
         <button type="button" className="p-secondary" disabled={currentPage === 0 || saving} onClick={() => setPage(currentPage - 1)}>← Previous slots</button>
         <button type="button" className="p-secondary" disabled={(currentPage + 1) * 20 >= rows.length || saving} onClick={() => setPage(currentPage + 1)}>Next slots →</button>
       </div></div>
-      <p className="p-muted">Codes are still shown only when created. Keep the invitation download; this assignment list does not recover lost codes. Clearing a name does not retire a code or delete responses.</p>
+      <p className="p-muted">New codes are saved encrypted and remain visible here to signed-in researchers. Older hash-only codes cannot be recovered. A used code cannot start another session. Clearing a name does not retire a code or delete responses.</p>
     </>}
   </section>
 }

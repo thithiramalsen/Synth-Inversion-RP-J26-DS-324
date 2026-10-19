@@ -20,7 +20,8 @@ from c1_protocol import PARTICIPANT_STUDY_ID, PARTICIPANT_PROTOCOL_VERSION, anal
 from experience import ExperienceEntry, experience_options
 from response_viewer import KindFilter, PhaseFilter, response_page
 from security import require_admin
-from assignment_roster import AssignmentName, reserved_assignments, roster, save_name
+from assignment_roster import AssignmentName, AssignmentInvitation, change_invitation, reserved_assignments, roster, save_name
+from invitation_codes import remember_code
 
 ROOT = Path(__file__).resolve().parents[2]
 router = APIRouter(prefix="/api/c1-pilot")
@@ -588,8 +589,9 @@ def issue_invitations():
             code = secrets.token_urlsafe(18)
             db.execute("INSERT INTO c1_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)",
                        (hashed(code), checksum, block["assignment_id"], now()))
+            remember_code(db, "c1", code)
             issued.append(dict(assignment_id=block["assignment_id"], invitation=code))
-    return {"invitations": issued, "note": "Save these once; only hashes are retained. Do not publish."}
+    return {"invitations": issued, "note": "Codes are available to signed-in researchers in the shared assignment list. Do not publish."}
 
 
 class ReplaceInvitation(StrictBody):
@@ -635,11 +637,12 @@ def replace_unused_invitations(body: ReplaceUnusedInvitations, response: Respons
             code = secrets.token_urlsafe(18)
             db.execute("INSERT INTO c1_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)",
                        (hashed(code), checksum, assignment_id, timestamp))
+            remember_code(db, "c1", code)
             issued.append(dict(assignment_id=assignment_id, invitation=code))
     response.headers["Cache-Control"] = "no-store"
     return dict(bundle_hash=checksum, invitations=issued, skipped_assignments=skipped, reserved_assignments=reserved,
                 replaced_count=replaced, created_count=len(issued)-replaced,
-                note="Save these once; only hashes are retained. Previous unused codes are invalid. "
+                note="Codes are available in the shared assignment list. Previous unused codes are invalid. "
                      "Started sessions and assignments reserved with a name were left untouched. Do not publish.")
 
 
@@ -664,7 +667,15 @@ def replace_invitation(body: ReplaceInvitation):
         code = secrets.token_urlsafe(18)
         db.execute("INSERT INTO c1_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)",
                    (hashed(code), checksum, body.assignment_id, now()))
+        remember_code(db, "c1", code)
     return {"assignment_id": body.assignment_id, "invitation": code}
+
+
+@router.post("/admin/assignment-invitation", dependencies=[Depends(require_admin)])
+def assignment_invitation(body: AssignmentInvitation, response: Response):
+    bundle, checksum = load_bundle()
+    response.headers["Cache-Control"] = "private, no-store"
+    return change_invitation("c1", bundle, checksum, body)
 
 
 @router.get("/admin/roster", dependencies=[Depends(require_admin)])
