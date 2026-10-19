@@ -3,6 +3,11 @@
 React/Vite + FastAPI research listening instruments. Audio is served by the backend;
 WAV files are not bundled into React.
 
+The current `/c4` preparation uses the real 200-triplet CLAP bank: 20 unique
+comparisons, two hidden repeats and two practices per listener, with 100 balanced
+assignments for 50–100 completed listeners. See [C4 protocol](C4_REVIEW_PROTOCOL.md).
+The ten-triplet C4 instructions below describe the historical development app.
+
 ## Current C1 pilot and local rehearsal
 
 The new `/pilot` instrument uses a separate versioned audio bundle and database

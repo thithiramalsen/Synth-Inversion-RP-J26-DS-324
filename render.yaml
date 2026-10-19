@@ -26,5 +26,9 @@ services:
         value: /app/survey/deploy/study/bundle.json
       - key: SURVEY_C1_CONFIG
         value: /app/survey/config/c1_review_20_v1.json
+      - key: SURVEY_C4_BUNDLE
+        value: /app/survey/deploy/study/c4_clap_bundle.json
+      - key: SURVEY_C4_CONFIG
+        value: /app/survey/config/c4_clap_v1.json
       - key: SURVEY_ALLOWED_ORIGINS
         value: ""

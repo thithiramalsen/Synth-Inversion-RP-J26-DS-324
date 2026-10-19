@@ -1,6 +1,8 @@
 # Survey local/runtime files
 survey/frontend/node_modules/
 survey/frontend/dist/
+# Local materialization of the already tracked CLAP playback assets; Docker copies the originals.
+survey/deploy/study/clap_audio/
 survey/backend/*.db
 survey/backend/__pycache__/
 survey/backend/.venv/

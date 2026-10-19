@@ -165,6 +165,18 @@ export function ComparisonQuestions({ answer, onChange }) {
   </section>
 }
 
+export function C4Workload({ status }) {
+  const cfg = status.config || {}
+  const practice = status.practice_presentations ?? cfg.practice_comparisons ?? 2
+  return <p>There are {practice} practice comparisons before the {status.rated_presentations} review comparisons. Choose a comfortable listening level and keep it consistent.</p>
+}
+
+export function C4Break({ step, busy, onContinue }) {
+  const completed = step.rated_completed ?? 6
+  const total = step.rated_total ?? 12
+  return <section className="p-card" aria-label="Listening break"><p className="p-eyebrow">LISTENING BREAK</p><h1>A moment to rest.</h1><p>You have completed {completed} of {total} review comparisons. Take a short break, then continue with the same listening setup and volume.</p><button disabled={busy} className="p-primary" onClick={onContinue}>Continue listening →</button></section>
+}
+
 export default function C4App() {
   const [status, setStatus] = useState(null), [session, setSession] = useState(savedSession)
   const [step, setStep] = useState(null), [error, setError] = useState(''), [busy, setBusy] = useState(false)
@@ -231,7 +243,7 @@ export default function C4App() {
             <label className="p-comment">Anything unclear? <span>Optional</span><textarea maxLength="1000" rows="2" value={answer.comment} onChange={e => setAnswer(a => ({ ...a, comment: e.target.value }))} /></label>
             <div className="p-save-row"><span>{phase === 'correction' ? 'Replaying is optional when correcting a saved answer.' : allPlayed ? 'All three clips played fully ✓' : 'Play all three clips fully to continue.'}</span><div className="p-actions">{phase === 'correction' && <button type="button" className="p-secondary" disabled={busy} onClick={() => act(() => submit('previous/cancel', { correction_token: step.correction_token }))}>Return without changes →</button>}<button className="p-primary" disabled={busy || (phase !== 'correction' && !allPlayed) || !answer.choice || (answer.choice !== 'cannot_decide' && !answer.confidence)}>{busy ? 'Saving…' : phase === 'correction' ? 'Save correction and continue →' : 'Save and continue →'}</button></div></div>
           </form>}
-          {phase === 'break' && <section className="p-card"><p className="p-eyebrow">HALFWAY THROUGH</p><h1>A moment to rest.</h1><p>You have completed half the review comparisons. Take a short break, then continue with the same listening setup and volume.</p><button disabled={busy} className="p-primary" onClick={() => act(() => submit('continue', {}))}>Continue listening →</button></section>}
+          {phase === 'break' && <C4Break step={step} busy={busy} onContinue={() => act(() => submit('continue', {}))} />}
           {phase === 'feedback' && <form className="p-card" onSubmit={e => { e.preventDefault(); act(() => submit('feedback', feedback)) }}><p className="p-eyebrow">ONE LAST THING</p><h1>How was the experience?</h1>
             <label>Were the comparison instructions clear?<select required value={feedback.clarity} onChange={e => setFeedback(v => ({ ...v, clarity:e.target.value }))}><option value="">Choose an answer</option>{['Clear','Some terms unclear','Difficult to understand'].map(s => <option key={s}>{s}</option>)}</select></label>
             <label>How did the session length feel?<select required value={feedback.length} onChange={e => setFeedback(v => ({ ...v, length:e.target.value }))}><option value="">Choose an answer</option>{['About right','Too long','Could be longer'].map(s => <option key={s}>{s}</option>)}</select></label>
@@ -256,7 +268,7 @@ function Entry({ status, busy, onSubmit }) {
     </div>
     <section className="p-card"><h2>Before you take part</h2>
       {cfg.information.map((text, i) => <p key={i}>{text}</p>)}
-      <p>There are 2 practice comparisons before the {status.rated_presentations} review comparisons. Choose a comfortable listening level and keep it consistent.</p>
+      <C4Workload status={status} />
       {cfg.researcher_email && <p>Research contact: {cfg.researcher_name} · <a href={`mailto:${cfg.researcher_email}`}>{cfg.researcher_email}</a></p>}
       {cfg.supervisor_contact && <p>Supervisor contact: {cfg.supervisor_contact}</p>}
       {cfg.retention_statement && <p>{cfg.retention_statement}</p>}
@@ -278,6 +290,30 @@ function Entry({ status, busy, onSubmit }) {
       <button className="p-primary" disabled={busy || !status.ready || !values.activities.length || !experienceReady(values, cfg)}>{busy ? 'Starting…' : 'Start listening setup'}<span aria-hidden="true">→</span></button>
     </section>
   </form>
+}
+
+export function C4DesignSummary({ data }) {
+  const { design, coverage } = data
+  if (!design?.bank_triplets) return null
+  const minimumPlanned = design.target_min * design.unique_per_listener / design.bank_triplets
+  const maximumPlanned = design.target_max * design.unique_per_listener / design.bank_triplets
+  return <section className="p-card" aria-label="C4 study plan and coverage">
+    <h2>Study plan and completed coverage</h2>
+    <p>Active survey: <strong>{data.study_id}</strong>{data.protocol_version && <> · Protocol {data.protocol_version}</>}</p>
+    <p>{design.bank_triplets} triplets in the bank. Each listener receives {design.unique_per_listener} different comparisons, {design.repeats_per_listener} hidden repeats and {design.practice_per_listener} practice comparisons.</p>
+    {design.target_min != null && design.target_max != null && <>
+      <p><strong>Target:</strong> {design.target_min}–{design.target_max} completed independent listeners. Give each person one invitation and work through assignments in order.</p>
+      <p>Complete groups of 10 assignments cover the bank evenly. At the target, completing these groups gives {minimumPlanned}–{maximumPlanned} primary judgments per triplet. Missing or unfinished assignments can leave uneven coverage.</p>
+    </>}
+    <p><strong>Planned:</strong> {data.assignment_capacity} assignment slots{coverage?.planned_per_triplet != null && <> provide {coverage.planned_per_triplet} listeners per triplet when all slots are completed</>}. Issued codes do not count as completed judgments.</p>
+    {coverage && <>
+      <p><strong>Completed:</strong> {coverage.completed_listeners} listeners. {coverage.triplets_with_completed_judgments} of {design.bank_triplets} triplets have a completed judgment; {coverage.triplets_at_least_two} have judgments from at least two completed listeners. Current range: {coverage.minimum_completed_judgments}–{coverage.maximum_completed_judgments} completed listeners per triplet.</p>
+      <p className="p-muted">Coverage counts primary comparisons from completed sessions. Practice, hidden repeats and corrections do not add independent judgments. Withdrawn or replaced sessions are excluded.</p>
+      {coverage.below_two && <p role="status" className={coverage.below_two.length ? 'p-notice' : 'p-muted'}>{coverage.below_two.length ? `${coverage.below_two.length} triplets remain below two completed listeners.` : 'Every triplet has judgments from at least two completed listeners.'}</p>}
+      {coverage.triplets?.length > 0 && <details><summary>View coverage for all {coverage.triplets.length} triplets</summary><div className="p-table"><table><thead><tr><th>Triplet</th><th>Planned listeners</th><th>Completed listeners</th></tr></thead><tbody>{coverage.triplets.map(triplet => <tr key={triplet.triplet_id}><td>{triplet.triplet_id}</td><td>{triplet.planned_listeners}</td><td>{triplet.completed_listeners}</td></tr>)}</tbody></table></div></details>}
+    </>}
+    <p className="p-muted">Responses from this review are excluded from research analysis. Formal recruitment needs a separate approved launch.</p>
+  </section>
 }
 
 export function C4InvitationAssignments({ data, busy, onCreate, onReplace }) {
@@ -395,6 +431,7 @@ export function C4Admin() {
     <SiteHeader current="c4-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
     <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>Manage C4 invitations and sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={locked} onClick={() => act(async () => setData(await request('/admin/summary')))}>{locked ? 'Working…' : 'Refresh invitations and sessions'}</button><button className="p-secondary" disabled={locked} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setSkippedAssignments(null); setAccountInvite(null); setReplacement({ assignment_id: '', reason: '' }); setReplaceAcknowledged(false) })}>Sign out</button></div>{loading && <p role="status">Loading participant assignments…</p>}</section>
+    {data && <C4DesignSummary data={data} />}
     <ResponseViewer study="C4" apiBase={`${API}/api/c4-pilot`} onError={setError} />
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
       <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unused assignments remain' : 'All assignments already have invitations'}</h2>

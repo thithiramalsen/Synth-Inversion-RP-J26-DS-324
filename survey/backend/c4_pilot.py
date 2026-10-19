@@ -7,6 +7,7 @@ import io
 import json
 import os
 import secrets
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Literal
@@ -34,24 +35,57 @@ def hashed(value):
 
 
 def bundle_path():
-    return Path(os.environ.get("SURVEY_C4_BUNDLE", ROOT / "survey/deploy/study/c4_bundle.json"))
+    return Path(os.environ.get("SURVEY_C4_BUNDLE", ROOT / "survey/deploy/study/c4_clap_bundle.json"))
+
+
+def known_bundle_paths():
+    """Only explicitly packaged/configured bundles may restore saved sessions."""
+    legacy = os.environ.get('SURVEY_C4_LEGACY_BUNDLES', str(ROOT / 'survey/deploy/study/c4_bundle.json'))
+    return list(dict.fromkeys([bundle_path().resolve(), *[Path(p).resolve() for p in legacy.split(os.pathsep) if p]]))
 
 
 def config():
-    path = Path(os.environ.get("SURVEY_C4_CONFIG", ROOT / "survey/config/c4_review_v1.json"))
+    path = Path(os.environ.get("SURVEY_C4_CONFIG", ROOT / "survey/config/c4_clap_v1.json"))
     cfg = json.loads(path.read_text(encoding="utf-8"))
     if cfg.get('experience_entry_format') == 'experience_tags_v1':
         cfg['experience_selection'] = experience_options()
     return cfg
 
 
-def load_bundle():
-    path = bundle_path()
+def load_bundle(path=None):
+    path = Path(path) if path is not None else bundle_path()
     if not path.is_file():
         raise HTTPException(503, "The study audio has not been prepared yet")
     payload = path.read_bytes()
     data = json.loads(payload)
     return data, hashlib.sha256(payload).hexdigest()
+
+
+def bundle_for_hash(checksum):
+    for path in known_bundle_paths():
+        if not path.is_file():
+            continue
+        try:
+            bundle, actual = load_bundle(path)
+        except (ValueError, OSError):
+            continue
+        if secrets.compare_digest(actual, checksum):
+            return bundle, path
+    raise HTTPException(409, 'The saved study audio bundle is unavailable or changed; contact the researcher')
+
+
+def trial_counts(trials):
+    counts = Counter(trial['kind'] for trial in trials)
+    return dict(practice_presentations=counts['practice'], unique_comparisons=counts['primary'],
+                repeat_comparisons=counts['repeat'], rated_presentations=counts['primary']+counts['repeat'],
+                total_presentations=len(trials))
+
+
+def comparison_number(trials, index):
+    practice = trials[index]['kind'] == 'practice'
+    same_group = lambda trial: (trial['kind'] == 'practice') == practice
+    return dict(display_number=sum(same_group(t) for t in trials[:index+1]),
+                display_total=sum(same_group(t) for t in trials))
 
 
 def initialize_pilot_database():
@@ -132,11 +166,21 @@ def can_correct(db, row):
 
 def launch_issues(bundle, cfg):
     # This release implements review only. Formal C4 recruitment requires a new protocol.
-    return [] if bundle.get("rehearsal") is True and bundle.get("study_id") == "c4_review_v1" else ["Only the C4 review protocol is available"]
+    if bundle.get('rehearsal') is not True or bundle.get('study_id') not in ('c4_review_v1', 'c4_clap_review_v1'):
+        return ['Only the versioned C4 review protocols are available']
+    if cfg.get('study_id', 'c4_review_v1') != bundle['study_id']:
+        return ['C4 protocol and audio bundle versions do not match']
+    for block in bundle['assignments']:
+        counts = trial_counts(block['trials'])
+        if (any(counts[key] != cfg.get(key) for key in ('unique_comparisons', 'repeat_comparisons'))
+                or counts['practice_presentations'] != cfg.get('practice_comparisons')):
+            return ['C4 assignment counts do not match the protocol']
+    return []
 
 
-def checked_asset(relative, expected_hash):
-    root = bundle_path().resolve().parent
+def checked_asset(relative, expected_hash, checksum):
+    _, path = bundle_for_hash(checksum)
+    root = path.parent
     path = (root / relative).resolve()
     if not path.is_relative_to(root) or not path.is_file():
         raise HTTPException(409, "Study audio unavailable")
@@ -151,12 +195,13 @@ def status():
     try:
         bundle, _ = load_bundle()
         issues = launch_issues(bundle, cfg)
-        total = len(bundle["assignments"][0]["trials"])
+        counts = trial_counts(bundle['assignments'][0]['trials'])
         rehearsal = bundle["rehearsal"]
     except HTTPException as error:
-        issues, total, rehearsal = [str(error.detail)], 39, False
-    return dict(config=cfg, ready=not issues, issues=issues, total_presentations=total,
-                rated_presentations=total-2, rehearsal=rehearsal)
+        issues, counts, rehearsal = [str(error.detail)], dict(total_presentations=0, rated_presentations=0,
+            practice_presentations=0, unique_comparisons=0, repeat_comparisons=0), False
+    return dict(config=cfg, ready=not issues, issues=issues, **counts, rehearsal=rehearsal,
+                target_min=cfg.get('target_completed_min'), target_max=cfg.get('target_completed_max'))
 
 
 class StrictBody(BaseModel):
@@ -188,9 +233,7 @@ def session_row(session_id, authorization):
 
 def context(session_id, authorization):
     row = session_row(session_id, authorization)
-    bundle, checksum = load_bundle()
-    if row["bundle_hash"] != checksum:
-        raise HTTPException(409, "The audio bundle changed; this session cannot continue")
+    bundle, _ = bundle_for_hash(row['bundle_hash'])
     # A participant stays on the exact consent/question version they entered.
     return row, bundle
 
@@ -233,23 +276,25 @@ def start(entry: Entry):
 @router.get("/sessions/{session_id}")
 def state(session_id: str, authorization: str = Header(default="")):
     row, bundle = context(session_id, authorization)
+    trials = json.loads(row['trial_order'])
+    counts = trial_counts(trials)
     result = dict(phase=row["phase"], participant_id=row["participant_id"], server_time=now(),
                   participant_label=listener_label(row["listener_number"]), saved_presentations=row["current_index"], current_index=row["current_index"],
                   total_presentations=len(json.loads(row["trial_order"])), completed_at=row["completed_at"],
                   config=json.loads(row["protocol_snapshot"]), rehearsal=bundle["rehearsal"])
+    result.update(**counts, rated_completed=sum(t['kind'] != 'practice' for t in trials[:row['current_index']]),
+                  rated_total=counts['rated_presentations'])
     if row["phase"] == "volume":
         result["audio_id"] = "volume_reference"
     elif row["phase"] == "headphones":
         answers = json.loads(row["screen_answers"])
         result.update(audio_id=json.loads(row["screen_order"])[len(answers)], screen_number=len(answers)+1)
     elif row["phase"] == "rating":
-        trials = json.loads(row["trial_order"])
         trial = trials[row["current_index"]]
         practice = trial["kind"] == "practice"
         result.update(presentation_id=trial["presentation_id"], practice=practice,
                       index=row["current_index"], total=len(trials),
-                      display_number=row["current_index"]+1 if practice else row["current_index"]-1,
-                      display_total=2 if practice else len(trials)-2)
+                      **comparison_number(trials, row['current_index']))
     with get_connection() as db:
         result['can_correct_previous'] = can_correct(db, row)
         correction = active_correction(db, session_id)
@@ -261,8 +306,7 @@ def state(session_id: str, authorization: str = Header(default="")):
             result.update(phase='correction', presentation_id=trial['presentation_id'], practice=trial['kind'] == 'practice',
                           correction_token=correction['correction_token'],
                           saved_answers={key: answers[key] for key in ('choice', 'confidence', 'comment')},
-                          display_number=correction['correction_index']+1 if trial['kind'] == 'practice' else correction['correction_index']-1,
-                          display_total=2 if trial['kind'] == 'practice' else result['total_presentations']-2)
+                          **comparison_number(trials, correction['correction_index']))
     return result
 
 
@@ -273,12 +317,12 @@ def audio(session_id: str, audio_id: str, authorization: str = Header(default=""
         raise HTTPException(403, "Session ended")
     if audio_id == "volume_reference":
         asset = bundle["calibration"]
-        path = checked_asset("audio/" + asset["path"], asset["sha256"])
+        path = checked_asset("audio/" + asset["path"], asset["sha256"], row['bundle_hash'])
     elif audio_id.startswith("headphones_"):
         asset = next((s for s in bundle["headphones"] if s["screen_id"] == audio_id), None)
         if asset is None:
             raise HTTPException(404, "Audio not found")
-        path = checked_asset("audio/" + asset["path"], asset["sha256"])
+        path = checked_asset("audio/" + asset["path"], asset["sha256"], row['bundle_hash'])
     else:
         raise HTTPException(403, "Use the current comparison playback controls")
     return FileResponse(path, media_type="audio/wav", headers={"Cache-Control": "private, no-store"})
@@ -300,7 +344,7 @@ def presentation_playback(session_id: str, presentation_id: str,
         if trial["presentation_id"] != presentation_id:
             raise HTTPException(409, "Only the current comparison can be played")
         asset = bundle["samples"][trial[role]]
-        path = checked_asset(asset["playback_path"], asset["playback_sha256"])
+        path = checked_asset(asset["playback_path"], asset["playback_sha256"], row['bundle_hash'])
         db.execute("INSERT INTO c4_exposures VALUES (?,?,?,?) ON CONFLICT DO NOTHING", (session_id, presentation_id, role, now()))
     return FileResponse(path, media_type="audio/wav", headers={"Cache-Control": "private, no-store"})
 
@@ -472,7 +516,10 @@ def rating(session_id: str, body: RatingBody, authorization: str = Header(defaul
                     row["current_index"]+1, json.dumps(values), json.dumps(plays), json.dumps(completed),
                     body.started_at.isoformat(), now()))
         index = row["current_index"]+1
-        phase = "feedback" if index == len(trials) else "break" if index == 8 and not row["break_done"] else "rating"
+        cfg = json.loads(row['protocol_snapshot'])
+        rated_completed = sum(t['kind'] != 'practice' for t in trials[:index])
+        at_break = trial['kind'] != 'practice' and rated_completed == cfg.get('break_after_rated', 6)
+        phase = "feedback" if index == len(trials) else "break" if at_break and not row["break_done"] else "rating"
         db.execute("UPDATE c4_sessions SET current_index=?,phase=? WHERE session_id=?", (index,phase,session_id))
     return {"saved": True}
 
@@ -616,6 +663,10 @@ def summary():
                                     LEFT JOIN c4_sessions s ON s.session_id=i.session_id AND s.bundle_hash=i.bundle_hash
                                     LEFT JOIN c4_listener_labels l ON l.session_id=s.session_id
                                     WHERE i.bundle_hash=? AND i.retired_at IS NULL''', (checksum,)).fetchall()
+        completed_ratings = db.execute('''SELECT r.session_id,r.triplet_json FROM c4_ratings r
+                                         JOIN c4_sessions s USING(session_id)
+                                         WHERE s.bundle_hash=? AND s.phase='complete' AND s.withdrawn_at IS NULL
+                                         AND r.kind='primary' ''', (checksum,)).fetchall()
     active = {row["assignment_id"]: row for row in invitations}
     assignments = []
     for block in bundle["assignments"]:
@@ -640,7 +691,34 @@ def summary():
             saved_presentations=(row["current_index"] or 0) if row is not None else 0,
             can_replace=row is not None and not protected,
         ))
-    return dict(bundle_hash=checksum, sessions=[dict(r, participant_label=listener_label(r["listener_number"])) for r in sessions],
+    cfg = config()
+    counts = trial_counts(bundle['assignments'][0]['trials'])
+    bank = {t['triplet_id'] for t in bundle['canonical_triplets']}
+    planned = Counter(tid for block in bundle['assignments']
+                      for tid in {t['triplet_id'] for t in block['trials'] if t['kind'] == 'primary'})
+    completed_by_triplet = {tid: set() for tid in bank}
+    for rating_row in completed_ratings:
+        tid = json.loads(rating_row['triplet_json'])['triplet_id']
+        if tid in completed_by_triplet:
+            completed_by_triplet[tid].add(rating_row['session_id'])
+    coverage_rows = [dict(triplet_id=tid, planned_listeners=planned[tid],
+                          completed_listeners=len(completed_by_triplet[tid])) for tid in sorted(bank)]
+    completed_counts = [r['completed_listeners'] for r in coverage_rows]
+    planned_values = {r['planned_listeners'] for r in coverage_rows}
+    completed_listeners = sum(r['phase'] == 'complete' and not r['withdrawn_at'] for r in sessions)
+    coverage = dict(planned_per_triplet=next(iter(planned_values)) if len(planned_values) == 1 else None,
+                    completed_listeners=completed_listeners,
+                    triplets_with_completed_judgments=sum(n > 0 for n in completed_counts),
+                    triplets_at_least_two=sum(n >= 2 for n in completed_counts),
+                    minimum_completed_judgments=min(completed_counts, default=0),
+                    maximum_completed_judgments=max(completed_counts, default=0),
+                    triplets=coverage_rows, below_two=[r['triplet_id'] for r in coverage_rows if r['completed_listeners'] < 2])
+    design = dict(bank_triplets=len(bank), unique_per_listener=counts['unique_comparisons'],
+                  repeats_per_listener=counts['repeat_comparisons'], practice_per_listener=counts['practice_presentations'],
+                  target_min=cfg.get('target_completed_min'), target_max=cfg.get('target_completed_max'))
+    return dict(bundle_hash=checksum, study_id=bundle['study_id'], protocol_version=cfg['protocol_version'],
+                design=design, coverage=coverage,
+                sessions=[dict(r, participant_label=listener_label(r["listener_number"])) for r in sessions],
                 completed=sum(r["phase"] == "complete" and not r["withdrawn_at"] for r in sessions),
                 assignments=assignments, assignment_capacity=len(assignments),
                 missing_invitation_count=sum(row["status"] == "missing" for row in assignments))
@@ -658,7 +736,9 @@ def export():
                "presentation_id", "triplet_id", "reference", "candidate_a", "candidate_b", "kind", "repeat_of", "trial_order",
                "choice", "chosen_sample_id", "confidence", "comment", "play_count", "completed_plays", "started_at", "submitted_at",
                "phase", "completed_at", "withdrawn_at", "analysis_include",
-               "choice_first", "chosen_sample_id_first", "confidence_first", "comment_first", "revision_count", "corrections_json"]
+               "choice_first", "chosen_sample_id_first", "confidence_first", "comment_first", "revision_count", "corrections_json",
+               "clap_similarity_a", "clap_similarity_b", "clap_nearer_sample_id",
+               "candidate_parameter_distance_a", "candidate_parameter_distance_b", "selection_method"]
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=columns)
     writer.writeheader()
