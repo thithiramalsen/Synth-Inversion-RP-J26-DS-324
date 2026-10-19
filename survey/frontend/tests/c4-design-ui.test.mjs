@@ -5,6 +5,7 @@ import { renderToString } from 'react-dom/server'
 import { createServer } from 'vite'
 
 let server, C4Workload, C4Break, C4DesignSummary, C4CollectionNotice, ComparisonQuestions
+let VolumeSetupHeading
 const originalWindow = globalThis.window
 const render = (component, props) => renderToString(React.createElement(component, props)).replace(/<!-- -->/g, '')
 
@@ -12,6 +13,7 @@ before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
   server = await createServer({ server: { middlewareMode: true, hmr: false }, resolve: { preserveSymlinks: true }, appType: 'custom' })
   ;({ C4Workload, C4Break, C4DesignSummary, C4CollectionNotice, ComparisonQuestions } = await server.ssrLoadModule('/src/C4App.jsx'))
+  VolumeSetupHeading = (await server.ssrLoadModule('/src/VolumeSetupHeading.jsx')).default
 })
 
 after(async () => {
@@ -27,6 +29,16 @@ test('C4 workload uses the active counts while supporting the legacy review', ()
   assert.match(legacy, /2 practice comparisons before the 12 review comparisons/)
   const changedPractice = render(C4Workload, { status: { practice_presentations: 3, rated_presentations: 22, config: { practice_comparisons: 2 } } })
   assert.match(changedPractice, /3 practice comparisons/)
+})
+
+test('both surveys show one listening setup step when the headphone screen is removed', () => {
+  const current = render(VolumeSetupHeading, { config: { headphone_screening_enabled: false } })
+  assert.match(current, /LISTENING SETUP/)
+  assert.match(current, /Find a comfortable level/)
+  assert.doesNotMatch(current, /OF 2|headphone check/i)
+  assert.match(render(VolumeSetupHeading, { config: {} }), /1 OF 2/)
+  const resumed = render(VolumeSetupHeading, { config: {}, screeningEnabled: false })
+  assert.doesNotMatch(resumed, /OF 2/)
 })
 
 test('C4 break displays saved-session progress instead of a fixed workload', () => {

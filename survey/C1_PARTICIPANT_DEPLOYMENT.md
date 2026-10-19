@@ -1,5 +1,10 @@
 # C1 participant collection
 
+The current participant protocol removes the six-question headphone screen.
+Listeners set a comfortable volume and go straight to practice. Headphones and
+a quiet place are still requested. No new environment settings or invitation
+codes are needed for this change.
+
 The active C1 release uses the existing 64 study sounds and three practices.
 Each person rates 20 distinct study sounds on four descriptors, with a break
 after ten. No audio is rendered or changed. Twenty-six assignments remain
@@ -41,13 +46,22 @@ contact or institutional approval has been invented; the configuration records
 the outcome as `not_recorded`. Participant mode is a collection/software setting,
 not a statement that an institution approved the project.
 
-The new protocol is `c1_participants_2026-10-19_v1`. Saved snapshots retain the
+The current protocol is `c1_participants_2026-10-19_v2_no_headphone_screen`. Saved snapshots retain the
 experience tags, descriptor definitions, scale and limited correction policy.
 Exports and the admin viewer use the same eligibility rule: the participant
 study/protocol/collection identity, a completed session with completion time,
 no withdrawal, and a study trial. Practice, incomplete, replaced and review rows
 remain excluded. Original answers and correction histories remain available.
 Historical `c1_pilot_v1` export behavior is retained for its separate instrument.
+
+Earlier participant sessions still waiting at volume setup or partway through
+the six-question screen skip that screen on resume. The original protocol and
+any screening answers are preserved; `entry_json.headphone_screening_change`
+records the removal time, original version, earlier phase and answered count.
+Completed, failed, withdrawn and replaced sessions are not reopened. Historical
+review sessions retain their original setup. Both participant protocol versions
+remain eligible under the completed-session export rules; distinguish versions
+and this audit event when analyzing setup differences.
 
 The CSV includes the planned `target_ratings_per_sound=5`. The descriptive
 analysis reads that value instead of assuming the older eight-ratings design;

@@ -17,6 +17,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from database import get_connection
+from listening_setup import headphone_screening_enabled, session_screening_enabled, retire_participant_screen
 from c4_protocol import PARTICIPANT_STUDY_ID, PARTICIPANT_PROTOCOL_VERSION, REVIEW_STUDY_IDS, analysis_include
 from experience import ExperienceEntry, experience_options
 from response_viewer import KindFilter, PhaseFilter, response_page
@@ -185,6 +186,8 @@ def launch_issues(bundle, cfg):
     if participant:
         if cfg.get('collection_mode') != 'participants' or cfg.get('protocol_version') != PARTICIPANT_PROTOCOL_VERSION:
             issues.append('C4 participant information and collection version do not match')
+        if cfg.get('headphone_screening_enabled') is not False:
+            issues.append('This participant protocol goes directly from volume setup to practice')
         if os.environ.get('SURVEY_C4_OPEN', '1') != '1':
             issues.append('Participant entry is currently closed')
         for name in ('researcher_name', 'researcher_email', 'retention_statement', 'withdrawal_statement'):
@@ -249,6 +252,8 @@ def session_row(session_id, authorization):
 def context(session_id, authorization):
     row = session_row(session_id, authorization)
     bundle, _ = bundle_for_hash(row['bundle_hash'])
+    if retire_participant_screen(row, PARTICIPANT_STUDY_ID, 'C4'):
+        row = session_row(session_id, authorization)
     # A participant stays on the exact consent/question version they entered.
     return row, bundle
 
@@ -274,7 +279,7 @@ def start(entry: Entry):
         if invitation["session_id"]:
             raise HTTPException(409, "Invitation already used. Resume the existing session or contact the researcher.")
         block = next(b for b in bundle["assignments"] if b["assignment_id"] == invitation["assignment_id"])
-        screens = [s["screen_id"] for s in bundle["headphones"]]
+        screens = [s["screen_id"] for s in bundle["headphones"]] if headphone_screening_enabled(cfg) else []
         secrets.SystemRandom().shuffle(screens)
         snapshot = json.dumps(cfg, sort_keys=True)
         db.execute('''INSERT INTO c4_sessions (session_id,token_hash,participant_id,bundle_hash,protocol_hash,
@@ -296,7 +301,8 @@ def state(session_id: str, authorization: str = Header(default="")):
     result = dict(phase=row["phase"], participant_id=row["participant_id"], server_time=now(),
                   participant_label=listener_label(row["listener_number"]), saved_presentations=row["current_index"], current_index=row["current_index"],
                   total_presentations=len(json.loads(row["trial_order"])), completed_at=row["completed_at"],
-                  config=json.loads(row["protocol_snapshot"]), rehearsal=bundle["rehearsal"])
+                  config=json.loads(row["protocol_snapshot"]), rehearsal=bundle["rehearsal"],
+                  headphone_screening_enabled=session_screening_enabled(row))
     result.update(**counts, rated_completed=sum(t['kind'] != 'practice' for t in trials[:row['current_index']]),
                   rated_total=counts['rated_presentations'])
     if row["phase"] == "volume":
@@ -334,6 +340,8 @@ def audio(session_id: str, audio_id: str, authorization: str = Header(default=""
         asset = bundle["calibration"]
         path = checked_asset("audio/" + asset["path"], asset["sha256"], row['bundle_hash'])
     elif audio_id.startswith("headphones_"):
+        if not session_screening_enabled(row):
+            raise HTTPException(403, 'Headphone screening is not part of this session')
         asset = next((s for s in bundle["headphones"] if s["screen_id"] == audio_id), None)
         if asset is None:
             raise HTTPException(404, "Audio not found")
@@ -388,9 +396,10 @@ def previous(session_id: str, body: PreviousRequest, authorization: str = Header
 
 @router.post("/sessions/{session_id}/volume")
 def volume(session_id: str, body: Played, authorization: str = Header(default="")):
-    context(session_id, authorization)
+    row, _ = context(session_id, authorization)
+    next_phase = 'headphones' if session_screening_enabled(row) else 'rating'
     with get_connection() as db:
-        changed = db.execute("UPDATE c4_sessions SET phase='headphones' WHERE session_id=? AND phase='volume'", (session_id,)).rowcount
+        changed = db.execute("UPDATE c4_sessions SET phase=? WHERE session_id=? AND phase='volume'", (next_phase, session_id)).rowcount
     if not changed:
         raise HTTPException(409, "Volume step is no longer current")
     return {"saved": True}
