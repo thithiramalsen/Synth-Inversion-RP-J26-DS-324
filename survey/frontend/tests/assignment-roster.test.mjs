@@ -29,5 +29,12 @@ test('private name exports quote Unicode and prevent spreadsheet formula executi
   assert.ok(csv.includes('"\'=SOME_FORMULA()"'))
   const invitations = invitationCsv([{ assignment_id: 'slot', invitation: 'SafeCode', participant_name: '=FORMULA()' }], 'C4')
   assert.ok(invitations.includes('"\'=FORMULA()","C4","slot","SafeCode"'))
-  assert.doesNotMatch(csv, /invitation_code|session_id|token/)
+  assert.doesNotMatch(csv, /session_id|token/)
+})
+
+test('assignment download carries only the current visible code with its saved name', () => {
+  const csv = assignmentRosterCsv([{ ...rows[0], invitation: 'Current_Code-01', invitation_version: 'PRIVATE_HASH', encrypted_code: 'PRIVATE_CIPHERTEXT' }], 'C1')
+  assert.match(csv, /"invitation_code"/)
+  assert.match(csv, /"Demo Pianist","C1","c1_participant_01","Current_Code-01"/)
+  assert.doesNotMatch(csv, /PRIVATE_HASH|PRIVATE_CIPHERTEXT/)
 })

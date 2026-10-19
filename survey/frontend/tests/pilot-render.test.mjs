@@ -10,6 +10,7 @@ const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
 let C1StudyNotice
 let AssignmentNameRow
+let AssignmentInvitationControls
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
@@ -22,7 +23,7 @@ before(async () => {
   ExperienceQuestions = (await server.ssrLoadModule('/src/ExperienceQuestions.jsx')).default
   PreviousNavigation = (await server.ssrLoadModule('/src/PreviousNavigation.jsx')).default
   ResponseTable = (await server.ssrLoadModule('/src/ResponseViewer.jsx')).ResponseTable
-  AssignmentNameRow = (await server.ssrLoadModule('/src/AssignmentRoster.jsx')).AssignmentNameRow
+  ;({ AssignmentNameRow, AssignmentInvitationControls } = await server.ssrLoadModule('/src/AssignmentRoster.jsx'))
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
   C4App = c4.default; C4Admin = c4.C4Admin; ComparisonPlayer = c4.ComparisonPlayer
   C4BulkInvitationDownload = c4.C4BulkInvitationDownload
@@ -138,6 +139,22 @@ test('assignment rows identify the listener and researcher without showing acces
   assert.match(html, /In progress/)
   assert.match(html, /9<!-- --> saved/)
   assert.doesNotMatch(html, /invitation_code|token_hash/)
+})
+
+test('assignment code controls display current codes, explain legacy codes and lock completed slots', () => {
+  const available = { assignment_id: 'c1_participant_01', invitation: 'Current_Code-01', invitation_version: 'a-hash', invitation_status: 'available', can_replace_invitation: true }
+  const html = renderToString(React.createElement(AssignmentInvitationControls, { row: available, busy: false, onChange() {} }))
+  assert.match(html, /value="Current_Code-01"/)
+  assert.match(html, /Copy code/)
+  assert.match(html, /Replace code/)
+  const legacy = renderToString(React.createElement(AssignmentInvitationControls, { row: { ...available, invitation: null, invitation_status: 'legacy_unavailable' }, onChange() {} }))
+  assert.match(legacy, /stored as a hash/)
+  assert.match(legacy, /Replace code/)
+  const completed = renderToString(React.createElement(AssignmentInvitationControls, { row: { ...available, can_replace_invitation: false }, onChange() {} }))
+  assert.match(completed, /replacement locked/)
+  assert.doesNotMatch(completed, /<button[^>]*>Replace code/)
+  const missing = renderToString(React.createElement(AssignmentInvitationControls, { row: { assignment_id: 'slot', invitation_version: null }, onChange() {} }))
+  assert.match(missing, /Create code/)
 })
 
 test('invitation download controls offer a fillable CSV and JSON backup', () => {

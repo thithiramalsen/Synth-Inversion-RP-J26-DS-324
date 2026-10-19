@@ -202,6 +202,115 @@ class AssignmentRosterTests(unittest.TestCase):
                 stored = db.execute(f"SELECT * FROM {component}_sessions").fetchall()
             self.assertNotIn(private_name, str([dict(row) for row in stored]))
 
+    def change_code(self, component, roster, record=None, **changes):
+        row = record or roster['assignments'][0]
+        body = dict(bundle_hash=roster['bundle_hash'], assignment_id=row['assignment_id'],
+                    expected_version=row['version'], expected_invitation=row['invitation_version'],
+                    reason='Recruiter needs to send a fresh invitation code', confirm_session_close=False)
+        body.update(changes)
+        return self.client.post(f'/api/{component}-pilot/admin/assignment-invitation', headers=self.admin, json=body)
+
+    def start_code(self, component, code):
+        return self.client.post(f'/api/{component}-pilot/sessions', json={
+            'invitation': code, 'adult': True, 'consent': True, 'headphones': True,
+            'quiet_environment': True, 'understands_language': True, 'activities': ['Sound design'],
+            'experience_months': 12, 'recent_frequency': 'Weekly', 'tools': 'Test synthesizer',
+            'example': 'I made synthesizer sounds for a music production.',
+        })
+
+    def test_current_codes_are_recoverable_only_in_admin_roster_and_encrypted_in_storage(self):
+        for component in ('c1', 'c4'):
+            prefix = f'/api/{component}-pilot'
+            issued = self.client.post(prefix+'/admin/invitations', headers=self.admin).json()['invitations']
+            code = issued[0]['invitation']
+            row = self.roster(component)['assignments'][0]
+            self.assertEqual(row['invitation'], code)
+            self.assertEqual(row['invitation_status'], 'available')
+            assignment_roster.initialize_roster_database()
+            self.assertEqual(self.roster(component)['assignments'][0]['invitation'], code)
+            with database.get_connection() as db:
+                encrypted = db.execute('SELECT encrypted_code FROM invitation_code_vault WHERE component=? AND invite_hash=?',
+                                       (component, security.token_hash(code))).fetchone()[0]
+            self.assertNotIn(code, encrypted)
+            for suffix in ('/admin/summary', '/admin/export', '/admin/sessions', '/admin/responses', '/status'):
+                self.assertNotIn(code, self.client.get(prefix+suffix, headers=self.admin).text)
+            started = self.start_code(component, code)
+            self.assertEqual(started.status_code, 200, started.text)
+            self.assertNotIn(code, started.text)
+
+    def test_inline_code_creation_and_replacement_reject_stale_recruiters(self):
+        for component in ('c1', 'c4'):
+            initial = self.roster(component)
+            self.assertEqual(self.save(component, initial, 'Assigned listener').status_code, 200)
+            current = self.roster(component)
+            created = self.change_code(component, current)
+            self.assertEqual(created.status_code, 200, created.text)
+            self.assertEqual(created.headers['cache-control'], 'private, no-store')
+            first = created.json()['assignment']
+            self.assertEqual(first['participant_name'], 'Assigned listener')
+            self.assertEqual(self.change_code(component, current).status_code, 409)
+            replaced = self.change_code(component, current, first)
+            self.assertEqual(replaced.status_code, 200, replaced.text)
+            second = replaced.json()['assignment']
+            self.assertNotEqual(first['invitation'], second['invitation'])
+            self.assertEqual(second['participant_name'], 'Assigned listener')
+            self.assertEqual(self.roster(component)['assignments'][0]['invitation'], second['invitation'])
+            self.assertEqual(self.change_code(component, current, first).status_code, 409)
+            self.assertEqual(self.start_code(component, first['invitation']).status_code, 403)
+            self.assertEqual(self.start_code(component, second['invitation']).status_code, 200)
+            self.assertEqual(self.change_code(component, current, second, bundle_hash='stale-bundle').status_code, 409)
+            self.assertEqual(self.change_code(component, current, second, expected_version=0).status_code, 409)
+
+    def test_inline_replacement_requires_confirmation_for_started_sessions_and_protects_completion(self):
+        for component in ('c1', 'c4'):
+            initial = self.roster(component)
+            created = self.change_code(component, initial).json()['assignment']
+            started = self.start_code(component, created['invitation'])
+            self.assertEqual(started.status_code, 200, started.text)
+            session_id = started.json()['session_id']
+            self.assertEqual(self.change_code(component, initial, created).status_code, 409)
+            replaced = self.change_code(component, initial, created, confirm_session_close=True)
+            self.assertEqual(replaced.status_code, 200, replaced.text)
+            with database.get_connection() as db:
+                preserved = db.execute(f'SELECT phase,feedback_json FROM {component}_sessions WHERE session_id=?', (session_id,)).fetchone()
+            self.assertEqual(preserved['phase'], 'replaced')
+            self.assertIn('fresh invitation code', preserved['feedback_json'])
+            new_row = replaced.json()['assignment']
+            new_session = self.start_code(component, new_row['invitation']).json()['session_id']
+            with database.get_connection() as db:
+                db.execute(f"UPDATE {component}_sessions SET phase='complete',completed_at='test-completed' WHERE session_id=?", (new_session,))
+            self.assertEqual(self.roster(component)['assignments'][0]['can_replace_invitation'], False)
+            self.assertEqual(self.change_code(component, initial, new_row, confirm_session_close=True).status_code, 409)
+
+    def test_old_hash_only_codes_are_labelled_without_being_invalidated(self):
+        for component in ('c1', 'c4'):
+            initial = self.roster(component)
+            row = self.change_code(component, initial).json()['assignment']
+            with database.get_connection() as db:
+                db.execute('DELETE FROM invitation_code_vault WHERE component=? AND invite_hash=?', (component, row['invitation_version']))
+            legacy = self.roster(component)['assignments'][0]
+            self.assertIsNone(legacy['invitation'])
+            self.assertEqual(legacy['invitation_status'], 'legacy_unavailable')
+            self.assertEqual(self.start_code(component, row['invitation']).status_code, 200)
+
+    def test_ciphertext_and_key_changes_never_return_a_wrong_code(self):
+        from invitation_codes import recover_code
+        initial = self.roster('c1')
+        row = self.change_code('c1', initial).json()['assignment']
+        with database.get_connection() as db:
+            encrypted = db.execute('SELECT encrypted_code FROM invitation_code_vault WHERE component=? AND invite_hash=?', ('c1', row['invitation_version'])).fetchone()[0]
+        self.assertEqual(recover_code('c4', row['invitation_version'], encrypted), (None, 'unreadable'))
+        self.assertEqual(recover_code('c1', 'wrong-hash', encrypted), (None, 'unreadable'))
+        self.assertEqual(recover_code('c1', row['invitation_version'], encrypted[:-4]+'AAAA'), (None, 'unreadable'))
+        with patch.dict(os.environ, SURVEY_INVITATION_SECRET='different-test-key-at-least-32-characters-long'):
+            self.assertEqual(recover_code('c1', row['invitation_version'], encrypted), (None, 'unreadable'))
+
+    def test_inline_invitation_endpoint_requires_researcher_authentication(self):
+        row = self.roster('c1')['assignments'][0]
+        response = self.client.post('/api/c1-pilot/admin/assignment-invitation', json=dict(bundle_hash='test', assignment_id=row['assignment_id'],
+            expected_version=0, expected_invitation=None, reason='Attempted without researcher authentication'))
+        self.assertEqual(response.status_code, 401)
+
 
 if __name__ == "__main__":
     unittest.main()

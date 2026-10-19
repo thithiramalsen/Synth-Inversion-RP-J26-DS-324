@@ -20,8 +20,8 @@ export function spreadsheetText(value) {
 export function assignmentRosterCsv(rows, study) {
   const cell = value => `"${String(value ?? '').replaceAll('"', '""')}"`
   return '\uFEFF' + [
-    ['participant_name', 'study', 'assignment_id', 'session_status', 'listener', 'updated_by', 'updated_at'],
-    ...rows.map(row => [spreadsheetText(row.participant_name), study, row.assignment_id, assignmentStatus[row.status] || row.status,
+    ['participant_name', 'study', 'assignment_id', 'invitation_code', 'session_status', 'listener', 'updated_by', 'updated_at'],
+    ...rows.map(row => [spreadsheetText(row.participant_name), study, row.assignment_id, row.invitation || '', assignmentStatus[row.status] || row.status,
       row.participant_label || '', spreadsheetText(row.updated_by), row.updated_at || '']),
   ].map(row => row.map(cell).join(',')).join('\r\n') + '\r\n'
 }
