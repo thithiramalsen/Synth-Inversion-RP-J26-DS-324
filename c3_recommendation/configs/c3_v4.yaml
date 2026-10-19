@@ -1,0 +1,71 @@
+# C3 v4 configuration - single source of paths, seeds and hyper-parameters.
+# Paths are relative to the repository root. Values were filled from the Phase 0
+# inspection (see c3_recommendation/docs/DATA_CONTRACT.md).
+
+run_name: c3_v4
+seed: 20261014
+
+paths:
+  reference_dir: reference
+  corpus_dir: data/raw/corpus_v4
+  dataset_config_json: reference/restricted_bend_sustain_v4_config.json
+  outputs_dir: c3_recommendation/outputs/v4
+
+data:
+  source: corpus_v4                             # reference | corpus_v4   (switched after Phase 5 gate passed, D-009)
+  id_column: sample_id
+  index_column: sample_index                    # integer 0..131071; use for ordering, not the string ID
+  parameter_columns:                            # schema order from parameter_order in the dataset config
+    - wave_frame
+    - bend_amount
+    - filter_cutoff
+    - filter_resonance
+    - filter_drive
+    - amp_attack
+    - amp_decay
+    - amp_sustain
+    - amp_release
+    - filter_env_amount
+    - filter_env_attack
+    - filter_env_decay
+    - filter_env_sustain
+  normalized_column_suffix: _normalized         # Vital normalized slider value, inside [min, max] of the config
+  unit_rule: vital_normalized_minmax            # unit = (normalized - min) / (max - min); see DECISIONS D-002
+  categorical_columns: []                       # all 13 controls are continuous
+  group_column: null                            # no family/anchor/perturbation columns exist
+
+splits:
+  val_fraction: 0.10
+  test_fraction: 0.10
+  n_val_targets_eval: 500
+  n_test_targets_eval: 1000
+  stratify_by: null
+
+param_distance:
+  method: auto                                  # auto -> euclid_sqrt_d if all continuous, else gower
+  weights: null
+
+relevance:
+  representation: mfcc26                        # mfcc26 | logmel_stats | clap | c4 (later)
+  similarity: cosine
+  standardize_with: bank
+
+retrieval:
+  pool_sizes: [50, 100]
+
+selection:
+  k_values: [5, 3]
+  lambda_grid: [1.00, 0.95, 0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.50, 0.40]
+  relevance_scaling: none                       # none | pool_minmax  (ablation only)
+  random_baseline_draws: 200
+
+near_duplicate:
+  epsilon_grid: [0.05, 0.097, 0.1, 0.1074, 0.1121, 0.1203, 0.15]   # proposed in Phase 3 (D-011); finalised on validation in Phase 7
+
+stats:
+  bootstrap_resamples: 10000
+  alpha: 0.05
+  multiple_comparison: holm
+
+final_test:
+  enabled: false                                # only the user flips this, after PREREGISTRATION.md
