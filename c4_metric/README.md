@@ -34,3 +34,11 @@ python c4_metric/mfcc_baseline.py path/to/c4_triplets_responses.csv
 ```
 
 This reports how often the simple MFCC-distance baseline agrees with the internal human choices. Later work can compare MFCC against stronger metrics such as CLAP, CDPAM, STFT-based distances, and the learned triplet metric.
+
+## CLAP rehearsal data from the current full corpus
+
+The separate [synthetic data guide](synthetic_data/README.md) documents a seeded
+sample from the 131,072-render corpus, CLAP-selected real sound triplets, and
+simulated responses for software rehearsal. Those response rows are synthetic;
+they are not survey submissions or research results. This does not replace or
+change the ten-triplet internal instrument above.

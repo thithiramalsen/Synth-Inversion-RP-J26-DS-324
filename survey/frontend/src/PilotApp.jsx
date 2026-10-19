@@ -3,6 +3,7 @@ import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
 import PreviousNavigation from './PreviousNavigation'
+import ResponseViewer from './ResponseViewer'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
@@ -96,10 +97,10 @@ function Scale({ descriptor, value, onChange }) {
     <legend>{descriptor.label}</legend><p>{descriptor.definition}</p>
     <div className="p-ratings" role="radiogroup" aria-label={descriptor.label}>
       {[1, 2, 3, 4, 5, 6, 7].map(n => <button key={n} type="button" role="radio" aria-checked={value === n}
-        className={value === n ? 'selected' : ''} onClick={() => onChange(n)} aria-label={`${descriptor.label}: ${n}`}>{n}</button>)}
+        className={value === n ? 'selected' : ''} onClick={() => onChange(n)} aria-label={`${descriptor.label}: ${n}${n === 1 ? ' — Not at all' : n === 7 ? ' — Very' : ''}`}>{n}</button>)}
     </div>
-    <div className="p-anchors"><span>Not at all</span><span>Very</span></div>
-    <button type="button" className={`p-unclear ${value === 'unclear' ? 'selected' : ''}`} aria-pressed={value === 'unclear'} onClick={() => onChange('unclear')}>I cannot judge / the term is unclear</button>
+    <div className="p-anchors"><span><strong>1</strong> Not at all</span><span><strong>7</strong> Very</span></div>
+    <button type="button" className={`p-unclear ${value === 'unclear' ? 'selected' : ''}`} aria-pressed={value === 'unclear'} onClick={() => onChange('unclear')}><span className="p-choice-check" aria-hidden="true">{value === 'unclear' ? '✓' : ''}</span><span>I cannot judge / the term is unclear</span></button>
   </fieldset>
 }
 
@@ -312,6 +313,7 @@ export function PilotAdmin() {
     <SiteHeader current="c1-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
     <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    <ResponseViewer study="C1" apiBase={`${API}/api/c1-pilot`} onError={setError} />
     <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
       <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
       {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}

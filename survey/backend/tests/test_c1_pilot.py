@@ -385,6 +385,53 @@ class C1PilotTests(unittest.TestCase):
         self.assertEqual(saved['tools'], 'Piano / keyboard; Singing / vocals; Harmonica')
         self.assertEqual(saved['example'], 'Practised or performed a song on an instrument')
 
+    def test_admin_response_viewer_is_private_paginated_and_shows_corrected_scores(self):
+        endpoint = '/api/c1-pilot/admin/responses'
+        self.assertEqual(self.client.get(endpoint).status_code, 401)
+        self.start(); self.setup_audio()
+        self.assertEqual(self.client.get(endpoint, headers=self.headers).status_code, 401)
+        first = self.state()
+        self.client.post(f"{self.base}/playback/{first['presentation_id']}", headers=self.headers)
+        self.client.post(self.base+'/ratings', headers=self.headers, json=self.rating_body(first))
+        self.client.post(self.base+'/previous', headers=self.headers, json={'current_index': self.state()['current_index']})
+        correction = self.state()
+        revised = self.rating_body(correction)
+        revised.update(correction_token=correction['correction_token'], play_count=0, completed_plays=0)
+        revised['answers'].update(brightness=7, comment='PRIVATE_COMMENT_NAME@example.invalid')
+        self.assertEqual(self.client.post(self.base+'/previous/save', headers=self.headers, json=revised).status_code, 200)
+        with database.get_connection() as db:
+            db.execute('UPDATE c1_sessions SET entry_json=?,feedback_json=? WHERE session_id=?',
+                       (json.dumps({'tools':'PRIVATE_ENTRY_NAME'}), json.dumps({'comment':'PRIVATE_FEEDBACK_NAME'}), self.session['session_id']))
+        response = self.client.get(endpoint+'?limit=1', headers=self.admin)
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.headers['cache-control'], 'private, no-store')
+        page = response.json(); row = page['responses'][0]
+        self.assertEqual(page['total'], 1)
+        self.assertEqual(row['participant_label'], 'Listener 001')
+        self.assertEqual(row['ratings']['brightness'], 7)
+        self.assertEqual(row['first_ratings']['brightness'], 4)
+        self.assertEqual(row['ratings']['roughness'], 'unclear')
+        self.assertEqual(row['revision_count'], 1)
+        self.assertFalse(row['analysis_include'])  # Practice is always excluded.
+        forbidden = ('PRIVATE_', 'session_id', 'participant_id', 'entry_json', 'feedback_json', 'comment', 'token',
+                     'screen_answers', 'protocol_snapshot', 'invite', self.session['session_id'], self.session['token'])
+        for value in forbidden:
+            self.assertNotIn(value, response.text)
+        for query in ('offset=1', 'kind=primary', 'phase=complete', 'listener_number=999'):
+            filtered = self.client.get(endpoint+'?'+query, headers=self.admin).json()
+            self.assertEqual(filtered['responses'], [], query)
+        self.assertEqual(self.client.get(endpoint+'?phase=in_progress&kind=practice&listener_number=1', headers=self.admin).json()['total'], 1)
+        for query in ('limit=101', 'offset=-1', 'listener_number=0', 'phase=unknown', 'kind=unknown'):
+            self.assertEqual(self.client.get(endpoint+'?'+query, headers=self.admin).status_code, 422)
+        # Cookie-authenticated researchers get the same access as existing admin tools.
+        self.client.post('/api/researcher/login', json={'username':'researcher', 'password':'researcher-password'})
+        self.assertEqual(self.client.get(endpoint).status_code, 200)
+        self.client.post('/api/researcher/logout')
+        self.assertEqual(self.client.get(endpoint).status_code, 401)
+        # The browser view is scoped to the current bundle, not archived study data.
+        self.bundle_path.write_text(self.bundle_path.read_text()+' ')
+        self.assertEqual(self.client.get(endpoint, headers=self.admin).json()['total'], 0)
+
     def test_replacement_preserves_data_and_closes_previous_session(self):
         self.start(); self.setup_audio()
         current = self.state()

@@ -11,12 +11,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Response
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from database import get_connection
 from experience import ExperienceEntry, experience_options
+from response_viewer import KindFilter, PhaseFilter, response_page
 from security import require_admin
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -670,6 +671,15 @@ def export():
         writer.writerow({k: safe_cell(row.get(k, "")) for k in columns})
     return StreamingResponse(iter([output.getvalue()]), media_type="text/csv",
                              headers={"Content-Disposition": 'attachment; filename="c1_pilot_responses.csv"'})
+
+
+@router.get('/admin/responses', dependencies=[Depends(require_admin)])
+def view_responses(response: Response, offset: int = Query(default=0, ge=0), limit: int = Query(default=25, ge=1, le=100),
+                   listener_number: int | None = Query(default=None, ge=1), phase: PhaseFilter = 'all', kind: KindFilter = 'all'):
+    bundle, checksum = load_bundle()
+    response.headers['Cache-Control'] = 'private, no-store'
+    return response_page('C1', checksum, offset=offset, limit=limit, listener_number=listener_number,
+                         phase=phase, kind=kind, rehearsal=bundle['rehearsal'])
 
 
 def safe_cell(value):

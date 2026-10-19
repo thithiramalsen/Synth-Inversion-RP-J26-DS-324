@@ -372,6 +372,47 @@ class C4PilotTests(unittest.TestCase):
         self.assertEqual(self.post('previous/cancel', {'correction_token': reopened['correction_token']}).status_code, 200)
         self.assertTrue(self.state()['can_correct_previous'])
 
+    def test_admin_response_viewer_omits_private_fields_and_tracks_corrections(self):
+        endpoint = '/api/c4-pilot/admin/responses'
+        self.assertEqual(self.client.get(endpoint).status_code, 401)
+        session = self.start(); self.setup_audio()
+        self.assertEqual(self.client.get(endpoint, headers=self.headers).status_code, 401)
+        first = self.state(); self.expose(first)
+        self.post('ratings', self.body(first))
+        self.post('previous', {'current_index':self.state()['current_index']})
+        correction = self.state()
+        revised = dict(self.body(correction, 'candidate_b'), correction_token=correction['correction_token'])
+        revised['answers']['comment'] = 'PRIVATE_COMMENT_NAME@example.invalid'
+        self.assertEqual(self.post('previous/save', revised).status_code, 200)
+        with database.get_connection() as db:
+            db.execute('UPDATE c4_sessions SET entry_json=?,feedback_json=? WHERE session_id=?',
+                       (json.dumps({'tools':'PRIVATE_ENTRY_NAME'}), json.dumps({'comment':'PRIVATE_FEEDBACK_NAME'}), session['session_id']))
+        response = self.client.get(endpoint+'?limit=1', headers=self.admin)
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.headers['cache-control'], 'private, no-store')
+        page = response.json(); row = page['responses'][0]
+        self.assertEqual(page['total'], 1)
+        self.assertEqual(row['participant_label'], 'Listener 001')
+        self.assertEqual(row['answer'], dict(choice='candidate_b', confidence=4))
+        self.assertEqual(row['first_answer'], dict(choice='candidate_a', confidence=4))
+        self.assertEqual(row['revision_count'], 1)
+        self.assertEqual(row['triplet_id'], self.bundle['assignments'][0]['trials'][0]['triplet_id'])
+        self.assertFalse(row['analysis_include'])
+        for value in ('PRIVATE_', 'session_id', 'participant_id', 'entry_json', 'feedback_json', 'comment', 'token',
+                      'screen_answers', 'protocol_snapshot', 'invite', session['session_id'], session['token']):
+            self.assertNotIn(value, response.text)
+        for query in ('offset=1', 'kind=repeat', 'phase=complete', 'listener_number=999'):
+            self.assertEqual(self.client.get(endpoint+'?'+query, headers=self.admin).json()['responses'], [], query)
+        self.assertEqual(self.client.get(endpoint+'?phase=in_progress&kind=practice&listener_number=1', headers=self.admin).json()['total'], 1)
+        for query in ('limit=101', 'offset=-1', 'listener_number=0', 'phase=unknown', 'kind=unknown'):
+            self.assertEqual(self.client.get(endpoint+'?'+query, headers=self.admin).status_code, 422)
+        self.assertEqual(self.post('withdraw', {}).status_code, 200)
+        withdrawn = self.client.get(endpoint+'?phase=withdrawn', headers=self.admin).json()
+        self.assertEqual(withdrawn['total'], 1)
+        self.assertFalse(withdrawn['responses'][0]['analysis_include'])
+        self.bundle_path.write_text(self.bundle_path.read_text()+' ')
+        self.assertEqual(self.client.get(endpoint, headers=self.admin).json()['total'], 0)
+
     def test_previous_locks_on_any_next_clip_and_rejects_invalid_corrections(self):
         self.start(); self.setup_audio()
         first = self.state(); self.expose(first)
