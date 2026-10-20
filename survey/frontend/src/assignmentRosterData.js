@@ -3,6 +3,17 @@ export const assignmentStatus = {
   withdrawn: 'Withdrawn', screen_failed: 'Headphone check failed', replaced: 'Replaced',
 }
 
+export function assignmentProgress(rows) {
+  const named = rows.filter(row => row.participant_name)
+  return {
+    named: named.length,
+    slots: rows.length,
+    completed: named.filter(row => row.status === 'completed').length,
+    pending: named.filter(row => ['missing', 'issued', 'in_progress'].includes(row.status)).length,
+    closed: named.filter(row => ['withdrawn', 'screen_failed', 'replaced'].includes(row.status)).length,
+  }
+}
+
 export function filterAssignments(rows, search, filter) {
   const term = search.trim().toLocaleLowerCase()
   return rows.filter(row => (!term || [row.assignment_id, row.participant_name, row.updated_by, row.participant_label]

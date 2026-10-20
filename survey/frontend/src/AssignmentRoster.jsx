@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { assignmentRosterCsv, assignmentStatus, filterAssignments } from './assignmentRosterData.js'
+import { assignmentProgress, assignmentRosterCsv, assignmentStatus, filterAssignments } from './assignmentRosterData.js'
 
 export function AssignmentInvitationControls({ row, busy, onChange }) {
   const [open, setOpen] = useState(false), [reason, setReason] = useState(''), [confirmed, setConfirmed] = useState(false)
@@ -145,6 +145,7 @@ export default function AssignmentRoster({ study, apiBase, busy = false, refresh
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
   const rows = filterAssignments(data?.assignments || [], search, filter)
+  const progress = assignmentProgress(data?.assignments || [])
   const currentPage = Math.min(page, Math.max(0, Math.ceil(rows.length / 20) - 1))
   return <section className="p-card p-assignment-roster" aria-label={`${study} shared assignment list`}>
     <h2>Assign participants together</h2>
@@ -157,7 +158,8 @@ export default function AssignmentRoster({ study, apiBase, busy = false, refresh
     {data && <>
       <div className="p-roster-filters"><label>Find a participant or assignment<input type="search" value={search} onChange={event => { setSearch(event.target.value); setPage(0) }} placeholder="Name, assignment or researcher" /></label>
         <label>Show<select value={filter} onChange={event => { setFilter(event.target.value); setPage(0) }}><option value="all">All slots</option><option value="unassigned">Unassigned · not started</option><option value="assigned">Names assigned</option><option value="started">Sessions started</option></select></label></div>
-      <p className="p-muted">{data.assignments.filter(row => row.participant_name).length} named assignments · {data.assignments.length} slots. Assigned slots are skipped when replacing unused codes in bulk.</p>
+      <p className="p-muted">{progress.named} named assignments · {progress.slots} slots. Assigned slots are skipped when replacing unused codes in bulk.</p>
+      <p className="p-muted">Named assignments: <strong>{progress.completed} completed · {progress.pending} pending</strong>{progress.closed > 0 && <> · {progress.closed} closed without completion</>}. Pending includes participants who have not started or are still in progress.</p>
       <div className="p-table"><table><caption>{study} shared participant assignments</caption><thead><tr><th>Assignment / listener</th><th>Participant name or nickname</th><th>Status</th><th>Name updated by</th></tr></thead><tbody>
         {rows.slice(currentPage * 20, currentPage * 20 + 20).map(row => <AssignmentNameRow key={`${data.bundle_hash}:${row.assignment_id}`} row={row} busy={busy || saving} onSave={save} onInvitationChange={changeInvitation} />)}
       </tbody></table></div>
