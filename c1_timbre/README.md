@@ -1,5 +1,11 @@
 # C1 - Timbre descriptors and parameter influence
 
+For the complete component definition, recommended research method and engineering
+with dummy ratings while approval is pending, read
+[the 14 October research and engineering plan](C1_RESEARCH_AND_ENGINEERING_PLAN.md).
+The full 131,072-sound v4 corpus is now generated and verified; it contains synth
+parameter labels, while human descriptor labels remain a separate study dataset.
+
 For transfer to the C1 component owner, use the
 [teammate handoff](C1_TEAMMATE_HANDOFF.md): prepared stimuli/survey, data locations,
 the known feature-precision issue, ownership and post-collection analysis steps.

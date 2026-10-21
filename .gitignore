@@ -1,6 +1,8 @@
 # Survey local/runtime files
 survey/frontend/node_modules/
 survey/frontend/dist/
+# Local materialization of the already tracked CLAP playback assets; Docker copies the originals.
+survey/deploy/study/clap_audio/
 survey/backend/*.db
 survey/backend/__pycache__/
 survey/backend/.venv/
@@ -8,6 +10,7 @@ survey/.env
 # Virtual environments
 venv/
 .venv/
+.venv-c2/
 venv-vita/
 
 # Python cache
@@ -35,6 +38,9 @@ data/manifests/*.parquet
 generation/test_renders/
 generation/*.wav
 
+# C3 v4 generated outputs (feature caches, per-target results, inspection dumps)
+c3_recommendation/outputs/v4/
+
 # Temporary files
 *.tmp
 *.log
@@ -48,3 +54,17 @@ generation/presets/base_basic_shapes_RP.vital
 generation/presets/base_restricted_v2.vital
 generation/presets/base_restricted_bend_v3.vital
 generation/presets/base_restricted_bend_sustain_v4.vital
+
+# Private reference files installed by the teammate reproduction setup
+reference/clone_integrity.json
+reference/restricted_bend_sustain_v4_config.json
+reference/parameters_normalized.parquet
+reference/parameters_full.parquet
+reference/full_waveform_reference.json
+reference/reference_recipe.json
+reference/reference_summary.json
+reference/corpus_verification.json
+
+# Generated ethics submission documents and working files
+/output/ethics/
+/tmp/ethics_pack_2026_10_15/

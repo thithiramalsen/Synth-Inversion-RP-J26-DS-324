@@ -1,5 +1,14 @@
 # Vital generation configurations
 
+For teammate reproduction and parameter-only experimentation with the completed
+131,072-sound corpus, see [the teammate handoff](TEAM_DATASET_HANDOFF.md).
+For a fresh Git clone, follow [the clone quickstart](TEAM_CLONE_QUICKSTART.md),
+which includes a safe setup command and direct full-corpus generation.
+
+For the full **131,072-sound v4 corpus**, use
+[the full-dataset runbook](FULL_DATASET_RUNBOOK.md). It includes storage preflight,
+preserving the current 1,024, teammate reproduction and full-waveform comparison.
+
 ## Current selection: 13 controls, Bend plus filter-envelope sustain
 
 On 7 October 2026 the researcher chose to keep **both Bend and variable

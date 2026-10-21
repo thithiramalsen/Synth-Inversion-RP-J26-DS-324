@@ -1,5 +1,6 @@
 {
-  "protocol_version": "c1_pilot_2026-10-09_20unique_v1",
+  "protocol_version": "c1_pilot_2026-10-19_20unique_tags_v2",
+  "experience_entry_format": "experience_tags_v1",
   "title": "How would you describe this sound?",
   "description": "A listening study about the character of short synthesizer sounds.",
   "target_participants": 16,
@@ -35,8 +36,8 @@
   },
   "information_version": "c1_information_2026-10-09_20unique_v1",
   "experience_question": {
-    "label": "Give one example of making music, performing, singing or shaping a sound yourself.",
-    "help": "One short sentence is enough. Say what you did and which instrument, vocal activity or music tool you used. Personal practice counts; it does not need to be released or professional work.",
+    "label": "Which of these have you done yourself?",
+    "help": "Select one or more examples you have actually done. Personal practice counts; it does not need to be released or professional work. Extra details are optional.",
     "placeholder": "For example: I practised a song on piano and varied the touch to shape its tone."
   },
   "resume_instructions": "You may close this tab and return to the same study link using the same browser profile on the same device while the study is open. Avoid private/incognito mode and do not clear this site's data. Your invitation starts one session; it cannot restore a session in a different browser. Each saved response is kept; an unfinished answer may need to be entered again.",
