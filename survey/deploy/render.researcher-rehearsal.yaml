@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: synth-c1-researcher-rehearsal
+    runtime: docker
+    plan: free
+    branch: c1-pilot-deployment
+    region: singapore
+    dockerfilePath: ./survey/deploy/Dockerfile
+    dockerContext: .
+    dockerCommand: python survey/backend/c1_researcher_rehearsal.py --postgres --host 0.0.0.0
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: SURVEY_REHEARSAL_DATABASE_URL
+        sync: false
+      - key: SURVEY_REHEARSAL_ADMIN_TOKEN
+        generateValue: true
+      - key: SURVEY_RESEARCHER_USERNAME
+        value: researcher
+      - key: SURVEY_RESEARCHER_PASSWORD_HASH
+        sync: false
+      - key: SURVEY_DATABASE_URL
+        value: ""
+      - key: SURVEY_REMOTE_MODE
+        value: "1"
