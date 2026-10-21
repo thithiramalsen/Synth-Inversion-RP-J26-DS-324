@@ -1,0 +1,198 @@
+{
+  "n_sounds": 128,
+  "n_participants": 30,
+  "n_anchors": 16,
+  "hidden_repeats": 2,
+  "wording_review_recommended": true,
+  "descriptor_status": {
+    "brightness": {
+      "action": "retain_unchanged",
+      "flags": []
+    },
+    "roughness": {
+      "action": "retain_unchanged",
+      "flags": []
+    },
+    "percussiveness": {
+      "action": "retain_unchanged",
+      "flags": []
+    },
+    "sustainedness": {
+      "action": "retain_unchanged",
+      "flags": []
+    }
+  },
+  "redundant_pairs": [],
+  "session_options": [
+    {
+      "unique_per_person": 20,
+      "min_listeners": 4,
+      "predicted_median_min": 21.5,
+      "feasible": false
+    },
+    {
+      "unique_per_person": 21,
+      "min_listeners": 4,
+      "predicted_median_min": 22.2,
+      "feasible": false
+    },
+    {
+      "unique_per_person": 22,
+      "min_listeners": 5,
+      "predicted_median_min": 22.9,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 23,
+      "min_listeners": 5,
+      "predicted_median_min": 23.5,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 24,
+      "min_listeners": 5,
+      "predicted_median_min": 24.2,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 25,
+      "min_listeners": 5,
+      "predicted_median_min": 24.9,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 26,
+      "min_listeners": 6,
+      "predicted_median_min": 25.6,
+      "feasible": false
+    },
+    {
+      "unique_per_person": 27,
+      "min_listeners": 6,
+      "predicted_median_min": 26.2,
+      "feasible": false
+    },
+    {
+      "unique_per_person": 28,
+      "min_listeners": 6,
+      "predicted_median_min": 26.9,
+      "feasible": false
+    },
+    {
+      "unique_per_person": 29,
+      "min_listeners": 6,
+      "predicted_median_min": 27.6,
+      "feasible": false
+    },
+    {
+      "unique_per_person": 30,
+      "min_listeners": 7,
+      "predicted_median_min": 28.3,
+      "feasible": false
+    }
+  ],
+  "unique_per_person": 22,
+  "min_listeners_per_sound": 5,
+  "total_primary_ratings": 660,
+  "sounds_with_extra_listener": 20,
+  "predicted_median_session_min": 22.9,
+  "break_after_rated": 12,
+  "presentations_per_person": 27,
+  "expected_reliability_of_sound_means": {
+    "brightness": {
+      "icc1": 0.5053516292359538,
+      "at_min_listeners": 0.8362853962252029,
+      "listeners_for_target": 4
+    },
+    "roughness": {
+      "icc1": 0.38098474465438803,
+      "at_min_listeners": 0.7547423845862281,
+      "listeners_for_target": 7
+    },
+    "percussiveness": {
+      "icc1": 0.587533635459036,
+      "at_min_listeners": 0.8768806567646388,
+      "listeners_for_target": 3
+    },
+    "sustainedness": {
+      "icc1": 0.616821997315339,
+      "at_min_listeners": 0.8894876907048352,
+      "listeners_for_target": 3
+    }
+  },
+  "spare_blocks": 5,
+  "assignment_capacity": 35,
+  "pilot_label_source": [
+    "simulated"
+  ],
+  "status": "DRY RUN from simulated pilot - not a frozen stimulus set",
+  "prefix_coverage": {
+    "26": {
+      "4": 68,
+      "5": 60
+    },
+    "30": {
+      "5": 108,
+      "6": 20
+    },
+    "35": {
+      "6": 126,
+      "7": 2
+    }
+  },
+  "anchor_and_practice_playback_identical_to_pilot": "19/19",
+  "bundle": "data/processed/c1_main_v1_simpilot_dryrun/bundle.json",
+  "version": "c1_main_v1_simpilot_dryrun",
+  "created_utc": "2026-10-14T08:43:31Z",
+  "seed": 20261014,
+  "feature_version": "c1_features_v2",
+  "weak_support_threshold": 1.1557918125895654,
+  "rules": {
+    "MAX_MEDIAN_SESSION_MIN": 25.0,
+    "TERMS_UNCLEAR_FEEDBACK_LIMIT": 0.3,
+    "MIN_LISTENERS": 5,
+    "TOO_LONG_FEEDBACK_LIMIT": 0.3,
+    "UNCLEAR_REVISE": 0.15,
+    "ICC_REVISE": 0.15,
+    "REDUNDANT_R": 0.85,
+    "LOW_SPREAD_IQR": 1.0,
+    "TARGET_RELIABILITY": 0.8,
+    "QUOTAS": {
+      "descriptor_quintile": 18,
+      "parameter_quartile": 24,
+      "env_depth_near_zero": 6,
+      "env_sustain_near_one": 6,
+      "weak_support": 16
+    },
+    "WEAK_SUPPORT_QUANTILE": 0.95,
+    "WEAK_SUPPORT_BONUS": 0.0
+  },
+  "corpus_exclusions": {
+    "eligible": 130854,
+    "level_incompatible_with_pilot_target": 151,
+    "pilot_stimulus": 67
+  },
+  "eligible_candidates": 130854,
+  "selected_anchor_pilot_ids": [
+    "sound_044",
+    "sound_014",
+    "sound_009",
+    "sound_042",
+    "sound_036",
+    "sound_049",
+    "sound_046",
+    "sound_015",
+    "sound_045",
+    "sound_025",
+    "sound_054",
+    "sound_058",
+    "sound_005",
+    "sound_027",
+    "sound_002",
+    "sound_020"
+  ],
+  "selected_weak_support": 19,
+  "log": [
+    "quota-aware greedy: 0 forced picks; unmet constraints: none"
+  ]
+}

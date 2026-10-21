@@ -1,0 +1,909 @@
+{
+  "snapshot_date": "2026-10-15",
+  "guides": {
+    "COMPONENT_STUDY_GUIDE": {
+      "pages": 29,
+      "link_annotations": 150,
+      "bookmarks_present": true,
+      "text_within_page_bounds": true,
+      "navigation_comments_or_missing_glyph_markers": false,
+      "sha256": "f84ac56f36eeba5a4bb43af46ce50455a3d3eb08eb1843e9d285399328b01835",
+      "source": "c2_estimation/COMPONENT_STUDY_GUIDE.md",
+      "source_sha256": "4bd77988be4ba704acebcbd401751d444b7a224481398e374eb0cf0a6fd235ae",
+      "sections": [
+        {
+          "title": "Understanding C2: from generated audio to parameter reliability",
+          "anchor": "understanding-c2-from-generated-audio-to-parameter-reliability",
+          "page": 1
+        },
+        {
+          "title": "Contents",
+          "anchor": "contents",
+          "page": 1
+        },
+        {
+          "title": "Part 1. Research overview",
+          "anchor": "part-1-research-overview",
+          "page": 2
+        },
+        {
+          "title": "1. What is my component trying to answer?",
+          "anchor": "1-what-is-my-component-trying-to-answer",
+          "page": 2
+        },
+        {
+          "title": "2. What has actually been completed?",
+          "anchor": "2-what-has-actually-been-completed",
+          "page": 3
+        },
+        {
+          "title": "Part 2. Dataset generation",
+          "anchor": "part-2-dataset-generation",
+          "page": 4
+        },
+        {
+          "title": "3. What exactly makes one sound?",
+          "anchor": "3-what-exactly-makes-one-sound",
+          "page": 4
+        },
+        {
+          "title": "The 13 parameters and their actual controls",
+          "anchor": "the-13-parameters-and-their-actual-controls",
+          "page": 4
+        },
+        {
+          "title": "4. How was the dataset generated and selected?",
+          "anchor": "4-how-was-the-dataset-generated-and-selected",
+          "page": 5
+        },
+        {
+          "title": "4.1 Choose parameter combinations with Sobol",
+          "anchor": "41-choose-parameter-combinations-with-sobol",
+          "page": 5
+        },
+        {
+          "title": "4.2 Set controls, then record what the engine actually accepted",
+          "anchor": "42-set-controls-then-record-what-the-engine-actually-accepted",
+          "page": 6
+        },
+        {
+          "title": "4.3 Render each complete patch",
+          "anchor": "43-render-each-complete-patch",
+          "page": 7
+        },
+        {
+          "title": "4.4 Check audio quality and integrity",
+          "anchor": "44-check-audio-quality-and-integrity",
+          "page": 7
+        },
+        {
+          "title": "Part 3. Preprocessing and data splits",
+          "anchor": "part-3-preprocessing-and-data-splits",
+          "page": 8
+        },
+        {
+          "title": "5. Why condition audio before extracting features?",
+          "anchor": "5-why-condition-audio-before-extracting-features",
+          "page": 8
+        },
+        {
+          "title": "6. What are n and z, and why rescale targets?",
+          "anchor": "6-what-are-n-and-z-and-why-rescale-targets",
+          "page": 9
+        },
+        {
+          "title": "7. How are clips separated without leakage?",
+          "anchor": "7-how-are-clips-separated-without-leakage",
+          "page": 9
+        },
+        {
+          "title": "8. How does audio become an input image?",
+          "anchor": "8-how-does-audio-become-an-input-image",
+          "page": 10
+        },
+        {
+          "title": "Part 4. Model training",
+          "anchor": "part-4-model-training",
+          "page": 12
+        },
+        {
+          "title": "9. How does the single CNN learn the settings?",
+          "anchor": "9-how-does-the-single-cnn-learn-the-settings",
+          "page": 12
+        },
+        {
+          "title": "10. Where does uncertainty U come from?",
+          "anchor": "10-where-does-uncertainty-u-come-from",
+          "page": 13
+        },
+        {
+          "title": "Part 5. Inference and forward diagnostics",
+          "anchor": "part-5-inference-and-forward-diagnostics",
+          "page": 14
+        },
+        {
+          "title": "11. How do we freeze predictions for the reliability experiment?",
+          "anchor": "11-how-do-we-freeze-predictions-for-the-reliability-experiment",
+          "page": 14
+        },
+        {
+          "title": "12. What is reconstruction residual R?",
+          "anchor": "12-what-is-reconstruction-residual-r",
+          "page": 15
+        },
+        {
+          "title": "13. How are perturbations made, and what is S?",
+          "anchor": "13-how-are-perturbations-made-and-what-is-s",
+          "page": 16
+        },
+        {
+          "title": "Why not perturb every corpus clip?",
+          "anchor": "why-not-perturb-every-corpus-clip",
+          "page": 16
+        },
+        {
+          "title": "14. Was the .02 perturbation choice checked?",
+          "anchor": "14-was-the-02-perturbation-choice-checked",
+          "page": 16
+        },
+        {
+          "title": "Part 6. Reliability calibration",
+          "anchor": "part-6-reliability-calibration",
+          "page": 17
+        },
+        {
+          "title": "15. How does U/S/R become a probability q?",
+          "anchor": "15-how-does-usr-become-a-probability-q",
+          "page": 17
+        },
+        {
+          "title": "Part 7. Evaluation and validation",
+          "anchor": "part-7-evaluation-and-validation",
+          "page": 18
+        },
+        {
+          "title": "16. How do we test the research hypothesis fairly?",
+          "anchor": "16-how-do-we-test-the-research-hypothesis-fairly",
+          "page": 18
+        },
+        {
+          "title": "Why paired bootstrap and why resample whole audio?",
+          "anchor": "why-paired-bootstrap-and-why-resample-whole-audio",
+          "page": 19
+        },
+        {
+          "title": "Part 8. Real example and saved evidence",
+          "anchor": "part-8-real-example-and-saved-evidence",
+          "page": 20
+        },
+        {
+          "title": "17. A complete real example",
+          "anchor": "17-a-complete-real-example",
+          "page": 20
+        },
+        {
+          "title": "18. What EDA and scientific checks were actually saved?",
+          "anchor": "18-what-eda-and-scientific-checks-were-actually-saved",
+          "page": 21
+        },
+        {
+          "title": "Part 9. Technology choices and justifications",
+          "anchor": "part-9-technology-choices-and-justifications",
+          "page": 23
+        },
+        {
+          "title": "19. Why these technologies and not something larger?",
+          "anchor": "19-why-these-technologies-and-not-something-larger",
+          "page": 23
+        },
+        {
+          "title": "Part 10. Revision and code reference",
+          "anchor": "part-10-revision-and-code-reference",
+          "page": 23
+        },
+        {
+          "title": "20. Questions you should be able to answer",
+          "anchor": "20-questions-you-should-be-able-to-answer",
+          "page": 23
+        },
+        {
+          "title": "21. One-minute explanation to practise",
+          "anchor": "21-one-minute-explanation-to-practise",
+          "page": 24
+        },
+        {
+          "title": "22. File map and validation pipeline",
+          "anchor": "22-file-map-and-validation-pipeline",
+          "page": 25
+        },
+        {
+          "title": "Do not confuse model weights, patches and audio",
+          "anchor": "do-not-confuse-model-weights-patches-and-audio",
+          "page": 27
+        },
+        {
+          "title": "Proposal alignment",
+          "anchor": "proposal-alignment",
+          "page": 27
+        },
+        {
+          "title": "23. Small dictionary for reading the code",
+          "anchor": "23-small-dictionary-for-reading-the-code",
+          "page": 28
+        }
+      ],
+      "rendered_pages": 29,
+      "contact_sheets": [
+        "tmp/pdfs/c2_guides/COMPONENT_STUDY_GUIDE/contact-01.jpg",
+        "tmp/pdfs/c2_guides/COMPONENT_STUDY_GUIDE/contact-02.jpg",
+        "tmp/pdfs/c2_guides/COMPONENT_STUDY_GUIDE/contact-03.jpg",
+        "tmp/pdfs/c2_guides/COMPONENT_STUDY_GUIDE/contact-04.jpg",
+        "tmp/pdfs/c2_guides/COMPONENT_STUDY_GUIDE/contact-05.jpg"
+      ]
+    },
+    "DEMONSTRATION_WALKTHROUGH": {
+      "pages": 8,
+      "link_annotations": 50,
+      "bookmarks_present": true,
+      "text_within_page_bounds": true,
+      "navigation_comments_or_missing_glyph_markers": false,
+      "sha256": "3f90c9996ed3dd0b0f193912c7f7f46fef99c4f854a209545d6015755528f0bb",
+      "source": "c2_estimation/DEMONSTRATION_WALKTHROUGH.md",
+      "source_sha256": "3744c8cf982c0d125378b7b289f768e6fe169bc88580ebe19057fc663d616f1c",
+      "sections": [
+        {
+          "title": "Showing and explaining the C2 results",
+          "anchor": "showing-and-explaining-the-c2-results",
+          "page": 1
+        },
+        {
+          "title": "Contents",
+          "anchor": "contents",
+          "page": 1
+        },
+        {
+          "title": "Browser route shortcuts",
+          "anchor": "browser-route-shortcuts",
+          "page": 1
+        },
+        {
+          "title": "Before starting",
+          "anchor": "before-starting",
+          "page": 2
+        },
+        {
+          "title": "Route A: use VS Code and its terminal",
+          "anchor": "route-a-use-vs-code-and-its-terminal",
+          "page": 2
+        },
+        {
+          "title": "Stop 1: Shared dataset generation",
+          "anchor": "stop-1-shared-dataset-generation",
+          "page": 2
+        },
+        {
+          "title": "1A. Configuration, sampling and rendering",
+          "anchor": "1a-configuration-sampling-and-rendering",
+          "page": 2
+        },
+        {
+          "title": "1B. Dataset integrity checks",
+          "anchor": "1b-dataset-integrity-checks",
+          "page": 2
+        },
+        {
+          "title": "1C. Inspect one generated record",
+          "anchor": "1c-inspect-one-generated-record",
+          "page": 3
+        },
+        {
+          "title": "Stop 2A: Audio conditioning with the shared utility",
+          "anchor": "stop-2a-audio-conditioning-with-the-shared-utility",
+          "page": 3
+        },
+        {
+          "title": "Stop 2B: C2 dataset splitting",
+          "anchor": "stop-2b-c2-dataset-splitting",
+          "page": 3
+        },
+        {
+          "title": "Recap of audio conditioning and C2 splitting",
+          "anchor": "recap-of-audio-conditioning-and-c2-splitting",
+          "page": 3
+        },
+        {
+          "title": "Stop 3: C2 feature preprocessing and normalization",
+          "anchor": "stop-3-c2-feature-preprocessing-and-normalization",
+          "page": 3
+        },
+        {
+          "title": "Stop 4: Single CNN training",
+          "anchor": "stop-4-single-cnn-training",
+          "page": 4
+        },
+        {
+          "title": "4A. Training code and learning curves",
+          "anchor": "4a-training-code-and-learning-curves",
+          "page": 4
+        },
+        {
+          "title": "4B. Parameter-recovery results on inverse validation",
+          "anchor": "4b-parameter-recovery-results-on-inverse-validation",
+          "page": 4
+        },
+        {
+          "title": "4C. Saved checkpoint metadata",
+          "anchor": "4c-saved-checkpoint-metadata",
+          "page": 4
+        },
+        {
+          "title": "Stop 5: Ensemble training and uncertainty U",
+          "anchor": "stop-5-ensemble-training-and-uncertainty-u",
+          "page": 4
+        },
+        {
+          "title": "Stop 6: Trace one saved prediction",
+          "anchor": "stop-6-trace-one-saved-prediction",
+          "page": 5
+        },
+        {
+          "title": "6A. Predicted settings and diagnostics",
+          "anchor": "6a-predicted-settings-and-diagnostics",
+          "page": 5
+        },
+        {
+          "title": "6B. Listen to target and reconstruction",
+          "anchor": "6b-listen-to-target-and-reconstruction",
+          "page": 5
+        },
+        {
+          "title": "6C. Inspect one parameter in detail",
+          "anchor": "6c-inspect-one-parameter-in-detail",
+          "page": 5
+        },
+        {
+          "title": "Stop 7A: Forward diagnostics with R and S",
+          "anchor": "stop-7a-forward-diagnostics-with-r-and-s",
+          "page": 5
+        },
+        {
+          "title": "Stop 7B: Reliability calibration and q",
+          "anchor": "stop-7b-reliability-calibration-and-q",
+          "page": 6
+        },
+        {
+          "title": "Recap of forward diagnostics and reliability calibration",
+          "anchor": "recap-of-forward-diagnostics-and-reliability-calibration",
+          "page": 6
+        },
+        {
+          "title": "Stop 8: Evaluation and validation",
+          "anchor": "stop-8-evaluation-and-validation",
+          "page": 6
+        },
+        {
+          "title": "8A. Compare reliability methods and statistical intervals",
+          "anchor": "8a-compare-reliability-methods-and-statistical-intervals",
+          "page": 6
+        },
+        {
+          "title": "8B. Perturbation step-size validation",
+          "anchor": "8b-perturbation-step-size-validation",
+          "page": 6
+        },
+        {
+          "title": "8C. Implementation verification",
+          "anchor": "8c-implementation-verification",
+          "page": 6
+        },
+        {
+          "title": "8D. Figures and interpretation",
+          "anchor": "8d-figures-and-interpretation",
+          "page": 6
+        },
+        {
+          "title": "Route B: use the browser demonstration",
+          "anchor": "route-b-use-the-browser-demonstration",
+          "page": 7
+        },
+        {
+          "title": "B1. Open the local demo",
+          "anchor": "b1-open-the-local-demo",
+          "page": 7
+        },
+        {
+          "title": "B2. Demonstrate audio, parameters and diagnostics",
+          "anchor": "b2-demonstrate-audio-parameters-and-diagnostics",
+          "page": 7
+        },
+        {
+          "title": "B3. Compare reliability models and examples",
+          "anchor": "b3-compare-reliability-models-and-examples",
+          "page": 7
+        },
+        {
+          "title": "B4. Show validation results and method",
+          "anchor": "b4-show-validation-results-and-method",
+          "page": 7
+        },
+        {
+          "title": "A short version if time is limited",
+          "anchor": "a-short-version-if-time-is-limited",
+          "page": 8
+        },
+        {
+          "title": "Useful answers when asked to go deeper",
+          "anchor": "useful-answers-when-asked-to-go-deeper",
+          "page": 8
+        }
+      ],
+      "rendered_pages": 8,
+      "contact_sheets": [
+        "tmp/pdfs/c2_guides/DEMONSTRATION_WALKTHROUGH/contact-01.jpg",
+        "tmp/pdfs/c2_guides/DEMONSTRATION_WALKTHROUGH/contact-02.jpg"
+      ]
+    },
+    "METRICS_REFERENCE": {
+      "pages": 14,
+      "link_annotations": 45,
+      "bookmarks_present": true,
+      "text_within_page_bounds": true,
+      "navigation_comments_or_missing_glyph_markers": false,
+      "sha256": "22824f606f6a7cf230f7e7d5d0616864bf2e0fa958e875c5ab74ceaa1cb4e9e1",
+      "source": "c2_estimation/METRICS_REFERENCE.md",
+      "source_sha256": "a97cedb6ceb53c0ca46bc9ad547474f3ab748683a53127b51c208586a0255912",
+      "sections": [
+        {
+          "title": "C2 metrics: definitions, measured results and interpretation",
+          "anchor": "c2-metrics-definitions-measured-results-and-interpretation",
+          "page": 1
+        },
+        {
+          "title": "Contents",
+          "anchor": "contents",
+          "page": 1
+        },
+        {
+          "title": "1. Which kind of number am I looking at?",
+          "anchor": "1-which-kind-of-number-am-i-looking-at",
+          "page": 2
+        },
+        {
+          "title": "2. Recovery metrics in plain language and equations",
+          "anchor": "2-recovery-metrics-in-plain-language-and-equations",
+          "page": 2
+        },
+        {
+          "title": "3. Single CNN and ensemble: the same 4,096 inverse-validation clips",
+          "anchor": "3-single-cnn-and-ensemble-the-same-4096-inverse-validation-clips",
+          "page": 3
+        },
+        {
+          "title": "4. What is a correctness label?",
+          "anchor": "4-what-is-a-correctness-label",
+          "page": 4
+        },
+        {
+          "title": "5. Probability, ranking and selective metrics",
+          "anchor": "5-probability-ranking-and-selective-metrics",
+          "page": 5
+        },
+        {
+          "title": "6. All five probability models: macro development results",
+          "anchor": "6-all-five-probability-models-macro-development-results",
+          "page": 6
+        },
+        {
+          "title": "7. Per-parameter Brier for every probability ablation",
+          "anchor": "7-per-parameter-brier-for-every-probability-ablation",
+          "page": 7
+        },
+        {
+          "title": "8. Full U+S+R reliability results for all parameters",
+          "anchor": "8-full-usr-reliability-results-for-all-parameters",
+          "page": 8
+        },
+        {
+          "title": "9. Raw uncertainty ranking before logistic calibration",
+          "anchor": "9-raw-uncertainty-ranking-before-logistic-calibration",
+          "page": 9
+        },
+        {
+          "title": "10. Same 50% coverage: retain 256 settings per parameter",
+          "anchor": "10-same-50-coverage-retain-256-settings-per-parameter",
+          "page": 10
+        },
+        {
+          "title": "11. Different definitions of correct: secondary tolerance analysis",
+          "anchor": "11-different-definitions-of-correct-secondary-tolerance-analysis",
+          "page": 11
+        },
+        {
+          "title": "12. Paired uncertainty around Brier differences",
+          "anchor": "12-paired-uncertainty-around-brier-differences",
+          "page": 11
+        },
+        {
+          "title": "13. Reconstruction residual R and sensitivity S",
+          "anchor": "13-reconstruction-residual-r-and-sensitivity-s",
+          "page": 11
+        },
+        {
+          "title": "14. Perturbation-step agreement on 256 calibration clips",
+          "anchor": "14-perturbation-step-agreement-on-256-calibration-clips",
+          "page": 13
+        },
+        {
+          "title": "15. Audio QA numbers are different again",
+          "anchor": "15-audio-qa-numbers-are-different-again",
+          "page": 13
+        },
+        {
+          "title": "16. Where are all remaining numbers?",
+          "anchor": "16-where-are-all-remaining-numbers",
+          "page": 14
+        }
+      ],
+      "rendered_pages": 14,
+      "contact_sheets": [
+        "tmp/pdfs/c2_guides/METRICS_REFERENCE/contact-01.jpg",
+        "tmp/pdfs/c2_guides/METRICS_REFERENCE/contact-02.jpg",
+        "tmp/pdfs/c2_guides/METRICS_REFERENCE/contact-03.jpg"
+      ]
+    },
+    "DEMONSTRATION_WALKTHROUGH_EXPLAINED": {
+      "pages": 23,
+      "link_annotations": 50,
+      "bookmarks_present": true,
+      "text_within_page_bounds": true,
+      "navigation_comments_or_missing_glyph_markers": false,
+      "sha256": "3cb7eb6c2a5144df8b6518b2073d80ca590e6019a01c35c20b0eefb0901f24c0",
+      "source": "c2_estimation/DEMONSTRATION_WALKTHROUGH_EXPLAINED.md",
+      "source_sha256": "54215d23bc86df6c25bf2c3c420e0321a062325d13fc4a149b68a386c5edcc68",
+      "sections": [
+        {
+          "title": "Showing and explaining the C2 results",
+          "anchor": "showing-and-explaining-the-c2-results",
+          "page": 1
+        },
+        {
+          "title": "About this expanded edition",
+          "anchor": "about-this-expanded-edition",
+          "page": 1
+        },
+        {
+          "title": "Contents",
+          "anchor": "contents",
+          "page": 1
+        },
+        {
+          "title": "Browser route shortcuts",
+          "anchor": "browser-route-shortcuts",
+          "page": 2
+        },
+        {
+          "title": "Before starting",
+          "anchor": "before-starting",
+          "page": 2
+        },
+        {
+          "title": "Explanation: what the whole component is trying to do",
+          "anchor": "explanation-what-the-whole-component-is-trying-to-do",
+          "page": 2
+        },
+        {
+          "title": "Route A: use VS Code and its terminal",
+          "anchor": "route-a-use-vs-code-and-its-terminal",
+          "page": 3
+        },
+        {
+          "title": "Explanation: what to do in VS Code",
+          "anchor": "explanation-what-to-do-in-vs-code",
+          "page": 3
+        },
+        {
+          "title": "Stop 1: Shared dataset generation",
+          "anchor": "stop-1-shared-dataset-generation",
+          "page": 3
+        },
+        {
+          "title": "1A. Configuration, sampling and rendering",
+          "anchor": "1a-configuration-sampling-and-rendering",
+          "page": 3
+        },
+        {
+          "title": "Explanation: the synth is the sound maker, not the CNN",
+          "anchor": "explanation-the-synth-is-the-sound-maker-not-the-cnn",
+          "page": 3
+        },
+        {
+          "title": "1B. Dataset integrity checks",
+          "anchor": "1b-dataset-integrity-checks",
+          "page": 5
+        },
+        {
+          "title": "Explanation: checking the ingredients before judging the model",
+          "anchor": "explanation-checking-the-ingredients-before-judging-the-model",
+          "page": 5
+        },
+        {
+          "title": "1C. Inspect one generated record",
+          "anchor": "1c-inspect-one-generated-record",
+          "page": 5
+        },
+        {
+          "title": "Explanation: how audio and labels stay connected",
+          "anchor": "explanation-how-audio-and-labels-stay-connected",
+          "page": 5
+        },
+        {
+          "title": "Stop 2A: Audio conditioning with the shared utility",
+          "anchor": "stop-2a-audio-conditioning-with-the-shared-utility",
+          "page": 6
+        },
+        {
+          "title": "Explanation: centering the waveform without erasing level information",
+          "anchor": "explanation-centering-the-waveform-without-erasing-level-information",
+          "page": 6
+        },
+        {
+          "title": "Stop 2B: C2 dataset splitting",
+          "anchor": "stop-2b-c2-dataset-splitting",
+          "page": 6
+        },
+        {
+          "title": "Explanation: separate books for learning and the final exam",
+          "anchor": "explanation-separate-books-for-learning-and-the-final-exam",
+          "page": 6
+        },
+        {
+          "title": "Recap of audio conditioning and C2 splitting",
+          "anchor": "recap-of-audio-conditioning-and-c2-splitting",
+          "page": 6
+        },
+        {
+          "title": "Explanation: remember the pool sizes versus the measured subsets",
+          "anchor": "explanation-remember-the-pool-sizes-versus-the-measured-subsets",
+          "page": 7
+        },
+        {
+          "title": "Stop 3: C2 feature preprocessing and normalization",
+          "anchor": "stop-3-c2-feature-preprocessing-and-normalization",
+          "page": 7
+        },
+        {
+          "title": "Explanation: turning sound into a small time-frequency map",
+          "anchor": "explanation-turning-sound-into-a-small-time-frequency-map",
+          "page": 7
+        },
+        {
+          "title": "Stop 4: Single CNN training",
+          "anchor": "stop-4-single-cnn-training",
+          "page": 8
+        },
+        {
+          "title": "4A. Training code and learning curves",
+          "anchor": "4a-training-code-and-learning-curves",
+          "page": 8
+        },
+        {
+          "title": "Explanation: the CNN learns patterns, then adjusts its own weights",
+          "anchor": "explanation-the-cnn-learns-patterns-then-adjusts-its-own-weights",
+          "page": 8
+        },
+        {
+          "title": "4B. Parameter-recovery results on inverse validation",
+          "anchor": "4b-parameter-recovery-results-on-inverse-validation",
+          "page": 9
+        },
+        {
+          "title": "Explanation: reading the recovery numbers",
+          "anchor": "explanation-reading-the-recovery-numbers",
+          "page": 9
+        },
+        {
+          "title": "4C. Saved checkpoint metadata",
+          "anchor": "4c-saved-checkpoint-metadata",
+          "page": 10
+        },
+        {
+          "title": "Explanation: a trained model is its learned weights plus its recipe",
+          "anchor": "explanation-a-trained-model-is-its-learned-weights-plus-its-recipe",
+          "page": 10
+        },
+        {
+          "title": "Stop 5: Ensemble training and uncertainty U",
+          "anchor": "stop-5-ensemble-training-and-uncertainty-u",
+          "page": 10
+        },
+        {
+          "title": "Explanation: three guesses, each with a predicted spread",
+          "anchor": "explanation-three-guesses-each-with-a-predicted-spread",
+          "page": 11
+        },
+        {
+          "title": "Stop 6: Trace one saved prediction",
+          "anchor": "stop-6-trace-one-saved-prediction",
+          "page": 11
+        },
+        {
+          "title": "6A. Predicted settings and diagnostics",
+          "anchor": "6a-predicted-settings-and-diagnostics",
+          "page": 11
+        },
+        {
+          "title": "Explanation: what is already frozen in this example",
+          "anchor": "explanation-what-is-already-frozen-in-this-example",
+          "page": 11
+        },
+        {
+          "title": "6B. Listen to target and reconstruction",
+          "anchor": "6b-listen-to-target-and-reconstruction",
+          "page": 12
+        },
+        {
+          "title": "Explanation: why two sounds can be close while some settings are wrong",
+          "anchor": "explanation-why-two-sounds-can-be-close-while-some-settings-are-wrong",
+          "page": 12
+        },
+        {
+          "title": "6C. Inspect one parameter in detail",
+          "anchor": "6c-inspect-one-parameter-in-detail",
+          "page": 12
+        },
+        {
+          "title": "Explanation: the cutoff arithmetic, one quantity at a time",
+          "anchor": "explanation-the-cutoff-arithmetic-one-quantity-at-a-time",
+          "page": 13
+        },
+        {
+          "title": "Stop 7A: Forward diagnostics with R and S",
+          "anchor": "stop-7a-forward-diagnostics-with-r-and-s",
+          "page": 13
+        },
+        {
+          "title": "Explanation: ask the synth two different questions",
+          "anchor": "explanation-ask-the-synth-two-different-questions",
+          "page": 13
+        },
+        {
+          "title": "Stop 7B: Reliability calibration and q",
+          "anchor": "stop-7b-reliability-calibration-and-q",
+          "page": 14
+        },
+        {
+          "title": "Explanation: teach a small judge what a correct estimate looks like",
+          "anchor": "explanation-teach-a-small-judge-what-a-correct-estimate-looks-like",
+          "page": 14
+        },
+        {
+          "title": "Recap of forward diagnostics and reliability calibration",
+          "anchor": "recap-of-forward-diagnostics-and-reliability-calibration",
+          "page": 15
+        },
+        {
+          "title": "Explanation: the boundary that makes this a fair experiment",
+          "anchor": "explanation-the-boundary-that-makes-this-a-fair-experiment",
+          "page": 15
+        },
+        {
+          "title": "Stop 8: Evaluation and validation",
+          "anchor": "stop-8-evaluation-and-validation",
+          "page": 15
+        },
+        {
+          "title": "8A. Compare reliability methods and statistical intervals",
+          "anchor": "8a-compare-reliability-methods-and-statistical-intervals",
+          "page": 15
+        },
+        {
+          "title": "Explanation: what is compared, and what each score means",
+          "anchor": "explanation-what-is-compared-and-what-each-score-means",
+          "page": 15
+        },
+        {
+          "title": "8B. Perturbation step-size validation",
+          "anchor": "8b-perturbation-step-size-validation",
+          "page": 17
+        },
+        {
+          "title": "Explanation: check whether the measuring ruler changes the conclusion",
+          "anchor": "explanation-check-whether-the-measuring-ruler-changes-the-conclusion",
+          "page": 18
+        },
+        {
+          "title": "8C. Implementation verification",
+          "anchor": "8c-implementation-verification",
+          "page": 18
+        },
+        {
+          "title": "Explanation: correct code is necessary, but is not the research result",
+          "anchor": "explanation-correct-code-is-necessary-but-is-not-the-research-result",
+          "page": 18
+        },
+        {
+          "title": "8D. Figures and interpretation",
+          "anchor": "8d-figures-and-interpretation",
+          "page": 19
+        },
+        {
+          "title": "Explanation: how to read the saved research evidence",
+          "anchor": "explanation-how-to-read-the-saved-research-evidence",
+          "page": 19
+        },
+        {
+          "title": "Route B: use the browser demonstration",
+          "anchor": "route-b-use-the-browser-demonstration",
+          "page": 20
+        },
+        {
+          "title": "B1. Open the local demo",
+          "anchor": "b1-open-the-local-demo",
+          "page": 20
+        },
+        {
+          "title": "Explanation: the page is a saved-results viewer",
+          "anchor": "explanation-the-page-is-a-saved-results-viewer",
+          "page": 20
+        },
+        {
+          "title": "B2. Demonstrate audio, parameters and diagnostics",
+          "anchor": "b2-demonstrate-audio-parameters-and-diagnostics",
+          "page": 20
+        },
+        {
+          "title": "Explanation: what to say while moving through the audio screen",
+          "anchor": "explanation-what-to-say-while-moving-through-the-audio-screen",
+          "page": 20
+        },
+        {
+          "title": "B3. Compare reliability models and examples",
+          "anchor": "b3-compare-reliability-models-and-examples",
+          "page": 21
+        },
+        {
+          "title": "Explanation: change the judge, not the answer it is judging",
+          "anchor": "explanation-change-the-judge-not-the-answer-it-is-judging",
+          "page": 21
+        },
+        {
+          "title": "B4. Show validation results and method",
+          "anchor": "b4-show-validation-results-and-method",
+          "page": 21
+        },
+        {
+          "title": "Explanation: connect the demonstration to the aggregate experiment",
+          "anchor": "explanation-connect-the-demonstration-to-the-aggregate-experiment",
+          "page": 21
+        },
+        {
+          "title": "A short version if time is limited",
+          "anchor": "a-short-version-if-time-is-limited",
+          "page": 22
+        },
+        {
+          "title": "Explanation: a compact spoken version of that same sequence",
+          "anchor": "explanation-a-compact-spoken-version-of-that-same-sequence",
+          "page": 22
+        },
+        {
+          "title": "Useful answers when asked to go deeper",
+          "anchor": "useful-answers-when-asked-to-go-deeper",
+          "page": 22
+        },
+        {
+          "title": "Explanation: useful distinctions behind those answers",
+          "anchor": "explanation-useful-distinctions-behind-those-answers",
+          "page": 23
+        }
+      ],
+      "rendered_pages": 23,
+      "contact_sheets": [
+        "tmp/pdfs/c2_guides/DEMONSTRATION_WALKTHROUGH_EXPLAINED/contact-01.jpg",
+        "tmp/pdfs/c2_guides/DEMONSTRATION_WALKTHROUGH_EXPLAINED/contact-02.jpg",
+        "tmp/pdfs/c2_guides/DEMONSTRATION_WALKTHROUGH_EXPLAINED/contact-03.jpg",
+        "tmp/pdfs/c2_guides/DEMONSTRATION_WALKTHROUGH_EXPLAINED/contact-04.jpg"
+      ]
+    }
+  }
+}

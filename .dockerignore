@@ -20,7 +20,17 @@
 !survey/deploy/start.py
 !survey/deploy/study/
 !survey/deploy/study/bundle.json
+!survey/deploy/study/c1_participant_bundle_v1.json
+!survey/deploy/study/c1_researcher_rehearsal_v1.json
+!survey/deploy/study/c1_researcher_rehearsal_v2.json
 !survey/deploy/study/audio/
 !survey/deploy/study/audio/*.wav
 
 !survey/deploy/study/c4_bundle.json
+!survey/deploy/study/c4_clap_bundle.json
+!survey/deploy/study/c4_participant_bundle_v1.json
+!survey/deploy/study/c4_researcher_rehearsal_v1.json
+!c4_metric/
+!c4_metric/synthetic_data/
+!c4_metric/synthetic_data/stimuli/
+!c4_metric/synthetic_data/stimuli/*.wav

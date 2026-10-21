@@ -1,0 +1,32 @@
+{
+  "version": "experience_tags_v1",
+  "tools": [
+    {"id": "piano_keyboard", "label": "Piano / keyboard"},
+    {"id": "guitar", "label": "Guitar"},
+    {"id": "bass", "label": "Bass guitar"},
+    {"id": "percussion", "label": "Drums / percussion"},
+    {"id": "strings", "label": "Strings (violin, cello, etc.)"},
+    {"id": "winds_brass", "label": "Wind / brass instruments"},
+    {"id": "singing", "label": "Singing / vocals"},
+    {"id": "beatboxing", "label": "Beatboxing / vocal percussion"},
+    {"id": "daw", "label": "DAW (FL Studio, Ableton, etc.)"},
+    {"id": "software_synth", "label": "Software synthesizer"},
+    {"id": "hardware_synth", "label": "Hardware synthesizer"},
+    {"id": "sampler", "label": "Sampler / sample editing"},
+    {"id": "drum_machine", "label": "Drum machine / sequencer"},
+    {"id": "recording", "label": "Audio recording equipment"},
+    {"id": "effects", "label": "Audio effects / pedals"},
+    {"id": "dj", "label": "DJ tools"},
+    {"id": "notation", "label": "Notation / composition tools"}
+  ],
+  "examples": [
+    {"id": "played_piece", "label": "Practised or performed a song on an instrument"},
+    {"id": "sang_song", "label": "Practised, performed or recorded a song with my voice"},
+    {"id": "made_music", "label": "Made a beat, track, composition or arrangement"},
+    {"id": "recorded_mixed", "label": "Recorded, edited or mixed music or vocals"},
+    {"id": "made_patch", "label": "Created or edited a synthesizer patch"},
+    {"id": "shaped_sound", "label": "Shaped a sound using filters, envelopes or effects"},
+    {"id": "made_effect", "label": "Created a sound effect for a project"},
+    {"id": "dj_set", "label": "Prepared or performed a DJ set or live electronic performance"}
+  ]
+}
