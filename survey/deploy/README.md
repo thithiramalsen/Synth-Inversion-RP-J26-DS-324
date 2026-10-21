@@ -1,5 +1,54 @@
 # Persistent C1 review deployment
 
+**Invitation codes in shared assignments — 19 October 2026:** current codes can
+now be viewed/copied, created and replaced beside the name. New codes are stored
+encrypted; legacy hash-only codes remain usable but cannot be displayed. Preserve
+the existing `SURVEY_ADMIN_TOKEN`, which supplies the default encryption key.
+See the [shared assignment guide](../SHARED_ASSIGNMENTS.md) for details.
+
+**Shared assignment names — 19 October 2026:** C1 and C4 now have a private
+researcher assignment list with names/nicknames, recruiter attribution and
+conflict protection. Read the [shared assignment guide](../SHARED_ASSIGNMENTS.md).
+Save a name before sending an invitation; bulk code replacement skips named slots.
+
+**C1 participant collection — 19 October 2026:** C1 now uses a separate
+`study/c1_participant_bundle_v1.json` and `config/c1_participants_v1.json`, with
+`SURVEY_C1_OPEN=1`. See [the C1 participant guide](../C1_PARTICIPANT_DEPLOYMENT.md)
+for the three Render overrides, fresh invitation IDs and completed-only export
+rules. Old review notes and responses below remain historical and excluded.
+
+**C4 participant collection — 19 October 2026:** the active participant bundle is
+`study/c4_participant_bundle_v1.json`, with `config/c4_participants_v1.json` and
+`SURVEY_C4_OPEN=1`. Read the [participant deployment guide](../C4_PARTICIPANT_DEPLOYMENT.md)
+for exact Render settings, fresh invitation IDs and export eligibility. The review
+deployment notes below remain historical; their records stay excluded.
+
+**C4 update — 19 October 2026:** the prepared deployment now defaults to
+`study/c4_clap_bundle.json` and `config/c4_clap_v1.json`: 200 real CLAP triplets,
+100 assignments, and 20 unique +2 hidden repeats +2 practice comparisons each.
+The target is 50–100 completed independent listeners. Issue codes in consecutive
+groups of ten so each completed group covers the complete bank once. The admin
+coverage panel reports actual completed judgments and gaps separately from the
+plan. Existing review sessions keep their unchanged historical bundle/config.
+This source update does not confirm a hosted deployment or formal-study launch.
+
+The Docker build copies the 600 already tracked source WAVs from
+`c4_metric/synthetic_data/stimuli/` into `study/clap_audio/`. No synthetic
+response CSVs are copied or imported. For local playback, materialize and verify:
+
+```powershell
+python -B -m survey.deploy.build_c4_clap
+python -B -m survey.deploy.build_c4_clap --check
+```
+
+The builder refuses to overwrite different bundle/audio bytes. Keep its frozen
+source provenance unchanged after responses exist; use a new version/path for
+future design changes. `SURVEY_C4_BUNDLE` and `SURVEY_C4_CONFIG` must refer to
+matching versions. Historical session lookup defaults to `study/c4_bundle.json`;
+additional retained bundles can be allowlisted in `SURVEY_C4_LEGACY_BUNDLES`
+(separate paths with the host platform's path separator). Startup verifies every
+registered bundle's playback assets. See the [C4 protocol](../C4_REVIEW_PROTOCOL.md).
+
 Updated 9 October 2026. **PostgreSQL verification passed:** the researcher ran
 all 23 integration tests against the configured test database using IPv4.
 The supplied final output reports `Ran 23 tests in 794.303s` and `OK`.
@@ -69,22 +118,26 @@ This remote restart/backup check has **not** been completed by local unit tests.
 
 At `/pilot/admin`, **Replace unused codes and download all** creates one private
 CSV download (`private-c1-unused-invitations.csv`) with each assignment ID and
-its new invitation. The `participant_name`, `date_sent` and `notes` columns are
-blank so you can fill them in locally as you distribute invitations. The `study`
-column identifies C1. Names entered in this file are not uploaded to the survey.
-Existing unused codes stop working, including codes already
-sent to someone who has not started. Send the replacements to those people.
-Missing codes are also created. Every assignment linked to a started session is
+its new invitation. Saved names are included when available; `date_sent` and
+`notes` remain blank. Spreadsheet edits stay local: save a name in the shared
+assignment list to make it visible to teammates. The `study` column identifies C1.
+Existing unassigned unused codes stop working, including codes sent without first
+saving a name. Coordinate with teammates before regenerating them.
+Slots with saved names are skipped and retain their existing codes. Missing codes
+for unnamed slots are also created. Every assignment linked to a started session is
 skipped, regardless of whether it is in progress, completed, withdrawn or failed
 screening; existing sessions and responses are not changed. The page lists
 the skipped assignments. No participant sessions are created by this action.
 
-Only hashes are retained on the server, so old codes cannot be recovered. Save
+Codes created before encrypted storage have only hashes, so those old codes cannot
+be recovered. New codes are available to researchers in the shared list. Save
 the download privately; **Download CSV to fill in names** saves the same new
 codes while they are still displayed, without replacing them another time.
 **Download JSON backup** preserves the earlier JSON option. Downloading again
-starts with blank name/tracking fields; it cannot recover your local edits.
-New and individual replacement invitations also download as CSV automatically.
+includes currently loaded shared assignment names when available; date sent and
+notes remain blank. It cannot recover your local spreadsheet edits.
+Bulk-created invitations download as CSV automatically. Individual code changes
+appear immediately in the shared list, whose private CSV includes visible codes.
 **Create missing invitations** still only issues codes for slots with no active
 invitation, and the individual replacement form still works as before. Bulk
 replacement is transactional and uses the same database lock as participant

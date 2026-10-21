@@ -129,3 +129,24 @@ def test_analysis_four_traits_missing_values_and_legacy_exports():
     assert 'sustainedness' not in summarize([legacy])['traits']
     with pytest.raises(ValueError, match='Mixed descriptor sets'):
         summarize([primary, dict(repeat, descriptor_ids=json.dumps(traits[:3]), sustainedness='')])
+
+
+def test_participant_coverage_uses_five_ratings_instead_of_historical_eight():
+    path = Path(__file__).resolve().parents[2]/'survey/deploy/study/c1_participant_bundle_v1.json'
+    bundle = json.loads(path.read_text(encoding='utf-8'))
+    rows = []
+    for number, block in enumerate(bundle['assignments'][:16]):
+        for trial in block['trials']:
+            if trial['kind'] != 'primary':
+                continue
+            rows.append(dict(analysis_include='True', bundle_hash='synthetic-test-bundle', protocol_hash='synthetic-test-protocol',
+                session_id=f'SIM_SESSION_{number}', participant_id=f'SIM_PERSON_{number}', sample_id=trial['sample_id'],
+                presentation_id=trial['presentation_id'], kind='primary', repeat_of='', target_ratings_per_sound='5',
+                brightness='4', roughness='3', percussiveness='2', sustainedness='6',
+                descriptor_ids=json.dumps(['brightness','roughness','percussiveness','sustainedness'])))
+    result = summarize(rows)
+    assert result['target_ratings_per_sound'] == 5
+    assert result['completed_participants'] == 16
+    assert result['coverage_complete'] is True
+    assert set(result['listeners_per_sound'].values()) == {5}
+    assert summarize(rows[1:])['coverage_complete'] is False

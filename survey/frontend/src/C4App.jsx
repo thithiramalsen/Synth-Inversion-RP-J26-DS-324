@@ -1,9 +1,11 @@
 import { SiteHeader } from './SiteNavigation'
+import VolumeSetupHeading from './VolumeSetupHeading'
 import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
 import PreviousNavigation from './PreviousNavigation'
 import ResponseViewer from './ResponseViewer'
+import AssignmentRoster from './AssignmentRoster.jsx'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
@@ -150,7 +152,7 @@ export function ComparisonPlayer({ session, step, busy, onCounts, onError, initi
   </section>
 }
 
-export function ComparisonQuestions({ answer, onChange }) {
+export function ComparisonQuestions({ answer, onChange, confidenceQuestion }) {
   return <section className="p-card p-rating-card">
     <fieldset className="p-scale"><legend>Which sounds closer to the reference?</legend><p>Choose the candidate with the more similar overall sound character.</p>
       <div className="p-ratings c4-choices" role="radiogroup" aria-label="Closer sound">{[['candidate_a', 'Sound A'], ['candidate_b', 'Sound B']].map(([value, label]) => <button type="button" key={value}
@@ -158,11 +160,29 @@ export function ComparisonQuestions({ answer, onChange }) {
       <button type="button" className={`p-unclear ${answer.choice === 'cannot_decide' ? 'selected' : ''}`} aria-pressed={answer.choice === 'cannot_decide'} onClick={() => onChange(a => ({ ...a, choice: 'cannot_decide', confidence: null }))}><span className="p-choice-check" aria-hidden="true">{answer.choice === 'cannot_decide' ? '✓' : ''}</span><span>I cannot decide</span></button>
       <p className="p-muted">“I cannot decide” records uncertainty, not equality.</p>
     </fieldset>
-    {answer.choice && answer.choice !== 'cannot_decide' && <fieldset className="p-scale c4-confidence"><legend>How confident are you in this choice?</legend><p>1 means “not confident”; 5 means “very confident”.</p>
+    {answer.choice && answer.choice !== 'cannot_decide' && <fieldset className="p-scale c4-confidence"><legend>{confidenceQuestion?.label || 'How confident are you in this choice?'}</legend><p>{confidenceQuestion?.help || '1 means “not confident”; 5 means “very confident”.'}</p>
       <div className="p-ratings" role="radiogroup" aria-label="Confidence">{[1, 2, 3, 4, 5].map(n => <button type="button" key={n} role="radio" aria-checked={answer.confidence === n} aria-label={`Confidence: ${n}`} className={answer.confidence === n ? 'selected' : ''} onClick={() => onChange(a => ({ ...a, confidence: n }))}>{n}</button>)}</div>
-      <div className="p-anchors"><span><strong>1</strong> Not confident</span><span><strong>5</strong> Very confident</span></div>
+      <div className="p-anchors"><span><strong>1</strong> {confidenceQuestion?.low || 'Not confident'}</span><span><strong>5</strong> {confidenceQuestion?.high || 'Very confident'}</span></div>
     </fieldset>}
   </section>
+}
+
+export function C4Workload({ status }) {
+  const cfg = status.config || {}
+  const practice = status.practice_presentations ?? cfg.practice_comparisons ?? 2
+  return <p>There are {practice > 0 && <>{practice} practice comparisons before the </>}{status.rated_presentations} {cfg.collection_mode === 'participants' ? 'study' : 'review'} comparisons. Choose a comfortable listening level and keep it consistent.</p>
+}
+
+export function C4CollectionNotice({ config, rehearsal }) {
+  return <div className={rehearsal ? 'p-rehearsal' : 'p-notice'}>{rehearsal
+    ? config?.review_notice || 'Supervisor review only. These responses are excluded from research analysis.'
+    : config?.participant_notice || 'C4 listening study. Practice responses are excluded from research analysis.'}</div>
+}
+
+export function C4Break({ step, busy, onContinue }) {
+  const completed = step.rated_completed ?? 6
+  const total = step.rated_total ?? 12
+  return <section className="p-card" aria-label="Listening break"><p className="p-eyebrow">LISTENING BREAK</p><h1>A moment to rest.</h1><p>You have completed {completed} of {total} {step.rehearsal === false ? 'study' : 'review'} comparisons. Take a short break, then continue with the same listening setup and volume.</p><button disabled={busy} className="p-primary" onClick={onContinue}>Continue listening →</button></section>
 }
 
 export default function C4App() {
@@ -196,17 +216,18 @@ export default function C4App() {
   }
   function reset() { localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false) }
   const phase = step?.phase, cfg = step?.config || status?.config
+  const rehearsal = step?.rehearsal ?? status?.rehearsal ?? true
   const end = ['complete', 'screen_failed', 'withdrawn', 'replaced'].includes(phase)
   const playable = ['volume', 'headphones', 'rating', 'correction'].includes(phase)
   const allPlayed = ROLES.every(([role]) => counts.completed[role] > 0)
   const progress = phase === 'rating' && !step.practice ? Math.round((step.display_number - 1) / step.display_total * 100) : 0
   function pause() { setPaused(v => !v) }
-  return <div className="pilot-app"><SiteHeader current="c4" note="C4 SIMILARITY REVIEW" />
+  return <div className="pilot-app"><SiteHeader current="c4" note={!cfg ? 'C4 LISTENING STUDY' : rehearsal ? 'C4 SIMILARITY REVIEW' : 'C4 LISTENING STUDY'} />
     <ErrorNotice message={error} onDismiss={() => setError('')}>
       {session && <button onClick={() => act(() => load())}>Reload current step</button>}
-      {!step && <button onClick={reset}>Return to review entry</button>}
+      {!step && <button onClick={reset}>Return to study entry</button>}
     </ErrorNotice>
-    <main className="p-main"><div className="p-rehearsal">{cfg?.review_notice || 'Supervisor review only. Not open for research recruitment.'}</div>
+    <main className="p-main">{cfg && <C4CollectionNotice config={cfg} rehearsal={rehearsal} />}
       {!status ? <p role="status">Loading the study…</p> : !session ? <>
         {!status.ready && <div className="p-notice"><strong>The study is not open yet.</strong><p>You can read the information below. The researcher is completing preparation.</p></div>}
         <Entry status={status} busy={busy} onSubmit={entry => act(async () => {
@@ -218,7 +239,7 @@ export default function C4App() {
         : paused ? <section className="p-card"><h1>Take your time.</h1><p>Your saved responses are safe. Resume when you are ready to listen in a quiet place. Clips already listened to fully remain checked.</p><button className="p-primary" onClick={pause}>Resume listening</button></section>
         : <>
           <PreviousNavigation step={step} busy={busy} unit="comparison" onPrevious={openPrevious} />
-          {phase === 'volume' && <><p className="p-eyebrow">SETUP · 1 OF 2</p><h1>Find a comfortable level.</h1><p className="p-lede">Start with a low device volume, play the tone and adjust it to a comfortable level. Keep that setting for the rest of the session.</p></>}
+          {phase === 'volume' && <VolumeSetupHeading config={cfg} screeningEnabled={step.headphone_screening_enabled} />}
           {phase === 'headphones' && <><p className="p-eyebrow">SETUP · 2 OF 2</p><h1>A quick headphone check.</h1><p className="p-lede">You will hear three tones. Which is the quietest? Listen to all three before choosing.</p><p className="p-muted">Check {step.screen_number} of 6</p></>}
           {['rating', 'correction'].includes(phase) && <><div className="p-trial-heading"><div><p className="p-eyebrow">{phase === 'correction' ? 'CORRECT PREVIOUS RESPONSE' : step.practice ? 'GET FAMILIAR WITH THE QUESTIONS' : 'LISTEN · COMPARE · CONTINUE'}</p><h1>{step.practice ? 'Practice' : 'Comparison'} {String(step.display_number).padStart(2, '0')}<span> / {step.display_total}</span></h1></div></div>
             {!step.practice && <div className="p-progress"><span style={{ width: `${progress}%` }} /></div>}
@@ -227,21 +248,24 @@ export default function C4App() {
           {phase === 'volume' && <button className="p-primary" disabled={busy || !counts.completed.setup} onClick={() => act(() => submit('volume', { completed_plays: counts.completed.setup }))}>This level is comfortable →</button>}
           {phase === 'headphones' && <section className="p-card"><fieldset><legend>Which tone was quietest?</legend><div className="p-intervals">{[1,2,3].map(n => <button type="button" key={n} className={interval === n ? 'selected' : ''} aria-pressed={interval === n} onClick={() => setInterval(n)}>{['First','Second','Third'][n-1]}</button>)}</div></fieldset><button className="p-primary" disabled={busy || !interval || !counts.completed.setup} onClick={() => act(() => submit('headphones', { interval, screen_number: step.screen_number, completed_plays: counts.completed.setup }))}>Continue →</button></section>}
           {['rating', 'correction'].includes(phase) && <form onSubmit={e => { e.preventDefault(); act(() => submit(phase === 'correction' ? 'previous/save' : 'ratings', { ...(phase === 'correction' ? { correction_token: step.correction_token } : {}), presentation_id: step.presentation_id, answers: answer, play_counts: counts.plays, completed_counts: counts.completed, started_at: step.server_time })) }}>
-            <ComparisonQuestions answer={answer} onChange={setAnswer} />
+            <ComparisonQuestions answer={answer} onChange={setAnswer} confidenceQuestion={cfg.confidence_question} />
             <label className="p-comment">Anything unclear? <span>Optional</span><textarea maxLength="1000" rows="2" value={answer.comment} onChange={e => setAnswer(a => ({ ...a, comment: e.target.value }))} /></label>
             <div className="p-save-row"><span>{phase === 'correction' ? 'Replaying is optional when correcting a saved answer.' : allPlayed ? 'All three clips played fully ✓' : 'Play all three clips fully to continue.'}</span><div className="p-actions">{phase === 'correction' && <button type="button" className="p-secondary" disabled={busy} onClick={() => act(() => submit('previous/cancel', { correction_token: step.correction_token }))}>Return without changes →</button>}<button className="p-primary" disabled={busy || (phase !== 'correction' && !allPlayed) || !answer.choice || (answer.choice !== 'cannot_decide' && !answer.confidence)}>{busy ? 'Saving…' : phase === 'correction' ? 'Save correction and continue →' : 'Save and continue →'}</button></div></div>
           </form>}
-          {phase === 'break' && <section className="p-card"><p className="p-eyebrow">HALFWAY THROUGH</p><h1>A moment to rest.</h1><p>You have completed half the review comparisons. Take a short break, then continue with the same listening setup and volume.</p><button disabled={busy} className="p-primary" onClick={() => act(() => submit('continue', {}))}>Continue listening →</button></section>}
+          {phase === 'break' && <C4Break step={step} busy={busy} onContinue={() => act(() => submit('continue', {}))} />}
           {phase === 'feedback' && <form className="p-card" onSubmit={e => { e.preventDefault(); act(() => submit('feedback', feedback)) }}><p className="p-eyebrow">ONE LAST THING</p><h1>How was the experience?</h1>
             <label>Were the comparison instructions clear?<select required value={feedback.clarity} onChange={e => setFeedback(v => ({ ...v, clarity:e.target.value }))}><option value="">Choose an answer</option>{['Clear','Some terms unclear','Difficult to understand'].map(s => <option key={s}>{s}</option>)}</select></label>
             <label>How did the session length feel?<select required value={feedback.length} onChange={e => setFeedback(v => ({ ...v, length:e.target.value }))}><option value="">Choose an answer</option>{['About right','Too long','Could be longer'].map(s => <option key={s}>{s}</option>)}</select></label>
             <label>Anything we should improve? <span>Optional</span><textarea maxLength="1500" rows="3" value={feedback.comment} onChange={e => setFeedback(v => ({ ...v, comment:e.target.value }))} /></label><button disabled={busy} className="p-primary">Finish session →</button></form>}
-          {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} comparison responses have been saved, including practice. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No comparison study responses are required.'}</p></section>}
+          {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} comparison responses have been saved${step.practice_presentations !== 0 ? ', including practice' : ''}. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No comparison study responses are required.'}</p></section>}
         </>}
         {!['withdrawn','replaced'].includes(phase) && !withdraw && <button className="p-withdraw" onClick={() => setWithdraw(true)}>Withdraw this session</button>}
-        {step.rehearsal && end && <section className="p-card"><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={reset}>Use another rehearsal invitation</button></section>}
+        {step.rehearsal && end && <section className="p-card">{status.config.collection_mode === 'participants'
+          ? <><p>This saved session belongs to the earlier review. To join the current participant study, use a new participant invitation. Your review answers remain separate.</p><button className="p-primary" onClick={reset}>Open the participant study</button></>
+          : <><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={reset}>Use another rehearsal invitation</button></>}
+        </section>}
       </>}
-    </main><footer className="p-footer">Synth Inversion Research · C4 similarity review</footer>
+    </main><footer className="p-footer">Synth Inversion Research · {cfg && rehearsal ? 'C4 similarity review' : 'C4 listening study'}{cfg?.researcher_email && <> · <a href={`mailto:${cfg.researcher_email}`}>Contact the researcher</a></>}</footer>
   </div>
 }
 
@@ -256,10 +280,11 @@ function Entry({ status, busy, onSubmit }) {
     </div>
     <section className="p-card"><h2>Before you take part</h2>
       {cfg.information.map((text, i) => <p key={i}>{text}</p>)}
-      <p>There are 2 practice comparisons before the {status.rated_presentations} review comparisons. Choose a comfortable listening level and keep it consistent.</p>
+      <C4Workload status={status} />
       {cfg.researcher_email && <p>Research contact: {cfg.researcher_name} · <a href={`mailto:${cfg.researcher_email}`}>{cfg.researcher_email}</a></p>}
       {cfg.supervisor_contact && <p>Supervisor contact: {cfg.supervisor_contact}</p>}
       {cfg.retention_statement && <p>{cfg.retention_statement}</p>}
+      {cfg.withdrawal_statement && <p>{cfg.withdrawal_statement}</p>}
       <label className="p-check"><input type="checkbox" required checked={values.consent} onChange={e => change('consent', e.target.checked)} />I have read this information and voluntarily agree to take part.</label>
     </section>
     <section className="p-card"><h2>Your listening setup</h2>
@@ -280,6 +305,33 @@ function Entry({ status, busy, onSubmit }) {
   </form>
 }
 
+export function C4DesignSummary({ data }) {
+  const { design, coverage } = data
+  if (!design?.bank_triplets) return null
+  const minimumPlanned = design.target_min * design.unique_per_listener / design.bank_triplets
+  const maximumPlanned = design.target_max * design.unique_per_listener / design.bank_triplets
+  return <section className="p-card" aria-label="C4 study plan and coverage">
+    <h2>Study plan and completed coverage</h2>
+    <p>Active survey: <strong>{data.study_id}</strong>{data.protocol_version && <> · Protocol {data.protocol_version}</>}</p>
+    {data.rehearsal === false && <p role="status"><strong>{data.ready ? 'Participant collection is open.' : 'Participant entry is closed.'}</strong> New invitations belong to this participant study. Existing review invitations are separate.</p>}
+    {data.rehearsal === true && <p role="status">This is a review version. These responses remain excluded from research analysis.</p>}
+    {data.issues?.length > 0 && <ul>{data.issues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
+    <p>{design.bank_triplets} triplets in the bank. Each listener receives {design.unique_per_listener} different comparisons, {design.repeats_per_listener} hidden repeats and {design.practice_per_listener} practice comparisons.</p>
+    {design.target_min != null && design.target_max != null && <>
+      <p><strong>Target:</strong> {design.target_min}–{design.target_max} completed independent listeners. Give each person one invitation and work through assignments in order.</p>
+      <p>Complete groups of 10 assignments cover the bank evenly. At the target, completing these groups gives {minimumPlanned}–{maximumPlanned} primary judgments per triplet. Missing or unfinished assignments can leave uneven coverage.</p>
+    </>}
+    <p><strong>Planned:</strong> {data.assignment_capacity} assignment slots{coverage?.planned_per_triplet != null && <> provide {coverage.planned_per_triplet} listeners per triplet when all slots are completed</>}. Issued codes do not count as completed judgments.</p>
+    {coverage && <>
+      <p><strong>Completed:</strong> {coverage.completed_listeners} listeners. {coverage.triplets_with_completed_judgments} of {design.bank_triplets} triplets have a completed judgment; {coverage.triplets_at_least_two} have judgments from at least two completed listeners. Current range: {coverage.minimum_completed_judgments}–{coverage.maximum_completed_judgments} completed listeners per triplet.</p>
+      <p className="p-muted">Coverage counts primary comparisons from completed sessions. Practice, hidden repeats and corrections do not add independent judgments. Withdrawn or replaced sessions are excluded.</p>
+      {coverage.below_two && <p role="status" className={coverage.below_two.length ? 'p-notice' : 'p-muted'}>{coverage.below_two.length ? `${coverage.below_two.length} triplets remain below two completed listeners.` : 'Every triplet has judgments from at least two completed listeners.'}</p>}
+      {coverage.triplets?.length > 0 && <details><summary>View coverage for all {coverage.triplets.length} triplets</summary><div className="p-table"><table><thead><tr><th>Triplet</th><th>Planned listeners</th><th>Completed listeners</th></tr></thead><tbody>{coverage.triplets.map(triplet => <tr key={triplet.triplet_id}><td>{triplet.triplet_id}</td><td>{triplet.planned_listeners}</td><td>{triplet.completed_listeners}</td></tr>)}</tbody></table></div></details>}
+    </>}
+    {data.rehearsal !== false && <p className="p-muted">Responses from this review are excluded from research analysis. Formal recruitment needs a separate approved launch.</p>}
+  </section>
+}
+
 export function C4InvitationAssignments({ data, busy, onCreate, onReplace }) {
   const rows = data.assignments || []
   const labels = { missing: 'No invitation yet', issued: 'Code issued · not started', in_progress: 'Session in progress', completed: 'Completed', withdrawn: 'Withdrawn', screen_failed: 'Headphone check failed' }
@@ -287,15 +339,15 @@ export function C4InvitationAssignments({ data, busy, onCreate, onReplace }) {
   return <section className="p-card" aria-label="C4 participant invitations">
     <h2>Participant invitations</h2>
     <p>These codes let listeners start <a href="/c4">the C4 survey</a>. C1 study codes and researcher account invitations are separate.</p>
-    <p className="p-muted">Each assignment is one listener’s set of comparisons. This version is for supervisor/interface review; responses remain excluded from research analysis.</p>
+    <p className="p-muted">Each assignment is one listener’s set of comparisons. {data.rehearsal === false ? 'Completed study comparisons are eligible for research analysis. Practice and withdrawn sessions are excluded.' : 'This version is for supervisor/interface review; responses remain excluded from research analysis.'}</p>
     <p>1. Create codes for available assignments. 2. Save the downloaded file. 3. Give each listener one code and the C4 study link.</p>
     <p role="status">{missing ?? '—'} of {data.assignment_capacity ?? rows.length} assignments need an invitation.</p>
     <button type="button" className="p-primary" disabled={busy || missing === 0} onClick={onCreate}>Create participant invitations{missing !== undefined ? ` (${missing})` : ''}</button>
-    <p className="p-muted">Existing codes are shown only when created. If you have lost a code, choose “Replace lost code” for an assignment marked “not started” below.</p>
-    {missing === 0 && <p className="p-notice">All assignments already have codes. Creating invitations will not recover an earlier download; use a replacement for a lost code.</p>}
+    <p className="p-muted">Current saved codes appear in the shared assignment list above. If you have lost a code, choose “Replace lost code” for an assignment marked “not started” below.</p>
+    {missing === 0 && <p className="p-notice">All assignments already have codes. Use the shared assignment list above to view saved codes or replace an older unrecoverable code.</p>}
     <div className="p-table"><table><thead><tr><th>Assignment</th><th>Invitation / session status</th><th>Listener</th><th>Saved presentations</th><th>Action</th></tr></thead><tbody>
       {rows.map(row => <tr key={row.assignment_id}><td>{row.assignment_id}</td><td>{labels[row.status] || row.status}</td><td>{row.participant_label || 'Not started'}</td><td>{row.saved_presentations}</td><td>
-        {row.can_replace ? <button type="button" className="p-secondary" disabled={busy} onClick={() => onReplace(row.assignment_id)}>{row.status === 'issued' ? 'Replace lost code' : 'Review replacement'}</button> : row.status === 'missing' ? 'Create invitations above' : 'Replacement unavailable'}
+        {row.can_replace ? <button type="button" className="p-secondary" disabled={busy} onClick={() => onReplace(row.assignment_id)}>{row.status === 'issued' ? 'Replace lost code' : data.rehearsal === false ? 'Replace invitation' : 'Review replacement'}</button> : row.status === 'missing' ? 'Create invitations above' : 'Replacement unavailable'}
       </td></tr>)}
     </tbody></table></div>
   </section>
@@ -304,9 +356,9 @@ export function C4InvitationAssignments({ data, busy, onCreate, onReplace }) {
 export function C4BulkInvitationDownload({ busy, onDownload }) {
   return <section className="p-card" aria-label="Download unused participant invitations">
     <h2>Get unused invitations in one file</h2>
-    <p>If you lost the original download, replace all unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions.</p>
+    <p>If you lost the original download, replace unassigned unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions. Slots with saved names are also skipped so another researcher’s assigned code stays valid. Check with teammates before regenerating codes: invitations sent without a saved name may still be replaced.</p>
     <button type="button" className="p-secondary" disabled={busy} onClick={onDownload}>Replace unused codes and download all</button>
-    <p className="p-muted">Save the private CSV file and fill in names as you assign codes. Each code is labelled with its C4 assignment. This does not create participant sessions.</p>
+    <p className="p-muted">Save the private CSV file and use the shared assignment list to record names for the team. Each code is labelled with its C4 assignment. This does not create participant sessions.</p>
   </section>
 }
 
@@ -315,14 +367,11 @@ export function C4Admin() {
   const [data, setData] = useState(null), [error, setError] = useState('')
   const [signingUp, setSigningUp] = useState(false), [signupFields, setSignupFields] = useState({ invitation: '', confirm: '' })
   const [accountInvite, setAccountInvite] = useState(null)
-  const [replacement, setReplacement] = useState({ assignment_id: '', reason: '' })
   const [busy, setBusy] = useState(false), [issued, setIssued] = useState(null)
   const [skippedAssignments, setSkippedAssignments] = useState(null)
-  const [loading, setLoading] = useState(false), [replaceAcknowledged, setReplaceAcknowledged] = useState(false)
-  const replacementForm = useRef(null)
+  const [rosterNames, setRosterNames] = useState([]), [rosterRefresh, setRosterRefresh] = useState(0)
+  const [loading, setLoading] = useState(false)
   const locked = busy || loading
-  const assignments = data?.assignments || []
-  const selectedAssignment = assignments.find(row => row.assignment_id === replacement.assignment_id)
   async function act(fn) { setError(''); setBusy(true); try { await fn() } catch (e) { setError(e.message) } finally { setBusy(false) } }
   useEffect(() => { fetch(`${API}/api/researcher/session`, { credentials: 'include' }).then(r => setAuthenticated(r.ok)).catch(() => {}) }, [])
   useEffect(() => {
@@ -358,28 +407,17 @@ export function C4Admin() {
     const result = await request('/admin/invitations', { body: {} })
     setSkippedAssignments(null)
     setIssued(result.invitations)
-    if (result.invitations.length) download(invitationCsv(result.invitations, 'C4'), 'private-c4-invitations.csv', 'text/csv;charset=utf-8')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C4', rosterNames), 'private-c4-invitations.csv', 'text/csv;charset=utf-8')
     setData(await request('/admin/summary'))
-  }
-  async function replaceInvitation() {
-    const result = await request('/admin/replace-invitation', { body: replacement })
-    setSkippedAssignments(null)
-    setIssued([result])
-    download(invitationCsv([result], 'C4'), 'private-c4-replacement-invitation.csv', 'text/csv;charset=utf-8')
-    setReplacement({ assignment_id: '', reason: '' })
-    setReplaceAcknowledged(false)
-    setData(await request('/admin/summary'))
+    setRosterRefresh(value => value + 1)
   }
   async function downloadUnusedInvitations() {
     const result = await request('/admin/replace-unused-invitations', { body: { confirm_replace_unused: true } })
     setIssued(result.invitations)
     setSkippedAssignments(result.skipped_assignments)
-    if (result.invitations.length) download(invitationCsv(result.invitations, 'C4'), 'private-c4-unused-invitations.csv', 'text/csv;charset=utf-8')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C4', rosterNames), 'private-c4-unused-invitations.csv', 'text/csv;charset=utf-8')
     setData(await request('/admin/summary'))
-  }
-  function selectReplacement(assignment_id) {
-    setReplacement({ assignment_id, reason: '' }); setReplaceAcknowledged(false)
-    replacementForm.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setRosterRefresh(value => value + 1)
   }
   if (!authenticated) return <div className="pilot-app"><SiteHeader current="c4-admin" researcher /><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
     <p>For the research team. Study participants should <a href="/c4">open the listening study</a>.</p>
@@ -394,20 +432,17 @@ export function C4Admin() {
   return <div className="pilot-app">
     <SiteHeader current="c4-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
-    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>Manage C4 invitations and sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={locked} onClick={() => act(async () => setData(await request('/admin/summary')))}>{locked ? 'Working…' : 'Refresh invitations and sessions'}</button><button className="p-secondary" disabled={locked} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setSkippedAssignments(null); setAccountInvite(null); setReplacement({ assignment_id: '', reason: '' }); setReplaceAcknowledged(false) })}>Sign out</button></div>{loading && <p role="status">Loading participant assignments…</p>}</section>
+    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>Manage C4 invitations and sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={locked} onClick={() => act(async () => setData(await request('/admin/summary')))}>{locked ? 'Working…' : 'Refresh invitations and sessions'}</button><button className="p-secondary" disabled={locked} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setRosterNames([]); setIssued(null); setSkippedAssignments(null); setAccountInvite(null) })}>Sign out</button></div>{loading && <p role="status">Loading participant assignments…</p>}</section>
+    {data && <C4DesignSummary data={data} />}
+    <AssignmentRoster study="C4" apiBase={`${API}/api/c4-pilot`} busy={locked} refreshKey={rosterRefresh} onError={setError} onRosterChange={setRosterNames} onInvitationChange={() => act(async () => setData(await request('/admin/summary')))} />
     <ResponseViewer study="C4" apiBase={`${API}/api/c4-pilot`} onError={setError} />
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
-      <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unused assignments remain' : 'All assignments already have invitations'}</h2>
-      {issued.length ? <><p>Save the downloaded CSV before leaving this page and fill in names as you assign codes. Copy only the invitation code to the participant and send them to <a href="/c4">the C4 study</a>.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C4'), 'private-c4-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-c4-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below for one file, or choose “Replace lost code” for an individual unused assignment. Creating invitations does not reissue existing codes.</p>}
-      {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} started assignments skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
+      <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unassigned unused codes remain' : 'All assignments already have invitations'}</h2>
+      {issued.length ? <><p>Current codes are also saved in the shared assignment list above. Record names there; downloading again includes your saved names. Copy only the invitation code to the participant and send them to <a href="/c4">the C4 study</a>.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C4', rosterNames), 'private-c4-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-c4-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>View and copy current codes in the shared assignment list above, or choose “Replace code” beside the relevant name. Creating invitations does not reissue existing codes.</p>}
+      {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} assigned or started slots skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
     </section>}
     <C4BulkInvitationDownload busy={locked} onDownload={() => act(downloadUnusedInvitations)} />
-    {data && <><C4InvitationAssignments data={data} busy={locked} onCreate={() => act(createMissing)} onReplace={selectReplacement} />
-      <form ref={replacementForm} className="p-card" onSubmit={e => { e.preventDefault(); act(replaceInvitation) }}><h2>Replace a lost or used participant code</h2><p>Choose an assignment and explain why you need a new code. The previous code stops working; any existing session closes, while its saved answers remain in the audit.</p>
-        <label>Assignment<select required disabled={locked} value={replacement.assignment_id} onChange={e => { setReplacement(r => ({ ...r, assignment_id: e.target.value })); setReplaceAcknowledged(false) }}><option value="">Choose an assignment</option>{assignments.filter(row => row.can_replace).map(row => <option key={row.assignment_id} value={row.assignment_id}>{row.assignment_id} · {row.participant_label || 'not started'}</option>)}</select></label>
-        {selectedAssignment?.phase && <label className="p-check"><input type="checkbox" required disabled={locked} checked={replaceAcknowledged} onChange={e => setReplaceAcknowledged(e.target.checked)} />I understand this closes {selectedAssignment.participant_label || 'the existing listener'}’s session for this assignment.</label>}
-        <label>Reason<textarea required disabled={locked} minLength="10" maxLength="500" value={replacement.reason} onChange={e => setReplacement(r => ({ ...r, reason: e.target.value }))} placeholder="For example: Lost the downloaded code for this unused review assignment." /></label><button className="p-secondary" disabled={locked || !selectedAssignment || (Boolean(selectedAssignment.phase) && !replaceAcknowledged)}>{busy ? 'Working…' : 'Generate replacement code'}</button>
-      </form>
+    {data && <><section className="p-card"><h2>Create missing invitations</h2><p>View and replace codes beside participant names in the shared assignment list above. Use this button to fill every slot that has no code yet.</p><button type="button" className="p-secondary" disabled={locked || data.missing_invitation_count === 0} onClick={() => act(createMissing)}>Create missing invitations ({data.missing_invitation_count})</button></section>
       <section className="p-card"><h2>{data.completed} completed sessions</h2><p>This table shows listeners who have started, including preserved sessions closed by a replacement. An empty table means nobody has started yet.</p><div className="p-actions"><button className="p-secondary" disabled={locked} onClick={() => act(() => exportFile('export', 'c4-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={locked} onClick={() => act(() => exportFile('sessions', 'c4-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th><th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td><td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section></>}
     <section className="p-card"><h2>Invite a researcher to the admin panel</h2><p>This creates an account invitation for a teammate who needs to manage studies and responses. Use “Participant invitations” above for listener codes.</p>
       <button className="p-secondary" disabled={locked} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>

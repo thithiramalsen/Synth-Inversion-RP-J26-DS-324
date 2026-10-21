@@ -8,17 +8,22 @@ import { readFileSync } from 'node:fs'
 let server, PilotApp, C1Admin, BulkInvitationDownload, InvitationDownloads, ExperienceQuestions, PreviousNavigation, ResponseTable, C4App, C4Admin, C4BulkInvitationDownload, ComparisonPlayer, C4InvitationAssignments, ComparisonQuestions
 const originalWindow = globalThis.window
 const originalStorage = globalThis.localStorage
+let C1StudyNotice
+let AssignmentNameRow
+let AssignmentInvitationControls
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
-  server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
+  server = await createServer({ server: { middlewareMode: true, hmr: false }, resolve: { preserveSymlinks: true }, appType: 'custom' })
   const c1 = await server.ssrLoadModule('/src/PilotApp.jsx')
   PilotApp = c1.default; BulkInvitationDownload = c1.BulkInvitationDownload
   C1Admin = c1.PilotAdmin
+  C1StudyNotice = c1.C1StudyNotice
   InvitationDownloads = (await server.ssrLoadModule('/src/InvitationDownloads.jsx')).default
   ExperienceQuestions = (await server.ssrLoadModule('/src/ExperienceQuestions.jsx')).default
   PreviousNavigation = (await server.ssrLoadModule('/src/PreviousNavigation.jsx')).default
   ResponseTable = (await server.ssrLoadModule('/src/ResponseViewer.jsx')).ResponseTable
+  ;({ AssignmentNameRow, AssignmentInvitationControls } = await server.ssrLoadModule('/src/AssignmentRoster.jsx'))
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
   C4App = c4.default; C4Admin = c4.C4Admin; ComparisonPlayer = c4.ComparisonPlayer
   C4BulkInvitationDownload = c4.C4BulkInvitationDownload
@@ -50,7 +55,9 @@ for (const [name, saved] of [
 
 test('C4 review, researcher login and triple player render independently', () => {
   globalThis.localStorage = { getItem: () => null }
-  assert.match(renderToString(React.createElement(C4App)), /C4 SIMILARITY REVIEW/)
+  const initial = renderToString(React.createElement(C4App))
+  assert.match(initial, /C4 LISTENING STUDY/)
+  assert.doesNotMatch(initial, /Supervisor review only|excluded from research analysis/)
   assert.match(renderToString(React.createElement(C4Admin)), /Sign in/)
   const html = renderToString(React.createElement(ComparisonPlayer, {
     session: {session_id: 'test', token:'test'}, step: {phase:'rating'}, onCounts:()=>{}, onError:()=>{}
@@ -71,6 +78,16 @@ test('signed-out admin pages do not render the response viewer', () => {
   }
 })
 
+test('C1 participant notice is distinct from historical rehearsal wording', () => {
+  const cfg = JSON.parse(readFileSync(new URL('../../config/c1_participants_v1.json', import.meta.url), 'utf8'))
+  const html = renderToString(React.createElement(C1StudyNotice, { rehearsal: false, config: cfg }))
+  assert.match(html, /C1 listening study/)
+  assert.match(html, /Completed study responses/)
+  assert.doesNotMatch(html, /Supervisor|rehearsal only|Awaiting approval/)
+  const old = renderToString(React.createElement(C1StudyNotice, { rehearsal: true, config: {} }))
+  assert.match(old, /Rehearsal only/)
+})
+
 test('response tables show saved ratings and corrections without private fields', () => {
   const base = { listener_number: 1, participant_label: 'Listener 001', assignment_id: 'block_01', presentation_id: 'practice_1',
     trial_order: 1, kind: 'practice', phase: 'rating', analysis_include: false, revision_count: 1,
@@ -89,6 +106,23 @@ test('response tables show saved ratings and corrections without private fields'
   assert.match(c4, /triplet_01/)
   for (const html of [c1, c4]) assert.doesNotMatch(html, /PRIVATE_/)
   assert.match(renderToString(React.createElement(ResponseTable, { study: 'C1', rows: [] })), /No saved responses/)
+})
+
+test('rehearsal response tables distinguish earlier answers from current answers', () => {
+  const base = { assignment_id: 'researcher_rehearsal_01', presentation_id: 'sound_01',
+    trial_order: 1, kind: 'primary', phase: 'complete', analysis_include: false, revision_count: 0,
+    sample_id: 'sound_001', ratings: { brightness: 4 }, first_ratings: { brightness: 4 } }
+  const rows = [
+    { ...base, listener_number: 1, participant_label: 'Listener 001', is_current_version: false },
+    { ...base, listener_number: 2, participant_label: 'Listener 002', is_current_version: true },
+  ]
+  const html = renderToString(React.createElement(ResponseTable, { study: 'C1', rows, showVersion: true }))
+  assert.match(html, /<th>Version<\/th>/)
+  assert.match(html, /<td>Earlier<\/td>/)
+  assert.match(html, /<td>Current<\/td>/)
+  assert.equal((html.match(/<td>Excluded<\/td>/g) || []).length, 2)
+  const singleVersion = renderToString(React.createElement(ResponseTable, { study: 'C1', rows }))
+  assert.doesNotMatch(singleVersion, /<th>Version<\/th>/)
 })
 
 test('C1 bulk invitation download explains replacement and protects started sessions', () => {
@@ -112,12 +146,41 @@ test('C4 bulk invitation download matches C1 and identifies C4 assignments', () 
   assert.match(busy, /<button[^>]*disabled=""[^>]*>Replace unused codes and download all/)
 })
 
+test('assignment rows identify the listener and researcher without showing access codes', () => {
+  const html = renderToString(React.createElement(AssignmentNameRow, { row: { assignment_id: 'c1_participant_01', participant_name: 'Demo Musician', version: 2,
+    status: 'in_progress', participant_label: 'Listener 001', saved_presentations: 9, updated_by: 'demo-researcher', updated_at: null }, busy: false, onSave() {} }))
+  assert.match(html, /Name or nickname for c1_participant_01/)
+  assert.match(html, /value="Demo Musician"/)
+  assert.match(html, /Listener 001/)
+  assert.match(html, /demo-researcher/)
+  assert.match(html, /In progress/)
+  assert.match(html, /9<!-- --> saved/)
+  assert.doesNotMatch(html, /invitation_code|token_hash/)
+})
+
+test('assignment code controls display current codes, explain legacy codes and lock completed slots', () => {
+  const available = { assignment_id: 'c1_participant_01', invitation: 'Current_Code-01', invitation_version: 'a-hash', invitation_status: 'available', can_replace_invitation: true }
+  const html = renderToString(React.createElement(AssignmentInvitationControls, { row: available, busy: false, onChange() {} }))
+  assert.match(html, /value="Current_Code-01"/)
+  assert.match(html, /Copy code/)
+  assert.match(html, /Replace code/)
+  const legacy = renderToString(React.createElement(AssignmentInvitationControls, { row: { ...available, invitation: null, invitation_status: 'legacy_unavailable' }, onChange() {} }))
+  assert.match(legacy, /stored as a hash/)
+  assert.match(legacy, /Replace code/)
+  const completed = renderToString(React.createElement(AssignmentInvitationControls, { row: { ...available, can_replace_invitation: false }, onChange() {} }))
+  assert.match(completed, /replacement locked/)
+  assert.doesNotMatch(completed, /<button[^>]*>Replace code/)
+  const missing = renderToString(React.createElement(AssignmentInvitationControls, { row: { assignment_id: 'slot', invitation_version: null }, onChange() {} }))
+  assert.match(missing, /Create code/)
+})
+
 test('invitation download controls offer a fillable CSV and JSON backup', () => {
   const html = renderToString(React.createElement(InvitationDownloads, { onCsv: () => {}, onJson: () => {} }))
   assert.match(html, /Download CSV to fill in names/)
   assert.match(html, /Download JSON backup/)
-  assert.match(html, /blank participant name, date sent and notes columns/)
-  assert.match(html, /Names are not uploaded to the study/)
+  assert.match(html, /includes saved assignment names when available/)
+  assert.match(html, /Edits to the downloaded CSV stay on your computer/)
+  assert.match(html, /shared assignment list above to save names for the team/)
   assert.match(html, /same displayed codes without replacing them/)
 })
 

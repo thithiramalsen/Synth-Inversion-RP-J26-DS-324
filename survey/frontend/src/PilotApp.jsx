@@ -1,9 +1,11 @@
 import { SiteHeader } from './SiteNavigation'
+import VolumeSetupHeading from './VolumeSetupHeading'
 import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
 import PreviousNavigation from './PreviousNavigation'
 import ResponseViewer from './ResponseViewer'
+import AssignmentRoster from './AssignmentRoster.jsx'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
@@ -104,6 +106,12 @@ function Scale({ descriptor, value, onChange }) {
   </fieldset>
 }
 
+export function C1Workload({ status }) {
+  const practice = status.practice_presentations ?? 3
+  return <p>{practice > 0 ? `There are ${practice} practice clips before the ${status.rated_presentations} rated presentations.`
+    : `There are ${status.rated_presentations} rated presentations.`} Choose a comfortable listening level and keep it consistent.</p>
+}
+
 function Entry({ status, busy, onSubmit }) {
   const [values, setValues] = useState({ invitation: '', activities: [], experience_months: '', recent_frequency: '', tools: '', example: '', experience_selection: emptyExperienceSelection(status.config), adult: false, consent: false, headphones: false, quiet_environment: false, understands_language: false })
   const change = (key, value) => setValues(v => ({ ...v, [key]: value }))
@@ -115,7 +123,7 @@ function Entry({ status, busy, onSubmit }) {
     </div>
     <section className="p-card"><h2>Before you take part</h2>
       {cfg.information.map((text, i) => <p key={i}>{text}</p>)}
-      <p>There are 3 practice clips before the {status.rated_presentations} rated presentations. Choose a comfortable listening level and keep it consistent.</p>
+      <C1Workload status={status} />
       {cfg.researcher_email && <p>Research contact: {cfg.researcher_name} · <a href={`mailto:${cfg.researcher_email}`}>{cfg.researcher_email}</a></p>}
       {cfg.supervisor_contact && <p>Supervisor contact: {cfg.supervisor_contact}</p>}
       {cfg.retention_statement && <p>{cfg.retention_statement}</p>}
@@ -137,6 +145,12 @@ function Entry({ status, busy, onSubmit }) {
       <button className="p-primary" disabled={busy || !status.ready || !values.activities.length || !experienceReady(values, cfg)}>{busy ? 'Starting…' : 'Start listening setup'}<span aria-hidden="true">→</span></button>
     </section>
   </form>
+}
+
+export function C1StudyNotice({ rehearsal, config }) {
+  return <div className="p-rehearsal">{rehearsal
+    ? config?.review_notice || 'Rehearsal only · These responses are excluded from the research pilot.'
+    : config?.participant_notice || 'C1 listening study. Practice responses are excluded from research analysis.'}</div>
 }
 
 export default function PilotApp() {
@@ -185,17 +199,18 @@ export default function PilotApp() {
     localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false)
   }
   const cfg = step?.config || status?.config
+  const rehearsal = step?.rehearsal ?? status?.rehearsal
   const phase = step?.phase
   const playable = ['volume', 'headphones', 'rating', 'correction'].includes(phase)
   const end = ['complete', 'withdrawn', 'screen_failed', 'replaced'].includes(phase)
   const progress = phase === 'rating' && !step.practice ? Math.round((step.display_number - 1) / step.display_total * 100) : 0
-  return <div className="pilot-app"><SiteHeader current="c1" note={step?.rehearsal || status?.rehearsal ? 'C1 INTERFACE REVIEW' : 'C1 TIMBRE STUDY'} />
+  return <div className="pilot-app"><SiteHeader current="c1" note={rehearsal ? 'C1 INTERFACE REVIEW' : 'C1 TIMBRE STUDY'} />
     <ErrorNotice message={error} onDismiss={() => setError('')}>
       {session && <button type="button" onClick={() => action(() => load())}>Reload current step</button>}
       {status?.rehearsal && !step && <button type="button" onClick={leaveRehearsal}>Return to rehearsal entry</button>}
     </ErrorNotice>
     <main className="p-main">
-      {(step?.rehearsal || status?.rehearsal) && <div className="p-rehearsal">{cfg?.review_notice || 'Rehearsal only · These responses are excluded from the research pilot.'}</div>}
+      {cfg && <C1StudyNotice rehearsal={rehearsal} config={cfg} />}
       {!status ? <p role="status">Loading the study…</p> : !session ? <>
         {!status.ready && <div className="p-notice"><strong>The study is not open yet.</strong><p>You can read the information below. The researcher is completing preparation.</p></div>}
         <Entry status={status} busy={busy} onSubmit={values => action(async () => { const active = await request('/sessions', { body: values }); localStorage.setItem(KEY, JSON.stringify(active)); setSession(active); await load(active); window.scrollTo(0, 0) })} />
@@ -203,7 +218,7 @@ export default function PilotApp() {
         <div className="p-session-bar"><span className="p-listener-label">{step.participant_label}</span>{!end && <button onClick={() => setPaused(!paused)}>{paused ? 'Resume' : 'Pause'}</button>}</div>
         {withdrawPrompt ? <section className="p-card"><h1>Withdraw this session?</h1><p>Your responses will be marked as withdrawn and excluded from analysis.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => action(async () => { await submit('withdraw', {}); setWithdrawPrompt(false) })}>Withdraw my responses</button><button className="p-secondary" onClick={() => setWithdrawPrompt(false)}>Keep my session</button></div></section> : paused ? <section className="p-card"><h1>Take your time.</h1><p>Your saved responses are safe. Resume when you are ready to listen in a quiet place.</p><button className="p-primary" onClick={() => setPaused(false)}>Resume listening</button></section> : <>
           <PreviousNavigation step={step} busy={busy} unit="sound" onPrevious={openPrevious} />
-          {phase === 'volume' && <><p className="p-eyebrow">SETUP · 1 OF 2</p><h1>Find a comfortable level.</h1><p className="p-lede">Start with a low device volume, play the tone and adjust it to a comfortable level. Keep that setting for the rest of the session.</p></>}
+          {phase === 'volume' && <VolumeSetupHeading config={cfg} screeningEnabled={step.headphone_screening_enabled} />}
           {phase === 'headphones' && <><p className="p-eyebrow">SETUP · 2 OF 2</p><h1>A quick headphone check.</h1><p className="p-lede">You will hear three tones. Which is the quietest? Listen to all three before choosing.</p><p className="p-muted">Check {step.screen_number} of 6</p></>}
           {phase === 'rating' && <><div className="p-trial-heading"><div><p className="p-eyebrow">{step.practice ? 'GET FAMILIAR WITH THE QUESTIONS' : 'LISTEN · DESCRIBE · CONTINUE'}</p><h1>{step.practice ? 'Practice' : 'Sound'} {String(step.display_number).padStart(2, '0')}<span> / {step.display_total}</span></h1></div></div>
             {!step.practice && <div className="p-progress"><span style={{ width: `${progress}%` }} /></div>}
@@ -231,10 +246,12 @@ export default function PilotApp() {
             <label>Were the descriptor questions clear?<select required value={feedback.clarity} onChange={e => setFeedback(v => ({ ...v, clarity: e.target.value }))}><option value="">Choose an answer</option>{['Clear', 'Some terms unclear', 'Difficult to understand'].map(s => <option key={s}>{s}</option>)}</select></label>
             <label>How did the session length feel?<select required value={feedback.length} onChange={e => setFeedback(v => ({ ...v, length: e.target.value }))}><option value="">Choose an answer</option>{['About right', 'Too long', 'Could be longer'].map(s => <option key={s}>{s}</option>)}</select></label>
             <label>Anything we should improve? <span>Optional</span><textarea maxLength="1500" rows="3" value={feedback.comment} onChange={e => setFeedback(v => ({ ...v, comment: e.target.value }))} /></label><button className="p-primary" disabled={busy}>Finish session →</button></form>}
-          {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} sound responses have been saved, including practice. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No descriptor study responses are required.'}</p></section>}
+          {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} sound responses have been saved${step.practice_presentations !== 0 ? ', including practice' : ''}. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No descriptor study responses are required.'}</p></section>}
         </>}
         {!['withdrawn', 'replaced'].includes(phase) && !withdrawPrompt && <button className="p-withdraw" onClick={() => setWithdrawPrompt(true)}>Withdraw this session</button>}
-        {step.rehearsal && end && <section className="p-card"><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={leaveRehearsal}>Use another rehearsal invitation</button></section>}
+        {step.rehearsal && end && <section className="p-card">{status?.rehearsal === false
+          ? <><p>This saved session belongs to the earlier rehearsal. To join the participant study, use a new participant invitation. Your rehearsal answers remain separate.</p><button className="p-primary" onClick={leaveRehearsal}>Open the participant study</button></>
+          : <><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={leaveRehearsal}>Use another rehearsal invitation</button></>}</section>}
       </>}
     </main><footer className="p-footer">Synth Inversion Research · C1 listening pilot</footer></div>
 }
@@ -242,9 +259,9 @@ export default function PilotApp() {
 export function BulkInvitationDownload({ busy, onDownload }) {
   return <section className="p-card" aria-label="Download unused participant invitations">
     <h2>Get unused invitations in one file</h2>
-    <p>If you lost the original download, replace all unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions.</p>
+    <p>If you lost the original download, replace unassigned unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions. Slots with saved names are also skipped so another researcher’s assigned code stays valid. Check with teammates before regenerating codes: invitations sent without a saved name may still be replaced.</p>
     <button type="button" className="p-secondary" disabled={busy} onClick={onDownload}>Replace unused codes and download all</button>
-    <p className="p-muted">Save the private CSV file and fill in names as you assign codes. Each code is labelled with its block. This does not create participant sessions.</p>
+    <p className="p-muted">Save the private CSV file and use the shared assignment list to record names for the team. Each code is labelled with its block. This does not create participant sessions.</p>
   </section>
 }
 
@@ -253,11 +270,18 @@ export function PilotAdmin() {
   const [data, setData] = useState(null), [error, setError] = useState('')
   const [signingUp, setSigningUp] = useState(false), [signupFields, setSignupFields] = useState({ invitation: '', confirm: '' })
   const [accountInvite, setAccountInvite] = useState(null)
-  const [replacement, setReplacement] = useState({ assignment_id: '', reason: '' })
   const [busy, setBusy] = useState(false), [issued, setIssued] = useState(null)
   const [skippedAssignments, setSkippedAssignments] = useState(null)
+  const [rosterNames, setRosterNames] = useState([]), [rosterRefresh, setRosterRefresh] = useState(0)
   async function act(fn) { setError(''); setBusy(true); try { await fn() } catch (e) { setError(e.message) } finally { setBusy(false) } }
   useEffect(() => { fetch(`${API}/api/researcher/session`, { credentials: 'include' }).then(r => setAuthenticated(r.ok)).catch(() => {}) }, [])
+  useEffect(() => {
+    if (!authenticated) return
+    let active = true
+    request('/admin/summary').then(result => { if (active) setData(result) })
+      .catch(error => { if (active) setError(error.message) })
+    return () => { active = false }
+  }, [authenticated])
   async function researcherRequest(path, body) {
     const response = await fetch(`${API}/api/researcher${path}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     const result = await response.json().catch(() => ({}))
@@ -282,22 +306,16 @@ export function PilotAdmin() {
     const result = await request('/admin/invitations', { body: {} })
     setSkippedAssignments(null)
     setIssued(result.invitations)
-    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1'), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')
-  }
-  async function replaceInvitation() {
-    const result = await request('/admin/replace-invitation', { body: replacement })
-    setIssued([result])
-    setSkippedAssignments(null)
-    download(invitationCsv([result], 'C1'), 'private-c1-replacement-invitation.csv', 'text/csv;charset=utf-8')
-    setReplacement({ assignment_id: '', reason: '' })
-    setData(await request('/admin/summary'))
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1', rosterNames), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')
+    setData(await request('/admin/summary')); setRosterRefresh(value => value + 1)
   }
   async function downloadUnusedInvitations() {
     const result = await request('/admin/replace-unused-invitations', { body: { confirm_replace_unused: true } })
     setIssued(result.invitations)
     setSkippedAssignments(result.skipped_assignments)
-    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1'), 'private-c1-unused-invitations.csv', 'text/csv;charset=utf-8')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1', rosterNames), 'private-c1-unused-invitations.csv', 'text/csv;charset=utf-8')
     setData(await request('/admin/summary'))
+    setRosterRefresh(value => value + 1)
   }
   if (!authenticated) return <div className="pilot-app"><SiteHeader current="c1-admin" researcher /><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
     <p>For the research team. Study participants should <a href="/pilot">open the listening study</a>.</p>
@@ -312,19 +330,22 @@ export function PilotAdmin() {
   return <div className="pilot-app">
     <SiteHeader current="c1-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
-    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setRosterNames([]); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    {data && <section className="p-card"><h2>{data.rehearsal ? 'Rehearsal invitations' : 'Participant invitations'}</h2><p role="status"><strong>{data.rehearsal ? 'This is the rehearsal study.' : data.ready ? 'Participant collection is open.' : 'Participant entry is closed.'}</strong> {data.assignment_capacity} assignments are available in this version. {data.rehearsal ? 'Responses remain excluded.' : 'Create fresh participant codes below; previous rehearsal codes are separate.'}</p></section>}
+    {data?.includes_previous_versions && <p className="p-notice" role="status">Sessions and saved answers below include earlier rehearsal versions. {data.previous_version_sessions} earlier-version sessions are saved. The shared assignment list and new invitations apply to the current version. Earlier sessions keep their original practice rounds and answers.</p>}
+    <AssignmentRoster study="C1" apiBase={`${API}/api/c1-pilot`} busy={busy} refreshKey={rosterRefresh} onError={setError} onRosterChange={setRosterNames} onInvitationChange={() => act(async () => setData(await request('/admin/summary')))} />
     <ResponseViewer study="C1" apiBase={`${API}/api/c1-pilot`} onError={setError} />
     <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
       <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
       {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}
     </section>
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
-      <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unused assignments remain' : 'All assignments already have invitations'}</h2>
-      {issued.length ? <><p>The codes are shown here and downloaded as a CSV with blank names. Copy only an invitation code to its participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C1'), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>Use “Replace unused codes and download all” below if you lost the original file. Creating missing invitations does not reissue existing codes.</p>}
-      {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} started assignments skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
+      <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unassigned unused codes remain' : 'All assignments already have invitations'}</h2>
+      {issued.length ? <><p>The codes are shown here and downloaded as a CSV. Saved assignment names are included when available. Copy only an invitation code to its participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C1', rosterNames), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>View and copy current codes in the shared assignment list above. Replace a legacy hash-only code there if needed. Creating missing invitations does not reissue existing codes. Current saved codes are visible in the shared assignment list.</p>}
+      {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} assigned or started slots skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
     </section>}
     <BulkInvitationDownload busy={busy} onDownload={() => act(downloadUnusedInvitations)} />
-    {data && <><section className="p-card"><h2>{data.completed} completed sessions</h2><p>Create missing invitations fills assignments without a code. To start an assignment again, use the replacement form below.</p><div className="p-actions"><button className="p-secondary" disabled={busy} onClick={() => act(createMissing)}>Create missing invitations</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('export', 'c1-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('sessions', 'c1-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th><th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td><td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section>
-      <form className="p-card" onSubmit={e => { e.preventDefault(); act(replaceInvitation) }}><h2>Generate a replacement invitation</h2><p>This retires the previous code and closes its session, preserving responses in the audit log. Completed research assignments cannot be replaced; rehearsal assignments can.</p><label>Assignment ID<input required disabled={busy} value={replacement.assignment_id} onChange={e => setReplacement(r => ({ ...r, assignment_id: e.target.value }))} placeholder="For example, block_01 or rehearsal" /></label><label>Reason<textarea required disabled={busy} minLength="10" maxLength="500" value={replacement.reason} onChange={e => setReplacement(r => ({ ...r, reason: e.target.value }))} placeholder="For example: Repeat the full interface rehearsal." /></label><button className="p-secondary" disabled={busy}>{busy ? 'Working…' : 'Generate replacement code'}</button></form></>}
+    {data && <><section className="p-card"><h2>{data.completed} completed sessions</h2><p>Create missing invitations fills assignments without a code. View or replace a code beside its name in the shared assignment list above.</p><div className="p-actions"><button className="p-secondary" disabled={busy} onClick={() => act(createMissing)}>Create missing invitations</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('export', 'c1-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('sessions', 'c1-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th>{data.includes_previous_versions && <th>Version</th>}<th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td>{data.includes_previous_versions && <td>{s.is_current_version ? 'Current' : 'Earlier'}</td>}<td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section>
+    </>}
   </main></div>
 }

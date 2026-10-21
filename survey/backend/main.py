@@ -17,6 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ValidationError
 
 from database import get_connection, initialize_database
+from assignment_roster import initialize_roster_database
 from security import (SESSION_COOKIE, SESSION_SECONDS, initialize_researcher_database,
                       issue_researcher_invite, login, logout, require_admin, signup)
 from c1_pilot import router as c1_router, initialize_pilot_database
@@ -50,6 +51,7 @@ async def lifespan(_app: FastAPI):
     initialize_researcher_database()
     initialize_pilot_database()
     initialize_c4_database()
+    initialize_roster_database()
     yield
 
 

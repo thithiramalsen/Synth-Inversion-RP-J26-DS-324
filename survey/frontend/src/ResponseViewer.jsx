@@ -6,14 +6,15 @@ const score = value => value === 'unclear' ? 'Cannot judge' : value ?? '—'
 const choice = answer => answer?.choice === 'cannot_decide' ? 'Cannot decide'
   : answer?.choice ? `${answer.choice === 'candidate_a' ? 'Sound A' : 'Sound B'} · ${answer.confidence ?? '—'}/5 confidence` : '—'
 
-export function ResponseTable({ study, rows }) {
+export function ResponseTable({ study, rows, showVersion = false }) {
   if (!rows.length) return <p role="status">No saved responses match these filters.</p>
   return <div className="p-table p-response-table"><table><caption>{study} saved answers · latest revision shown</caption>
-    <thead><tr><th>Listener</th><th>Assignment</th><th>{study === 'C1' ? 'Sound' : 'Comparison'}</th><th>Trial type</th><th>Session status</th>
+    <thead><tr><th>Listener</th><th>Assignment</th>{showVersion && <th>Version</th>}<th>{study === 'C1' ? 'Sound' : 'Comparison'}</th><th>Trial type</th><th>Session status</th>
       {study === 'C1' ? descriptors.map(([id, label]) => <th key={id}>{label}</th>) : <th>Choice and confidence</th>}
       <th>Corrections</th><th>Analysis</th></tr></thead>
     <tbody>{rows.map(row => <tr key={`${row.listener_number}-${row.presentation_id}`}>
       <td>{row.participant_label}</td><td>{row.assignment_id}</td>
+      {showVersion && <td>{row.is_current_version ? 'Current' : 'Earlier'}</td>}
       <td><strong>#{row.trial_order}</strong><br />{study === 'C1' ? row.sample_id : <details><summary>{row.triplet_id}</summary><dl>
         <dt>Reference</dt><dd>{row.reference}</dd><dt>Sound A</dt><dd>{row.candidate_a}</dd><dt>Sound B</dt><dd>{row.candidate_b}</dd>
       </dl></details>}</td>
@@ -61,8 +62,9 @@ export default function ResponseViewer({ study, apiBase, onError }) {
       </div>
       {loading ? <p role="status">Loading saved responses…</p> : data ? <>
         {data.rehearsal && <p className="p-notice">Review / rehearsal responses are excluded from research analysis. Practice and withdrawn responses remain labelled separately.</p>}
+        {data.includes_previous_versions && <p className="p-muted">Showing saved answers from the current and earlier rehearsal versions. Use the Version column to distinguish them.</p>}
         {data.responses.length > 0 && <p className="p-muted">On smaller screens, scroll the table sideways to see all columns.</p>}
-        <ResponseTable study={study} rows={data.responses} />
+        <ResponseTable study={study} rows={data.responses} showVersion={data.includes_previous_versions} />
         <div className="p-response-controls"><span role="status">{data.total ? `${offset+1}–${Math.min(offset+data.responses.length, data.total)} of ${data.total} saved responses` : '0 saved responses'}</span>
           <div className="p-actions"><button type="button" className="p-secondary" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset-25))}>← Previous page</button><button type="button" className="p-secondary" disabled={offset+data.limit >= data.total} onClick={() => setOffset(offset+25)}>Next page →</button></div>
         </div>

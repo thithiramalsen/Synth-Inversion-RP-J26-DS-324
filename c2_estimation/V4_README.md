@@ -7,6 +7,11 @@ See [VALIDATION_RESULTS.md](VALIDATION_RESULTS.md) and [DEMO.md](DEMO.md).
 Nothing here regenerates the corpus. See [FULL_BASELINE_RESULTS.md](FULL_BASELINE_RESULTS.md).
 Saved EDA/audit evidence is indexed in [RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.md).
 
+Application update, 20 October 2026: the separate [live C2 app](live/README.md)
+adds WAV upload, fresh ensemble inference, reconstruction, U/S/R/q, and verified
+Vital-preset export on port 8770. The saved-results viewer remains available.
+See [live verification](live/VERIFICATION.md) for checks and remaining limits.
+
 ## Implemented and verified
 
 - Exact agreement between the canonical 131,072-row manifest and the full parameter
@@ -52,8 +57,6 @@ Saved EDA/audit evidence is indexed in [RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.
 
 ## Not yet completed
 
-- Live audio upload/inference interface and downloadable predicted Vital patch.
-  The current browser interface replays saved examples; see [DEMO.md](DEMO.md).
 - Final method locking and any decision/abstention threshold policy.
 - Final untouched-test evaluation and the later exploratory human usefulness study.
 
