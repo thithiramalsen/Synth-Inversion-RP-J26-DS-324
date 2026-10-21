@@ -40,6 +40,11 @@ responses and ownership records. Keep the participant service on root
 - Volume setup remains; neither researcher survey has practice rounds.
 - Existing C1 sessions keep their saved 23-step protocol and can still resume.
   The frozen v1 bundle stays packaged. New C1 invitations use the v2 bundle.
+- The C1 admin session summary and response viewer include both registered
+  researcher rehearsal versions, marked Current or Earlier. Earlier answers
+  and completed sessions remain visible after upgrading. The shared assignment
+  list and newly issued codes still belong to the current version; no old
+  session, rating, protocol or invitation is migrated or rewritten.
 - The main participant surveys retain their existing practice rounds.
 
 ## Verify after deployment

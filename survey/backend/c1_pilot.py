@@ -79,6 +79,25 @@ def bundle_for_hash(checksum):
     raise HTTPException(409, 'The saved study audio bundle is unavailable or changed; contact the researcher')
 
 
+def admin_bundle_hashes(bundle, checksum):
+    """Keep registered versions of the same researcher rehearsal visible.
+
+    Participant and supervisor-review dashboards retain their current-bundle
+    scope. This only broadens the explicitly separate researcher rehearsal.
+    """
+    hashes = [checksum]
+    if not bundle['rehearsal'] or config().get('collection_mode') != 'researcher_rehearsal':
+        return hashes
+    for path in known_bundle_paths():
+        if not path.is_file():
+            continue
+        previous, previous_hash = load_bundle(path)
+        if (previous['rehearsal'] and previous['study_id'] == bundle['study_id']
+                and previous_hash not in hashes):
+            hashes.append(previous_hash)
+    return hashes
+
+
 def initialize_pilot_database():
     with get_connection() as db:
         db.executescript('''
@@ -713,12 +732,18 @@ def assignment_name(body: AssignmentName, response: Response, actor: str = Depen
 def summary():
     bundle, checksum = load_bundle()
     issues = launch_issues(bundle, config())
+    hashes = admin_bundle_hashes(bundle, checksum)
+    placeholders = ','.join('?' for _ in hashes)
     with get_connection() as db:
-        sessions = db.execute('''SELECT participant_id,assignment_id,phase,current_index,started_at,completed_at,
+        sessions = db.execute(f'''SELECT participant_id,assignment_id,phase,current_index,started_at,completed_at,bundle_hash,
                                 withdrawn_at,listener_number FROM c1_sessions JOIN c1_listener_labels USING(session_id)
-                                WHERE bundle_hash=?''', (checksum,)).fetchall()
-    return dict(bundle_hash=checksum, sessions=[dict(r, participant_label=listener_label(r["listener_number"])) for r in sessions],
+                                WHERE bundle_hash IN ({placeholders}) AND study_id=?
+                                ORDER BY listener_number''', (*hashes, bundle['study_id'])).fetchall()
+    return dict(bundle_hash=checksum, sessions=[dict(r, participant_label=listener_label(r["listener_number"]),
+                                                   is_current_version=r['bundle_hash'] == checksum) for r in sessions],
                 completed=sum(r["phase"] == "complete" and not r["withdrawn_at"] for r in sessions),
+                includes_previous_versions=len(hashes) > 1,
+                previous_version_sessions=sum(r['bundle_hash'] != checksum for r in sessions),
                 rehearsal=bundle['rehearsal'], study_id=bundle['study_id'], ready=not issues, issues=issues,
                 assignment_capacity=len(bundle['assignments']))
 
@@ -769,7 +794,8 @@ def view_responses(response: Response, offset: int = Query(default=0, ge=0), lim
     bundle, checksum = load_bundle()
     response.headers['Cache-Control'] = 'private, no-store'
     return response_page('C1', checksum, offset=offset, limit=limit, listener_number=listener_number,
-                         phase=phase, kind=kind, rehearsal=bundle['rehearsal'])
+                         phase=phase, kind=kind, rehearsal=bundle['rehearsal'],
+                         bundle_hashes=admin_bundle_hashes(bundle, checksum))
 
 
 def safe_cell(value):

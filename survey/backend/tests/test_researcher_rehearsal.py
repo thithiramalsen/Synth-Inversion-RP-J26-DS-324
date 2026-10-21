@@ -148,6 +148,72 @@ class ResearcherRehearsalTests(unittest.TestCase):
         self.assertEqual(state.json()['config']['protocol_version'], 'c1_researcher_rehearsal_2026-10-21_v1')
         self.assertEqual(self.client.get('/api/c1-pilot/status').json()['total_presentations'], 20)
 
+    def test_admin_keeps_saved_sessions_and_answers_visible_across_rehearsal_versions(self):
+        legacy = ROOT/'survey/deploy/study/c1_researcher_rehearsal_v1.json'
+        legacy_config = ROOT/'survey/config/c1_researcher_rehearsal_v1.json'
+        with patch.dict(os.environ, SURVEY_C1_BUNDLE=str(legacy), SURVEY_C1_CONFIG=str(legacy_config)):
+            self.start()
+            self.client.post(self.base+'/volume', headers=self.headers, json={'completed_plays':1})
+            state = self.client.get(self.base, headers=self.headers).json()
+            self.client.post(self.base+'/playback/'+state['presentation_id'], headers=self.headers, json={})
+            saved = self.client.post(self.base+'/ratings', headers=self.headers, json={
+                'presentation_id':state['presentation_id'], 'started_at':state['server_time'],
+                'play_count':1, 'completed_plays':1,
+                'answers':dict(brightness=4, roughness=3, percussiveness=2, sustainedness=5)})
+            self.assertEqual(saved.status_code, 200, saved.text)
+        legacy_id = self.session['session_id']
+        tables = ('c1_sessions', 'c1_ratings', 'c1_invites', 'rehearsal_session_actors')
+        with database.get_connection() as db:
+            before = {table: [dict(row) for row in db.execute(f'SELECT * FROM {table}').fetchall()] for table in tables}
+        summary = self.client.get('/api/c1-pilot/admin/summary').json()
+        self.assertEqual(len(summary['sessions']), 1)
+        self.assertEqual(summary['previous_version_sessions'], 1)
+        self.assertFalse(summary['sessions'][0]['is_current_version'])
+        self.assertEqual(summary['sessions'][0]['current_index'], 1)
+        response = self.client.get('/api/c1-pilot/admin/responses?limit=1')
+        self.assertEqual(response.status_code, 200, response.text)
+        page = response.json()
+        self.assertEqual(page['total'], 1)
+        self.assertTrue(page['includes_previous_versions'])
+        self.assertEqual(page['responses'][0]['ratings']['brightness'], 4)
+        self.assertFalse(page['responses'][0]['is_current_version'])
+        self.assertFalse(page['responses'][0]['analysis_include'])
+        for private in ('entry_json', 'token_hash', 'entered_by', legacy_id):
+            self.assertNotIn(private, response.text)
+        for query in ('offset=1', 'kind=primary', 'phase=complete', 'listener_number=999'):
+            self.assertEqual(self.client.get('/api/c1-pilot/admin/responses?'+query).json()['responses'], [])
+        self.assertEqual(self.client.get('/api/c1-pilot/admin/responses?kind=practice&phase=in_progress&listener_number=1').json()['total'], 1)
+        with database.get_connection() as db:
+            for table in tables:
+                self.assertEqual([dict(row) for row in db.execute(f'SELECT * FROM {table}').fetchall()], before[table])
+        # New codes still start the current 20-sound protocol; the old session
+        # keeps its 23-step snapshot, saved rating and research exclusion.
+        self.start()
+        summary = self.client.get('/api/c1-pilot/admin/summary').json()
+        self.assertEqual(len(summary['sessions']), 2)
+        self.assertEqual(summary['previous_version_sessions'], 1)
+        self.assertEqual(sum(row['is_current_version'] for row in summary['sessions']), 1)
+        self.assertEqual(self.client.get(self.base, headers=self.headers).json()['total_presentations'], 20)
+        exported = list(csv.DictReader(io.StringIO(self.client.get('/api/c1-pilot/admin/export').text)))
+        self.assertEqual(len(exported), 1)
+        self.assertEqual(exported[0]['session_id'], legacy_id)
+        self.assertEqual(exported[0]['analysis_include'], 'False')
+
+    def test_rehearsal_admin_does_not_include_other_studies_or_unknown_bundles(self):
+        self.start()
+        with database.get_connection() as db:
+            db.execute("UPDATE c1_sessions SET bundle_hash='unknown-unregistered-bundle'")
+        participant = str(ROOT/'survey/deploy/study/c1_participant_bundle_v1.json')
+        legacy = os.environ['SURVEY_C1_LEGACY_BUNDLES']
+        with patch.dict(os.environ, SURVEY_C1_LEGACY_BUNDLES=os.pathsep.join([legacy, participant])):
+            import c1_pilot
+            bundle, checksum = c1_pilot.load_bundle()
+            hashes = c1_pilot.admin_bundle_hashes(bundle, checksum)
+            self.assertEqual(len(hashes), 2)
+            self.assertNotIn(hashlib.sha256(Path(participant).read_bytes()).hexdigest(), hashes)
+            self.assertEqual(self.client.get('/api/c1-pilot/admin/summary').json()['sessions'], [])
+            self.assertEqual(self.client.get('/api/c1-pilot/admin/responses').json()['total'], 0)
+
     def test_store_guard_rejects_participant_data_before_initialization(self):
         with database.get_connection() as db:
             db.execute("INSERT INTO c4_sessions(session_id,token_hash,participant_id,bundle_hash,protocol_hash,study_id,protocol_snapshot,assignment_id,entry_json,trial_order,screen_order,started_at) VALUES ('fixture','x','x','x','x','real-c4','{}','x','{}','[]','[]','test')")

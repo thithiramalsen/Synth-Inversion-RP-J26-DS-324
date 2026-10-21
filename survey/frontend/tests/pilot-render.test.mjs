@@ -108,6 +108,23 @@ test('response tables show saved ratings and corrections without private fields'
   assert.match(renderToString(React.createElement(ResponseTable, { study: 'C1', rows: [] })), /No saved responses/)
 })
 
+test('rehearsal response tables distinguish earlier answers from current answers', () => {
+  const base = { assignment_id: 'researcher_rehearsal_01', presentation_id: 'sound_01',
+    trial_order: 1, kind: 'primary', phase: 'complete', analysis_include: false, revision_count: 0,
+    sample_id: 'sound_001', ratings: { brightness: 4 }, first_ratings: { brightness: 4 } }
+  const rows = [
+    { ...base, listener_number: 1, participant_label: 'Listener 001', is_current_version: false },
+    { ...base, listener_number: 2, participant_label: 'Listener 002', is_current_version: true },
+  ]
+  const html = renderToString(React.createElement(ResponseTable, { study: 'C1', rows, showVersion: true }))
+  assert.match(html, /<th>Version<\/th>/)
+  assert.match(html, /<td>Earlier<\/td>/)
+  assert.match(html, /<td>Current<\/td>/)
+  assert.equal((html.match(/<td>Excluded<\/td>/g) || []).length, 2)
+  const singleVersion = renderToString(React.createElement(ResponseTable, { study: 'C1', rows }))
+  assert.doesNotMatch(singleVersion, /<th>Version<\/th>/)
+})
+
 test('C1 bulk invitation download explains replacement and protects started sessions', () => {
   const html = renderToString(React.createElement(BulkInvitationDownload, { busy: false, onDownload: () => {} }))
   assert.match(html, /Replace unused codes and download all/)
