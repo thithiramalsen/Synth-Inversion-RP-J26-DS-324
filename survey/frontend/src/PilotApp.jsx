@@ -1,4 +1,12 @@
 import { SiteHeader } from './SiteNavigation'
+import VolumeSetupHeading from './VolumeSetupHeading'
+import InvitationDownloads from './InvitationDownloads'
+import { invitationCsv } from './invitationCsv'
+import ExperienceQuestions from './ExperienceQuestions'
+import PreviousNavigation from './PreviousNavigation'
+import ResponseViewer from './ResponseViewer'
+import AssignmentRoster from './AssignmentRoster.jsx'
+import { emptyExperienceSelection, experienceReady } from './experienceSelection'
 import { useEffect, useRef, useState } from 'react'
 import './pilot.css'
 
@@ -91,15 +99,15 @@ function Scale({ descriptor, value, onChange }) {
     <legend>{descriptor.label}</legend><p>{descriptor.definition}</p>
     <div className="p-ratings" role="radiogroup" aria-label={descriptor.label}>
       {[1, 2, 3, 4, 5, 6, 7].map(n => <button key={n} type="button" role="radio" aria-checked={value === n}
-        className={value === n ? 'selected' : ''} onClick={() => onChange(n)} aria-label={`${descriptor.label}: ${n}`}>{n}</button>)}
+        className={value === n ? 'selected' : ''} onClick={() => onChange(n)} aria-label={`${descriptor.label}: ${n}${n === 1 ? ' — Not at all' : n === 7 ? ' — Very' : ''}`}>{n}</button>)}
     </div>
-    <div className="p-anchors"><span>Not at all</span><span>Very</span></div>
-    <button type="button" className={`p-unclear ${value === 'unclear' ? 'selected' : ''}`} aria-pressed={value === 'unclear'} onClick={() => onChange('unclear')}>I cannot judge / the term is unclear</button>
+    <div className="p-anchors"><span><strong>1</strong> Not at all</span><span><strong>7</strong> Very</span></div>
+    <button type="button" className={`p-unclear ${value === 'unclear' ? 'selected' : ''}`} aria-pressed={value === 'unclear'} onClick={() => onChange('unclear')}><span className="p-choice-check" aria-hidden="true">{value === 'unclear' ? '✓' : ''}</span><span>I cannot judge / the term is unclear</span></button>
   </fieldset>
 }
 
 function Entry({ status, busy, onSubmit }) {
-  const [values, setValues] = useState({ invitation: '', activities: [], experience_months: '', recent_frequency: '', tools: '', example: '', adult: false, consent: false, headphones: false, quiet_environment: false, understands_language: false })
+  const [values, setValues] = useState({ invitation: '', activities: [], experience_months: '', recent_frequency: '', tools: '', example: '', experience_selection: emptyExperienceSelection(status.config), adult: false, consent: false, headphones: false, quiet_environment: false, understands_language: false })
   const change = (key, value) => setValues(v => ({ ...v, [key]: value }))
   const cfg = status.config
   return <form className="p-entry" onSubmit={e => { e.preventDefault(); onSubmit({ ...values, experience_months: Number(values.experience_months) }) }}>
@@ -123,16 +131,20 @@ function Entry({ status, busy, onSubmit }) {
       <fieldset className="p-activities"><legend>Which have you done? Select at least one.</legend>{cfg.eligibility.activities.map(activity => <label className="p-check" key={activity}><input type="checkbox" checked={values.activities.includes(activity)} onChange={e => change('activities', e.target.checked ? [...values.activities, activity] : values.activities.filter(a => a !== activity))} />{activity}</label>)}</fieldset>
       <div className="p-columns"><label>Approximately how many months?<input type="number" min="0" max="1200" required value={values.experience_months} onChange={e => change('experience_months', e.target.value)} /></label>
         <label>How often have you done this recently?<select required value={values.recent_frequency} onChange={e => change('recent_frequency', e.target.value)}><option value="">Choose frequency</option>{['Less than monthly', 'Monthly', 'Weekly', 'Daily'].map(f => <option key={f}>{f}</option>)}</select></label></div>
-      <label>{cfg.experience_tools_label || 'Which tools have you used?'}<input required minLength="2" maxLength="250" value={values.tools} onChange={e => change('tools', e.target.value)} placeholder={cfg.experience_tools_placeholder || 'For example, a DAW or synthesizer'} /></label>
-      <label>{cfg.experience_question.label}<textarea required minLength="20" maxLength="700" value={values.example} onChange={e => change('example', e.target.value)} rows="2" aria-describedby="experience-help" placeholder={cfg.experience_question.placeholder} /></label>
-      <p id="experience-help" className="p-muted">{cfg.experience_question.help}</p>
+      <ExperienceQuestions cfg={cfg} values={values} onChange={change} disabled={busy} />
     </section>
     <section className="p-card"><label>Invitation code<input required minLength="8" maxLength="150" autoComplete="off" value={values.invitation} onChange={e => change('invitation', e.target.value)} /></label>
       <p className="p-muted">Use the invitation supplied by the researcher. It starts one listening session.</p>
       <details className="p-resume-help"><summary>Can I close this tab and return later?</summary><p>{cfg.resume_instructions}</p></details>
-      <button className="p-primary" disabled={busy || !status.ready || !values.activities.length}>{busy ? 'Starting…' : 'Start listening setup'}<span aria-hidden="true">→</span></button>
+      <button className="p-primary" disabled={busy || !status.ready || !values.activities.length || !experienceReady(values, cfg)}>{busy ? 'Starting…' : 'Start listening setup'}<span aria-hidden="true">→</span></button>
     </section>
   </form>
+}
+
+export function C1StudyNotice({ rehearsal, config }) {
+  return <div className="p-rehearsal">{rehearsal
+    ? config?.review_notice || 'Rehearsal only · These responses are excluded from the research pilot.'
+    : config?.participant_notice || 'C1 listening study. Practice responses are excluded from research analysis.'}</div>
 }
 
 export default function PilotApp() {
@@ -142,11 +154,14 @@ export default function PilotApp() {
   const [interval, setInterval] = useState(''), [startedAt, setStartedAt] = useState('')
   const [paused, setPaused] = useState(false), [withdrawPrompt, setWithdrawPrompt] = useState(false)
   const [feedback, setFeedback] = useState({ clarity: '', length: '', comment: '' })
+  const pendingDraft = useRef(null)
 
   async function load(active = session) {
     if (!active) return
     const next = await request(`/sessions/${active.session_id}`, { session: active })
-    setStep(next); setRatings(next.phase === 'correction' ? { ...blankRatings(next.config.descriptors), ...next.saved_answers } : blankRatings(next.config.descriptors)); setInterval(''); setPlays(0); setCompleted(0); setStartedAt(next.server_time)
+    const draft = next.phase === 'rating' && pendingDraft.current?.presentation_id === next.presentation_id ? pendingDraft.current : null
+    setStep(next); setRatings(next.phase === 'correction' ? { ...blankRatings(next.config.descriptors), ...next.saved_answers } : draft?.ratings || blankRatings(next.config.descriptors)); setInterval(''); setPlays(0); setCompleted(0); setStartedAt(next.server_time)
+    if (draft) pendingDraft.current = null
   }
   useEffect(() => {
     request('/status').then(setStatus).catch(e => setError(e.message))
@@ -163,6 +178,7 @@ export default function PilotApp() {
   }
   async function openPrevious() {
     await action(async () => {
+      if (step.phase === 'rating') pendingDraft.current = { presentation_id: step.presentation_id, ratings: { ...ratings } }
       await request(`/sessions/${session.session_id}/previous`, { session, body: { current_index: step.current_index } })
       await load()
     })
@@ -177,24 +193,26 @@ export default function PilotApp() {
     localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false)
   }
   const cfg = step?.config || status?.config
+  const rehearsal = step?.rehearsal ?? status?.rehearsal
   const phase = step?.phase
   const playable = ['volume', 'headphones', 'rating', 'correction'].includes(phase)
   const end = ['complete', 'withdrawn', 'screen_failed', 'replaced'].includes(phase)
   const progress = phase === 'rating' && !step.practice ? Math.round((step.display_number - 1) / step.display_total * 100) : 0
-  return <div className="pilot-app"><SiteHeader current="c1" note={step?.rehearsal || status?.rehearsal ? 'C1 INTERFACE REVIEW' : 'C1 TIMBRE STUDY'} />
+  return <div className="pilot-app"><SiteHeader current="c1" note={rehearsal ? 'C1 INTERFACE REVIEW' : 'C1 TIMBRE STUDY'} />
     <ErrorNotice message={error} onDismiss={() => setError('')}>
       {session && <button type="button" onClick={() => action(() => load())}>Reload current step</button>}
       {status?.rehearsal && !step && <button type="button" onClick={leaveRehearsal}>Return to rehearsal entry</button>}
     </ErrorNotice>
     <main className="p-main">
-      {(step?.rehearsal || status?.rehearsal) && <div className="p-rehearsal">{cfg?.review_notice || 'Rehearsal only · These responses are excluded from the research pilot.'}</div>}
+      {cfg && <C1StudyNotice rehearsal={rehearsal} config={cfg} />}
       {!status ? <p role="status">Loading the study…</p> : !session ? <>
         {!status.ready && <div className="p-notice"><strong>The study is not open yet.</strong><p>You can read the information below. The researcher is completing preparation.</p></div>}
         <Entry status={status} busy={busy} onSubmit={values => action(async () => { const active = await request('/sessions', { body: values }); localStorage.setItem(KEY, JSON.stringify(active)); setSession(active); await load(active); window.scrollTo(0, 0) })} />
       </> : !step ? <p role="status">Restoring your session…</p> : <>
         <div className="p-session-bar"><span className="p-listener-label">{step.participant_label}</span>{!end && <button onClick={() => setPaused(!paused)}>{paused ? 'Resume' : 'Pause'}</button>}</div>
         {withdrawPrompt ? <section className="p-card"><h1>Withdraw this session?</h1><p>Your responses will be marked as withdrawn and excluded from analysis.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => action(async () => { await submit('withdraw', {}); setWithdrawPrompt(false) })}>Withdraw my responses</button><button className="p-secondary" onClick={() => setWithdrawPrompt(false)}>Keep my session</button></div></section> : paused ? <section className="p-card"><h1>Take your time.</h1><p>Your saved responses are safe. Resume when you are ready to listen in a quiet place.</p><button className="p-primary" onClick={() => setPaused(false)}>Resume listening</button></section> : <>
-          {phase === 'volume' && <><p className="p-eyebrow">SETUP · 1 OF 2</p><h1>Find a comfortable level.</h1><p className="p-lede">Start with a low device volume, play the tone and adjust it to a comfortable level. Keep that setting for the rest of the session.</p></>}
+          <PreviousNavigation step={step} busy={busy} unit="sound" onPrevious={openPrevious} />
+          {phase === 'volume' && <VolumeSetupHeading config={cfg} screeningEnabled={step.headphone_screening_enabled} />}
           {phase === 'headphones' && <><p className="p-eyebrow">SETUP · 2 OF 2</p><h1>A quick headphone check.</h1><p className="p-lede">You will hear three tones. Which is the quietest? Listen to all three before choosing.</p><p className="p-muted">Check {step.screen_number} of 6</p></>}
           {phase === 'rating' && <><div className="p-trial-heading"><div><p className="p-eyebrow">{step.practice ? 'GET FAMILIAR WITH THE QUESTIONS' : 'LISTEN · DESCRIBE · CONTINUE'}</p><h1>{step.practice ? 'Practice' : 'Sound'} {String(step.display_number).padStart(2, '0')}<span> / {step.display_total}</span></h1></div></div>
             {!step.practice && <div className="p-progress"><span style={{ width: `${progress}%` }} /></div>}
@@ -203,7 +221,6 @@ export default function PilotApp() {
           {playable && <Player key={step.presentation_id || step.audio_id} session={session} audioId={step.audio_id} presentationId={cfg.navigation_policy === 'previous_before_next_play_v1' ? step.presentation_id : undefined} label={phase === 'volume' ? 'Volume reference' : phase === 'headphones' ? `Headphone check ${step.screen_number} of 6` : `${step.practice ? 'Practice' : 'Sound'} ${String(step.display_number).padStart(2, '0')} / ${step.display_total}`} disabled={busy} onStart={() => setStep(s => ({ ...s, can_correct_previous: false }))} onPlay={() => setPlays(n => n + 1)} onEnd={() => setCompleted(n => n + 1)} onError={setError} />}
           {phase === 'volume' && <button className="p-primary" disabled={busy || !completed} onClick={() => action(() => submit('volume', { completed_plays: completed }))}>This level is comfortable →</button>}
           {phase === 'headphones' && <section className="p-card"><fieldset><legend>Which tone was quietest?</legend><div className="p-intervals">{[1, 2, 3].map(n => <button key={n} type="button" className={interval === n ? 'selected' : ''} aria-pressed={interval === n} onClick={() => setInterval(n)}>{['First', 'Second', 'Third'][n - 1]}</button>)}</div></fieldset><button className="p-primary" disabled={busy || !completed || !interval} onClick={() => action(() => submit('headphones', { screen_number: step.screen_number, interval, completed_plays: completed }))}>Continue →</button></section>}
-          {step.can_correct_previous && <div className="p-previous-row"><button type="button" className="p-secondary" disabled={busy} onClick={openPrevious}>← Correct previous sound</button><span>You can correct the previous response until you select “Start this sound” for the next clip.</span></div>}
           {phase === 'rating' && <><form onSubmit={e => { e.preventDefault(); action(() => submit('ratings', { presentation_id: step.presentation_id, answers: ratings, play_count: plays, completed_plays: completed, started_at: startedAt })) }}>
             <p className="p-scale-help">1 means “not at all”; 7 means “very”. Use “cannot judge” if you are unsure what a term means.</p>
             <section className="p-card p-rating-card">{cfg.descriptors.map(d => <Scale key={d.id} descriptor={d} value={ratings[d.id]} onChange={value => setRatings(r => ({ ...r, [d.id]: value }))} />)}</section>
@@ -216,7 +233,7 @@ export default function PilotApp() {
             <p className="p-scale-help">1 means “not at all”; 7 means “very”. Use “cannot judge” if you are unsure what a term means.</p>
             <section className="p-card p-rating-card">{cfg.descriptors.map(d => <Scale key={d.id} descriptor={d} value={ratings[d.id]} onChange={value => setRatings(r => ({ ...r, [d.id]: value }))} />)}</section>
             <label className="p-comment">Anything unclear? <span>Optional</span><textarea maxLength="1000" rows="2" value={ratings.comment} onChange={e => setRatings(r => ({ ...r, comment: e.target.value }))} /></label>
-            <div className="p-actions"><button type="submit" className="p-primary" disabled={busy || !allRated(cfg.descriptors, ratings)}>{busy ? 'Saving…' : 'Save correction'}</button><button type="button" className="p-secondary" disabled={busy} onClick={cancelCorrection}>Cancel correction</button></div>
+            <div className="p-actions"><button type="button" className="p-secondary" disabled={busy} onClick={cancelCorrection}>Return without changes →</button><button type="submit" className="p-primary" disabled={busy || !allRated(cfg.descriptors, ratings)}>{busy ? 'Saving…' : 'Save correction and continue →'}</button></div>
           </form>}
           {phase === 'break' && <section className="p-card"><p className="p-eyebrow">HALFWAY THROUGH</p><h1>A moment to rest.</h1><p>You have completed half the rated presentations. Take a short break, then continue with the same listening setup and volume.</p><button className="p-primary" disabled={busy} onClick={() => action(() => submit('continue', {}))}>Continue listening →</button></section>}
           {phase === 'feedback' && <form className="p-card" onSubmit={e => { e.preventDefault(); action(() => submit('feedback', feedback)) }}><p className="p-eyebrow">ONE LAST THING</p><h1>How was the experience?</h1>
@@ -226,9 +243,20 @@ export default function PilotApp() {
           {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} sound responses have been saved, including practice. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No descriptor study responses are required.'}</p></section>}
         </>}
         {!['withdrawn', 'replaced'].includes(phase) && !withdrawPrompt && <button className="p-withdraw" onClick={() => setWithdrawPrompt(true)}>Withdraw this session</button>}
-        {step.rehearsal && end && <section className="p-card"><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={leaveRehearsal}>Use another rehearsal invitation</button></section>}
+        {step.rehearsal && end && <section className="p-card">{status?.rehearsal === false
+          ? <><p>This saved session belongs to the earlier rehearsal. To join the participant study, use a new participant invitation. Your rehearsal answers remain separate.</p><button className="p-primary" onClick={leaveRehearsal}>Open the participant study</button></>
+          : <><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={leaveRehearsal}>Use another rehearsal invitation</button></>}</section>}
       </>}
     </main><footer className="p-footer">Synth Inversion Research · C1 listening pilot</footer></div>
+}
+
+export function BulkInvitationDownload({ busy, onDownload }) {
+  return <section className="p-card" aria-label="Download unused participant invitations">
+    <h2>Get unused invitations in one file</h2>
+    <p>If you lost the original download, replace unassigned unused invitation codes and download them together. Previously shared unused codes will stop working. Every assignment with a started session is skipped, including completed or withdrawn sessions. Slots with saved names are also skipped so another researcher’s assigned code stays valid. Check with teammates before regenerating codes: invitations sent without a saved name may still be replaced.</p>
+    <button type="button" className="p-secondary" disabled={busy} onClick={onDownload}>Replace unused codes and download all</button>
+    <p className="p-muted">Save the private CSV file and use the shared assignment list to record names for the team. Each code is labelled with its block. This does not create participant sessions.</p>
+  </section>
 }
 
 export function PilotAdmin() {
@@ -236,10 +264,18 @@ export function PilotAdmin() {
   const [data, setData] = useState(null), [error, setError] = useState('')
   const [signingUp, setSigningUp] = useState(false), [signupFields, setSignupFields] = useState({ invitation: '', confirm: '' })
   const [accountInvite, setAccountInvite] = useState(null)
-  const [replacement, setReplacement] = useState({ assignment_id: '', reason: '' })
   const [busy, setBusy] = useState(false), [issued, setIssued] = useState(null)
+  const [skippedAssignments, setSkippedAssignments] = useState(null)
+  const [rosterNames, setRosterNames] = useState([]), [rosterRefresh, setRosterRefresh] = useState(0)
   async function act(fn) { setError(''); setBusy(true); try { await fn() } catch (e) { setError(e.message) } finally { setBusy(false) } }
   useEffect(() => { fetch(`${API}/api/researcher/session`, { credentials: 'include' }).then(r => setAuthenticated(r.ok)).catch(() => {}) }, [])
+  useEffect(() => {
+    if (!authenticated) return
+    let active = true
+    request('/admin/summary').then(result => { if (active) setData(result) })
+      .catch(error => { if (active) setError(error.message) })
+    return () => { active = false }
+  }, [authenticated])
   async function researcherRequest(path, body) {
     const response = await fetch(`${API}/api/researcher${path}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     const result = await response.json().catch(() => ({}))
@@ -262,15 +298,18 @@ export function PilotAdmin() {
   }
   async function createMissing() {
     const result = await request('/admin/invitations', { body: {} })
+    setSkippedAssignments(null)
     setIssued(result.invitations)
-    if (result.invitations.length) download(JSON.stringify(result, null, 2), 'private-invitations.json', 'application/json')
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1', rosterNames), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')
+    setData(await request('/admin/summary')); setRosterRefresh(value => value + 1)
   }
-  async function replaceInvitation() {
-    const result = await request('/admin/replace-invitation', { body: replacement })
-    setIssued([result])
-    download(JSON.stringify(result, null, 2), 'private-replacement-invitation.json', 'application/json')
-    setReplacement({ assignment_id: '', reason: '' })
+  async function downloadUnusedInvitations() {
+    const result = await request('/admin/replace-unused-invitations', { body: { confirm_replace_unused: true } })
+    setIssued(result.invitations)
+    setSkippedAssignments(result.skipped_assignments)
+    if (result.invitations.length) download(invitationCsv(result.invitations, 'C1', rosterNames), 'private-c1-unused-invitations.csv', 'text/csv;charset=utf-8')
     setData(await request('/admin/summary'))
+    setRosterRefresh(value => value + 1)
   }
   if (!authenticated) return <div className="pilot-app"><SiteHeader current="c1-admin" researcher /><ErrorNotice message={error} onDismiss={() => setError('')} /><main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>{signingUp ? 'Create an account' : 'Sign in'}</h1>
     <p>For the research team. Study participants should <a href="/pilot">open the listening study</a>.</p>
@@ -285,16 +324,21 @@ export function PilotAdmin() {
   return <div className="pilot-app">
     <SiteHeader current="c1-admin" researcher />
     <ErrorNotice message={error} onDismiss={() => setError('')} />
-    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    <main className="p-main"><p className="p-eyebrow">RESEARCHER ACCESS</p><h1>C1 pilot sessions</h1><section className="p-card"><p>You are signed in. This browser session expires after 8 hours.</p><div className="p-actions"><button className="p-primary" disabled={busy} onClick={() => act(async () => setData(await request('/admin/summary')))}>{busy ? 'Working…' : 'Load sessions'}</button><button className="p-secondary" disabled={busy} onClick={() => act(async () => { await researcherRequest('/logout', {}); setAuthenticated(false); setData(null); setRosterNames([]); setIssued(null); setAccountInvite(null) })}>Sign out</button></div></section>
+    {data && <section className="p-card"><h2>{data.rehearsal ? 'Rehearsal invitations' : 'Participant invitations'}</h2><p role="status"><strong>{data.rehearsal ? 'This is the rehearsal study.' : data.ready ? 'Participant collection is open.' : 'Participant entry is closed.'}</strong> {data.assignment_capacity} assignments are available in this version. {data.rehearsal ? 'Responses remain excluded.' : 'Create fresh participant codes below; previous rehearsal codes are separate.'}</p></section>}
+    <AssignmentRoster study="C1" apiBase={`${API}/api/c1-pilot`} busy={busy} refreshKey={rosterRefresh} onError={setError} onRosterChange={setRosterNames} onInvitationChange={() => act(async () => setData(await request('/admin/summary')))} />
+    <ResponseViewer study="C1" apiBase={`${API}/api/c1-pilot`} onError={setError} />
     <section className="p-card"><h2>Invite a researcher</h2><p>This gives a team member access to participant responses, exports and invitation management. It is separate from a participant study invitation.</p>
       <button className="p-secondary" disabled={busy} onClick={() => act(async () => setAccountInvite(await researcherRequest('/invitations', {})))}>Create researcher account invitation</button>
       {accountInvite && <div className="p-issued"><label>Researcher account invitation<input readOnly value={accountInvite.invitation} onFocus={e => e.target.select()} /></label><p role="status">Share this code privately with your teammate and send them to this page → Create an account. Valid once, until {new Date(accountInvite.expires_at * 1000).toLocaleString()}.</p><button className="p-secondary" onClick={() => download(JSON.stringify(accountInvite, null, 2), 'private-researcher-invitation.json', 'application/json')}>Download account invitation</button></div>}
     </section>
     {issued !== null && <section className="p-card p-issued" aria-label="Invitation result">
-      <h2 role="status">{issued.length ? 'New invitation ready' : 'All assignments already have invitations'}</h2>
-      {issued.length ? <><p>The code is shown here and downloaded as JSON. Copy only the invitation code to the participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<button type="button" className="p-secondary" onClick={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')}>Download these invitations again</button></> : <p>Use “Generate a replacement invitation” below to replace a lost or used code. Creating missing invitations does not reissue existing codes.</p>}
+      <h2 role="status">{issued.length ? 'New invitations ready' : skippedAssignments !== null ? 'No unassigned unused codes remain' : 'All assignments already have invitations'}</h2>
+      {issued.length ? <><p>The codes are shown here and downloaded as a CSV. Saved assignment names are included when available. Copy only an invitation code to its participant; keep your researcher login private.</p>{issued.map(item => <label key={item.assignment_id}>{item.assignment_id}<input readOnly value={item.invitation} onFocus={e => e.target.select()} aria-label={`Invitation for ${item.assignment_id}`} /></label>)}<InvitationDownloads onCsv={() => download(invitationCsv(issued, 'C1', rosterNames), 'private-c1-invitations.csv', 'text/csv;charset=utf-8')} onJson={() => download(JSON.stringify({ invitations: issued }, null, 2), 'private-invitations.json', 'application/json')} /></> : skippedAssignments === null && <p>View and copy current codes in the shared assignment list above. Replace a legacy hash-only code there if needed. Creating missing invitations does not reissue existing codes. Current saved codes are visible in the shared assignment list.</p>}
+      {skippedAssignments !== null && <p role="status">{issued.length} unused assignment codes ready. {skippedAssignments.length} assigned or started slots skipped; their codes, sessions and responses were left untouched.{skippedAssignments.length > 0 && <> Skipped: {skippedAssignments.join(', ')}.</>}</p>}
     </section>}
-    {data && <><section className="p-card"><h2>{data.completed} completed sessions</h2><p>Create missing invitations fills assignments without a code. To start an assignment again, use the replacement form below.</p><div className="p-actions"><button className="p-secondary" disabled={busy} onClick={() => act(createMissing)}>Create missing invitations</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('export', 'c1-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('sessions', 'c1-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th><th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td><td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section>
-      <form className="p-card" onSubmit={e => { e.preventDefault(); act(replaceInvitation) }}><h2>Generate a replacement invitation</h2><p>This retires the previous code and closes its session, preserving responses in the audit log. Completed research assignments cannot be replaced; rehearsal assignments can.</p><label>Assignment ID<input required disabled={busy} value={replacement.assignment_id} onChange={e => setReplacement(r => ({ ...r, assignment_id: e.target.value }))} placeholder="For example, block_01 or rehearsal" /></label><label>Reason<textarea required disabled={busy} minLength="10" maxLength="500" value={replacement.reason} onChange={e => setReplacement(r => ({ ...r, reason: e.target.value }))} placeholder="For example: Repeat the full interface rehearsal." /></label><button className="p-secondary" disabled={busy}>{busy ? 'Working…' : 'Generate replacement code'}</button></form></>}
+    <BulkInvitationDownload busy={busy} onDownload={() => act(downloadUnusedInvitations)} />
+    {data && <><section className="p-card"><h2>{data.completed} completed sessions</h2><p>Create missing invitations fills assignments without a code. View or replace a code beside its name in the shared assignment list above.</p><div className="p-actions"><button className="p-secondary" disabled={busy} onClick={() => act(createMissing)}>Create missing invitations</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('export', 'c1-responses.csv'))}>Download responses</button><button className="p-secondary" disabled={busy} onClick={() => act(() => exportFile('sessions', 'c1-sessions.csv'))}>Download session audit</button></div><div className="p-table"><table><thead><tr><th>Participant</th><th>Assignment</th><th>Status</th><th>Saved presentations</th></tr></thead><tbody>{data.sessions.map(s => <tr key={s.participant_id}><td>{s.participant_label}</td><td>{s.assignment_id}</td><td>{s.phase}</td><td>{s.current_index}</td></tr>)}</tbody></table></div></section>
+    </>}
   </main></div>
 }

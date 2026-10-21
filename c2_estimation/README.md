@@ -1,15 +1,43 @@
 # C2 - Deterministic synthesizer parameter estimation
 
-This directory contains the initial Component 2 baseline. It uses only the canonical 1,024-sample `pilot_v1` dataset, computes fixed-reference log-mel spectrograms, and trains one small convolutional neural network to estimate the eight normalized Vital parameters.
+## Current research implementation: 13-control v4
 
-The implementation does not generate the planned scaled dataset and does not include ensembles, uncertainty calibration, or any Component 3 work.
+For a plain-language explanation with exact code excerpts, start with
+[COMPONENT_STUDY_GUIDE.md](COMPONENT_STUDY_GUIDE.md). Use
+[DEMONSTRATION_WALKTHROUGH.md](DEMONSTRATION_WALKTHROUGH.md) for VS Code/browser
+walkthroughs, and [METRICS_REFERENCE.md](METRICS_REFERENCE.md) for formulas and
+complete measured tables.
 
-The shared candidate research configuration now has twelve controls within the
-one-oscillator architecture; see [generation/README.md](../generation/README.md).
-The proposed scaled total is 131072. Existing defaults, checkpoints and results
-here remain the eight-control engineering baseline and must not be presented as
-twelve-control results. A new configuration/dataset needs a separate training run,
-cache and output directory after the candidate domain is settled.
+The current C2 research dataset is the completed **131,072-sound, 13-control v4
+corpus**. Start with [V4_README.md](V4_README.md) for commands, verified status,
+split protections, and remaining work. [RESEARCH_DESIGN.md](RESEARCH_DESIGN.md)
+explains the technology choices and evaluation justification;
+[WORKED_EXAMPLE.md](WORKED_EXAMPLE.md) walks through actual development renders.
+The full deterministic model is now trained; measured results are in
+[FULL_BASELINE_RESULTS.md](FULL_BASELINE_RESULTS.md).
+[RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.md) indexes the saved EDA figures, tables,
+audits and statistical safeguards, and distinguishes running experiments from results.
+
+The deterministic baseline, three-member ensemble, EDA and development calibration
+are complete. Diagnostics cover 128 smoke, 2,048 calibration and 512
+reliability-validation clips. The per-control results audit and a fixed 256-clip
+calibration-only perturbation-step study are also complete; see
+[VALIDATION_RESULTS.md](VALIDATION_RESULTS.md) for measured findings and limits.
+
+Use [DEMO.md](DEMO.md) to launch the local saved-results viewer: six predetermined
+examples with target/reconstruction audio, 13 predicted controls, correctness
+probabilities, perturbations and research figures. This is not live inference.
+The final test set remains untouched, the final method is not locked, and no human
+study has been run. No C3 code or frozen generation code was changed. Checkpoint
+locations are in the [runbook](V4_README.md#live-progress-and-saved-models).
+
+## Historical eight-control pilot
+
+The original `pipeline.py` uses only the canonical 1,024-sample `pilot_v1`
+dataset, computes fixed-reference log-mel spectrograms, and trains one small CNN
+to estimate eight normalized Vital parameters. Its defaults, checkpoints and
+results below are preserved as historical engineering evidence, not v4 results.
+That historical pipeline has no ensembles or reliability calibration.
 
 ## Environment
 

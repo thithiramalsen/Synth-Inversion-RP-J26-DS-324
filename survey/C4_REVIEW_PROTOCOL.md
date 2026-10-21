@@ -1,104 +1,148 @@
-# C4 hosted interface review
+# C4 CLAP survey preparation
 
-This release adds `/c4` and `/c4/admin` to the existing Render service.
-It is a supervisor/interface rehearsal. All C4 exports have
-`analysis_include=False`. Main-study recruitment is deliberately not implemented
-in this protocol; setting an environment flag cannot turn these records into
-research responses.
+This document describes the retained review instrument. The new participant
+release is documented in [C4 participant deployment](C4_PARTICIPANT_DEPLOYMENT.md);
+it has a separate study ID, bundle and invitation set.
 
-## Listener task
+The retained C4 review is prepared around the user's stated C4 design: a frozen
+bank of 200 CLAP-selected triplets, 20 different triplets per listener, two
+hidden repeats and two practice comparisons. The target is 50–100 independent
+listeners, with capacity for 100 assignments. This is a technical preparation
+and review release (`c4_clap_review_v1`), not evidence of approval to recruit.
+Its responses remain excluded from research analysis (`analysis_include=False`).
+An approved formal launch needs its own frozen information and study version;
+review records must not be relabelled as research data.
 
-1. Read the information and consent, give a brief music/sound-design experience
-   example, and enter a C4 invitation.
-2. Set comfortable device volume. Complete six headphone questions (5/6 pass).
-3. Complete two practice comparisons.
-4. Complete twelve review comparisons: ten unique triplets and two later repeats.
-   Take a break after comparison six; pausing is available throughout.
-5. Give feedback about clarity and session length. Saved steps resume in the same
-   browser profile; a consumed invitation does not recover another browser's token.
+## Stimulus provenance
 
-Each comparison presents a reference, A and B. Choose the candidate with more
-similar overall timbre, considering spectral and temporal character, without
-choosing solely by loudness. A/B choices require confidence 1–5. “I cannot decide”
-records uncertainty, not equality, and has no confidence score. Optional comments
-are saved. There is no researcher-defined correct similarity answer.
+The bank comes from `c4_metric/synthetic_data/clap_triplets.csv`, last changed in
+commit `db4ce9b` on 14 October 2026. It preserves the existing 200 reference/A/B
+triplets rather than selecting a new bank. Each triplet contains three distinct
+sound IDs, and its 600 sound IDs are globally distinct across the bank.
 
-One audio element prevents overlap; each selection restarts its clip. Full
-playthrough is required for all three roles before submission. Switching/stopping
-does not credit an unfinished play. These browser-reported counts are interaction
-checks, not proof of human attention. The controls stay visible while scrolling.
-Answers may be changed before saving; previous-comparison correction is not in
-this version. C1's existing correction policy is unchanged.
+The source generator's CLAP bands are rank ranges among the candidates still
+unused when each triplet is created: the nearer candidate uses the 5–20% band
+and the other candidate uses the 20–40% band. The candidate pool shrinks from
+1,023 to 426. These are neither cosine-score percentages nor fixed ranks in
+the complete 1,024-sound pool. The displayed A/B side is counterbalanced by the
+survey assignments, so it must not be interpreted as a CLAP preference label.
+There is no researcher-supplied correct human similarity answer.
 
-## Stimuli and assignments
+The packaged bank contains 600 mono, 44.1 kHz, three-second PCM16 playback
+files. Their bytes were reconstructed and verified against the saved source
+hashes using the current raw masters, saved gains and original DC-removal and
+encoding policy. CLAP feature preparation resamples to 48 kHz; the survey uses
+the frozen playback files. The original source-manifest hash differs from the
+current manifest; six selected bank raw-path strings also differ, while all
+selected audio hashes match. The audit does not identify every historical
+manifest difference. Bundle provenance records the original source-manifest hash
+and frozen bank/asset hashes. Default builds do not depend on a local copy of the
+full corpus; a current manifest can be recorded explicitly for a separate build. This update does
+not rerender the synthesizer or change the source triplet selection.
 
-`survey/deploy/build_c4_review.py` deterministically selects 30 distinct sounds
-from the 64 current C1 primary playback assets (seed 41009) and groups them into
-10 canonical triplets. Selection is independent of MFCC or other metric scores.
-Two practice comparisons rotate the three separate practice sounds. No audio is
-rendered or processed again; filenames and hashes point to the existing packaged
-13-control playback assets. The C1 bundle remains unchanged.
+## Assignments and coverage
 
-There are 16 invitation assignments in eight pairs. Within each pair the order
-and references match, and A/B are swapped. Different pairs have different seeded
-orders. Repeats reverse the candidates from earlier comparisons and are separated
-by at least six intervening positions in this design. Exports retain canonical
-reference/candidate IDs, chosen sound ID, presentation order, repeat linkage,
-confidence, uncertainty, timestamps, play counts and withdrawal state.
+The 100 assignments are ordered in ten groups of ten listeners. In each group,
+the 200 bank triplets are shuffled and divided into ten sets of 20. Each set
+has 20 distinct primary triplets; groups vary the mixture, order and displayed
+candidate sides. Two separated, swapped-side repeats are added to each set.
+They appear as ordinary comparisons and do not add independent judgments.
+Two separate practice comparisons precede the 22 review comparisons, giving
+24 presentations per completed session.
 
-Sixteen slots are interface capacity, **not a statistically justified C4 sample
-size**. Use consecutive assignment pairs when reviewing side balance. Missing or
-unevenly completed pairs can unbalance realized A/B presentation.
+Complete groups of ten listeners provide one primary judgment per bank triplet.
+Completing the first five groups gives five judgments per triplet; completing
+all ten gives ten. The 50–100 target therefore plans 5–10 judgments per triplet
+when groups are completed. At least two different completed listeners per
+triplet is a coverage floor, not a claim of statistical precision or approval
+of the sample size. Missing, failed, withdrawn or replaced sessions can leave
+uneven coverage even when many invitations have been issued.
 
-Ten unique comparisons plus two repeats and two practice trials are a pragmatic
-review workload. The provisional 10–15-minute estimate must be checked with real
-reviewers. This convenient C1 subset is not representative evidence for the entire
-131,072-sound space, and ten comparisons cannot validate or train the final metric.
+The admin panel separates the assignment plan from completed coverage. It shows
+completed listeners, triplets with any completed judgment, triplets reaching
+two completed listeners, the minimum/maximum completed judgments, and each
+triplet's planned and completed counts. Only primary comparisons from completed,
+nonwithdrawn and nonreplaced sessions count. Practice, hidden repeats and
+correction revisions do not increase replication. Give each independent person
+one invitation; separate browser sessions alone cannot establish that two
+responses came from different people.
 
-## Hosting and access
+## Listener flow and answers
 
-- Same Render service, existing Neon database and researcher account; separate
-  `c4_*` tables, invitations and browser token key. Startup adds tables only.
-- Open `/c4/admin`, sign in, select **Load sessions**, then **Create missing
-  invitations**. Save the downloaded codes privately. C1 codes do not start C4.
-- To replace a lost/used review code, use an assignment such as `c4_review_01` and
-  a reason. Earlier records remain audited and excluded.
-- `c4_bundle.json` is packaged in Docker. Startup verifies its audio hashes.
-  Config and stimulus hashes are saved with sessions; config text is frozen on
-  entry. Changing the bundle blocks old sessions rather than silently changing
-  their stimuli. Plan a new version if the sampling design changes.
-- The older `/api/studies` prototype remains blocked in remote mode.
-- Withdraw marks records excluded; it does not immediately erase audit records.
+1. Read the information and consent, confirm the adult/headphone/quiet-place
+   requirements, describe practical music or sound experience, and enter a C4
+   invitation. Entry uses the shared `experience_tags_v1` catalogue with optional
+   details; an alternative typed example needs at least 20 characters.
+2. Set a comfortable listening level and complete six headphone questions
+   (five correct answers are required to continue).
+3. Complete two practice comparisons, then 22 review comparisons. A break follows
+   review comparison 11. Pause/resume is available throughout.
+4. Give feedback about instruction clarity and session length.
 
-## Before a research pilot or main study
+Each comparison presents Reference, Sound A and Sound B. The listener chooses
+the candidate with the more similar overall timbre, considering tone and its
+change over time without choosing solely by loudness. A/B choices require
+confidence from 1 (not confident) to 5 (very confident). “I cannot decide”
+records uncertainty, not equality, and has no confidence score. Comments are
+optional. The survey does not identify repeats or show CLAP scores to listeners.
 
-Confirm with the C4 owner/supervisor whether data are for feasibility, metric
-training or independent evaluation. Freeze the triplet sampling frame and strategy,
-independent participant target, judgments per triplet, uncertainty/repeat handling,
-and sound-grouped held-out split. Decide if people join both C1 and C4 and how
-order/burden will be managed. Complete institutional clearance, contacts, retention,
-withdrawal arrangements and backup/restore validation. Use a new study version
-and approved information rather than relabelling review records.
+One audio element prevents overlapping clips. Native playback controls and
+completion indicators require all three clips to play fully before an initial
+answer can be saved. Seeking over unheard ranges does not satisfy that gate.
+These browser interaction checks do not establish attention. Page pause/resume
+keeps answers and completed-clip counts; refreshing can lose an unfinished draft
+and require listening to the current comparison again.
 
-Triplet human judgments have precedent in [CDPAM (Manocha et al., 2021)](https://arxiv.org/abs/2102.05109).
-That paper does not validate this synth-domain sample size. The headphone-screen
-procedure follows [Woods et al. (2017)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5693749/);
-it does not standardize headphones or calibrate sound level at the ear.
+The immediately previous response can be corrected before any clip from the
+next comparison is requested, including at the break and final-feedback step.
+Replay is optional during a correction. Original answers remain immutable;
+exports include the latest answer, first answer and complete correction audit.
+Consistency analysis must distinguish first answers from later corrections.
 
-## Verification
+## Invitations, hosting and older sessions
 
-Run backend and frontend checks before pushing the deployment branch:
+Use `/c4` for listeners and `/c4/admin` for researchers. The admin panel uses
+the existing researcher login and loads assignments automatically. **Create
+participant invitations** creates missing codes; save the private CSV when it
+is shown because plaintext codes cannot be retrieved later. Give each listener
+one code and the C4 link. Assignment order identifies the coverage groups.
 
-```powershell
-.\venv\Scripts\python.exe -B -m unittest discover -s survey/backend/tests -v
-cd survey/frontend
-npm test
-npm run build
-```
+**Replace lost code** replaces an unused code. **Replace unused codes and
+download all** replaces unused codes and creates missing ones, skipping every
+assignment with a started session. Previously distributed unused codes then
+stop working. Replacing a started review assignment closes its session but
+keeps its audit. Downloaded tracking CSV names/dates/notes are local only and
+are not uploaded. Researcher-account invitations and C1 participant codes are
+separate from C4 invitations.
 
-C4 API tests cover authenticated invitations, one-use entry, setup/order gates,
-all-three exposure checks, full completion, resume, duplicate submissions,
-canonical A/B exports, CSV formula escaping, withdrawal, replacement, modified
-audio and review-only gating. Design tests check deterministic selection,
-distinct sounds, candidate counterbalancing and repeat spacing. They use an
-isolated SQLite database unless the dedicated PostgreSQL suite is selected.
+C4 shares the Render service and persistent Neon database with C1 but uses
+separate `c4_*` tables, invitations and browser token storage. The new
+`c4_clap_bundle.json` is versioned separately from the unchanged historical
+`c4_bundle.json`. Sessions retain their saved bundle hash, protocol snapshot,
+assignment and trial order. Historical sessions resolve their original bundle
+and audio so they can resume; they are not converted into the new design.
+New entry and invitation management use the active version. Full CSV exports
+retain study and bundle identifiers for separating versions.
+
+The historical review had ten unique triplets, two repeats and two practices,
+16 assignment slots and a break after six review comparisons. Sessions retain
+their original navigation policy, including forward-only behavior where it
+was originally saved. Withdrawal excludes responses without immediately
+erasing the audit. The older `/api/studies` prototype remains blocked remotely.
+C1's instrument and invitations are unaffected.
+
+## Verification and formal launch
+
+Run backend tests, then `npm test` and `npm run build` in `survey/frontend`.
+Checks cover the frozen source bank, assignment uniqueness/mixing, candidate
+balance, hidden-repeat spacing, full session flow, historical resume and audio,
+coverage accounting, invitation isolation, correction audits and review-only
+exports. Frontend checks cover the 22-comparison workload, 11-of-22 break,
+planned versus completed coverage and legacy rendering.
+
+Before a formal study, confirm the collection's training/evaluation purpose,
+participant target and independence, uncertainty and repeat handling, grouped
+held-out splits, final duration, contacts, retention, withdrawal, institutional
+clearance and backup/restore arrangements with the C4 owner and supervisor.
+The 50–100 target and CLAP-selected bank do not by themselves establish metric
+validity or represent the full synthesizer space.

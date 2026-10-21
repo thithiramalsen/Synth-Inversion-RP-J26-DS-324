@@ -21,10 +21,16 @@ services:
       - key: SURVEY_REMOTE_MODE
         value: "1"
       - key: SURVEY_C1_OPEN
-        value: "0"
+        value: "1"
       - key: SURVEY_C1_BUNDLE
-        value: /app/survey/deploy/study/bundle.json
+        value: /app/survey/deploy/study/c1_participant_bundle_v1.json
       - key: SURVEY_C1_CONFIG
-        value: /app/survey/config/c1_review_20_v1.json
+        value: /app/survey/config/c1_participants_v1.json
+      - key: SURVEY_C4_BUNDLE
+        value: /app/survey/deploy/study/c4_participant_bundle_v1.json
+      - key: SURVEY_C4_CONFIG
+        value: /app/survey/config/c4_participants_v1.json
+      - key: SURVEY_C4_OPEN
+        value: "1"
       - key: SURVEY_ALLOWED_ORIGINS
         value: ""
