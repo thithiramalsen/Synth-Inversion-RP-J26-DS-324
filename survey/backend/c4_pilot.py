@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from database import get_connection
 from listening_setup import headphone_screening_enabled, session_screening_enabled, retire_participant_screen
-from c4_protocol import PARTICIPANT_STUDY_ID, PARTICIPANT_PROTOCOL_VERSION, REVIEW_STUDY_IDS, analysis_include
+from c4_protocol import PARTICIPANT_STUDY_ID, PARTICIPANT_PROTOCOL_VERSION, REVIEW_STUDY_IDS, RESEARCHER_REHEARSAL_STUDY_ID, analysis_include
 from experience import ExperienceEntry, experience_options
 from response_viewer import KindFilter, PhaseFilter, response_page
 from security import require_admin
@@ -173,7 +173,10 @@ def can_correct(db, row):
 def launch_issues(bundle, cfg):
     participant = bundle.get('study_id') == PARTICIPANT_STUDY_ID and bundle.get('rehearsal') is False
     review = bundle.get('study_id') in REVIEW_STUDY_IDS and bundle.get('rehearsal') is True
-    if not (participant or review):
+    researcher_rehearsal = (bundle.get('study_id') == RESEARCHER_REHEARSAL_STUDY_ID
+                            and bundle.get('rehearsal') is True
+                            and cfg.get('collection_mode') == 'researcher_rehearsal')
+    if not (participant or review or researcher_rehearsal):
         return ['This C4 study version is not supported']
     if cfg.get('study_id', 'c4_review_v1') != bundle['study_id']:
         return ['C4 protocol and audio bundle versions do not match']

@@ -1,4 +1,4 @@
-"""Separate C1 instance for fresh researcher-entered rehearsal responses."""
+"""Shared C1/C4 researcher rehearsal, separate from participant collection."""
 import argparse
 from contextlib import asynccontextmanager
 import csv
@@ -16,6 +16,11 @@ from fastapi.responses import JSONResponse, RedirectResponse, Response
 
 ROOT = Path(__file__).resolve().parents[2]
 STUDY_ID = 'c1_researcher_rehearsal_v1'
+C4_STUDY_ID = 'c4_researcher_rehearsal_v1'
+STUDIES = {
+    'c1': dict(study_id=STUDY_ID, page='/pilot', actors='rehearsal_session_actors'),
+    'c4': dict(study_id=C4_STUDY_ID, page='/c4', actors='c4_rehearsal_session_actors'),
+}
 ORIGIN = 'researcher_entered_rehearsal'
 REHEARSAL_COOKIE = 'c1_researcher_rehearsal_session'
 DEFAULT_STATE = ROOT/'data/processed'/STUDY_ID
@@ -29,15 +34,19 @@ def database_identity(url):
 def configure(state_dir=DEFAULT_STATE, use_postgres=False):
     """Configure only this new process; never inherit the participant database."""
     state_dir = Path(state_dir).resolve()
-    bundle = ROOT/'survey/deploy/study/c1_researcher_rehearsal_v1.json'
-    config = ROOT/'survey/config/c1_researcher_rehearsal_v1.json'
-    if not bundle.is_file() or not config.is_file():
-        raise RuntimeError('Prepare the researcher rehearsal package first')
-    data = json.loads(bundle.read_text(encoding='utf-8'))
-    cfg = json.loads(config.read_text(encoding='utf-8'))
-    if (data.get('study_id') != STUDY_ID or data.get('rehearsal') is not True
-            or cfg.get('study_id') != STUDY_ID or cfg.get('collection_mode') != 'researcher_rehearsal'):
-        raise RuntimeError('This runner only accepts the labelled researcher rehearsal')
+    bundle = ROOT/'survey/deploy/study/c1_researcher_rehearsal_v2.json'
+    config = ROOT/'survey/config/c1_researcher_rehearsal_v2.json'
+    legacy = ROOT/'survey/deploy/study/c1_researcher_rehearsal_v1.json'
+    c4_bundle = ROOT/'survey/deploy/study/c4_researcher_rehearsal_v1.json'
+    c4_config = ROOT/'survey/config/c4_researcher_rehearsal_v1.json'
+    for bundle_file, config_file, expected_id in ((bundle, config, STUDY_ID), (c4_bundle, c4_config, C4_STUDY_ID)):
+        if not bundle_file.is_file() or not config_file.is_file():
+            raise RuntimeError('Prepare both researcher rehearsal packages first')
+        data = json.loads(bundle_file.read_text(encoding='utf-8'))
+        cfg = json.loads(config_file.read_text(encoding='utf-8'))
+        if (data.get('study_id') != expected_id or data.get('rehearsal') is not True
+                or cfg.get('study_id') != expected_id or cfg.get('collection_mode') != 'researcher_rehearsal'):
+            raise RuntimeError('This runner only accepts the labelled researcher rehearsals')
     inherited = os.environ.get('SURVEY_DATABASE_URL', '')
     if use_postgres:
         url = os.environ.get('SURVEY_REHEARSAL_DATABASE_URL', '')
@@ -66,7 +75,8 @@ def configure(state_dir=DEFAULT_STATE, use_postgres=False):
         os.environ.update(SURVEY_RESEARCHER_USERNAME=access['researcher_username'],
                           SURVEY_RESEARCHER_PASSWORD_HASH=f'{salt}${digest}')
     os.environ.update(SURVEY_DATABASE_URL=url, SURVEY_DATABASE_PATH=str(state_dir/'researcher_rehearsal.sqlite'),
-                      SURVEY_C1_BUNDLE=str(bundle), SURVEY_C1_CONFIG=str(config), SURVEY_C1_LEGACY_BUNDLES='',
+                      SURVEY_C1_BUNDLE=str(bundle), SURVEY_C1_CONFIG=str(config), SURVEY_C1_LEGACY_BUNDLES=str(legacy),
+                      SURVEY_C4_BUNDLE=str(c4_bundle), SURVEY_C4_CONFIG=str(c4_config), SURVEY_C4_LEGACY_BUNDLES='',
                       SURVEY_ADMIN_TOKEN=secret, SURVEY_INVITATION_SECRET='', SURVEY_REMOTE_MODE='1',
                       SURVEY_C1_OPEN='0', SURVEY_C4_OPEN='0', SURVEY_ALLOWED_ORIGINS='')
     # The normal app captures this path at import time. Reset it explicitly for
@@ -86,13 +96,14 @@ def assert_separate_store():
         tables = {row['name'] for row in names}
         if tables and 'rehearsal_session_actors' not in tables:
             raise RuntimeError('Use an empty, separate rehearsal database; this schema has no rehearsal marker')
-        if 'c1_sessions' in tables:
-            ids = db.execute('SELECT DISTINCT study_id FROM c1_sessions').fetchall()
-            if any(row['study_id'] != STUDY_ID for row in ids):
-                raise RuntimeError('Refusing to use a database containing another C1 study')
-        for table in ('c4_sessions', 'sessions'):
-            if table in tables and db.execute(f'SELECT COUNT(*) FROM {table}').fetchone()[0]:
-                raise RuntimeError('Refusing to use a database containing another study')
+        for component, study in STUDIES.items():
+            table = f'{component}_sessions'
+            if table in tables:
+                ids = db.execute(f'SELECT DISTINCT study_id FROM {table}').fetchall()
+                if any(row['study_id'] != study['study_id'] for row in ids):
+                    raise RuntimeError(f'Refusing to use a database containing another study ({component.upper()})')
+        if 'sessions' in tables and db.execute('SELECT COUNT(*) FROM sessions').fetchone()[0]:
+            raise RuntimeError('Refusing to use a database containing another study')
 
 
 def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
@@ -106,10 +117,11 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
         assert_separate_store()
         async with shared.lifespan(app):
             with get_connection() as db:
-                db.execute('CREATE TABLE IF NOT EXISTS rehearsal_session_actors (session_id TEXT PRIMARY KEY, researcher TEXT NOT NULL)')
+                for study in STUDIES.values():
+                    db.execute(f"CREATE TABLE IF NOT EXISTS {study['actors']} (session_id TEXT PRIMARY KEY, researcher TEXT NOT NULL)")
             yield
 
-    app = FastAPI(title='C1 researcher rehearsal', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title='C1 and C4 researcher rehearsal', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     app.router.routes.extend(shared.app.router.routes)
 
     def actor(request, cookie):
@@ -119,28 +131,31 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
     @app.middleware('http')
     async def researcher_boundary(request: Request, call_next):
         path = request.url.path
+        component = next((key for key in STUDIES if path.startswith(f'/api/{key}-pilot/')), None)
+        study = STUDIES.get(component)
+        page = next((value['page'] for value in STUDIES.values() if path == value['page']), None)
         allowed = (path.startswith('/assets/') or path.startswith('/api/researcher/')
-                   or path.startswith('/api/c1-pilot/') or path in ('/', '/researcher', '/admin', '/pilot', '/pilot/admin', '/api/health', '/favicon.ico'))
+                   or study is not None or path in ('/', '/researcher', '/admin', '/pilot', '/pilot/admin', '/c4', '/c4/admin', '/api/health', '/favicon.ico'))
         if not allowed:
-            return JSONResponse({'detail': 'This instance contains only the C1 researcher rehearsal'}, status_code=404)
-        if path in ('/', '/researcher', '/admin'):
-            return RedirectResponse('/pilot/admin')
+            return JSONResponse({'detail': 'This instance contains only the C1 and C4 researcher rehearsals'}, status_code=404)
+        if path in ('/', '/admin'):
+            return RedirectResponse('/researcher')
         cookie = request.cookies.get(REHEARSAL_COOKIE)
-        protected = path == '/pilot' or path.startswith('/api/c1-pilot/')
+        protected = page is not None or study is not None
         researcher = None
         if protected:
             try:
                 researcher = actor(request, cookie)
             except HTTPException as error:
-                if path == '/pilot':
-                    return RedirectResponse('/pilot/admin')
+                if page:
+                    return RedirectResponse(page+'/admin')
                 return JSONResponse({'detail': 'Sign in as a researcher to use this rehearsal'}, status_code=error.status_code,
                                     headers={'Cache-Control': 'private, no-store'})
-        prefix = '/api/c1-pilot/sessions/'
-        if path.startswith(prefix):
+        prefix = f'/api/{component}-pilot/sessions/'
+        if study and path.startswith(prefix):
             session_id = path[len(prefix):].split('/')[0]
             with get_connection() as db:
-                owner = db.execute('SELECT researcher FROM rehearsal_session_actors WHERE session_id=?', (session_id,)).fetchone()
+                owner = db.execute(f"SELECT researcher FROM {study['actors']} WHERE session_id=?", (session_id,)).fetchone()
             if owner is None or owner['researcher'] != researcher:
                 return JSONResponse({'detail': 'This rehearsal session belongs to another researcher'}, status_code=403)
         # Keep localhost rehearsal logins independent of any pilot on another
@@ -151,10 +166,11 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
         response = await call_next(request)
         if response.headers.get('set-cookie'):
             response.headers['set-cookie'] = response.headers['set-cookie'].replace(f'{SESSION_COOKIE}=', f'{REHEARSAL_COOKIE}=', 1)
-        if path.startswith('/api/c1-pilot/'):
+        if study:
             response.headers['Cache-Control'] = 'private, no-store'
-        capture = (path == '/api/c1-pilot/sessions' and request.method == 'POST' and response.status_code == 200)
-        exported = path in ('/api/c1-pilot/admin/export', '/api/c1-pilot/admin/sessions') and response.status_code == 200
+        api = f'/api/{component}-pilot'
+        capture = study and path == api+'/sessions' and request.method == 'POST' and response.status_code == 200
+        exported = study and path in (api+'/admin/export', api+'/admin/sessions') and response.status_code == 200
         if not capture and not exported:
             return response
         body = b''.join([chunk async for chunk in response.body_iterator])
@@ -163,16 +179,16 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
         if capture:
             session_id = json.loads(body)['session_id']
             with get_connection() as db:
-                db.execute('INSERT INTO rehearsal_session_actors(session_id,researcher) VALUES (?,?)', (session_id, researcher))
-                row = db.execute('SELECT entry_json FROM c1_sessions WHERE session_id=?', (session_id,)).fetchone()
+                db.execute(f"INSERT INTO {study['actors']}(session_id,researcher) VALUES (?,?)", (session_id, researcher))
+                row = db.execute(f'SELECT entry_json FROM {component}_sessions WHERE session_id=?', (session_id,)).fetchone()
                 entry = json.loads(row['entry_json'])
                 entry.update(data_origin=ORIGIN, entered_by=researcher)
-                db.execute('UPDATE c1_sessions SET entry_json=? WHERE session_id=?', (json.dumps(entry), session_id))
+                db.execute(f'UPDATE {component}_sessions SET entry_json=? WHERE session_id=?', (json.dumps(entry), session_id))
         else:
             rows = csv.DictReader(io.StringIO(body.decode()))
             columns = [*(rows.fieldnames or []), 'data_origin', 'entered_by', 'session_type']
             with get_connection() as db:
-                owners = {row['session_id']: row['researcher'] for row in db.execute('SELECT * FROM rehearsal_session_actors').fetchall()}
+                owners = {row['session_id']: row['researcher'] for row in db.execute(f"SELECT * FROM {study['actors']}").fetchall()}
             output = io.StringIO()
             writer = csv.DictWriter(output, fieldnames=columns)
             writer.writeheader()
@@ -183,7 +199,7 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
                 writer.writerow(row)
             body = output.getvalue().encode()
             suffix = 'responses' if path.endswith('/export') else 'sessions'
-            headers['Content-Disposition'] = f'attachment; filename="c1_researcher_rehearsal_{suffix}.csv"'
+            headers['Content-Disposition'] = f'attachment; filename="{component}_researcher_rehearsal_{suffix}.csv"'
         return Response(body, status_code=response.status_code, headers=headers)
 
     return app
@@ -196,7 +212,7 @@ def main():
     parser.add_argument('--postgres', action='store_true', help='Use a separate SURVEY_REHEARSAL_DATABASE_URL')
     args = parser.parse_args()
     app = create_app(use_postgres=args.postgres)
-    print(f'C1 researcher rehearsal: http://{args.host}:{args.port}/pilot/admin', flush=True)
+    print(f'C1/C4 researcher rehearsal: http://{args.host}:{args.port}/researcher', flush=True)
     if not args.postgres:
         print(f'Private local login: {DEFAULT_STATE / "private_access.json"}', flush=True)
     import uvicorn

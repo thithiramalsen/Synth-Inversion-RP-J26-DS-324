@@ -74,13 +74,15 @@ class ResearcherRehearsalTests(unittest.TestCase):
 
     def test_every_study_endpoint_requires_researcher_authentication(self):
         self.assertEqual(self.client.get('/pilot', follow_redirects=False).headers['location'], '/pilot/admin')
-        for path in ('/api/c1-pilot/status', '/api/c1-pilot/admin/summary', '/api/c1-pilot/sessions/unknown/audio/test'):
+        self.assertEqual(self.client.get('/c4', follow_redirects=False).headers['location'], '/c4/admin')
+        for path in ('/api/c1-pilot/status', '/api/c1-pilot/admin/summary', '/api/c1-pilot/sessions/unknown/audio/test', '/api/c4-pilot/status', '/api/c4-pilot/admin/summary'):
             self.assertEqual(self.client.get(path).status_code, 401)
         self.assertEqual(self.client.post('/api/c1-pilot/sessions', json={}).status_code, 401)
-        for path in ('/c4', '/c4/admin', '/api/c4-pilot/status', '/api/studies', '/docs', '/openapi.json'):
+        for path in ('/api/studies', '/docs', '/openapi.json'):
             self.assertEqual(self.client.get(path).status_code, 404)
         self.login()
         self.assertEqual(self.client.get('/api/c1-pilot/status').status_code, 200)
+        self.assertEqual(self.client.get('/api/c4-pilot/status').status_code, 200)
 
     def test_fresh_answers_save_with_actor_and_export_only_as_rehearsal(self):
         self.start()
@@ -89,11 +91,14 @@ class ResearcherRehearsalTests(unittest.TestCase):
         self.assertEqual(self.client.post(self.base+'/volume', headers=self.headers, json={'completed_plays':1}).status_code, 200)
         state = self.client.get(self.base, headers=self.headers).json()
         self.assertEqual(state['phase'], 'rating')
-        for index in range(23):
+        for index in range(20):
             state = self.client.get(self.base, headers=self.headers).json()
             if state['phase'] == 'break':
                 self.assertEqual(self.client.post(self.base+'/continue', headers=self.headers, json={}).status_code, 200)
                 state = self.client.get(self.base, headers=self.headers).json()
+            self.assertFalse(state['practice'])
+            self.assertEqual(state['display_number'], index+1)
+            self.assertEqual(state['display_total'], 20)
             self.assertEqual(self.client.post(self.base+'/playback/'+state['presentation_id'], headers=self.headers, json={}).status_code, 200)
             response = self.client.post(self.base+'/ratings', headers=self.headers, json={
                 'presentation_id':state['presentation_id'], 'started_at':state['server_time'], 'play_count':1, 'completed_plays':1,
@@ -104,7 +109,7 @@ class ResearcherRehearsalTests(unittest.TestCase):
         self.assertEqual(self.client.get(self.base, headers=self.headers).json()['phase'], 'complete')
         response = self.client.get('/api/c1-pilot/admin/export')
         rows = list(csv.DictReader(io.StringIO(response.text)))
-        self.assertEqual(len(rows), 23)
+        self.assertEqual(len(rows), 20)
         for row in rows:
             self.assertEqual(row['analysis_include'], 'False')
             self.assertEqual(row['data_origin'], rehearsal.ORIGIN)
@@ -128,11 +133,62 @@ class ResearcherRehearsalTests(unittest.TestCase):
         self.client.cookies.set(rehearsal.REHEARSAL_COOKIE, cookie)
         self.assertEqual(self.client.get(self.base, headers=self.headers).status_code, 200)
 
+    def test_existing_rehearsal_sessions_keep_their_original_bundle_and_responses(self):
+        legacy = ROOT/'survey/deploy/study/c1_researcher_rehearsal_v1.json'
+        legacy_config = ROOT/'survey/config/c1_researcher_rehearsal_v1.json'
+        with patch.dict(os.environ, SURVEY_C1_BUNDLE=str(legacy), SURVEY_C1_CONFIG=str(legacy_config)):
+            self.start()
+            self.client.post(self.base+'/volume', headers=self.headers, json={'completed_plays':1})
+        state = self.client.get(self.base, headers=self.headers)
+        self.assertEqual(state.status_code, 200, state.text)
+        self.assertEqual(state.json()['total_presentations'], 23)
+        self.assertTrue(state.json()['practice'])
+        self.assertEqual(state.json()['display_number'], 1)
+        self.assertEqual(state.json()['display_total'], 3)
+        self.assertEqual(state.json()['config']['protocol_version'], 'c1_researcher_rehearsal_2026-10-21_v1')
+        self.assertEqual(self.client.get('/api/c1-pilot/status').json()['total_presentations'], 20)
+
     def test_store_guard_rejects_participant_data_before_initialization(self):
         with database.get_connection() as db:
             db.execute("INSERT INTO c4_sessions(session_id,token_hash,participant_id,bundle_hash,protocol_hash,study_id,protocol_snapshot,assignment_id,entry_json,trial_order,screen_order,started_at) VALUES ('fixture','x','x','x','x','real-c4','{}','x','{}','[]','[]','test')")
         with self.assertRaisesRegex(RuntimeError, 'another study'):
             rehearsal.assert_separate_store()
+
+    def test_existing_c1_database_upgrades_in_place_and_preserves_accounts_codes_names_and_answers(self):
+        self.start()
+        self.client.post(self.base+'/volume', headers=self.headers, json={'completed_plays':1})
+        state = self.client.get(self.base, headers=self.headers).json()
+        self.client.post(self.base+'/playback/'+state['presentation_id'], headers=self.headers, json={})
+        result = self.client.post(self.base+'/ratings', headers=self.headers, json={
+            'presentation_id':state['presentation_id'], 'started_at':state['server_time'], 'play_count':1, 'completed_plays':1,
+            'answers':dict(brightness=4, roughness=3, percussiveness=2, sustainedness=5)})
+        self.assertEqual(result.status_code, 200, result.text)
+        roster = self.client.get('/api/c1-pilot/admin/roster').json()
+        slot = roster['assignments'][0]
+        saved = self.client.post('/api/c1-pilot/admin/assignment-name', json=dict(bundle_hash=roster['bundle_hash'],
+            assignment_id=slot['assignment_id'], participant_name='Test researcher', expected_version=slot['version']))
+        self.assertEqual(saved.status_code, 200, saved.text)
+        tables = ('c1_sessions', 'c1_ratings', 'c1_invites', 'rehearsal_session_actors',
+                  'researcher_accounts', 'researcher_sessions', 'assignment_roster', 'invitation_code_vault')
+        with database.get_connection() as db:
+            before = {table: [dict(r) for r in db.execute(f'SELECT * FROM {table}').fetchall()] for table in tables}
+            # The previous C1 deployment has the shared empty C4 schema but no C4 ownership table.
+            db.execute('DROP TABLE c4_rehearsal_session_actors')
+        new_app = rehearsal.create_app(self.state_dir)
+        with TestClient(new_app) as upgraded:
+            upgraded.cookies.set(rehearsal.REHEARSAL_COOKIE, self.client.cookies.get(rehearsal.REHEARSAL_COOKIE))
+            self.assertTrue(upgraded.get('/api/c1-pilot/status').json()['ready'])
+            self.assertTrue(upgraded.get('/api/c4-pilot/status').json()['ready'])
+            restored = upgraded.get(self.base, headers=self.headers)
+            self.assertEqual(restored.status_code, 200, restored.text)
+            self.assertEqual(restored.json()['saved_presentations'], 1)
+            after_roster = upgraded.get('/api/c1-pilot/admin/roster').json()['assignments'][0]
+            self.assertEqual(after_roster['invitation'], slot['invitation'])
+            self.assertEqual(after_roster['participant_name'], 'Test researcher')
+            with database.get_connection() as db:
+                for table in tables:
+                    self.assertEqual([dict(r) for r in db.execute(f'SELECT * FROM {table}').fetchall()], before[table], table)
+                self.assertEqual(db.execute('SELECT COUNT(*) FROM c4_rehearsal_session_actors').fetchone()[0], 0)
 
     def test_same_postgres_database_is_rejected_without_connecting(self):
         with patch.dict(os.environ, SURVEY_DATABASE_URL='postgresql://user:one@database.invalid:5432/main',

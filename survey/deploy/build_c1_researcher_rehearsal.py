@@ -10,10 +10,10 @@ from survey.deploy.start import validate_assets
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'survey/deploy/study/c1_participant_bundle_v1.json'
 SOURCE_CONFIG = ROOT / 'survey/config/c1_participants_v1.json'
-OUTPUT = SOURCE.with_name('c1_researcher_rehearsal_v1.json')
-OUTPUT_CONFIG = SOURCE_CONFIG.with_name('c1_researcher_rehearsal_v1.json')
+OUTPUT = SOURCE.with_name('c1_researcher_rehearsal_v2.json')
+OUTPUT_CONFIG = SOURCE_CONFIG.with_name('c1_researcher_rehearsal_v2.json')
 STUDY_ID = 'c1_researcher_rehearsal_v1'
-PROTOCOL_VERSION = 'c1_researcher_rehearsal_2026-10-21_v1'
+PROTOCOL_VERSION = 'c1_researcher_rehearsal_2026-10-21_v2_no_practice'
 DATA_ORIGIN = 'researcher_entered_rehearsal'
 NOTICE = ('Researcher rehearsal only. Fresh answers are entered by research team members '
           'for internal testing and review, not by independent study participants. '
@@ -46,9 +46,11 @@ def build(source, digest):
                   source_participant_bundle_hash_format='lf_utf8')
     for number, block in enumerate(result['assignments'], 1):
         block['assignment_id'] = f'researcher_rehearsal_{number:02d}'
+        block['trials'] = [trial for trial in block['trials'] if trial['kind'] != 'practice']
     plan = result.get('assignment_plan', {})
     plan.pop('target_completions', None)
     plan.pop('completed_prefix_coverage', None)
+    plan['practice_per_person'] = 0
     plan['note'] = 'Internal team test assignments; these do not represent independent study participants.'
     return result
 
@@ -61,7 +63,8 @@ def build_config(source, digest):
         result.pop(key, None)
     result.update(study_id=STUDY_ID, protocol_version=PROTOCOL_VERSION,
                   collection_mode='researcher_rehearsal', data_origin=DATA_ORIGIN,
-                  information_version='c1_researcher_rehearsal_information_2026-10-21_v1',
+                  information_version='c1_researcher_rehearsal_information_2026-10-21_v2',
+                  practice_presentations=0,
                   description='Internal research team rehearsal of the C1 listening interface.',
                   review_notice=NOTICE, source_participant_config_sha256=digest,
                   source_participant_config_hash_format='lf_utf8',
@@ -69,6 +72,9 @@ def build_config(source, digest):
                                       'They are excluded from participant research analysis. No automatic deletion date has been set. '
                                       'Contact the researcher with your listener code about stored rehearsal responses.')
     result['information'][0] = NOTICE
+    result['information'][1] = ('Set a comfortable listening volume, then listen to 20 different synthesizer sounds '
+                              'and rate brightness, roughness, percussiveness and sustainedness. '
+                              'There are no practice rounds. Take a break after sound 10.')
     return result
 
 
@@ -102,7 +108,7 @@ def prepare(source_path=SOURCE, output_path=OUTPUT, source_config_path=SOURCE_CO
     validate_assets(output_path)
     return dict(study_id=STUDY_ID, protocol_version=PROTOCOL_VERSION, data_origin=DATA_ORIGIN,
                 rehearsal=True, analysis_include=False, assignments=len(result['assignments']),
-                study_sounds=64, practice_sounds=3, presentations_per_listener=23,
+                study_sounds=64, practice_sounds=0, presentations_per_listener=20,
                 audio_rendered=False, responses_copied=0)
 
 

@@ -5,7 +5,7 @@ import { renderToString } from 'react-dom/server'
 import { createServer } from 'vite'
 
 let server, C4Workload, C4Break, C4DesignSummary, C4CollectionNotice, ComparisonQuestions
-let VolumeSetupHeading
+let VolumeSetupHeading, C1Workload
 const originalWindow = globalThis.window
 const render = (component, props) => renderToString(React.createElement(component, props)).replace(/<!-- -->/g, '')
 
@@ -14,6 +14,7 @@ before(async () => {
   server = await createServer({ server: { middlewareMode: true, hmr: false }, resolve: { preserveSymlinks: true }, appType: 'custom' })
   ;({ C4Workload, C4Break, C4DesignSummary, C4CollectionNotice, ComparisonQuestions } = await server.ssrLoadModule('/src/C4App.jsx'))
   VolumeSetupHeading = (await server.ssrLoadModule('/src/VolumeSetupHeading.jsx')).default
+  C1Workload = (await server.ssrLoadModule('/src/PilotApp.jsx')).C1Workload
 })
 
 after(async () => {
@@ -39,6 +40,17 @@ test('both surveys show one listening setup step when the headphone screen is re
   assert.match(render(VolumeSetupHeading, { config: {} }), /1 OF 2/)
   const resumed = render(VolumeSetupHeading, { config: {}, screeningEnabled: false })
   assert.doesNotMatch(resumed, /OF 2/)
+})
+
+test('researcher surveys omit practice rounds while participant and legacy workloads retain them', () => {
+  const c1 = render(C1Workload, { status: { practice_presentations: 0, rated_presentations: 20 } })
+  assert.match(c1, /20 rated presentations/)
+  assert.doesNotMatch(c1, /practice/i)
+  assert.match(render(C1Workload, { status: { practice_presentations: 3, rated_presentations: 20 } }), /3 practice clips before the 20 rated presentations/)
+  assert.match(render(C1Workload, { status: { rated_presentations: 36 } }), /3 practice clips before the 36 rated presentations/)
+  const c4 = render(C4Workload, { status: { practice_presentations: 0, rated_presentations: 22, config: { collection_mode: 'researcher_rehearsal' } } })
+  assert.match(c4, /22 review comparisons/)
+  assert.doesNotMatch(c4, /practice/i)
 })
 
 test('C4 break displays saved-session progress instead of a fixed workload', () => {

@@ -106,6 +106,12 @@ function Scale({ descriptor, value, onChange }) {
   </fieldset>
 }
 
+export function C1Workload({ status }) {
+  const practice = status.practice_presentations ?? 3
+  return <p>{practice > 0 ? `There are ${practice} practice clips before the ${status.rated_presentations} rated presentations.`
+    : `There are ${status.rated_presentations} rated presentations.`} Choose a comfortable listening level and keep it consistent.</p>
+}
+
 function Entry({ status, busy, onSubmit }) {
   const [values, setValues] = useState({ invitation: '', activities: [], experience_months: '', recent_frequency: '', tools: '', example: '', experience_selection: emptyExperienceSelection(status.config), adult: false, consent: false, headphones: false, quiet_environment: false, understands_language: false })
   const change = (key, value) => setValues(v => ({ ...v, [key]: value }))
@@ -117,7 +123,7 @@ function Entry({ status, busy, onSubmit }) {
     </div>
     <section className="p-card"><h2>Before you take part</h2>
       {cfg.information.map((text, i) => <p key={i}>{text}</p>)}
-      <p>There are 3 practice clips before the {status.rated_presentations} rated presentations. Choose a comfortable listening level and keep it consistent.</p>
+      <C1Workload status={status} />
       {cfg.researcher_email && <p>Research contact: {cfg.researcher_name} · <a href={`mailto:${cfg.researcher_email}`}>{cfg.researcher_email}</a></p>}
       {cfg.supervisor_contact && <p>Supervisor contact: {cfg.supervisor_contact}</p>}
       {cfg.retention_statement && <p>{cfg.retention_statement}</p>}
@@ -240,7 +246,7 @@ export default function PilotApp() {
             <label>Were the descriptor questions clear?<select required value={feedback.clarity} onChange={e => setFeedback(v => ({ ...v, clarity: e.target.value }))}><option value="">Choose an answer</option>{['Clear', 'Some terms unclear', 'Difficult to understand'].map(s => <option key={s}>{s}</option>)}</select></label>
             <label>How did the session length feel?<select required value={feedback.length} onChange={e => setFeedback(v => ({ ...v, length: e.target.value }))}><option value="">Choose an answer</option>{['About right', 'Too long', 'Could be longer'].map(s => <option key={s}>{s}</option>)}</select></label>
             <label>Anything we should improve? <span>Optional</span><textarea maxLength="1500" rows="3" value={feedback.comment} onChange={e => setFeedback(v => ({ ...v, comment: e.target.value }))} /></label><button className="p-primary" disabled={busy}>Finish session →</button></form>}
-          {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} sound responses have been saved, including practice. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No descriptor study responses are required.'}</p></section>}
+          {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} sound responses have been saved${step.practice_presentations !== 0 ? ', including practice' : ''}. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No descriptor study responses are required.'}</p></section>}
         </>}
         {!['withdrawn', 'replaced'].includes(phase) && !withdrawPrompt && <button className="p-withdraw" onClick={() => setWithdrawPrompt(true)}>Withdraw this session</button>}
         {step.rehearsal && end && <section className="p-card">{status?.rehearsal === false
