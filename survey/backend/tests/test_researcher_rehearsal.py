@@ -108,6 +108,7 @@ class ResearcherRehearsalTests(unittest.TestCase):
             json={'clarity':'Clear', 'length':'About right'}).status_code, 200)
         self.assertEqual(self.client.get(self.base, headers=self.headers).json()['phase'], 'complete')
         response = self.client.get('/api/c1-pilot/admin/export')
+        self.assertEqual(len(response.headers.get_list('content-disposition')), 1)
         rows = list(csv.DictReader(io.StringIO(response.text)))
         self.assertEqual(len(rows), 20)
         for row in rows:
@@ -117,10 +118,25 @@ class ResearcherRehearsalTests(unittest.TestCase):
             self.assertEqual(row['study_id'], rehearsal.STUDY_ID)
             self.assertEqual(row['session_type'], 'researcher_rehearsal')
         self.assertIn('c1_researcher_rehearsal_responses.csv', response.headers['content-disposition'])
-        audit = list(csv.DictReader(io.StringIO(self.client.get('/api/c1-pilot/admin/sessions').text)))
+        audit_response = self.client.get('/api/c1-pilot/admin/sessions')
+        self.assertEqual(len(audit_response.headers.get_list('content-disposition')), 1)
+        audit = list(csv.DictReader(io.StringIO(audit_response.text)))
         self.assertEqual(audit[0]['entered_by'], 'researcher')
         self.assertEqual(json.loads(audit[0]['entry_json'])['data_origin'], rehearsal.ORIGIN)
         self.assertEqual(hashlib.sha256(self.main_store.read_bytes()).hexdigest(), self.original_hash)
+
+    def test_both_study_downloads_send_one_attachment_header_and_the_correct_body_length(self):
+        self.login()
+        for component in ('c1', 'c4'):
+            for endpoint, suffix in (('export', 'responses'), ('sessions', 'sessions')):
+                with self.subTest(component=component, endpoint=endpoint):
+                    response = self.client.get(f'/api/{component}-pilot/admin/{endpoint}')
+                    self.assertEqual(response.status_code, 200, response.text)
+                    self.assertEqual(response.headers.get_list('content-disposition'), [
+                        f'attachment; filename="{component}_researcher_rehearsal_{suffix}.csv"'])
+                    self.assertEqual(int(response.headers['content-length']), len(response.content))
+                    self.assertIn('text/csv', response.headers['content-type'])
+                    self.assertEqual(response.headers['cache-control'], 'private, no-store')
 
     def test_participant_token_alone_or_another_researcher_cannot_resume_the_session(self):
         self.start()

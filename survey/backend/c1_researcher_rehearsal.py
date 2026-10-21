@@ -206,7 +206,9 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
                 writer.writerow(row)
             body = output.getvalue().encode()
             suffix = 'responses' if path.endswith('/export') else 'sessions'
-            headers['Content-Disposition'] = f'attachment; filename="{component}_researcher_rehearsal_{suffix}.csv"'
+            # Copied response headers are lowercase. Replace the existing key;
+            # two conflicting attachment filenames cause browsers to reject it.
+            headers['content-disposition'] = f'attachment; filename="{component}_researcher_rehearsal_{suffix}.csv"'
         return Response(body, status_code=response.status_code, headers=headers)
 
     return app
