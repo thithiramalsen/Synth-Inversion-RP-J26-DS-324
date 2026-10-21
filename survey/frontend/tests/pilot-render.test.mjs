@@ -11,6 +11,7 @@ const originalStorage = globalThis.localStorage
 let C1StudyNotice
 let AssignmentNameRow
 let AssignmentInvitationControls
+let C2App, C2Admin, SiteHome, ResearcherHome
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
@@ -29,6 +30,26 @@ before(async () => {
   C4BulkInvitationDownload = c4.C4BulkInvitationDownload
   C4InvitationAssignments = c4.C4InvitationAssignments
   ComparisonQuestions = c4.ComparisonQuestions
+  ;({ default: C2App, C2Admin } = await server.ssrLoadModule('/src/C2App.jsx'))
+  ;({ default: SiteHome, ResearcherHome } = await server.ssrLoadModule('/src/SiteNavigation.jsx'))
+})
+
+test('C2 pages render with shared navigation and no claim that research collection is open', () => {
+  for (const Component of [C2App, C2Admin]) {
+    const html = renderToString(React.createElement(Component))
+    assert.match(html, /Research collection|research collection/)
+    assert.match(html, /href="\/pilot/)
+    assert.match(html, /href="\/c4/)
+  }
+  const admin = renderToString(React.createElement(C2Admin))
+  assert.match(admin, /existing researcher login/)
+  assert.doesNotMatch(admin, /Create missing C2 preview codes/)
+  for (const Component of [SiteHome, ResearcherHome]) {
+    const html = renderToString(React.createElement(Component))
+    assert.match(html, /COMPONENT 1/)
+    assert.match(html, /COMPONENT 2/)
+    assert.match(html, /COMPONENT 4/)
+  }
 })
 
 after(async () => {

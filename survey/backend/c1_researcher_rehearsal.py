@@ -79,6 +79,7 @@ def configure(state_dir=DEFAULT_STATE, use_postgres=False):
                       SURVEY_C4_BUNDLE=str(c4_bundle), SURVEY_C4_CONFIG=str(c4_config), SURVEY_C4_LEGACY_BUNDLES='',
                       SURVEY_ADMIN_TOKEN=secret, SURVEY_INVITATION_SECRET='', SURVEY_REMOTE_MODE='1',
                       SURVEY_C1_OPEN='0', SURVEY_C4_OPEN='0', SURVEY_ALLOWED_ORIGINS='')
+    os.environ['SURVEY_C2_RESEARCHER_ONLY'] = '1'
     # The normal app captures this path at import time. Reset it explicitly for
     # tests; actual participant and rehearsal servers run in separate processes.
     import database
@@ -135,13 +136,16 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
         study = STUDIES.get(component)
         page = next((value['page'] for value in STUDIES.values() if path == value['page']), None)
         allowed = (path.startswith('/assets/') or path.startswith('/api/researcher/')
+                   or path.startswith('/api/c2-pilot/') or path.startswith('/c2-flow/')
+                   or path in ('/c2', '/c2/admin')
                    or study is not None or path in ('/', '/researcher', '/admin', '/pilot', '/pilot/admin', '/c4', '/c4/admin', '/api/health', '/favicon.ico'))
         if not allowed:
             return JSONResponse({'detail': 'This instance contains only the C1 and C4 researcher rehearsals'}, status_code=404)
         if path in ('/', '/admin'):
             return RedirectResponse('/researcher')
         cookie = request.cookies.get(REHEARSAL_COOKIE)
-        protected = page is not None or study is not None
+        protected = (page is not None or study is not None
+                     or path.startswith('/c2-flow/') or path.startswith('/api/c2-pilot/'))
         researcher = None
         if protected:
             try:

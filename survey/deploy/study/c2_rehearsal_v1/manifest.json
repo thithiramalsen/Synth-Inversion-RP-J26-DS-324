@@ -1,0 +1,32 @@
+{
+  "files": {
+    "audio/case_01_predicted.wav": "e02851b969ec50af513acc64debb4ad387565710a48e583d59d72606a566e96d",
+    "audio/case_01_target.wav": "98a833b8b88834036195f5a42ae362b2e7944c3c376cadb13614cdb6b83ce930",
+    "audio/case_02_predicted.wav": "43c2aca9fad5eaeb5c065f556394a1f370517cb544eeb1f03cd26143b938bca4",
+    "audio/case_02_target.wav": "4ee0f8e43f8376db34ac80ddf5cc25b946fda39895e9e7853e13952e025e4d15",
+    "audio/case_03_predicted.wav": "5e7fd1cd061b6b37bf7d9fff92eabda8e12d03bafa946a834a742522fe161b2d",
+    "audio/case_03_target.wav": "80d2d3b49cc6eb71c7d62c61bf98f7de04c9c4b21ac1930ecf8bce4efe38db05",
+    "audio/case_04_predicted.wav": "5a1d52c59f1b38cd1516e79bec51deb0e737dd5e7ed9e8b8939cc908a1d78066",
+    "audio/case_04_target.wav": "c07d096ec0715c44123fab25a18772abc80408b6dc6a4c73e05c64d21637bb9f",
+    "audio/case_05_predicted.wav": "0d71bd955e309b0cac930694baa775f6c947e2b5827875b0e58cf859c963b912",
+    "audio/case_05_target.wav": "74017a0f38c17f4493302d391dc2a22b30db4958d215155ef9f4e6b0a20948ee",
+    "audio/case_06_predicted.wav": "0a5c279c4bb60e5007cdd22ba1ab7343f7f3c7fdbadb249bf39d5048a07e1046",
+    "audio/case_06_target.wav": "92cde9c31a8c4e75da6f3fd107cfecdcdf5d65cbf0cf8813e4cb416026680b51",
+    "audio/case_07_predicted.wav": "3ac114d2c0c6a06a2936cea60625a11c18f5c4061cd909f79325bfbba7d92f15",
+    "audio/case_07_target.wav": "c8fdbccc122beadd8d3cda089df071895cd2538182069f1e739261b8f3d63bd9",
+    "audio/case_08_predicted.wav": "f907a412bbb2000c5c75ee312752d7ed1dd27790cf541e92a9f8902d52f4485a",
+    "audio/case_08_target.wav": "85302fa2de041ea84034f0f27571545605414975ae0479f260e3ec6216ffc008",
+    "audio/headphones_01.wav": "b86135a99f3ae6bb2c353a54068f065f22eb13f2b21421243dd8e887faf535b3",
+    "audio/headphones_02.wav": "e19fa8fbe2dbe5be293279cff803e63e441f2d7fd9d9d6e8bd50c101f179b07b",
+    "audio/headphones_03.wav": "2d790dc070d8f18f7775a016cd9b3a57a42e6383723b6cf131f3628b16465fe4",
+    "audio/headphones_04.wav": "c64e0098605dc073d08095f3d2e383303a4a128426ce69d196c9d4cd3b8f58e2",
+    "audio/headphones_05.wav": "6ddc2c4f848025a58cd8f935b93930dc6a09536580229102e9c74e26768f6bb8",
+    "audio/headphones_06.wav": "698271ecf6a8078ea4db9bfa72d1d0d7f9e3550bf51972b798ece0423f231b8d",
+    "audio/practice_predicted.wav": "94805b912fc4abc391b611ff24a4047307bbe7abd99eed12066fc8c806ef90f2",
+    "audio/practice_target.wav": "84e5d8b7d53045fe089a3f60a508256da4d072a67cb6b0880bef641ed257e11d",
+    "audio/volume_reference.wav": "0e2b88a79aee2a26da064bfdedb7f8b0070f2c0a14a7f894e803df1e2806d0d8",
+    "bundle.json": "7ea58c8e1ef761b9bd276741d8fa81bfc663a042e70dd8242ac7820e56a8faf5"
+  },
+  "status": "complete_rehearsal_bundle",
+  "test_evaluated": false
+}
