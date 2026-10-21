@@ -217,3 +217,18 @@ Observations (diagnostic, not hypothesis results):
   λ values between 0.95 and 1.0 to the grid is an open question for the user before Phase 7.
 
 Status: features and checks recorded; primary representation and λ grid are the user's decisions.
+
+## D-014 — Offline demo viewer for Progress Presentation 1 (2026-10-22)
+
+`scripts/demo_build_viewer.py` builds two offline pages in `outputs/v4/demo/` (git-ignored):
+`demo_mfcc26.html` and `demo_logmel_stats.html`. Both show the same 8 seeded validation targets,
+a 100-candidate audio shortlist, plain top 5 and MMR picks side by side with playable audio
+(16-bit PCM copies of the processed corpus audio, 174 clips, 46 MB) and knob-setting bars.
+
+- Selections come from the tested `pool_from_scores`, `mmr_indices` and `metrics_from_indices`
+  (`c3.demo.build_demo_data`); λ = 1 is asserted to equal the plain top 5.
+- The demo λ list `1.0, 0.99, 0.98, 0.97, 0.96, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.6, 0.5` is for
+  illustration only. It does not set the Phase 7 grid, and the demo numbers (8 targets) are not
+  results. Every page is labelled "Illustration · validation sounds · λ not tuned yet".
+
+Status: built at the user's request for the presentation.
