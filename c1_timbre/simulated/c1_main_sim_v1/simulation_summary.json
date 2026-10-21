@@ -1,0 +1,68 @@
+{
+  "WARNING": "SIMULATED DATA. No human ratings. Engineering fixture only; not perceptual evidence. Never merge with approved human responses or count as participants.",
+  "label_source": "simulated",
+  "generator_version": "c1_main_sim_v1",
+  "seed": 20261115,
+  "study_id": "c1_main_SIMULATED_v1",
+  "created_utc": "2026-10-14T11:59:35+00:00",
+  "protocol_version": "c1_main_2026-10-14_22unique_2rep_DRAFT",
+  "bundle": "data\\processed\\c1_main_v1_simpilot_dryrun\\bundle.json",
+  "bundle_sha256": "017fa9e30301787bdece6ec929b0c0497b8979c3ad205ebbb123b2b9c3527a80",
+  "protocol": "c1_timbre\\main_study\\c1_main_v1_simpilot_dryrun\\c1_main_protocol_DRAFT.json",
+  "protocol_sha256": "8da310a8562565ee2f04265b6d19b885781de01f670aeb0d2355d7b87a9f2e28",
+  "completed_sessions": 30,
+  "excluded_sessions": {
+    "SIM_S004": "abandoned",
+    "SIM_S010": "withdrawn"
+  },
+  "included_study_evaluations": 660,
+  "included_hidden_repeats": 60,
+  "repeat_abs_difference": {
+    "pairs": 224,
+    "median": 1.0,
+    "within_one": 0.6830357142857143
+  },
+  "truth_reference": "c1_timbre\\simulated\\c1_pilot_sim_v1\\simulation_ground_truth.csv",
+  "unique_study_sounds": 128,
+  "listeners_per_sound": [
+    5,
+    6
+  ],
+  "unclear_fraction": {
+    "brightness": 0.0125,
+    "roughness": 0.0556,
+    "percussiveness": 0.0306,
+    "sustainedness": 0.0389
+  },
+  "corrections": 23,
+  "rule": {
+    "brightness": "energy-weighted log2 spectral centroid (gated frames, -60 dB bin floor)",
+    "roughness": "log 15-150 Hz amplitude-modulation index of the 0.2-1.45 s body",
+    "percussiveness": "0.5*z(-log attack time) + 0.5*z(peak-to-body level drop)",
+    "sustainedness": "0.7*z(-peak-to-body drop) + 0.3*z(1.6-2.4 s tail level)",
+    "mapping": "mean = 4 + 1.25*z, plus per-sound effect sd 0.4, clipped",
+    "listener": {
+      "bias_sd": 0.45,
+      "scale_use_log_sd": 0.15,
+      "noise_sd": {
+        "brightness": 0.75,
+        "roughness": 1.05,
+        "percussiveness": 0.7,
+        "sustainedness": 0.85
+      },
+      "halo_sd": 0.25,
+      "fatigue_per_trial": 0.015,
+      "unclear_rate": {
+        "brightness": 0.015,
+        "roughness": 0.06,
+        "percussiveness": 0.02,
+        "sustainedness": 0.035
+      },
+      "p_rough_confuses_bright": 0.2,
+      "p_sustain_as_opposite": 0.25,
+      "correction_rate": 0.03
+    },
+    "rating": "round(4 + scale_use*(mean + bias - 4) + halo + noise), clipped to 1-7"
+  },
+  "audio_source": "PCM16 playback files (what participants would hear); hashes checked against the bundle"
+}
