@@ -4,6 +4,7 @@ import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
 import PreviousNavigation from './PreviousNavigation'
+import NewInvitationEntry from './NewInvitationEntry.jsx'
 import ResponseViewer from './ResponseViewer'
 import AssignmentRoster from './AssignmentRoster.jsx'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
@@ -214,7 +215,13 @@ export default function C4App() {
       await submit('previous', { current_index: step.current_index })
     })
   }
-  function reset() { localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false) }
+  function reset() {
+    localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false)
+    pendingDraft.current = null; setWithdraw(false); setInterval('')
+    setCounts({ plays: zeroCounts(), completed: zeroCounts() })
+    setAnswer({ choice: '', confidence: null, comment: '' }); setFeedback({ clarity: '', length: '', comment: '' })
+    window.scrollTo(0, 0)
+  }
   const phase = step?.phase, cfg = step?.config || status?.config
   const rehearsal = step?.rehearsal ?? status?.rehearsal ?? true
   const end = ['complete', 'screen_failed', 'withdrawn', 'replaced'].includes(phase)
@@ -260,6 +267,7 @@ export default function C4App() {
           {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} comparison responses have been saved${step.practice_presentations !== 0 ? ', including practice' : ''}. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No comparison study responses are required.'}</p></section>}
         </>}
         {!['withdrawn','replaced'].includes(phase) && !withdraw && <button className="p-withdraw" onClick={() => setWithdraw(true)}>Withdraw this session</button>}
+        {!withdraw && <NewInvitationEntry step={step} busy={busy} onStart={reset} />}
         {step.rehearsal && end && <section className="p-card">{status.config.collection_mode === 'participants'
           ? <><p>This saved session belongs to the earlier review. To join the current participant study, use a new participant invitation. Your review answers remain separate.</p><button className="p-primary" onClick={reset}>Open the participant study</button></>
           : <><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={reset}>Use another rehearsal invitation</button></>}

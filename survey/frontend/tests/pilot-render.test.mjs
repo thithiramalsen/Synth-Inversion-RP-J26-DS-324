@@ -12,6 +12,7 @@ let C1StudyNotice
 let AssignmentNameRow
 let AssignmentInvitationControls
 let C2App, C2Admin, SiteHome, ResearcherHome
+let NewInvitationEntry
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
@@ -23,6 +24,7 @@ before(async () => {
   InvitationDownloads = (await server.ssrLoadModule('/src/InvitationDownloads.jsx')).default
   ExperienceQuestions = (await server.ssrLoadModule('/src/ExperienceQuestions.jsx')).default
   PreviousNavigation = (await server.ssrLoadModule('/src/PreviousNavigation.jsx')).default
+  NewInvitationEntry = (await server.ssrLoadModule('/src/NewInvitationEntry.jsx')).default
   ResponseTable = (await server.ssrLoadModule('/src/ResponseViewer.jsx')).ResponseTable
   ;({ AssignmentNameRow, AssignmentInvitationControls } = await server.ssrLoadModule('/src/AssignmentRoster.jsx'))
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
@@ -58,6 +60,25 @@ after(async () => {
   else globalThis.window = originalWindow
   if (originalStorage === undefined) delete globalThis.localStorage
   else globalThis.localStorage = originalStorage
+})
+
+test('completed main surveys offer a new invitation while preserving the listener reference', () => {
+  for (const study of ['C1', 'C4']) {
+    const html = renderToString(React.createElement(NewInvitationEntry, {
+      step: { phase: 'complete', rehearsal: false, participant_label: `${study} Listener 005` }, busy: false, onStart() {},
+    })).replace(/<!-- -->/g, '')
+    assert.match(html, /Use a new invitation code/)
+    assert.match(html, new RegExp(`completed responses stay saved under ${study} Listener 005`))
+    assert.doesNotMatch(html, /disabled=""/)
+  }
+  const busy = renderToString(React.createElement(NewInvitationEntry, {
+    step: { phase: 'complete', rehearsal: false }, busy: true, onStart() {},
+  }))
+  assert.match(busy, /<button[^>]*disabled=""/)
+  for (const phase of ['volume', 'headphones', 'rating', 'correction', 'break', 'feedback', 'withdrawn', 'screen_failed', 'replaced']) {
+    assert.equal(renderToString(React.createElement(NewInvitationEntry, { step: { phase, rehearsal: false } })), '')
+  }
+  assert.equal(renderToString(React.createElement(NewInvitationEntry, { step: { phase: 'complete', rehearsal: true } })), '')
 })
 
 // Building alone does not catch undefined names executed during initial render.
