@@ -112,6 +112,7 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
     import main as shared
     from database import get_connection
     from security import SESSION_COOKIE, require_admin
+    from rehearsal_experience import initialize_experience_profiles, router as experience_router
 
     @asynccontextmanager
     async def lifespan(app):
@@ -120,10 +121,12 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
             with get_connection() as db:
                 for study in STUDIES.values():
                     db.execute(f"CREATE TABLE IF NOT EXISTS {study['actors']} (session_id TEXT PRIMARY KEY, researcher TEXT NOT NULL)")
+            initialize_experience_profiles()
             yield
 
     app = FastAPI(title='C1 and C4 researcher rehearsal', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     app.router.routes.extend(shared.app.router.routes)
+    app.include_router(experience_router)
 
     def actor(request, cookie):
         return require_admin(authorization=request.headers.get('authorization', ''),

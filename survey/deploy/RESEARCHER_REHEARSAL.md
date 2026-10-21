@@ -47,6 +47,20 @@ responses and ownership records. Keep the participant service on root
   session, rating, protocol or invitation is migrated or rewritten.
 - The main participant surveys retain their existing practice rounds.
 
+## Reuse a researcher's background information
+
+In **Your experience**, fill in music activities, months, frequency, tools and
+examples, then choose **Save my experience**. On a later C1 or C4 researcher
+session, choose **Load my saved experience**. The fields stay editable. Use
+**Update saved experience** after changes or **Forget saved experience** to
+delete the reusable profile without changing existing sessions.
+
+The profile belongs to the signed-in researcher account and is stored in the
+separate rehearsal database, so it works across devices and redeployments. Each
+team member should use their own researcher account. Profiles never save or
+prefill consent, listening setup, invitation codes or sound/comparison answers.
+The main participant surveys have no profile controls or profile API.
+
 ## Verify after deployment
 
 - `/api/health` succeeds; `/` opens `/researcher` with both study links.
