@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { assignmentRosterCsv, filterAssignments } from '../src/assignmentRosterData.js'
+import { assignmentProgress, assignmentRosterCsv, filterAssignments } from '../src/assignmentRosterData.js'
 import { invitationCsv } from '../src/invitationCsv.js'
 
 const rows = [
@@ -8,6 +8,16 @@ const rows = [
   { assignment_id: 'c1_participant_02', participant_name: '', status: 'issued', updated_by: '' },
   { assignment_id: 'c1_participant_03', participant_name: '', status: 'in_progress', participant_label: 'Listener 003' },
 ]
+
+test('assignment progress counts named participants without inflating pending with unused or closed slots', () => {
+  const assignments = [
+    ...['missing', 'issued', 'in_progress', 'completed', 'withdrawn', 'screen_failed', 'replaced']
+      .map(status => ({ participant_name: `Person ${status}`, status })),
+    ...['missing', 'issued', 'in_progress', 'completed'].map(status => ({ participant_name: '', status })),
+  ]
+  assert.deepEqual(assignmentProgress(assignments), { named: 7, slots: 11, completed: 1, pending: 3, closed: 3 })
+  assert.deepEqual(assignmentProgress([]), { named: 0, slots: 0, completed: 0, pending: 0, closed: 0 })
+})
 
 test('the available filter never offers a named or started slot as unassigned', () => {
   assert.deepEqual(filterAssignments(rows, '', 'unassigned').map(row => row.assignment_id), ['c1_participant_02'])
