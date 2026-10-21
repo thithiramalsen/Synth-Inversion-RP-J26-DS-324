@@ -32,13 +32,16 @@ class ResearcherRehearsalPackageTests(unittest.TestCase):
             self.assertEqual(result[key], source[key])
         for number, (old, new) in enumerate(zip(source['assignments'], result['assignments']), 1):
             self.assertEqual(new['assignment_id'], f'researcher_rehearsal_{number:02d}')
-            self.assertEqual(old['trials'], new['trials'])
+            self.assertEqual([t for t in old['trials'] if t['kind'] != 'practice'], new['trials'])
+            self.assertEqual(len(new['trials']), 20)
         for key in ('descriptors', 'scale', 'experience_question', 'experience_tools_label',
                     'experience_tools_placeholder', 'experience_entry_format', 'navigation_policy',
                     'headphone_screening_enabled', 'break_after_rated', 'eligibility'):
             self.assertEqual(cfg[key], result_cfg[key])
         self.assertEqual(result_cfg['information'][0], NOTICE)
-        self.assertEqual(cfg['information'][1:], result_cfg['information'][1:])
+        self.assertEqual(cfg['information'][2:], result_cfg['information'][2:])
+        self.assertEqual(result_cfg['practice_presentations'], 0)
+        self.assertEqual(result['assignment_plan']['practice_per_person'], 0)
         self.assertEqual(cfg['institutional_review_status'], result_cfg['institutional_review_status'])
         self.assertNotIn('target_participants', result_cfg)
         self.assertNotIn('target_ratings_per_sound', result_cfg)

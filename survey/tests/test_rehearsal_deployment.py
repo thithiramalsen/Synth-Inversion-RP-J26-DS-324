@@ -8,6 +8,18 @@ ROOT = Path(__file__).resolve().parents[2]
 
 @unittest.skipUnless(importlib.util.find_spec('yaml'), 'PyYAML is not installed in this test environment')
 class RehearsalBlueprintTests(unittest.TestCase):
+    def test_both_researcher_studies_use_the_existing_service_and_packaged_bundles(self):
+        import yaml
+        shared = yaml.safe_load((ROOT/'survey/deploy/render.researcher-rehearsal.yaml').read_text())
+        self.assertEqual(len(shared['services']), 1)
+        service = shared['services'][0]
+        self.assertEqual(service['name'], 'synth-c1-researcher-rehearsal')
+        self.assertEqual(service['dockerCommand'], 'python survey/backend/c1_researcher_rehearsal.py --postgres --host 0.0.0.0')
+        self.assertFalse((ROOT/'survey/deploy/render.c4-researcher-rehearsal.yaml').exists())
+        ignore = (ROOT/'.dockerignore').read_text()
+        for bundle in ('c1_researcher_rehearsal_v1.json', 'c1_researcher_rehearsal_v2.json', 'c4_researcher_rehearsal_v1.json'):
+            self.assertIn('!survey/deploy/study/'+bundle, ignore)
+
     def test_service_and_secrets_do_not_target_participant_deployment(self):
         import yaml
         source = ROOT/'survey/deploy/render.researcher-rehearsal.yaml'

@@ -1,0 +1,85 @@
+{
+  "protocol_version": "c1_researcher_rehearsal_2026-10-21_v2_no_practice",
+  "headphone_screening_enabled": false,
+  "study_id": "c1_researcher_rehearsal_v1",
+  "collection_mode": "researcher_rehearsal",
+  "experience_entry_format": "experience_tags_v1",
+  "navigation_policy": "previous_before_next_play_v1",
+  "title": "How would you describe this sound?",
+  "description": "Internal research team rehearsal of the C1 listening interface.",
+  "assignment_capacity": 26,
+  "unique_sounds_per_person": 20,
+  "hidden_repeats": 0,
+  "break_after_rated": 10,
+  "descriptors": [
+    {
+      "id": "brightness",
+      "label": "Brightness",
+      "definition": "How much high-frequency or treble character does this sound have?"
+    },
+    {
+      "id": "roughness",
+      "label": "Roughness",
+      "definition": "How much rapid fluttering, beating or grating texture does this sound have?"
+    },
+    {
+      "id": "percussiveness",
+      "label": "Percussiveness",
+      "definition": "How much does this sound resemble a struck or plucked event, with a distinct onset followed by a fall in sound level?"
+    },
+    {
+      "id": "sustainedness",
+      "label": "Sustainedness",
+      "definition": "How strongly does this sound have a continuing, held quality after it begins?"
+    }
+  ],
+  "scale": {
+    "minimum": 1,
+    "maximum": 7,
+    "low_label": "Not at all",
+    "high_label": "Very",
+    "unclear_label": "I cannot judge / the term is unclear"
+  },
+  "information_version": "c1_researcher_rehearsal_information_2026-10-21_v2",
+  "experience_question": {
+    "label": "Which of these have you done yourself?",
+    "help": "Select one or more examples you have actually done. Personal practice counts; it does not need to be released or professional work. Extra details are optional.",
+    "placeholder": "For example: I practised a song on piano and varied the touch to shape its tone."
+  },
+  "experience_tools_label": "Which instruments, vocal activities or music tools have you used?",
+  "experience_tools_placeholder": "For example: piano, bass guitar, singing, a DAW or a synthesizer",
+  "resume_instructions": "You may close this tab and return to the same study link using the same browser profile on the same device while the study is open. Avoid private/incognito mode and do not clear this site's data. Your invitation starts one session; it cannot restore a session in a different browser. Each saved response is kept; an unfinished answer may need to be entered again.",
+  "information": [
+    "Researcher rehearsal only. Fresh answers are entered by research team members for internal testing and review, not by independent study participants. All responses are excluded from participant research analysis.",
+    "Set a comfortable listening volume, then listen to 20 different synthesizer sounds and rate brightness, roughness, percussiveness and sustainedness. There are no practice rounds. Take a break after sound 10.",
+    "Play each sound fully at least once. For each quality, choose a rating from 1 (not at all) to 7 (very). Select I cannot judge / the term is unclear when you cannot make that judgment. There is no correct answer supplied by the researcher.",
+    "You can correct the immediately previous response before starting the next sound. Your original answers and any corrections are retained. Use Save and continue to save each response. You cannot skip unanswered sounds.",
+    "Participation is voluntary. Pause or stop at any time. Use headphones in a quiet place, set a comfortable volume and stop if listening becomes uncomfortable. Your experience answers, ratings, playback counts, times and feedback are saved under a participant code. Please do not enter names, email addresses or identifying links. Hosting providers may keep technical access logs.",
+    "You may withdraw using this browser while you retain session access, or contact the researcher with your listener code. Withdrawal excludes responses from analysis; saved audit records are not immediately erased."
+  ],
+  "eligibility": {
+    "minimum_age": 18,
+    "activities": [
+      "Music production",
+      "Sound design",
+      "Synthesizer patch creation",
+      "Instrument performance",
+      "Singing"
+    ],
+    "rule": "Adult volunteer with practical experience in music production, sound design, synth patch creation, instrumental performance or singing, supported by a self-reported practical example. Personal practice counts; passive music listening alone does not qualify.",
+    "supervisor_confirmed": false
+  },
+  "researcher_name": "Malsen N.G.T.",
+  "researcher_email": "it23203280@my.sliit.lk",
+  "supervisor_contact": "",
+  "retention_statement": "Internal rehearsal responses are stored separately with access restricted to the research team. They are excluded from participant research analysis. No automatic deletion date has been set. Contact the researcher with your listener code about stored rehearsal responses.",
+  "withdrawal_statement": "You may withdraw using this browser while you retain session access, or contact the researcher with your listener code. Withdrawn responses are excluded from analysis. Withdrawal does not immediately erase saved audit records.",
+  "institutional_review_status": "not_recorded",
+  "level_policy_listening_checked": false,
+  "rehearsal_completed": false,
+  "data_origin": "researcher_entered_rehearsal",
+  "practice_presentations": 0,
+  "review_notice": "Researcher rehearsal only. Fresh answers are entered by research team members for internal testing and review, not by independent study participants. All responses are excluded from participant research analysis.",
+  "source_participant_config_sha256": "bf6a8219cbe0ec7965c7ba48f6e23d73303ec6eced38b9cbe7da2c23e2ca86ad",
+  "source_participant_config_hash_format": "lf_utf8"
+}

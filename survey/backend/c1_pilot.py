@@ -213,11 +213,13 @@ def status():
         bundle, _ = load_bundle()
         issues = launch_issues(bundle, cfg)
         total = len(bundle["assignments"][0]["trials"])
+        practice = sum(trial['kind'] == 'practice' for trial in bundle['assignments'][0]['trials'])
         rehearsal = bundle["rehearsal"]
     except HTTPException as error:
-        issues, total, rehearsal = [str(error.detail)], 39, False
+        issues, total, practice, rehearsal = [str(error.detail)], 39, 3, False
     return dict(config=cfg, ready=not issues, issues=issues, total_presentations=total,
-                rated_presentations=total-3, rehearsal=rehearsal, study_id=cfg.get('study_id'))
+                practice_presentations=practice, rated_presentations=total-practice,
+                rehearsal=rehearsal, study_id=cfg.get('study_id'))
 
 
 class StrictBody(BaseModel):
@@ -291,12 +293,20 @@ def start(entry: Entry):
     return dict(session_id=sid, token=token)
 
 
+def presentation_number(trials, index):
+    practice = trials[index]['kind'] == 'practice'
+    same_group = lambda trial: (trial['kind'] == 'practice') == practice
+    return dict(display_number=sum(same_group(t) for t in trials[:index+1]),
+                display_total=sum(same_group(t) for t in trials))
+
+
 @router.get("/sessions/{session_id}")
 def state(session_id: str, authorization: str = Header(default="")):
     row, bundle = context(session_id, authorization)
+    trials = json.loads(row['trial_order'])
     result = dict(phase=row["phase"], participant_id=row["participant_id"], server_time=now(),
                   participant_label=listener_label(row["listener_number"]), saved_presentations=row["current_index"], current_index=row["current_index"],
-                  total_presentations=len(json.loads(row["trial_order"])), completed_at=row["completed_at"],
+                  total_presentations=len(trials), practice_presentations=sum(t['kind'] == 'practice' for t in trials), completed_at=row["completed_at"],
                   config=json.loads(row["protocol_snapshot"]), rehearsal=bundle["rehearsal"],
                   headphone_screening_enabled=session_screening_enabled(row))
     if row["phase"] == "volume":
@@ -310,8 +320,7 @@ def state(session_id: str, authorization: str = Header(default="")):
         practice = trial["kind"] == "practice"
         result.update(presentation_id=trial["presentation_id"], audio_id=trial["sample_id"],
                       practice=practice, index=row["current_index"], total=len(trials),
-                      display_number=row["current_index"]+1 if practice else row["current_index"]-2,
-                      display_total=3 if practice else len(trials)-3)
+                      **presentation_number(trials, row['current_index']))
     with get_connection() as db:
         correction = active_correction(db, session_id)
         result["can_correct_previous"] = can_correct(db, row)
@@ -323,8 +332,7 @@ def state(session_id: str, authorization: str = Header(default="")):
             result.update(phase="correction", presentation_id=trial["presentation_id"], audio_id=trial["sample_id"],
                           practice=practice, correction_token=correction["correction_token"],
                           saved_answers=json.loads((latest or original)["answers_json"]),
-                          display_number=correction["correction_index"]+1 if practice else correction["correction_index"]-2,
-                          display_total=3 if practice else result["total_presentations"]-3)
+                          **presentation_number(trials, correction['correction_index']))
     return result
 
 
