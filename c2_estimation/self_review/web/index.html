@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C2 · Study example preview</title><link rel="stylesheet" href="/assets/style.css"><script src="/preview.js" defer></script></head>
+<body><div class="rehearsal">READ-ONLY EXAMPLE · No session, answers or participant findings</div>
+<header><a class="brand" href="/">C2 <span>/ Study example preview</span></a></header>
+<nav class="review-links" aria-label="C2 study views"><a href="/">Participant study preview</a><a href="http://127.0.0.1:8767/">Researcher self-review</a></nav>
+<main><h1>What a study case looks like</h1><p class="lead">This is the separate practice example. Listen to the original and reconstruction, then inspect the two display conditions.</p>
+<div class="note">This screen illustrates the questionnaire. It does not enrol anyone, save answers or replace the full study flow. The controls below are disabled examples.</div>
+<div class="cards"><div class="card"><h3>Original</h3><audio controls preload="metadata" src="/api/walkthrough/audio/target" aria-label="Original audio"></audio></div><div class="card"><h3>Model reconstruction</h3><audio controls preload="metadata" src="/api/walkthrough/audio/predicted" aria-label="Reconstruction audio"></audio></div></div>
+<label class="choice"><input type="checkbox" id="show-q" checked> Show reliability estimates</label>
+<p id="meaning">Reliability estimates whether the generating control is within ±5 points of the prediction on the research-range scale. It is not an audio-similarity percentage.</p>
+<div class="table-wrap"><table><thead><tr><th>Control</th><th>Suggested position (0–100)</th><th id="q-heading">Reliability</th><th>What would you do?</th></tr></thead><tbody id="controls"></tbody></table></div>
+<h2>Questions shown after listening</h2><div id="ratings"></div>
+<div id="comprehension"><p>In your own words, what does the reliability estimate mean? “I do not know” is allowed.</p><textarea disabled aria-label="Meaning question example"></textarea><p>Does high reliability guarantee perceptually identical audio? Yes / No / Unsure</p><p>Does low estimated reliability mean finding a matching patch is impossible? Yes / No / Unsure</p></div>
+<p>Both real study conditions use the same audio and predicted controls for a given case. Only the reliability display and associated questions differ.</p>
+<p id="error" role="alert"></p></main><footer>Practice case only · Full questionnaire available from Participant study preview</footer></body></html>
