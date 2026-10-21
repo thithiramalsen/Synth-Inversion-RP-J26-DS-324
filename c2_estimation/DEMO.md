@@ -6,13 +6,18 @@ No full synthesizer interface needs to be recreated: the existing Vita adapter
 already renders the fixed Vital preset with the predicted controls. The viewer
 plays those verified renders and displays their measured diagnostics.
 
+For fresh WAV inference and a downloadable Vital preset, use the separate
+[live C2 app](live/README.md) on port 8770. This document describes the original
+saved-results viewer on port 8765.
+
 ## Intended application output
 
 The intended C2 application takes an isolated synth clip and returns the 13
 predicted settings, a downloadable Vital patch, reconstructed audio and
 per-parameter uncertainty U, sensitivity S and calibrated correctness q, together
 with reconstruction error R. The trained models and forward diagnostics exist;
-the upload/inference service and patch-download interface are still pending.
+the [live application](live/README.md) now connects them to WAV upload and
+verified patch download.
 
 An uploaded clip generally has no known generating settings, so MAE, RMSE, R2 and
 true parameter errors cannot be calculated for it. Those belong in the research
