@@ -13,6 +13,8 @@
 !survey/frontend/public/**
 !survey/backend/
 !survey/backend/*.py
+!survey/backend/c2_web/
+!survey/backend/c2_web/**
 !survey/config/
 !survey/config/**
 !survey/deploy/
@@ -25,6 +27,8 @@
 !survey/deploy/study/c1_researcher_rehearsal_v2.json
 !survey/deploy/study/audio/
 !survey/deploy/study/audio/*.wav
+!survey/deploy/study/c2_rehearsal_v1/
+!survey/deploy/study/c2_rehearsal_v1/**
 
 !survey/deploy/study/c4_bundle.json
 !survey/deploy/study/c4_clap_bundle.json
