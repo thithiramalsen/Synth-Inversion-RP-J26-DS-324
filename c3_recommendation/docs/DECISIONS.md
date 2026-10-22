@@ -232,3 +232,30 @@ a 100-candidate audio shortlist, plain top 5 and MMR picks side by side with pla
   results. Every page is labelled "Illustration · validation sounds · λ not tuned yet".
 
 Status: built at the user's request for the presentation.
+
+## D-015 — C3 human study (H3) design, rehearsal bundle v1 (2026-10-22)
+
+User decisions (2026-10-22): blinded A/B set comparison; participants see knob bars and hear
+audio; validation targets now with a provisional operating point, rebuilt after Phase 7;
+standalone local rehearsal first (`c3_recommendation/human_study/`, like the C2 study), to be
+integrated into the shared survey service later.
+
+Design (`human_study/design.py`, version `c3-human-v1`, seed 20261022):
+- Each case: a target sound and two sets of k = 5 (plain top 5 and C3/MMR) from the same
+  100-sound shortlist. Participants rate how close each distinct sound is (1–5 or Cannot judge),
+  then answer three A/B/No difference/Cannot judge questions: more useful, different starting
+  points; closer overall; more different by ear. Plus confidence and an optional reason.
+- The target's own knob settings are never shown (unknown in real use).
+- Sounds are numbered by a fixed per-case shuffle and each set is listed in number order, so
+  rank order cannot reveal the method. A sound in both sets keeps one number and one rating.
+- 8 scored cases + 1 practice; 12 completions planned, 16 enrolments maximum. Complementary
+  slot pairs: every participant sees C3 as Set A in 4 of 8 cases; each case shows C3 as A in
+  6 of 12 completions; case order rotates between pairs.
+- Stimuli: seeded sample of 40 validation targets screened in order; skip only identical sets
+  or technical audio failure (non-finite, clipped, below −60 dBFS). Bundle v1: 1 skipped
+  (identical sets), 8 scored + practice built. Test split untouched.
+- **Provisional** operating point: mfcc26, N = 100, k = 5, λ = 0.8, relevance scaling none.
+  It must be replaced by the Phase 7 preregistered values in a new bundle version before any
+  real participant. Bundle v1 is for rehearsal only.
+
+Status: design confirmed by the user; provisional values chosen by Claude Code.
