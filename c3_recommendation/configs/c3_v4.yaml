@@ -46,7 +46,8 @@ param_distance:
   weights: null
 
 relevance:
-  representation: mfcc26                        # mfcc26 | logmel_stats | clap | c4 (later)
+  representation: mfcc26                        # PRIMARY (D-016); logmel_stats and clap are secondary sensitivity checks
+  secondary_representations: [logmel_stats, clap]
   similarity: cosine
   standardize_with: bank
 
@@ -55,12 +56,16 @@ retrieval:
 
 selection:
   k_values: [5, 3]
-  lambda_grid: [1.00, 0.95, 0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.50, 0.40]
+  lambda_grid: [1.00, 0.99, 0.98, 0.97, 0.96, 0.95, 0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.50, 0.40]   # fine steps near 1 added (D-016)
   relevance_scaling: none                       # none | pool_minmax  (ablation only)
   random_baseline_draws: 200
 
 near_duplicate:
   epsilon_grid: [0.05, 0.097, 0.1, 0.1074, 0.1121, 0.1203, 0.15]   # proposed in Phase 3 (D-011); finalised on validation in Phase 7
+
+tuning:
+  tau: 0.02                                     # H2 tolerance: max relative mean-relevance loss vs top-k (D-016)
+  primary_k: 5
 
 stats:
   bootstrap_resamples: 10000
@@ -68,4 +73,4 @@ stats:
   multiple_comparison: holm
 
 final_test:
-  enabled: false                                # only the user flips this, after PREREGISTRATION.md
+  enabled: true                               # only the user flips this, after PREREGISTRATION.md

@@ -13,5 +13,5 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 # Lets `python -m pytest c3_recommendation/tests_v4` run without installing the package.
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 testpaths = ["tests_v4"]

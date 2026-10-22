@@ -1,7 +1,6 @@
 """Synthetic step-size checks; no held-out audio access."""
 import json
 from pathlib import Path
-import tempfile
 import unittest
 
 import numpy as np
@@ -9,6 +8,7 @@ import pandas as pd
 
 from c2_estimation.v4.data import NAMES, ROOT, digest_json, write_json
 from c2_estimation.v4.stability import agreement, checked_case, check_measurement, select_pilot
+from c2_estimation.tests.scratch import temporary_directory
 
 
 class StabilityTests(unittest.TestCase):
@@ -36,7 +36,7 @@ class StabilityTests(unittest.TestCase):
             agreement(np.array([-1.]), np.array([0.]))
 
     def test_case_digest_resume_and_tamper_rejection(self):
-        with tempfile.TemporaryDirectory(prefix="c2-step-test-", dir=ROOT / "data/processed") as folder:
+        with temporary_directory(prefix="c2-step-test-") as folder:
             path = Path(folder) / "case.json"
             record = {"sample_id": "a", "signature": "s", "S": 3.}
             record["content_sha256"] = digest_json(record)

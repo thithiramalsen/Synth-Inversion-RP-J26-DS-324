@@ -217,3 +217,180 @@ Observations (diagnostic, not hypothesis results):
   λ values between 0.95 and 1.0 to the grid is an open question for the user before Phase 7.
 
 Status: features and checks recorded; primary representation and λ grid are the user's decisions.
+
+## D-014 — Offline demo viewer for Progress Presentation 1 (2026-10-22)
+
+`scripts/demo_build_viewer.py` builds two offline pages in `outputs/v4/demo/` (git-ignored):
+`demo_mfcc26.html` and `demo_logmel_stats.html`. Both show the same 8 seeded validation targets,
+a 100-candidate audio shortlist, plain top 5 and MMR picks side by side with playable audio
+(16-bit PCM copies of the processed corpus audio, 174 clips, 46 MB) and knob-setting bars.
+
+- Selections come from the tested `pool_from_scores`, `mmr_indices` and `metrics_from_indices`
+  (`c3.demo.build_demo_data`); λ = 1 is asserted to equal the plain top 5.
+- The demo λ list `1.0, 0.99, 0.98, 0.97, 0.96, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.6, 0.5` is for
+  illustration only. It does not set the Phase 7 grid, and the demo numbers (8 targets) are not
+  results. Every page is labelled "Illustration · validation sounds · λ not tuned yet".
+
+Status: built at the user's request for the presentation.
+
+## D-015 — C3 human study (H3) design, rehearsal bundle v1 (2026-10-22)
+
+User decisions (2026-10-22): blinded A/B set comparison; participants see knob bars and hear
+audio; validation targets now with a provisional operating point, rebuilt after Phase 7;
+standalone local rehearsal first (`c3_recommendation/human_study/`, like the C2 study), to be
+integrated into the shared survey service later.
+
+Design (`human_study/design.py`, version `c3-human-v1`, seed 20261022):
+- Each case: a target sound and two sets of k = 5 (plain top 5 and C3/MMR) from the same
+  100-sound shortlist. Participants rate how close each distinct sound is (1–5 or Cannot judge),
+  then answer three A/B/No difference/Cannot judge questions: more useful, different starting
+  points; closer overall; more different by ear. Plus confidence and an optional reason.
+- The target's own knob settings are never shown (unknown in real use).
+- Sounds are numbered by a fixed per-case shuffle and each set is listed in number order, so
+  rank order cannot reveal the method. A sound in both sets keeps one number and one rating.
+- 8 scored cases + 1 practice; 12 completions planned, 16 enrolments maximum. Complementary
+  slot pairs: every participant sees C3 as Set A in 4 of 8 cases; each case shows C3 as A in
+  6 of 12 completions; case order rotates between pairs.
+- Stimuli: seeded sample of 40 validation targets screened in order; skip only identical sets
+  or technical audio failure (non-finite, clipped, below −60 dBFS). Bundle v1: 1 skipped
+  (identical sets), 8 scored + practice built. Test split untouched.
+- **Provisional** operating point: mfcc26, N = 100, k = 5, λ = 0.8, relevance scaling none.
+  It must be replaced by the Phase 7 preregistered values in a new bundle version before any
+  real participant. Bundle v1 is for rehearsal only.
+
+Status: design confirmed by the user; provisional values chosen by Claude Code.
+
+## D-016 — Evaluation decisions fixed before Phase 7 (2026-10-22)
+
+Made by the user before any tuning result was computed:
+
+- **H2 tolerance τ = 0.02**: the largest accepted relative loss in mean relevance of the C3 set
+  versus the plain top-k (per target, upper 95% bootstrap CI). Stored as `tuning.tau`.
+- **Primary representation: `mfcc26`** (identical to the pilot_v1 MFCC). `logmel_stats` and
+  `clap` are secondary sensitivity checks, reported but not used for the hypothesis decision.
+- **λ grid extended** with 0.99, 0.98, 0.97, 0.96 because relevance spans a narrow band (D-013).
+  Grid: 1.00, 0.99, 0.98, 0.97, 0.96, 0.95, 0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.50, 0.40.
+- **CLAP features added**: `laion/clap-htsat-unfused` through the Hugging Face Transformers CLAP
+  API, revision `8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a`, 48 kHz input — the same checkpoint and
+  revision C4 uses, so C3 and C4 CLAP results are comparable.
+- Primary k = 5 (k = 3 is a sensitivity check).
+
+Status: confirmed by user 2026-10-22.
+
+## D-017 — Phase 7 selection rules, written before running tuning (2026-10-22)
+
+Implemented in `c3.tuning`; logged before `scripts/07_tune.py` was first run.
+
+1. **Targets:** `splits.n_val_targets_eval` = 500 validation targets (seeded); the test split is
+   not read. Primary representation mfcc26; k = 5 primary, k = 3 sensitivity.
+2. **λ and N rule:** among MMR configurations for k = 5, (N, λ) is eligible when the upper
+   bound of the 95% bootstrap CI (10,000 resamples, seeded) of the per-target relative relevance
+   loss versus top-k is ≤ τ = 0.02. Choose the eligible configuration with the highest mean
+   pairwise parameter distance; ties → smaller N, then larger λ. If only λ = 1 is eligible, the
+   outcome is reported as "no diversity gain within tolerance" (a valid negative result).
+3. **ε rule:** at the chosen (N*, λ*, k = 5), the primary near-duplicate threshold ε* is the
+   smallest grid value at which at least 10% of validation targets have a near-duplicate pair in
+   their plain top-k set. This depends on top-k only, never on the MMR effect. If no ε
+   qualifies, the largest grid value is used and dup_rate is flagged as uninformative for H1.
+   The full ε sensitivity table is reported either way.
+4. Secondary representations (logmel_stats, clap) are tuned with the same rules and reported as
+   sensitivity analyses only.
+
+Status: rules proposed by Claude Code, consistent with the build guide §7 and the user's
+D-016 decisions; recorded before results.
+
+## D-018 — Phase 7 validation tuning result (2026-10-22)
+
+`scripts/07_tune.py`, 500 validation targets, rules D-017, outputs `outputs/v4/val/<rep>/`.
+λ = 1 equalled top-k in every set. Re-running reproduced identical numbers.
+
+Primary (mfcc26), k = 5 — top-k vs chosen MMR, means over targets:
+
+| | mean relevance | rel. loss vs top-k (95% CI upper) | mean pair dist | min pair dist |
+|---|---|---|---|---|
+| top-k (N = 100) | 0.9725 | — | 0.3250 | 0.2258 |
+| **MMR, N* = 100, λ* = 0.5** | 0.9550 | 1.81% (1.90%) | **0.4161** | **0.3619** |
+| random from shortlist (N = 100) | 0.9360 | 3.80% (4.00%) | 0.3395 | 0.2382 |
+
+- Outcome: **diversity gain within tolerance** (τ = 0.02). k = 3 gives the same point (N 100, λ 0.5).
+- For N = 50 the best eligible λ is 0.4, the lowest grid value; N = 100, λ = 0.5 still has the
+  higher diversity, so the grid edge does not change the choice.
+- **ε* = 0.15, flagged uninformative:** top-k sets contained a near-duplicate pair for at most
+  4.8% of targets (ε = 0.15) and 0% for ε ≤ 0.1121. On this evenly spread Sobol bank, the C3
+  benefit shows as larger pairwise spread, not as removal of near-copies. Following D-017 rule 3,
+  the preregistration template makes H1 a two-metric family (mean and minimum pairwise distance)
+  and reports dup_rate descriptively.
+- Secondary (logmel_stats): N = 100, λ = 0.4, loss 1.38% (CI upper 1.48%), mean pair dist 0.422.
+  λ = 0.4 is the grid edge, so log-mel's optimum may lie lower; reported as a limitation.
+- `docs/PREREGISTRATION_TEMPLATE.md` generated from the primary run. PREREGISTRATION.md is written
+  and committed by the user.
+
+Status: computed; awaiting the user's preregistration.
+
+## D-019 — Human study rebuilt as version 2 with the Phase 7 operating point (2026-10-22)
+
+At the user's request the study was rebuilt before the CLAP work:
+- `human_study/design.py`: `VERSION = "c3-human-v2"`; `OPERATING_POINT` = mfcc26, N = 100, k = 5,
+  λ = 0.5 (D-018), replacing the provisional λ = 0.8 of version 1.
+- New bundle `data/processed/c3_v4/human_study_bundle_v2/` and database
+  `human_study_rehearsal_v2/`. Version 1 bundle and database are kept on disk unchanged.
+- Same seeded validation screening (seed 20261022): v2 skipped no target (every target's sets
+  differ at λ = 0.5), so v2 uses screened ranks 0–8. 6–9 distinct sounds per case (8 on average,
+  v1: 6.6); the participant time estimate was raised to 30–35 minutes.
+- The values must match PREREGISTRATION.md; if the preregistration changes them, build a new
+  study version.
+
+Status: built at the user's request.
+
+## D-020 — Human study perceptual closeness analysis plan, frozen before any response (2026-10-22)
+
+User decisions: build the perceptual closeness evaluation; equivalence margin 0.5 rating points;
+keep the headphone check. Implemented in `human_study/analysis.py`, run with
+`manage analyze`. No real or rehearsal responses existed when this plan was written.
+
+- **Primary outcome:** for each participant, the mean closeness rating (1–5; Cannot judge
+  excluded) of sounds only in the C3 set minus sounds only in the top-k set. Across participants:
+  mean, median and 95% percentile bootstrap CI (10,000 draws, seed 20261022). **C3's picks are
+  "heard as close as the top-k" if the CI lower bound is above −0.5.** Otherwise "not shown to be
+  within the margin"; with fewer than 2 eligible participants, "insufficient data". An exploratory
+  Wilcoxon signed-rank test against 0 is reported (n ≥ 6).
+- **Secondary (descriptive):** mean rating and share rated 4–5 for top-k-only, C3-only and
+  shared sounds (are the suggestions close at all?); within-participant Spearman correlation of
+  model relevance and of shortlist rank with ratings; participant-level C3 share of decisive
+  answers for the three set questions (0.5 = no preference); per-case tables.
+- Unit of analysis: the participant. Outputs: REPORT.md, analysis.json, CSV tables, two figures.
+- Only simulated or rehearsal data can be analysed while research collection is disabled.
+- The simulator (`simulate_sessions`) assumes ratings track MFCC relevance steeply; its output
+  is a software check, never a prediction or result.
+
+Status: confirmed by the user (margin, scope); plan details by Claude Code.
+
+## D-021 — Retry for a failed headphone check (2026-10-22)
+
+At the user's request a failed setup check offers "Try the setup check again":
+- Retries happen inside the same session (no new enrolment, consent unchanged), at most
+  `MAX_SCREEN_ATTEMPTS = 3` attempts in total. Each failed attempt's answers are kept in
+  `screen_history`; the retry restarts at the volume step and requires replaying every clip.
+- A failed session keeps its counterbalancing slot while it may still retry, and releases it
+  only after the final failed attempt.
+- Rationale: a first failure usually means speakers or loose headphones; a capped retry lets
+  people fix their setup without allowing unlimited guessing (one random attempt passes
+  ≥5/6 three-way trials with probability ≈ 0.0178, so three attempts ≈ 0.052).
+- Changing the page and protocol required a fresh rehearsal database; the previous one (one
+  failed rehearsal session) is kept as `superseded_2026-10-22b_responses.sqlite3`.
+
+Status: requested by the user; limit of 3 attempts proposed by Claude Code.
+
+## D-022 — Demo mode with a skippable headphone check, for presentations (2026-10-22)
+
+At the user's request (Progress Presentation 1), `server.py --demo` allows skipping the setup
+check. To keep the real evaluation valid:
+- Demo mode is a separate server instance (default port 8768) with its own database
+  `human_study_demo_v2/`; the demo flag is part of the database fingerprint, so demo and normal
+  sessions cannot share a database. Demo sessions are coded `C3-D-…` and show a DEMO banner.
+- Skipped sessions are marked `screen_skipped` and are excluded from rehearsal/research analysis
+  (`excluded_screen_skipped` is reported). `manage analyze` on a demo database produces a report
+  labelled DEMO DATA that keeps them, for demonstration only.
+- The normal study has no skip option; the headphone check stays as decided (D-021).
+
+Status: requested by the user.
