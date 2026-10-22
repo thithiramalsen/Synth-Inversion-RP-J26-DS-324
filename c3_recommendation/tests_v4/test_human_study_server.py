@@ -33,7 +33,7 @@ def make_bundle(root):
         (bundle / "audio" / name).write_bytes(b"fixture")
     data = {"version": VERSION, "test_evaluated": False, "cases": cases, "headphones": screens,
             "volume": {"path": "volume_reference.wav"}, "assignments": [assignment(i) for i in range(12)],
-            "parameter_labels": list(NAMES), "provisional": {"status": "provisional"},
+            "parameter_labels": list(NAMES), "operating_point": {"status": "test fixture"},
             "provenance": [{"target_sample_id": "restricted_bend_sustain_v4_00001"}]}
     (bundle / "bundle.json").write_text(json.dumps(data))
     write_manifest(bundle)
