@@ -12,6 +12,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 COPY survey/deploy/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 COPY survey/backend/*.py /app/survey/backend/
+COPY survey/backend/c2_web/ /app/survey/backend/c2_web/
 COPY survey/config/ /app/survey/config/
 COPY survey/deploy/study/ /app/survey/deploy/study/
 COPY c4_metric/synthetic_data/stimuli/ /app/survey/deploy/study/clap_audio/

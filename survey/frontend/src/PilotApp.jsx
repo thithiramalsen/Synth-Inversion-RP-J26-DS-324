@@ -3,7 +3,9 @@ import VolumeSetupHeading from './VolumeSetupHeading'
 import InvitationDownloads from './InvitationDownloads'
 import { invitationCsv } from './invitationCsv'
 import ExperienceQuestions from './ExperienceQuestions'
+import ResearcherExperienceProfile from './ResearcherExperienceProfile.jsx'
 import PreviousNavigation from './PreviousNavigation'
+import NewInvitationEntry from './NewInvitationEntry.jsx'
 import ResponseViewer from './ResponseViewer'
 import AssignmentRoster from './AssignmentRoster.jsx'
 import { emptyExperienceSelection, experienceReady } from './experienceSelection'
@@ -134,6 +136,7 @@ function Entry({ status, busy, onSubmit }) {
       <p className="p-muted">Turn off optional sound enhancements or EQ where practical. You do not need SoundID Reference.</p>
     </section>
     <section className="p-card"><h2>Your experience</h2><p>Tell us about your practical music or sound-design experience. Please leave out names, contact details and identifying links.</p>
+      <ResearcherExperienceProfile cfg={cfg} values={values} disabled={busy} onApply={profile => setValues(v => ({ ...v, ...profile }))} />
       <fieldset className="p-activities"><legend>Which have you done? Select at least one.</legend>{cfg.eligibility.activities.map(activity => <label className="p-check" key={activity}><input type="checkbox" checked={values.activities.includes(activity)} onChange={e => change('activities', e.target.checked ? [...values.activities, activity] : values.activities.filter(a => a !== activity))} />{activity}</label>)}</fieldset>
       <div className="p-columns"><label>Approximately how many months?<input type="number" min="0" max="1200" required value={values.experience_months} onChange={e => change('experience_months', e.target.value)} /></label>
         <label>How often have you done this recently?<select required value={values.recent_frequency} onChange={e => change('recent_frequency', e.target.value)}><option value="">Choose frequency</option>{['Less than monthly', 'Monthly', 'Weekly', 'Daily'].map(f => <option key={f}>{f}</option>)}</select></label></div>
@@ -195,8 +198,12 @@ export default function PilotApp() {
       await load()
     })
   }
-  function leaveRehearsal() {
+  function returnToEntry() {
     localStorage.removeItem(KEY); setSession(null); setStep(null); setError(''); setPaused(false)
+    pendingDraft.current = null; setWithdrawPrompt(false)
+    setRatings(blankRatings(status?.config.descriptors)); setPlays(0); setCompleted(0); setInterval(''); setStartedAt('')
+    setFeedback({ clarity: '', length: '', comment: '' })
+    window.scrollTo(0, 0)
   }
   const cfg = step?.config || status?.config
   const rehearsal = step?.rehearsal ?? status?.rehearsal
@@ -207,7 +214,7 @@ export default function PilotApp() {
   return <div className="pilot-app"><SiteHeader current="c1" note={rehearsal ? 'C1 INTERFACE REVIEW' : 'C1 TIMBRE STUDY'} />
     <ErrorNotice message={error} onDismiss={() => setError('')}>
       {session && <button type="button" onClick={() => action(() => load())}>Reload current step</button>}
-      {status?.rehearsal && !step && <button type="button" onClick={leaveRehearsal}>Return to rehearsal entry</button>}
+      {status?.rehearsal && !step && <button type="button" onClick={returnToEntry}>Return to rehearsal entry</button>}
     </ErrorNotice>
     <main className="p-main">
       {cfg && <C1StudyNotice rehearsal={rehearsal} config={cfg} />}
@@ -249,9 +256,10 @@ export default function PilotApp() {
           {end && <section className="p-card p-finish"><span className="p-finish-mark" aria-hidden="true">{phase === 'complete' ? '✓' : '·'}</span><h1>{phase === 'complete' ? 'Thank you for listening.' : phase === 'withdrawn' ? 'Your session is withdrawn.' : phase === 'screen_failed' ? 'This setup did not pass the check.' : 'This session has been closed.'}</h1><p>{phase === 'complete' ? `All ${step.saved_presentations} of ${step.total_presentations} sound responses have been saved${step.practice_presentations !== 0 ? ', including practice' : ''}. Your final feedback is saved too. You can close this window.` : phase === 'withdrawn' ? 'Your responses are marked as excluded from analysis.' : 'Please contact the researcher if you think there was a setup problem. No descriptor study responses are required.'}</p></section>}
         </>}
         {!['withdrawn', 'replaced'].includes(phase) && !withdrawPrompt && <button className="p-withdraw" onClick={() => setWithdrawPrompt(true)}>Withdraw this session</button>}
+        {!withdrawPrompt && <NewInvitationEntry step={step} busy={busy} onStart={returnToEntry} />}
         {step.rehearsal && end && <section className="p-card">{status?.rehearsal === false
-          ? <><p>This saved session belongs to the earlier rehearsal. To join the participant study, use a new participant invitation. Your rehearsal answers remain separate.</p><button className="p-primary" onClick={leaveRehearsal}>Open the participant study</button></>
-          : <><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={leaveRehearsal}>Use another rehearsal invitation</button></>}</section>}
+          ? <><p>This saved session belongs to the earlier rehearsal. To join the participant study, use a new participant invitation. Your rehearsal answers remain separate.</p><button className="p-primary" onClick={returnToEntry}>Open the participant study</button></>
+          : <><p>To try again, first get a replacement rehearsal invitation from the researcher view. Returning to entry keeps these test responses in the audit log.</p><button className="p-secondary" onClick={returnToEntry}>Use another rehearsal invitation</button></>}</section>}
       </>}
     </main><footer className="p-footer">Synth Inversion Research · C1 listening pilot</footer></div>
 }

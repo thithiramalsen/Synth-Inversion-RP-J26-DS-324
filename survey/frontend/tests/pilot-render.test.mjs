@@ -11,6 +11,9 @@ const originalStorage = globalThis.localStorage
 let C1StudyNotice
 let AssignmentNameRow
 let AssignmentInvitationControls
+let C2App, C2Admin, SiteHome, ResearcherHome
+let NewInvitationEntry
+let ResearcherExperienceProfile
 
 before(async () => {
   globalThis.window = { location: { protocol: 'http:', hostname: 'localhost' } }
@@ -21,7 +24,9 @@ before(async () => {
   C1StudyNotice = c1.C1StudyNotice
   InvitationDownloads = (await server.ssrLoadModule('/src/InvitationDownloads.jsx')).default
   ExperienceQuestions = (await server.ssrLoadModule('/src/ExperienceQuestions.jsx')).default
+  ResearcherExperienceProfile = (await server.ssrLoadModule('/src/ResearcherExperienceProfile.jsx')).default
   PreviousNavigation = (await server.ssrLoadModule('/src/PreviousNavigation.jsx')).default
+  NewInvitationEntry = (await server.ssrLoadModule('/src/NewInvitationEntry.jsx')).default
   ResponseTable = (await server.ssrLoadModule('/src/ResponseViewer.jsx')).ResponseTable
   ;({ AssignmentNameRow, AssignmentInvitationControls } = await server.ssrLoadModule('/src/AssignmentRoster.jsx'))
   const c4 = await server.ssrLoadModule('/src/C4App.jsx')
@@ -29,6 +34,43 @@ before(async () => {
   C4BulkInvitationDownload = c4.C4BulkInvitationDownload
   C4InvitationAssignments = c4.C4InvitationAssignments
   ComparisonQuestions = c4.ComparisonQuestions
+  ;({ default: C2App, C2Admin } = await server.ssrLoadModule('/src/C2App.jsx'))
+  ;({ default: SiteHome, ResearcherHome } = await server.ssrLoadModule('/src/SiteNavigation.jsx'))
+})
+
+test('experience reuse controls appear only on the researcher C1 and C4 forms', () => {
+  const options = JSON.parse(readFileSync(new URL('../../config/experience_tags_v1.json', import.meta.url), 'utf8'))
+  for (const name of ['c1_researcher_rehearsal_v2', 'c4_researcher_rehearsal_v1']) {
+    const cfg = { ...JSON.parse(readFileSync(new URL(`../../config/${name}.json`, import.meta.url), 'utf8')), experience_selection: options }
+    const html = renderToString(React.createElement(ResearcherExperienceProfile, { cfg, values: {}, onApply() {} }))
+    assert.match(html, /Load my saved experience/)
+    assert.match(html, /Save my experience/)
+    assert.match(html, /Forget saved experience/)
+    assert.match(html, /Consent and listening setup must be confirmed each time/)
+    assert.equal((html.match(/type="button"/g) || []).length, 3)
+  }
+  for (const name of ['c1_participants_v1', 'c4_participants_v1', 'c1_review_20_v1']) {
+    const cfg = JSON.parse(readFileSync(new URL(`../../config/${name}.json`, import.meta.url), 'utf8'))
+    assert.equal(renderToString(React.createElement(ResearcherExperienceProfile, { cfg, values: {}, onApply() {} })), '')
+  }
+})
+
+test('C2 pages render with shared navigation and no claim that research collection is open', () => {
+  for (const Component of [C2App, C2Admin]) {
+    const html = renderToString(React.createElement(Component))
+    assert.match(html, /Research collection|research collection/)
+    assert.match(html, /href="\/pilot/)
+    assert.match(html, /href="\/c4/)
+  }
+  const admin = renderToString(React.createElement(C2Admin))
+  assert.match(admin, /existing researcher login/)
+  assert.doesNotMatch(admin, /Create missing C2 preview codes/)
+  for (const Component of [SiteHome, ResearcherHome]) {
+    const html = renderToString(React.createElement(Component))
+    assert.match(html, /COMPONENT 1/)
+    assert.match(html, /COMPONENT 2/)
+    assert.match(html, /COMPONENT 4/)
+  }
 })
 
 after(async () => {
@@ -37,6 +79,25 @@ after(async () => {
   else globalThis.window = originalWindow
   if (originalStorage === undefined) delete globalThis.localStorage
   else globalThis.localStorage = originalStorage
+})
+
+test('completed main surveys offer a new invitation while preserving the listener reference', () => {
+  for (const study of ['C1', 'C4']) {
+    const html = renderToString(React.createElement(NewInvitationEntry, {
+      step: { phase: 'complete', rehearsal: false, participant_label: `${study} Listener 005` }, busy: false, onStart() {},
+    })).replace(/<!-- -->/g, '')
+    assert.match(html, /Use a new invitation code/)
+    assert.match(html, new RegExp(`completed responses stay saved under ${study} Listener 005`))
+    assert.doesNotMatch(html, /disabled=""/)
+  }
+  const busy = renderToString(React.createElement(NewInvitationEntry, {
+    step: { phase: 'complete', rehearsal: false }, busy: true, onStart() {},
+  }))
+  assert.match(busy, /<button[^>]*disabled=""/)
+  for (const phase of ['volume', 'headphones', 'rating', 'correction', 'break', 'feedback', 'withdrawn', 'screen_failed', 'replaced']) {
+    assert.equal(renderToString(React.createElement(NewInvitationEntry, { step: { phase, rehearsal: false } })), '')
+  }
+  assert.equal(renderToString(React.createElement(NewInvitationEntry, { step: { phase: 'complete', rehearsal: true } })), '')
 })
 
 // Building alone does not catch undefined names executed during initial render.

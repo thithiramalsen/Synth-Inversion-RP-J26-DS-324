@@ -21,6 +21,12 @@
 .p-error-dismiss:hover{background:#efd7ca}.p-error-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.p-error-actions button{border:1px solid #bd806a;border-radius:6px;background:white;color:inherit;padding:7px 10px;font-size:12px}
 .p-issued{border-color:#91ac9a;background:#f4f8f1}.p-issued input{font-family:ui-monospace,monospace!important}
 /* Give each rating question, its endpoints and the uncertainty option equal clarity. */
+.p-experience-profile{margin:20px 0;padding:18px;border:1px solid #c5d6c7;border-radius:10px;background:#f0f5ef}
+.p-experience-profile>strong{font-size:16px;color:var(--accent)}
+.p-experience-profile p{font-size:13px;line-height:1.6;margin:10px 0}
+.p-experience-profile .p-actions{gap:8px}
+.p-experience-profile button{font-size:13px!important;padding:10px 13px;min-height:44px}
+.p-experience-profile [role=alert]{color:#8e3c26;font-weight:600}
 .p-main .p-scale legend{font-size:23px;font-weight:750;color:var(--ink);line-height:1.35;margin-bottom:9px}
 .p-scale p{font-size:14px;line-height:1.6;color:#465c53}
 .p-ratings button{min-height:48px;border-width:2px;font-size:17px;font-weight:650}

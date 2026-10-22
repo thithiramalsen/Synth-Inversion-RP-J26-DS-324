@@ -79,6 +79,7 @@ def configure(state_dir=DEFAULT_STATE, use_postgres=False):
                       SURVEY_C4_BUNDLE=str(c4_bundle), SURVEY_C4_CONFIG=str(c4_config), SURVEY_C4_LEGACY_BUNDLES='',
                       SURVEY_ADMIN_TOKEN=secret, SURVEY_INVITATION_SECRET='', SURVEY_REMOTE_MODE='1',
                       SURVEY_C1_OPEN='0', SURVEY_C4_OPEN='0', SURVEY_ALLOWED_ORIGINS='')
+    os.environ['SURVEY_C2_RESEARCHER_ONLY'] = '1'
     # The normal app captures this path at import time. Reset it explicitly for
     # tests; actual participant and rehearsal servers run in separate processes.
     import database
@@ -111,6 +112,7 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
     import main as shared
     from database import get_connection
     from security import SESSION_COOKIE, require_admin
+    from rehearsal_experience import initialize_experience_profiles, router as experience_router
 
     @asynccontextmanager
     async def lifespan(app):
@@ -119,10 +121,12 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
             with get_connection() as db:
                 for study in STUDIES.values():
                     db.execute(f"CREATE TABLE IF NOT EXISTS {study['actors']} (session_id TEXT PRIMARY KEY, researcher TEXT NOT NULL)")
+            initialize_experience_profiles()
             yield
 
     app = FastAPI(title='C1 and C4 researcher rehearsal', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     app.router.routes.extend(shared.app.router.routes)
+    app.include_router(experience_router)
 
     def actor(request, cookie):
         return require_admin(authorization=request.headers.get('authorization', ''),
@@ -135,13 +139,16 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
         study = STUDIES.get(component)
         page = next((value['page'] for value in STUDIES.values() if path == value['page']), None)
         allowed = (path.startswith('/assets/') or path.startswith('/api/researcher/')
+                   or path.startswith('/api/c2-pilot/') or path.startswith('/c2-flow/')
+                   or path in ('/c2', '/c2/admin')
                    or study is not None or path in ('/', '/researcher', '/admin', '/pilot', '/pilot/admin', '/c4', '/c4/admin', '/api/health', '/favicon.ico'))
         if not allowed:
             return JSONResponse({'detail': 'This instance contains only the C1 and C4 researcher rehearsals'}, status_code=404)
         if path in ('/', '/admin'):
             return RedirectResponse('/researcher')
         cookie = request.cookies.get(REHEARSAL_COOKIE)
-        protected = page is not None or study is not None
+        protected = (page is not None or study is not None
+                     or path.startswith('/c2-flow/') or path.startswith('/api/c2-pilot/'))
         researcher = None
         if protected:
             try:
@@ -199,7 +206,9 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
                 writer.writerow(row)
             body = output.getvalue().encode()
             suffix = 'responses' if path.endswith('/export') else 'sessions'
-            headers['Content-Disposition'] = f'attachment; filename="{component}_researcher_rehearsal_{suffix}.csv"'
+            # Copied response headers are lowercase. Replace the existing key;
+            # two conflicting attachment filenames cause browsers to reject it.
+            headers['content-disposition'] = f'attachment; filename="{component}_researcher_rehearsal_{suffix}.csv"'
         return Response(body, status_code=response.status_code, headers=headers)
 
     return app

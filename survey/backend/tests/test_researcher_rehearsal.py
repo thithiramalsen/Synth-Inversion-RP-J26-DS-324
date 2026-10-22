@@ -108,6 +108,7 @@ class ResearcherRehearsalTests(unittest.TestCase):
             json={'clarity':'Clear', 'length':'About right'}).status_code, 200)
         self.assertEqual(self.client.get(self.base, headers=self.headers).json()['phase'], 'complete')
         response = self.client.get('/api/c1-pilot/admin/export')
+        self.assertEqual(len(response.headers.get_list('content-disposition')), 1)
         rows = list(csv.DictReader(io.StringIO(response.text)))
         self.assertEqual(len(rows), 20)
         for row in rows:
@@ -117,10 +118,25 @@ class ResearcherRehearsalTests(unittest.TestCase):
             self.assertEqual(row['study_id'], rehearsal.STUDY_ID)
             self.assertEqual(row['session_type'], 'researcher_rehearsal')
         self.assertIn('c1_researcher_rehearsal_responses.csv', response.headers['content-disposition'])
-        audit = list(csv.DictReader(io.StringIO(self.client.get('/api/c1-pilot/admin/sessions').text)))
+        audit_response = self.client.get('/api/c1-pilot/admin/sessions')
+        self.assertEqual(len(audit_response.headers.get_list('content-disposition')), 1)
+        audit = list(csv.DictReader(io.StringIO(audit_response.text)))
         self.assertEqual(audit[0]['entered_by'], 'researcher')
         self.assertEqual(json.loads(audit[0]['entry_json'])['data_origin'], rehearsal.ORIGIN)
         self.assertEqual(hashlib.sha256(self.main_store.read_bytes()).hexdigest(), self.original_hash)
+
+    def test_both_study_downloads_send_one_attachment_header_and_the_correct_body_length(self):
+        self.login()
+        for component in ('c1', 'c4'):
+            for endpoint, suffix in (('export', 'responses'), ('sessions', 'sessions')):
+                with self.subTest(component=component, endpoint=endpoint):
+                    response = self.client.get(f'/api/{component}-pilot/admin/{endpoint}')
+                    self.assertEqual(response.status_code, 200, response.text)
+                    self.assertEqual(response.headers.get_list('content-disposition'), [
+                        f'attachment; filename="{component}_researcher_rehearsal_{suffix}.csv"'])
+                    self.assertEqual(int(response.headers['content-length']), len(response.content))
+                    self.assertIn('text/csv', response.headers['content-type'])
+                    self.assertEqual(response.headers['cache-control'], 'private, no-store')
 
     def test_participant_token_alone_or_another_researcher_cannot_resume_the_session(self):
         self.start()
@@ -261,6 +277,65 @@ class ResearcherRehearsalTests(unittest.TestCase):
                          SURVEY_REHEARSAL_DATABASE_URL='postgresql://other:two@database.invalid/main?sslmode=require'):
             with self.assertRaisesRegex(RuntimeError, 'separate rehearsal database'):
                 rehearsal.configure(self.state_dir, use_postgres=True)
+
+    def profile_fixture(self):
+        return dict(activities=['Instrument performance'], experience_months=24, recent_frequency='Weekly',
+                    experience_selection=dict(version='experience_tags_v1', tool_ids=['piano_keyboard'],
+                                              example_ids=['played_piece'], tools_other='', example_other=''))
+
+    def test_experience_profile_is_authenticated_personal_persistent_and_shared_between_rehearsals(self):
+        endpoint = '/api/researcher/experience-profile'
+        self.assertFalse(any(getattr(route, 'path', '') == endpoint for route in main.app.routes))
+        for method in ('get', 'put', 'delete'):
+            response = getattr(self.client, method)(endpoint, **({'json': self.profile_fixture()} if method == 'put' else {}))
+            self.assertEqual(response.status_code, 401, response.text)
+        self.login()
+        self.assertIsNone(self.client.get(endpoint).json()['profile'])
+        saved = self.client.put(endpoint, json=self.profile_fixture())
+        self.assertEqual(saved.status_code, 200, saved.text)
+        self.assertEqual(saved.headers['cache-control'], 'private, no-store')
+        profile = saved.json()['profile']
+        self.assertEqual(profile['experience_selection']['tool_ids'], ['piano_keyboard'])
+        self.assertEqual(profile['tools'], 'Piano / keyboard')
+        self.assertEqual(set(profile), {'activities', 'experience_months', 'recent_frequency', 'tools', 'example', 'experience_selection'})
+        # Both C1 and C4 reuse this same account-level endpoint, not separate
+        # per-study caches; a redeploy/new client also retains the profile.
+        cookie = self.client.cookies.get(rehearsal.REHEARSAL_COOKIE)
+        with TestClient(rehearsal.create_app(self.state_dir)) as reopened:
+            reopened.cookies.set(rehearsal.REHEARSAL_COOKIE, cookie)
+            for component in ('c1', 'c4'):
+                self.assertTrue(reopened.get(f'/api/{component}-pilot/status').json()['rehearsal'])
+                self.assertEqual(reopened.get(endpoint).json()['profile'], profile)
+        self.client.cookies.set(rehearsal.REHEARSAL_COOKIE, security.new_session('other-team-member'))
+        self.assertIsNone(self.client.get(endpoint).json()['profile'])
+        other = self.profile_fixture()
+        other['experience_months'] = 6
+        self.assertEqual(self.client.put(endpoint, json=other).status_code, 200)
+        self.client.cookies.set(rehearsal.REHEARSAL_COOKIE, cookie)
+        self.assertEqual(self.client.get(endpoint).json()['profile']['experience_months'], 24)
+        self.assertEqual(self.client.delete(endpoint).status_code, 200)
+        self.assertIsNone(self.client.get(endpoint).json()['profile'])
+        self.client.cookies.set(rehearsal.REHEARSAL_COOKIE, security.new_session('other-team-member'))
+        self.assertEqual(self.client.get(endpoint).json()['profile']['experience_months'], 6)
+        with database.get_connection() as db:
+            for table in ('c1_sessions', 'c4_sessions', 'c1_ratings', 'c4_ratings'):
+                self.assertEqual(db.execute(f'SELECT COUNT(*) FROM {table}').fetchone()[0], 0)
+        self.assertEqual(hashlib.sha256(self.main_store.read_bytes()).hexdigest(), self.original_hash)
+
+    def test_experience_profile_rejects_consent_access_codes_ratings_and_invalid_backgrounds(self):
+        self.login()
+        endpoint = '/api/researcher/experience-profile'
+        for key in ('consent', 'adult', 'headphones', 'quiet_environment', 'understands_language',
+                    'invitation', 'session_id', 'token', 'answers', 'brightness', 'choice', 'researcher'):
+            response = self.client.put(endpoint, json={**self.profile_fixture(), key: 'not-a-profile-field'})
+            self.assertEqual(response.status_code, 422, key)
+        for key, value in (('experience_months', 1201), ('experience_months', True), ('activities', []),
+                           ('activities', ['Unknown activity']), ('recent_frequency', 'Unknown frequency')):
+            self.assertEqual(self.client.put(endpoint, json={**self.profile_fixture(), key:value}).status_code, 422)
+        invalid = self.profile_fixture()
+        invalid['experience_selection']['tool_ids'] = ['not-an-offered-tool']
+        self.assertEqual(self.client.put(endpoint, json=invalid).status_code, 422)
+        self.assertIsNone(self.client.get(endpoint).json()['profile'])
 
     def test_render_requires_persistent_storage_without_creating_local_files(self):
         target = self.root/'not-created'
