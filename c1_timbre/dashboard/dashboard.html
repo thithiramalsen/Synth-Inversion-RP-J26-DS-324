@@ -6,38 +6,30 @@
 <title>C1 Timbre Dashboard</title>
 <style>
 :root {
-  --bg: #f6f7f9; --panel: #ffffff; --ink: #1d2433; --quiet: #5b6577; --line: #dde2ea; --soft: #eef1f5;
-  --accent: #2f6fdb; --warn-bg: #fff4e0; --warn-ink: #7a4a00; --good: #1f8a4c; --bad: #c2412d;
-  --c-brightness: #d9930d; --c-roughness: #c2412d; --c-percussiveness: #2f6fdb; --c-sustainedness: #1f8a4c;
-  --c-features19: #2f6fdb; --c-clap512: #9b5de5; --c-combined: #1f8a4c;
-  --base: #9aa3b2; --pos: 31, 138, 76; --neg: 194, 65, 45;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #12151b; --panel: #1b2029; --ink: #e7ebf2; --quiet: #9aa4b5; --line: #2c3340; --soft: #232a35;
-    --accent: #6ea0ff; --warn-bg: #3a2c10; --warn-ink: #f3cf8a; --good: #4cc483; --bad: #ff7a63;
-    --c-brightness: #f0b33a; --c-roughness: #ff7a63; --c-percussiveness: #6ea0ff; --c-sustainedness: #4cc483;
-    --c-features19: #6ea0ff; --c-clap512: #c08cff; --c-combined: #4cc483;
-    --base: #66707f; --pos: 76, 196, 131; --neg: 255, 122, 99;
-  }
+  color-scheme: dark;
+  --bg: #191c20; --panel: #262a30; --ink: #eeeef5; --quiet: #b5b8c4; --line: #414650; --soft: #1e2126;
+  --accent: #b89aff; --warn-bg: #392e26; --warn-ink: #ffdbb5; --good: #65ead5; --bad: #ffab99;
+  --c-brightness: #e9be78; --c-roughness: #ffab99; --c-percussiveness: #b89aff; --c-sustainedness: #65ead5;
+  --c-features19: #b89aff; --c-clap512: #84bafa; --c-combined: #65ead5;
+  --base: #8b93a3; --pos: 101, 234, 213; --neg: 255, 171, 153;
 }
 * { box-sizing: border-box; }
 html, body { overflow-x: hidden; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-header { background: var(--panel); border-bottom: 1px solid var(--line); padding: 16px 24px 0; }
+header { background: #22252a; border-top: 3px solid var(--accent); border-bottom: 1px solid var(--line); padding: 16px 24px 0; }
 h1 { font-size: 20px; margin: 0 0 12px; }
 .sub { color: var(--quiet); font-size: 13px; margin-bottom: 12px; }
 .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; }
 nav { display: flex; gap: 4px; overflow-x: auto; }
 nav button { border: 0; background: none; color: var(--quiet); font: inherit; padding: 10px 14px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
-nav button.on { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+nav button.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 main { max-width: 1180px; margin: 0 auto; padding: 24px 16px 48px; }
 section { display: none; } section.on { display: block; }
 h2 { font-size: 18px; margin: 0 0 4px; } h3 { font-size: 15px; margin: 0 0 8px; }
 .lead { color: var(--quiet); margin: 0 0 20px; max-width: 820px; }
 .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
 .grid.small { grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: 16px; min-width: 0; }
 .wide { grid-column: 1 / -1; }
 .kpi { font-size: 26px; font-weight: 700; } .kpi small { font-size: 13px; font-weight: 400; color: var(--quiet); }
 .muted { color: var(--quiet); font-size: 13px; }
@@ -69,6 +61,8 @@ svg text { fill: var(--ink); font: 12px system-ui, sans-serif; } svg .q { fill: 
 .list tr[data-id] { cursor: pointer; } .list tr.sel td { background: var(--soft); }
 .err { color: var(--bad); }
 audio { width: 100%; margin: 6px 0; }
+audio::-webkit-media-controls-panel { background-color: #30343c; }
+:focus-visible { outline: 2px solid var(--good); outline-offset: 3px; }
 @media (max-width: 640px) { header { padding: 12px 16px 0; } main { padding: 16px 16px 40px; } .grid { grid-template-columns: 1fr; } }
 </style>
 </head>
