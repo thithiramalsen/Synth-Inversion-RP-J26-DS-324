@@ -21,6 +21,10 @@ from .engine import (
     Cancelled, DEFAULT_OUTPUT, Engine, InputError, MAX_UPLOAD_BYTES,
     VERSION, decode_wav, read_json, sha, write_json,
 )
+from .preset_compat import (
+    AUDIT_NAME, INPUT_NAMES, CompatibilityError,
+    cached_export, export_directory, input_hashes, prepare_export,
+)
 
 ASSETS = Path(__file__).with_name("web")
 JOB_ID = re.compile(r"^[0-9a-f]{32}$")
@@ -225,6 +229,40 @@ def create_app(output=DEFAULT_OUTPUT, device="auto", engine_factory=None):
     @app.get("/api/jobs/{job}/result")
     def result(job: str):
         return read_json(app.state.jobs.file(job, "result.json"))
+
+    @app.post("/api/jobs/{job}/compatibility/vital-1.6.4")
+    async def prepare_desktop_patch(job: str):
+        jobs = app.state.jobs
+        with jobs.lock:
+            if jobs.active is not None:
+                raise HTTPException(409, "Wait for the current operation to finish before exporting.")
+            paths = {name: jobs.file(job, name) for name in INPUT_NAMES}
+            # Reserve the existing single worker; do not edit the source job's status.
+            jobs.active = job
+        try:
+            _, audit = await asyncio.get_running_loop().run_in_executor(
+                jobs.executor, prepare_export, app.state.engine, paths, export_directory(output, job))
+            base = f"/api/jobs/{job}/compatibility/vital-1.6.4"
+            return {"download_url": base + "/patch", "audit_url": base + "/audit",
+                    "desktop_vital_checked": audit["desktop_vital_checked"]}
+        except CompatibilityError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        finally:
+            with jobs.lock:
+                jobs.active = None
+
+    @app.get("/api/jobs/{job}/compatibility/vital-1.6.4/{kind}")
+    def download_desktop_patch(job: str, kind: str):
+        if kind not in ("patch", "audit"):
+            raise HTTPException(404)
+        paths = {name: app.state.jobs.file(job, name) for name in INPUT_NAMES}
+        folder = export_directory(output, job)
+        try:
+            patch, _ = cached_export(folder, input_hashes(paths))
+        except CompatibilityError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        path = patch if kind == "patch" else folder / AUDIT_NAME
+        return FileResponse(path, media_type="application/json", filename=path.name)
 
     @app.get("/api/jobs/{job}/files/{name}")
     def download(job: str, name: str, attachment: bool = False):

@@ -1,5 +1,11 @@
 # C2 on the existing study services
 
+**V2 update:** the default C2 entry/admin now uses the separate
+[listening-first v2 rehearsal](C2_HOSTED_REHEARSAL_V2.md). The flow, tables,
+codes and exports described below are **preserved v1**, not migrated into v2.
+Old `/c2-flow/` tabs deliberately remain v1. New sessions should use v2 after
+the deployment update; research collection remains disabled in both versions.
+
 ## Two deployments, not two new websites
 
 | Service | C2 entry | Access and saved data |

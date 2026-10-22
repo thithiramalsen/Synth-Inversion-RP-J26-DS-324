@@ -1,7 +1,7 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
 let active = null, result = null, resultJob = null, selectedControl = 0, chosenFile = null;
-let busy = false, pollTimer = null;
+let busy = false, pollTimer = null, exporting = false;
 const requestHeaders = {"X-C2-Request": "1"};
 const fmt = (n, digits = 4) => Number(n).toFixed(digits);
 const pct = (n) => `${fmt(n * 100, 1)}%`;
@@ -13,7 +13,7 @@ function message(text) {
 async function api(path, options = {}) {
   const response = await fetch(path, options);
   const data = await response.json();
-  if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "The request could not be processed.");
+  if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Request failed. Try again.");
   return data;
 }
 function setBusy(value) {
@@ -103,13 +103,13 @@ function inspectControl() {
   const details = $("control-details"); details.replaceChildren();
   for (const [name, value] of [
     ["Vital value", p.vital_display], ["Vital normalized setting", fmt(p.vital_normalized, 6)],
-    ["Estimated reliability", pct(p.q[$("variant").value])],
+    ["Reliability q", pct(p.q[$("variant").value])],
     ["Uncertainty U (research range²)", Number(p.U).toPrecision(5)],
     ["Local sensitivity S", Number(p.S).toPrecision(5)],
   ]) { details.append(cell(name, "dt"), cell(value, "dd")); }
   $("minus-player").src = filesUrl(`${p.name}_minus.wav`);
   $("plus-player").src = filesUrl(`${p.name}_plus.wav`);
-  $("step-note").textContent = `Research positions ${pct(p.minus_z)} and ${pct(p.plus_z)}. ${p.perturbation_mode === "central" ? "Both sides of the estimate were measured." : "A one-sided check was used near the range boundary."} All other controls stayed fixed.`;
+  $("step-note").textContent = `Research positions: ${pct(p.minus_z)} and ${pct(p.plus_z)}. ${p.perturbation_mode === "central" ? "Both sides measured." : "One-sided check near the range limit."} Other controls unchanged.`;
 }
 async function openResult(job) {
   message("");
@@ -121,10 +121,12 @@ async function openResult(job) {
   $("target-player").src = filesUrl("target.wav");
   $("reconstruction-player").src = filesUrl("reconstruction.wav");
   $("spectrograms").src = filesUrl("spectrograms.png");
-  $("patch-download").href = filesUrl("predicted.vital", true);
+  $("patch-download").href = `/api/jobs/${job}/compatibility/vital-1.6.4/patch`;
+  $("original-patch-download").href = filesUrl("predicted.vital", true);
+  $("compat-audit").hidden = true;
   $("wav-download").href = filesUrl("reconstruction_float.wav", true);
   $("report-download").href = filesUrl("result.json", true);
-  $("patch-check").textContent = "Export checked: reloading this patch through Vita reproduced the control values and reconstruction exactly.";
+  $("patch-check").textContent = "Original export passed Vita checks. The desktop copy is rechecked when downloaded.";
   $("residual").textContent = `Reconstruction distance R: ${fmt(loaded.R, 5)} (multi-resolution STFT).`;
   renderControls(); inspectControl(); remember(job, loaded.filename);
   window.history.replaceState(null, "", `/?job=${job}#result`);
@@ -155,7 +157,7 @@ async function poll() {
     }
     pollTimer = setTimeout(poll, 800);
   } catch (error) {
-    message(`Connection interrupted. This page will check again. ${error.message}`);
+    message(`Connection lost. Retrying… ${error.message}`);
     pollTimer = setTimeout(poll, 3000);
   }
 }
@@ -193,6 +195,33 @@ $("cancel").addEventListener("click", async () => {
   catch (error) { $("cancel").disabled = false; message(error.message); }
 });
 $("variant").addEventListener("change", () => { if (result) { renderControls(); inspectControl(); } });
+$("patch-download").addEventListener("click", async event => {
+  event.preventDefault();
+  if (!resultJob || exporting || busy) return;
+  const job = resultJob, button = $("patch-download");
+  exporting = true; setBusy(true); message("");
+  button.textContent = "Checking export…";
+  button.setAttribute("aria-disabled", "true");
+  try {
+    const prepared = await api(`/api/jobs/${job}/compatibility/vital-1.6.4`, {
+      method: "POST", headers: requestHeaders,
+    });
+    if (resultJob === job) {
+      $("compat-audit").href = prepared.audit_url;
+      $("compat-audit").hidden = false;
+      $("patch-check").textContent = "Desktop export passed Vita checks: controls and audio unchanged. Confirm it opens in desktop Vital.";
+    }
+    const download = document.createElement("a");
+    download.href = prepared.download_url;
+    download.download = "predicted_vital_1_6_4.vital";
+    document.body.append(download); download.click(); download.remove();
+  } catch (error) { message(error.message); }
+  finally {
+    exporting = false; setBusy(Boolean(active));
+    button.textContent = "Download Vital 1.6.4 patch";
+    button.removeAttribute("aria-disabled");
+  }
+});
 async function boot() {
   const info = await api("/api/info");
   $("runtime").textContent = `Local · ${info.device.toUpperCase()}`;
@@ -215,4 +244,4 @@ async function boot() {
     else message(status.detail);
   }
 }
-boot().catch(error => message(`Could not connect to C2. ${error.message}`));
+boot().catch(error => message(`C2 is unavailable. Check that the local server is running. ${error.message}`));

@@ -139,8 +139,8 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
         study = STUDIES.get(component)
         page = next((value['page'] for value in STUDIES.values() if path == value['page']), None)
         allowed = (path.startswith('/assets/') or path.startswith('/api/researcher/')
-                   or path.startswith('/api/c2-pilot/') or path.startswith('/c2-flow/')
-                   or path in ('/c2', '/c2/admin')
+                   or path.startswith('/api/c2-pilot/') or path.startswith('/c2-flow/') or path.startswith('/c2-flow-v2/')
+                   or path in ('/c2', '/c2/admin', '/c2/rehearsal-v2')
                    or study is not None or path in ('/', '/researcher', '/admin', '/pilot', '/pilot/admin', '/c4', '/c4/admin', '/api/health', '/favicon.ico'))
         if not allowed:
             return JSONResponse({'detail': 'This instance contains only the C1 and C4 researcher rehearsals'}, status_code=404)
@@ -148,7 +148,7 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
             return RedirectResponse('/researcher')
         cookie = request.cookies.get(REHEARSAL_COOKIE)
         protected = (page is not None or study is not None
-                     or path.startswith('/c2-flow/') or path.startswith('/api/c2-pilot/'))
+                     or path.startswith('/c2-flow/') or path.startswith('/c2-flow-v2/') or path.startswith('/api/c2-pilot/'))
         researcher = None
         if protected:
             try:

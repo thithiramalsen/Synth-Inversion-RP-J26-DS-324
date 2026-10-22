@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "description": "C2-only organization. Production models, features, protocol, diagnostics and study runtimes keep their original paths. Moved historical/check folders retain old-path directory junctions.",
+  "moves": [
+    {"source": "data/processed/c2_v4/baseline_development_cuda_v1", "destination": "data/processed/c2_v4/archive/development/baseline_development_cuda_v1"},
+    {"source": "data/processed/c2_v4/baseline_development_v1", "destination": "data/processed/c2_v4/archive/development/baseline_development_v1"},
+    {"source": "data/processed/c2_v4/baseline_development_v2", "destination": "data/processed/c2_v4/archive/development/baseline_development_v2"},
+    {"source": "data/processed/c2_v4/baseline_development_v3", "destination": "data/processed/c2_v4/archive/development/baseline_development_v3"},
+    {"source": "data/processed/c2_v4/features_development_v1", "destination": "data/processed/c2_v4/archive/development/features_development_v1"},
+    {"source": "data/processed/c2_v4/worked_example_v1", "destination": "data/processed/c2_v4/archive/development/worked_example_v1"},
+    {"source": "data/processed/c2_v4/worked_example_v3", "destination": "data/processed/c2_v4/archive/development/worked_example_v3"},
+    {"source": "data/processed/c2_v4/forward_batch_check_v1", "destination": "data/processed/c2_v4/checks/forward_batch_check_v1"},
+    {"source": "data/processed/c2_v4/forward_parallel_check_v2", "destination": "data/processed/c2_v4/checks/forward_parallel_check_v2"},
+    {"source": "data/processed/c2_v4/forward_parallel_check_v3", "destination": "data/processed/c2_v4/checks/forward_parallel_check_v3"},
+    {"source": "data/processed/c2_v4/verification_cpu_v1", "destination": "data/processed/c2_v4/checks/verification_cpu_v1"},
+    {"source": "data/processed/c2_v4/verification_cpu_v2", "destination": "data/processed/c2_v4/checks/verification_cpu_v2"},
+    {"source": "data/processed/c2_v4/verification_gpu_v1", "destination": "data/processed/c2_v4/checks/verification_gpu_v1"},
+    {"source": "data/processed/c2_v4/verification_validation_viewer_v1", "destination": "data/processed/c2_v4/checks/verification_validation_viewer_v1"},
+    {"source": "data/processed/c2_v4/live_browser_qa_v1", "destination": "data/processed/c2_v4/checks/live_browser_qa_v1"},
+    {"source": "data/processed/c2_v4/live_cpu_check_v1", "destination": "data/processed/c2_v4/checks/live_cpu_check_v1"},
+    {"source": "data/processed/c2_v4/live_engine_check_v1", "destination": "data/processed/c2_v4/checks/live_engine_check_v1"},
+    {"source": "data/processed/c2_v4/live_verification_v1", "destination": "data/processed/c2_v4/checks/live_verification_v1"},
+    {"source": "data/processed/c2_v4/hosted_verification_20261022", "destination": "data/processed/c2_v4/checks/hosted_verification_20261022"},
+    {"source": "data/processed/c2_v4/self_review_verification_v1", "destination": "data/processed/c2_v4/checks/self_review_verification_v1"},
+    {"source": "data/processed/c2_v4/live_http_test_6zxphwf3", "destination": "data/processed/c2_v4/archive/test_fixtures/live_http_test_6zxphwf3"},
+    {"source": "data/processed/c2_v4/researcher_self_review_test_ekyit32w", "destination": "data/processed/c2_v4/archive/test_fixtures/researcher_self_review_test_ekyit32w"},
+    {"source": "data/processed/c2_v4/researcher_self_review_test_fl87g739", "destination": "data/processed/c2_v4/archive/test_fixtures/researcher_self_review_test_fl87g739"},
+    {"source": "data/processed/c2-human-tests-5gudpz61", "destination": "data/processed/c2_v4/archive/test_fixtures/c2-human-tests-5gudpz61"},
+    {"source": "data/processed/c2_v4/unused_sites_hosting_draft_20261022", "destination": "data/processed/c2_v4/archive/drafts/unused_sites_hosting_draft_20261022"}
+  ]
+}

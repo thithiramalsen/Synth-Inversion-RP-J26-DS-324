@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import tempfile
 import unittest
 from unittest.mock import patch
 from argparse import Namespace
@@ -19,6 +18,7 @@ from c2_estimation.v4.data import (NAMES, COUNTS, assignments, from_z, inverse_r
 from c2_estimation.v4.diagnostics import distance, perturbation_pair
 from c2_estimation.v4.features import training_statistics
 from c2_estimation.v4.compare_baselines import compare
+from c2_estimation.tests.scratch import temporary_directory
 
 
 class ProtocolTests(unittest.TestCase):
@@ -45,10 +45,7 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(full.split.value_counts().to_dict(), {"train": 98304, "validation": 4096})
 
     def test_tampered_manifest_is_rejected(self):
-        # Some Windows sandboxes expose an unwritable inherited system TEMP.
-        scratch_root = Path(__file__).resolve().parents[2] / "data/processed"
-        scratch_root.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(prefix="c2-test-", dir=scratch_root) as folder:
+        with temporary_directory(prefix="c2-test-") as folder:
             root = Path(folder)
             (root / "manifest.parquet").write_bytes(b"original")
             (root / "split_manifest.csv").write_text("frozen", encoding="utf-8")
@@ -197,9 +194,7 @@ class DiagnosticTests(unittest.TestCase):
 
 class ResumeTests(unittest.TestCase):
     def test_interrupted_epoch_resume_matches_uninterrupted_training(self):
-        scratch_root = Path(__file__).resolve().parents[2] / "data/processed"
-        scratch_root.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(prefix="c2-resume-test-", dir=scratch_root) as folder:
+        with temporary_directory(prefix="c2-resume-test-") as folder:
             root = Path(folder)
             prepared = root / "prepared"
             prepared.mkdir()
@@ -243,9 +238,7 @@ class ResumeTests(unittest.TestCase):
 
 class BaselineComparisonTests(unittest.TestCase):
     def test_comparison_matches_ids_and_rejects_test_rows(self):
-        scratch_root = Path(__file__).resolve().parents[2] / "data/processed"
-        scratch_root.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(prefix="c2-comparison-test-", dir=scratch_root) as folder:
+        with temporary_directory(prefix="c2-comparison-test-") as folder:
             root = Path(folder)
             runs = [root / "development", root / "full"]
             truth = {"a": .2, "b": .8, "c": .4}
