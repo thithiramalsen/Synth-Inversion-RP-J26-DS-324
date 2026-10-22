@@ -108,6 +108,7 @@ parameters cannot have a meaningful parameter MAE, RMSE or R² computed for it.
 |---|---|
 | `c2_estimation/live/engine.py` | Source/artifact verification, input conditioning, inference, diagnostics, calibration, patch export and roundtrip checks |
 | `c2_estimation/live/server.py` | Loopback API, one worker, bounded uploads, progress, cancellation, persistence and checked downloads |
+| `c2_estimation/live/preset_compat.py` | Separate metadata-only desktop export, exact Vita controls/audio checks and immutable-job preservation |
 | `c2_estimation/live/web/index.html` | Page content and accessible controls |
 | `c2_estimation/live/web/app.js` | Uploads, progress polling, audio, control inspector and result reopening |
 | `c2_estimation/live/web/style.css` | Responsive layout |
@@ -136,6 +137,41 @@ needed results separately. Cancelling preserves partial files for diagnosis but
 does not expose them as completed results. There is no participant-data collection.
 
 ## Frozen-source and preset checks
+
+### Desktop Vital 1.6.4 export
+
+The main patch download now prepares a separate desktop copy. Vita 0.0.5 writes
+the placeholder `99999.9.9` into the preset and three wavetable version fields;
+desktop Vital interprets it as a future version. See the
+[upstream report](https://github.com/DBraun/Vita/issues/2).
+
+`preset_compat.py` changes only those four known metadata fields to `1.6.4`.
+It refuses to downgrade other real versions or guess at an unknown schema.
+Before publishing, fresh Vita synths reload both actual files without reapplying
+controls. Original-vs-copy control readbacks, raw stereo audio and the saved
+conditioned FLOAT reconstruction must match exactly. The 13 saved requested
+settings use the profile's existing `2e-6` tolerance against float32 readbacks;
+the audit records the actual difference. This does not relax the exact
+original-vs-copy comparison.
+
+Copies and their `verification.json` live in
+`data/processed/c2_v4/live_app_v1/compatibility_v1/<job>/vital_1_6_4_<converter-hash>/`.
+The original job files, hashes, results, base preset, dataset, models and
+calibrators are not rewritten. The original Vita export remains downloadable.
+Preparation uses the app's existing single worker and rejects concurrent runs;
+failed checks publish no download. This is an export compatibility check, not
+new inference, training, calibration or final-test evaluation.
+
+For an existing completed result, the same operation is available from PowerShell:
+
+```powershell
+.\venv\Scripts\python.exe -B -m c2_estimation.live.preset_compat --job 93ecd387623c4d168cd04c8e1edbb08d
+```
+
+An audit records `desktop_vital_checked: false`: changing a header and passing a
+Vita roundtrip are not proof of desktop compatibility. Open and play the new copy
+in the installed desktop Vital to complete that check. This targets 1.6.4;
+compatibility with 1.0.7 is not claimed. No Vital/Vita installation is changed.
 
 The runtime verifies the protocol, training source, checkpoint signatures,
 calibrators, diagnostic configuration and synthesis recipe. Git's CRLF conversion

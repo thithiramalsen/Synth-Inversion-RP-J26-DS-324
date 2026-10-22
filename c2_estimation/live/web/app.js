@@ -1,7 +1,7 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
 let active = null, result = null, resultJob = null, selectedControl = 0, chosenFile = null;
-let busy = false, pollTimer = null;
+let busy = false, pollTimer = null, exporting = false;
 const requestHeaders = {"X-C2-Request": "1"};
 const fmt = (n, digits = 4) => Number(n).toFixed(digits);
 const pct = (n) => `${fmt(n * 100, 1)}%`;
@@ -121,10 +121,12 @@ async function openResult(job) {
   $("target-player").src = filesUrl("target.wav");
   $("reconstruction-player").src = filesUrl("reconstruction.wav");
   $("spectrograms").src = filesUrl("spectrograms.png");
-  $("patch-download").href = filesUrl("predicted.vital", true);
+  $("patch-download").href = `/api/jobs/${job}/compatibility/vital-1.6.4/patch`;
+  $("original-patch-download").href = filesUrl("predicted.vital", true);
+  $("compat-audit").hidden = true;
   $("wav-download").href = filesUrl("reconstruction_float.wav", true);
   $("report-download").href = filesUrl("result.json", true);
-  $("patch-check").textContent = "Patch verified: reloading it through Vita reproduced the controls and audio exactly.";
+  $("patch-check").textContent = "Original export passed Vita checks. The desktop copy is rechecked when downloaded.";
   $("residual").textContent = `Reconstruction distance R: ${fmt(loaded.R, 5)} (multi-resolution STFT).`;
   renderControls(); inspectControl(); remember(job, loaded.filename);
   window.history.replaceState(null, "", `/?job=${job}#result`);
@@ -193,6 +195,33 @@ $("cancel").addEventListener("click", async () => {
   catch (error) { $("cancel").disabled = false; message(error.message); }
 });
 $("variant").addEventListener("change", () => { if (result) { renderControls(); inspectControl(); } });
+$("patch-download").addEventListener("click", async event => {
+  event.preventDefault();
+  if (!resultJob || exporting || busy) return;
+  const job = resultJob, button = $("patch-download");
+  exporting = true; setBusy(true); message("");
+  button.textContent = "Checking export…";
+  button.setAttribute("aria-disabled", "true");
+  try {
+    const prepared = await api(`/api/jobs/${job}/compatibility/vital-1.6.4`, {
+      method: "POST", headers: requestHeaders,
+    });
+    if (resultJob === job) {
+      $("compat-audit").href = prepared.audit_url;
+      $("compat-audit").hidden = false;
+      $("patch-check").textContent = "Desktop export passed Vita checks: controls and audio unchanged. Confirm it opens in desktop Vital.";
+    }
+    const download = document.createElement("a");
+    download.href = prepared.download_url;
+    download.download = "predicted_vital_1_6_4.vital";
+    document.body.append(download); download.click(); download.remove();
+  } catch (error) { message(error.message); }
+  finally {
+    exporting = false; setBusy(Boolean(active));
+    button.textContent = "Download Vital 1.6.4 patch";
+    button.removeAttribute("aria-disabled");
+  }
+});
 async function boot() {
   const info = await api("/api/info");
   $("runtime").textContent = `Local · ${info.device.toUpperCase()}`;

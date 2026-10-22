@@ -58,12 +58,15 @@
         <div><h3>Reconstruction</h3><audio id="reconstruction-player" controls preload="none"></audio></div>
       </div>
       <div class="downloads">
-        <a id="patch-download" class="button" download>Download Vital patch</a>
+        <a id="patch-download" class="button" download>Download Vital 1.6.4 patch</a>
         <a id="wav-download" class="button secondary" download>Download reconstruction WAV</a>
         <a id="report-download" class="text-link" download>Download result JSON</a>
+        <a id="original-patch-download" class="text-link" download>Original Vita export</a>
+        <a id="compat-audit" class="text-link" download hidden>Export checks</a>
       </div>
       <p id="patch-check" class="small"></p>
-      <p class="small">The patch stores the synth settings. Audio playback uses the same 10 Hz DC filter as the research pipeline.</p>
+      <p class="small">The desktop copy changes version metadata only and is rechecked in Vita before download. Opening and playing it in desktop Vital is a separate check. The original Vita export stays unchanged.</p>
+      <p class="small">Audio playback uses the same 10 Hz DC filter as the research pipeline.</p>
       <details><summary>Compare spectrograms</summary><img id="spectrograms" alt="Target and reconstructed audio log-mel spectrograms, on the same fixed decibel scale"></details>
       <div class="section-heading controls-heading"><h3>Predicted controls</h3>
         <label>Reliability model <select id="variant">
