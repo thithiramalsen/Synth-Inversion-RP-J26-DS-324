@@ -41,6 +41,11 @@ LABELS = (
 CONSENT = ("adult", "english", "synth_experience", "information_read", "voluntary", "coded_data")
 
 CLOSENESS = (1, 2, 3, 4, 5)
+
+# Perceptual closeness analysis (frozen before any response; D-020).
+EQUIVALENCE_MARGIN = 0.5   # C3 picks "heard as close" if CI lower bound of (C3-only - top-k-only) > -0.5
+CLOSE_RATING = 4           # a rating of 4 or 5 counts as "close" in descriptive shares
+ANALYSIS_BOOTSTRAP = 10000 # participant-level percentile bootstrap draws (seed = SEED)
 SET_CHOICES = ("A", "B", "no_difference", "cannot_judge")
 SET_QUESTIONS = ("useful_starting_points", "closer_overall", "more_different_by_ear")
 
