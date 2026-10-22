@@ -26,7 +26,7 @@ fields are fictional placeholders for software rehearsal only.
 
 ## Run
 
-Install PyTorch, Transformers 4.50+, and librosa in the project environment. The
+Install the pinned C4 PyTorch and Transformers dependencies in the project environment. The
 generator loads the public `laion/clap-htsat-unfused` checkpoint through the
 Hugging Face Transformers CLAP API, pinned by default to commit
 `8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a`. It applies the repository DC filter
@@ -36,7 +36,7 @@ listening. Pin a local checkpoint directory with `--model-path` when reproducibi
 future package/model changes is required.
 
 ```powershell
-.\venv\Scripts\python.exe -m pip install torch transformers==4.50.0 librosa
+.\venv\Scripts\python.exe -m pip install -r c4_metric\requirements.txt
 .\venv\Scripts\python.exe c4_metric\synthetic_data\generate_dummy_c4.py --participants 100
 .\venv\Scripts\python.exe c4_metric\synthetic_data\generate_dummy_c4.py --participants 50 --seed 17
 ```
