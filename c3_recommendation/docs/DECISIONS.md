@@ -341,3 +341,26 @@ At the user's request the study was rebuilt before the CLAP work:
   study version.
 
 Status: built at the user's request.
+
+## D-020 — Human study perceptual closeness analysis plan, frozen before any response (2026-10-22)
+
+User decisions: build the perceptual closeness evaluation; equivalence margin 0.5 rating points;
+keep the headphone check. Implemented in `human_study/analysis.py`, run with
+`manage analyze`. No real or rehearsal responses existed when this plan was written.
+
+- **Primary outcome:** for each participant, the mean closeness rating (1–5; Cannot judge
+  excluded) of sounds only in the C3 set minus sounds only in the top-k set. Across participants:
+  mean, median and 95% percentile bootstrap CI (10,000 draws, seed 20261022). **C3's picks are
+  "heard as close as the top-k" if the CI lower bound is above −0.5.** Otherwise "not shown to be
+  within the margin"; with fewer than 2 eligible participants, "insufficient data". An exploratory
+  Wilcoxon signed-rank test against 0 is reported (n ≥ 6).
+- **Secondary (descriptive):** mean rating and share rated 4–5 for top-k-only, C3-only and
+  shared sounds (are the suggestions close at all?); within-participant Spearman correlation of
+  model relevance and of shortlist rank with ratings; participant-level C3 share of decisive
+  answers for the three set questions (0.5 = no preference); per-case tables.
+- Unit of analysis: the participant. Outputs: REPORT.md, analysis.json, CSV tables, two figures.
+- Only simulated or rehearsal data can be analysed while research collection is disabled.
+- The simulator (`simulate_sessions`) assumes ratings track MFCC relevance steeply; its output
+  is a software check, never a prediction or result.
+
+Status: confirmed by the user (margin, scope); plan details by Claude Code.
