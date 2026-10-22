@@ -9,3 +9,7 @@ scipy==1.18.0
 soundfile==0.14.0
 pytest==9.1.1
 matplotlib==3.11.2
+# C3 human study rehearsal server (same pins as survey/backend)
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+httpx==0.28.1
