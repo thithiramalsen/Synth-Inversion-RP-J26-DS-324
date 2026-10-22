@@ -186,3 +186,18 @@ def test_screen_failure_and_tamper_detection(study):
     (bundle / "audio/volume_reference.wav").write_bytes(b"changed")
     with pytest.raises(ValueError):
         create_app(bundle, db)
+
+
+def test_analysis_code_changes_do_not_lock_the_database(study, monkeypatch):
+    app, client, bundle, db = study
+    import human_study.server as server
+    before = app.state.store.path
+    # Editing analysis/export code must not change the fingerprint; editing the protocol must.
+    with TestClient(create_app(bundle, db)):
+        pass
+    monkeypatch.setattr(server, "N_SCORED", server.N_SCORED)  # unchanged value: still accepted
+    with TestClient(create_app(bundle, db)):
+        pass
+    monkeypatch.setattr(server, "CAP", server.CAP + 1)
+    with pytest.raises(ValueError, match="changed"):
+        create_app(bundle, before)

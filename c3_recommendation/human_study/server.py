@@ -24,7 +24,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from .design import (
-    CAP, CLOSENESS, CONSENT, N_SCORED, SET_CHOICES, SET_QUESTIONS, TARGET, VERSION, assignment,
+    CAP, CLOSENESS, CONSENT, N_SCORED, OPERATING_POINT, SET_CHOICES, SET_QUESTIONS, TARGET, VERSION, assignment,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -94,6 +94,13 @@ class Store:
             db.close()
 
 
+def protocol():
+    """The participant-facing study rules from design.py, as values (not file bytes)."""
+    return {"version": VERSION, "target": TARGET, "cap": CAP, "n_scored": N_SCORED, "consent": list(CONSENT),
+            "closeness": list(CLOSENESS), "set_choices": list(SET_CHOICES), "set_questions": list(SET_QUESTIONS),
+            "operating_point": OPERATING_POINT, "assignments": [assignment(i) for i in range(TARGET)]}
+
+
 def membership(case):
     """Private per-sound label for analysis: in both sets, top-k only or C3 only."""
     top, mmr = set(case["sets"]["topk"]), set(case["sets"]["mmr"])
@@ -116,10 +123,13 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
         raise ValueError("Need exactly eight scored cases and a separate practice case")
     if bundle["assignments"] != [assignment(i) for i in range(TARGET)]:
         raise ValueError("Counterbalancing changed after bundle freeze")
-    source_hashes = {p.name: digest(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
+    # Fingerprint only what participants experience: this server, the web page, the frozen
+    # bundle and the study protocol. Analysis/export code can change without a new database.
+    source_hashes = {"server.py": digest(__file__)}
     source_hashes.update({p.name: digest(p) for p in sorted(ASSETS.glob("*")) if p.is_file()})
     fingerprint = hashlib.sha256(json.dumps({"bundle": digest(bundle_path / "manifest.json"),
-                                             "source": source_hashes}, sort_keys=True).encode()).hexdigest()
+                                             "source": source_hashes, "protocol": protocol()},
+                                            sort_keys=True).encode()).hexdigest()
     store = Store(database, fingerprint)
     app = FastAPI(title="C3 study rehearsal", docs_url=None, redoc_url=None, openapi_url=None)
     app.state.store = store
