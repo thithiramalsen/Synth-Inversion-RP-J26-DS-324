@@ -259,3 +259,70 @@ Design (`human_study/design.py`, version `c3-human-v1`, seed 20261022):
   real participant. Bundle v1 is for rehearsal only.
 
 Status: design confirmed by the user; provisional values chosen by Claude Code.
+
+## D-016 — Evaluation decisions fixed before Phase 7 (2026-10-22)
+
+Made by the user before any tuning result was computed:
+
+- **H2 tolerance τ = 0.02**: the largest accepted relative loss in mean relevance of the C3 set
+  versus the plain top-k (per target, upper 95% bootstrap CI). Stored as `tuning.tau`.
+- **Primary representation: `mfcc26`** (identical to the pilot_v1 MFCC). `logmel_stats` and
+  `clap` are secondary sensitivity checks, reported but not used for the hypothesis decision.
+- **λ grid extended** with 0.99, 0.98, 0.97, 0.96 because relevance spans a narrow band (D-013).
+  Grid: 1.00, 0.99, 0.98, 0.97, 0.96, 0.95, 0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.50, 0.40.
+- **CLAP features added**: `laion/clap-htsat-unfused` through the Hugging Face Transformers CLAP
+  API, revision `8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a`, 48 kHz input — the same checkpoint and
+  revision C4 uses, so C3 and C4 CLAP results are comparable.
+- Primary k = 5 (k = 3 is a sensitivity check).
+
+Status: confirmed by user 2026-10-22.
+
+## D-017 — Phase 7 selection rules, written before running tuning (2026-10-22)
+
+Implemented in `c3.tuning`; logged before `scripts/07_tune.py` was first run.
+
+1. **Targets:** `splits.n_val_targets_eval` = 500 validation targets (seeded); the test split is
+   not read. Primary representation mfcc26; k = 5 primary, k = 3 sensitivity.
+2. **λ and N rule:** among MMR configurations for k = 5, (N, λ) is eligible when the upper
+   bound of the 95% bootstrap CI (10,000 resamples, seeded) of the per-target relative relevance
+   loss versus top-k is ≤ τ = 0.02. Choose the eligible configuration with the highest mean
+   pairwise parameter distance; ties → smaller N, then larger λ. If only λ = 1 is eligible, the
+   outcome is reported as "no diversity gain within tolerance" (a valid negative result).
+3. **ε rule:** at the chosen (N*, λ*, k = 5), the primary near-duplicate threshold ε* is the
+   smallest grid value at which at least 10% of validation targets have a near-duplicate pair in
+   their plain top-k set. This depends on top-k only, never on the MMR effect. If no ε
+   qualifies, the largest grid value is used and dup_rate is flagged as uninformative for H1.
+   The full ε sensitivity table is reported either way.
+4. Secondary representations (logmel_stats, clap) are tuned with the same rules and reported as
+   sensitivity analyses only.
+
+Status: rules proposed by Claude Code, consistent with the build guide §7 and the user's
+D-016 decisions; recorded before results.
+
+## D-018 — Phase 7 validation tuning result (2026-10-22)
+
+`scripts/07_tune.py`, 500 validation targets, rules D-017, outputs `outputs/v4/val/<rep>/`.
+λ = 1 equalled top-k in every set. Re-running reproduced identical numbers.
+
+Primary (mfcc26), k = 5 — top-k vs chosen MMR, means over targets:
+
+| | mean relevance | rel. loss vs top-k (95% CI upper) | mean pair dist | min pair dist |
+|---|---|---|---|---|
+| top-k (N = 100) | 0.9725 | — | 0.3250 | 0.2258 |
+| **MMR, N* = 100, λ* = 0.5** | 0.9550 | 1.81% (1.90%) | **0.4161** | **0.3619** |
+| random from shortlist (N = 100) | 0.9360 | 3.80% (4.00%) | 0.3395 | 0.2382 |
+
+- Outcome: **diversity gain within tolerance** (τ = 0.02). k = 3 gives the same point (N 100, λ 0.5).
+- For N = 50 the best eligible λ is 0.4, the lowest grid value; N = 100, λ = 0.5 still has the
+  higher diversity, so the grid edge does not change the choice.
+- **ε* = 0.15, flagged uninformative:** top-k sets contained a near-duplicate pair for at most
+  4.8% of targets (ε = 0.15) and 0% for ε ≤ 0.1121. On this evenly spread Sobol bank, the C3
+  benefit shows as larger pairwise spread, not as removal of near-copies. Following D-017 rule 3,
+  the preregistration template makes H1 a two-metric family (mean and minimum pairwise distance)
+  and reports dup_rate descriptively.
+- Secondary (logmel_stats): N = 100, λ = 0.4, loss 1.38% (CI upper 1.48%), mean pair dist 0.422.
+  λ = 0.4 is the grid edge, so log-mel's optimum may lie lower; reported as a limitation.
+- `docs/PREREGISTRATION_TEMPLATE.md` generated from the primary run. PREREGISTRATION.md is written
+  and committed by the user.
+
+Status: computed; awaiting the user's preregistration.
