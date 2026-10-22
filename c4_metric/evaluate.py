@@ -18,7 +18,7 @@ from scipy.stats import binomtest
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from c4_metric.c3_adapter import AdaptedScorer
+from c4_metric.c3_adapter import AdaptedScorer, MFCCAdaptedScorer
 from c4_metric.similarity import SimilarityResult, _cosine, baseline_availability, score_similarity
 
 MARK = "SYNTHETIC_DO_NOT_USE_AS_HUMAN_EVIDENCE"
@@ -160,8 +160,21 @@ def _participant_accuracy(rows: list[dict], values: np.ndarray) -> dict[str, flo
 
 
 def _metric_summary(rows: list[dict], method: str, bootstrap_draws: int,
-                    seed: int) -> tuple[dict, dict[str, float]]:
+                    seed: int, *, aggregate_mode: bool = False) -> tuple[dict, dict[str, float]]:
     values = _accuracy_values(rows, method)
+    if aggregate_mode:
+        summary = {
+            "triplet_choice_accuracy": float(np.mean(values)),
+            "participant_macro_accuracy": None,
+            "audio_component_bootstrap_95_percent_ci": _audio_component_bootstrap_ci(
+                rows, values, bootstrap_draws, seed),
+            "aggregate_comparisons": len(rows),
+            "unique_participants": None,
+            "unique_triplets": len({_triplet_key(row) for row in rows}),
+            "unique_audio_components": len({row["audio_component_id"] for row in rows}),
+            "model_score_ties_counted_as_half_correct": int(np.sum(values == 0.5)),
+        }
+        return summary, {}
     participants = _participant_accuracy(rows, values)
     interval = _two_way_bootstrap_ci(rows, values, bootstrap_draws, seed)
     summary = {
@@ -175,6 +188,39 @@ def _metric_summary(rows: list[dict], method: str, bootstrap_draws: int,
         "model_score_ties_counted_as_half_correct": int(np.sum(values == 0.5)),
     }
     return summary, participants
+
+
+def _audio_component_bootstrap_ci(rows: list[dict], values: np.ndarray, draws: int,
+                                  seed: int) -> list[float]:
+    components = sorted({str(row["audio_component_id"]) for row in rows})
+    lookup = {component: index for index, component in enumerate(components)}
+    indexes = np.asarray([lookup[str(row["audio_component_id"])] for row in rows], dtype=np.int64)
+    rng = np.random.default_rng(seed)
+    estimates = np.empty(draws, dtype=np.float64)
+    for draw in range(draws):
+        counts = np.bincount(rng.integers(0, len(components), size=len(components)),
+                             minlength=len(components))
+        weights = counts[indexes]
+        estimates[draw] = float(np.dot(weights, values) / weights.sum()) if weights.sum() else float(values.mean())
+    return [float(np.quantile(estimates, .025)), float(np.quantile(estimates, .975))]
+
+
+def _paired_comparison_test(rows: list[dict], left_values: np.ndarray,
+                            right_values: np.ndarray) -> dict:
+    deltas_by_key: dict[tuple[str, str, str], list[float]] = defaultdict(list)
+    for row, left, right in zip(rows, left_values, right_values, strict=True):
+        deltas_by_key[_triplet_key(row)].append(float(left - right))
+    deltas = [float(np.mean(values)) for values in deltas_by_key.values()]
+    nonzero = [value for value in deltas if abs(value) > 1e-12]
+    wins = sum(value > 0 for value in nonzero)
+    return {
+        "mean_accuracy_difference_c4_minus_baseline": float(np.mean(deltas)) if deltas else None,
+        "aggregate_comparisons_paired": len(deltas),
+        "comparisons_with_non_tied_delta": len(nonzero),
+        "c4_higher_accuracy_comparisons": int(wins),
+        "paired_sign_test_p_value": float(binomtest(wins, len(nonzero), .5,
+                                              alternative="two-sided").pvalue) if nonzero else 1.0,
+    }
 
 
 def _two_way_bootstrap_ci(rows: list[dict], values: np.ndarray, draws: int,
@@ -341,6 +387,8 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
         raise ValueError("C4 evaluation requires --checkpoint")
     validation = [row for row in rows if row["split"] == "validation"]
     test = [row for row in rows if row["split"] == "test"]
+    aggregate_mode = (bool(rows)
+                      and all(row.get("comparison_ids") for row in rows))
 
     embedding_by_id: dict[str, np.ndarray] = {}
     embedding_cache_status = "not supplied"
@@ -349,9 +397,15 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
         meta_path = embedding_path.with_suffix(".json")
         embedding_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.is_file() else {}
         expected_revision = "8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a"
-        valid_meta = (embedding_meta.get("model") == "laion/clap-htsat-unfused"
-                      and embedding_meta.get("revision") == expected_revision
-                      and embedding_meta.get("manifest_sha256") == _sha256(manifest_path))
+        is_mfcc26_cache = (embedding_meta.get("model") == "c3-mfcc26"
+                           and embedding_meta.get("representation") == "mfcc26"
+                           and embedding_meta.get("feature_dimension") == 26)
+        is_clap_cache = (embedding_meta.get("model") == "laion/clap-htsat-unfused"
+                         and embedding_meta.get("revision") == expected_revision)
+        expected_cache_status = MARK if synthetic else "human_response"
+        valid_meta = ((is_mfcc26_cache or is_clap_cache)
+                      and embedding_meta.get("manifest_sha256") == _sha256(manifest_path)
+                      and embedding_meta.get("data_status") == expected_cache_status)
         if valid_meta:
             with np.load(embedding_path, allow_pickle=False) as archive:
                 ids = archive["sample_ids"].astype(str)
@@ -359,9 +413,14 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
             if (vectors.ndim != 2 or len(ids) != vectors.shape[0] or len(set(ids)) != len(ids)
                     or not np.isfinite(vectors).all() or np.any(np.linalg.norm(vectors, axis=1) <= 1e-12)):
                 raise ValueError("Embedding cache has duplicate IDs or invalid sample vectors")
+            expected_dimension = 26 if is_mfcc26_cache else 512
+            if vectors.shape[1] != expected_dimension:
+                representation = "MFCC26" if is_mfcc26_cache else "CLAP"
+                raise ValueError(f"{representation} cache must contain {expected_dimension}D vectors, "
+                                 f"got {vectors.shape[1]}")
             embedding_by_id = {sid: vector for sid, vector in zip(ids, vectors)}
-            embedding_cache_status = (f"validated pinned CLAP cache: {len(ids)} embeddings, "
-                                      f"revision {embedding_meta.get('revision')}")
+            representation_name = "mfcc26" if is_mfcc26_cache else "pinned CLAP"
+            embedding_cache_status = f"validated {representation_name} cache: {len(ids)} embeddings"
         else:
             embedding_cache_status = "ignored: model, revision, or manifest hash does not match this run"
     elif embedding_path:
@@ -370,10 +429,19 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
     adapted = None
     training_metadata = None
     if checkpoint:
-        adapted = AdaptedScorer(checkpoint,
-                                allow_synthetic_checkpoint=allow_synthetic and synthetic)
-        if (adapted.clap_model != "laion/clap-htsat-unfused"
-                or adapted.clap_revision != "8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a"):
+        import torch
+        checkpoint_state = torch.load(checkpoint, map_location="cpu", weights_only=True)
+        if checkpoint_state.get("encoder_model") == "c3-mfcc26":
+            adapted = MFCCAdaptedScorer(checkpoint,
+                                        allow_synthetic_checkpoint=allow_synthetic and synthetic)
+
+        else:
+            adapted = AdaptedScorer(checkpoint,
+                                    allow_synthetic_checkpoint=allow_synthetic and synthetic)
+
+        if (adapted.encoder_model != "c3-mfcc26"
+                and (adapted.encoder_model != "laion/clap-htsat-unfused"
+                     or adapted.encoder_revision != "8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a")):
             raise ValueError("Fair C4-versus-CLAP comparison requires the pinned laion/clap-htsat-unfused encoder revision")
         run_config_path = checkpoint.parent / "run_config.json"
         if not synthetic:
@@ -387,8 +455,8 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
                 "test_triplets_sha256": _split_rows_sha256(source_rows, "test"),
                 "checkpoint_sha256": _sha256(checkpoint),
                 "embedding_cache_sha256": _sha256(embedding_path) if embedding_path and embedding_path.is_file() else None,
-                "encoder_model": adapted.clap_model,
-                "encoder_revision": adapted.clap_revision,
+                "encoder_model": adapted.encoder_model,
+                "encoder_revision": adapted.encoder_revision,
                 "training_split_name": "train",
                 "checkpoint_selection_split": "validation",
                 "test_labels_used_for_training_or_selection": False,
@@ -402,10 +470,12 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
                     raise ValueError(f"C4 training provenance mismatch for {field}: expected {expected!r}, "
                                      f"found {training_metadata.get(field)!r}")
         if embedding_meta and embedding_by_id:
-            if (embedding_meta.get("model") != adapted.clap_model
-                    or embedding_meta.get("revision") != adapted.clap_revision):
+            expected_representation = adapted.encoder_model
+            if (embedding_meta.get("model") != expected_representation
+                    or (not isinstance(adapted, MFCCAdaptedScorer)
+                        and embedding_meta.get("revision") != adapted.clap_revision)):
                 embedding_by_id = {}
-                embedding_cache_status = "ignored: CLAP cache encoder does not match the adapted C4 checkpoint"
+                embedding_cache_status = "ignored: embedding cache encoder does not match the adapted C4 checkpoint"
 
     score_cache: dict[tuple[str, str, str], float] = {}
 
@@ -427,15 +497,23 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
         if method == "synth_aware":
             score = score_similarity(None, None, method, reference_id=left,
                                      candidate_id=right, manifest_path=manifest_path)
-        elif (method in {"clap", "c4"} and left in embedding_by_id and right in embedding_by_id):
-            if method == "c4":
-                score = adapted.score_embeddings(embedding_by_id[left], embedding_by_id[right])
-            else:
-                similarity = float(np.clip(_cosine(embedding_by_id[left], embedding_by_id[right]), -1.0, 1.0))
-                score = SimilarityResult("clap", similarity, 1.0 - similarity)
+        elif (method == "c4" and left in embedding_by_id and right in embedding_by_id
+              and embedding_meta.get("model") == adapted.encoder_model):
+            score = adapted.score_embeddings(embedding_by_id[left], embedding_by_id[right])
+        elif (method == "clap" and left in embedding_by_id and right in embedding_by_id
+              and embedding_meta.get("model") == "laion/clap-htsat-unfused"):
+            similarity = float(np.clip(_cosine(embedding_by_id[left], embedding_by_id[right]), -1.0, 1.0))
+            score = SimilarityResult("clap", similarity, 1.0 - similarity)
         else:
             left_path, right_path = audio_path(left), audio_path(right)
             if method == "c4":
+                if isinstance(adapted, MFCCAdaptedScorer):
+                    from generation.corpus_audio import load_audio
+                    left_row, right_row = audio_by_id[left], audio_by_id[right]
+                    if not left_row.get("audio_path") and left_row.get("raw_audio_path"):
+                        left_path = load_audio(left_row, ROOT, verify=True)
+                    if not right_row.get("audio_path") and right_row.get("raw_audio_path"):
+                        right_path = load_audio(right_row, ROOT, verify=True)
                 score = adapted.score(left_path, right_path)
             else:
                 score = score_similarity(left_path, right_path, method,
@@ -482,6 +560,15 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
     if synthetic:
         validation_summary = None
         selected_baseline = None
+    elif aggregate_mode:
+        validation_summary = {
+            method: {"aggregate_comparison_accuracy": float(np.mean(_accuracy_values(validation_scored, method))),
+                     "aggregate_comparisons": len(validation_scored)}
+            for method in baseline_methods
+        }
+        selected_baseline = (max(baseline_methods,
+                                 key=lambda method: validation_summary[method]["aggregate_comparison_accuracy"])
+                             if baseline_methods else None)
     else:
         validation_summary = {
             method: {"participant_macro_accuracy": float(np.mean(list(
@@ -505,6 +592,7 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
         "methods_requested": requested,
         "methods_computed_on_identical_validation_and_test_rows": available,
         "method_failures_or_unavailable": method_failures,
+        "embedding_cache": embedding_cache_status,
         "clap_embedding_cache": embedding_cache_status,
         "baseline_availability": baseline_availability(),
         "split_integrity": split_integrity,
@@ -530,9 +618,14 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
             "training_triplet_manifest_sha256": training_metadata.get("triplets_sha256") if training_metadata else None,
             "embedding_cache_sha256": _sha256(embedding_path) if embedding_path and embedding_path.is_file() else None,
             "test_rows_used_for_selection_or_tuning": False,
-            "audio_preprocessing": "mono, 44.1 kHz, DC high-pass, fixed RMS target with peak ceiling",
+            "audio_preprocessing": (
+                "C3 MFCC26: mono, 44.1 kHz, existing manifest/canonical audio policy; C3 MFCC extraction"
+                if isinstance(adapted, MFCCAdaptedScorer) else
+                "mono, 44.1 kHz, DC high-pass, fixed RMS target with peak ceiling"),
             "metric_tie_rule": "exact score tie within 1e-12 contributes 0.5 choice accuracy",
-            "human_unit": "individual decisive held-out response; uncertain responses are excluded upstream",
+            "human_unit": ("one aggregated, unambiguous comparison; confidence is excluded upstream"
+                           if aggregate_mode else
+                           "individual decisive held-out response; uncertain responses are excluded upstream"),
             "software": {
                 "python": platform.python_version(),
                 "platform": platform.platform(),
@@ -548,7 +641,9 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
                 "stft": "cosine over one 2048-point pooled log-magnitude profile",
                 "ms_stft": "mean cosine over pooled 512/1024/2048/4096-point profiles",
                 "clap": "frozen laion/clap-htsat-unfused cosine",
-                "c4": "same frozen CLAP revision with trainable projection learned by triplet margin loss",
+                "c4": ("C3-compatible mfcc26 feature vector with trainable projection learned by triplet margin loss"
+                       if isinstance(adapted, MFCCAdaptedScorer) else
+                       "same frozen CLAP revision with trainable projection learned by triplet margin loss"),
                 "cdpam": "published pretrained pairwise perceptual distance; lower is better",
                 "synth_aware": "normalized Vital parameter-space distance; non-audio baseline",
             },
@@ -560,8 +655,10 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
         "note": ("Synthetic labels only exercise scoring and split integrity; accuracy, confidence intervals, "
                  "paired tests, and hard-case results are suppressed. Do not cite as perceptual evidence."
                  if synthetic else
-                 "Test labels are used once for final reporting only. The frozen CLAP scorer and adapted C4 use "
-                 "the same pinned CLAP representation when the validated embedding cache covers both samples."),
+                 "Test labels are used once for final reporting only. "
+                 + ("Each aggregate comparison is treated as the independent preference observation. "
+                    if aggregate_mode else "")
+                 + "The adapted C4 scores the same validated representation used by its embedding cache."),
     }
 
     if not synthetic:
@@ -569,7 +666,8 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
         participant_values: dict[str, dict[str, float]] = {}
         for index, method in enumerate(available):
             summaries[method], participant_values[method] = _metric_summary(
-                test_scored, method, bootstrap_draws, seed + index)
+                test_scored, method, bootstrap_draws, seed + index,
+                aggregate_mode=aggregate_mode)
         result["test_metrics"] = summaries
         result["test_ranking_descriptive_only"] = sorted(
             available, key=lambda method: summaries[method]["triplet_choice_accuracy"], reverse=True)
@@ -579,25 +677,36 @@ def evaluate(split_path: Path, manifest_path: Path, output_dir: Path, *,
         raw_p_values = {}
         if "c4" in participant_values:
             for index, method in enumerate(baseline_methods):
-                comparison = _paired_sign_test(participant_values["c4"], participant_values[method])
-                # Bootstrap the paired response-level accuracy delta with the same two cluster axes.
                 c4_values = _accuracy_values(test_scored, "c4")
                 base_values = _accuracy_values(test_scored, method)
-                delta_ci = _two_way_bootstrap_ci(test_scored, c4_values - base_values,
-                                                 bootstrap_draws, seed + 1000 + index)
-                comparison["two_way_cluster_bootstrap_95_percent_ci_accuracy_difference"] = delta_ci
-                raw_p_values[method] = comparison["participant_level_paired_sign_test_p_value"]
+                if aggregate_mode:
+                    comparison = _paired_comparison_test(test_scored, c4_values, base_values)
+                    comparison["audio_component_bootstrap_95_percent_ci_accuracy_difference"] = (
+                        _audio_component_bootstrap_ci(test_scored, c4_values - base_values,
+                                                      bootstrap_draws, seed + 1000 + index))
+                    raw_p_values[method] = comparison["paired_sign_test_p_value"]
+                else:
+                    comparison = _paired_sign_test(participant_values["c4"], participant_values[method])
+                    comparison["two_way_cluster_bootstrap_95_percent_ci_accuracy_difference"] = (
+                        _two_way_bootstrap_ci(test_scored, c4_values - base_values,
+                                              bootstrap_draws, seed + 1000 + index))
+                    raw_p_values[method] = comparison["participant_level_paired_sign_test_p_value"]
                 paired["baseline_comparisons"][method] = comparison
             adjusted = _holm_adjust(raw_p_values)
             for method, p_value in adjusted.items():
                 paired["baseline_comparisons"][method]["holm_adjusted_p_value"] = p_value
-            paired["test_scope"] = ("paired per-participant accuracy differences; sign tests treat participants "
-                                    "as independent clusters; two-way bootstrap resamples participants and "
-                                    "audio-disjoint test components")
+            paired["test_scope"] = (
+                "paired aggregate-comparison accuracy differences; sign test compares majority-vote comparisons; "
+                "bootstrap resamples audio-disjoint components"
+                if aggregate_mode else
+                "paired per-participant accuracy differences; sign tests treat participants as independent clusters; "
+                "two-way bootstrap resamples participants and audio-disjoint test components")
         else:
             paired["status"] = "C4 was unavailable; no adaptation comparison can be reported"
         result["paired_test"] = paired
-        result["hard_case_results"] = _triplet_hard_cases(test_scored, available)
+        result["hard_case_results"] = (
+            {"status": "not_applicable", "reason": "one majority-vote row per comparison; respondent-level consensus is not present"}
+            if aggregate_mode else _triplet_hard_cases(test_scored, available))
 
     run_meta_path = output_dir / "benchmark_config.json"
     run_meta_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
@@ -612,7 +721,7 @@ def main() -> None:
                         help="Required for real human evaluation; synthetic checkpoint needs --allow-synthetic")
     parser.add_argument("--embeddings", type=Path,
                         default=ROOT / "c4_metric/outputs/embeddings/clap_corpus_v4.npz",
-                        help="Pinned CLAP cache; must cover survey IDs for fast/reproducible scoring")
+                        help="Matching pinned CLAP or mfcc26 cache; should cover survey IDs for reproducible scoring")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "c4_metric/outputs/evaluation")
     parser.add_argument("--methods", default=",".join(DEFAULT_METHODS),
                         help="Baselines: mfcc,ms_stft,clap,cdpam,synth_aware; c4 is added when a checkpoint is supplied")

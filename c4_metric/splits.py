@@ -46,6 +46,20 @@ def create_splits(input_path: Path, output_path: Path, summary_path: Path, *,
     required = {"anchor_id", "positive_id", "negative_id"}
     if not rows or not required.issubset(fields):
         raise ValueError(f"Input triplets must be nonempty and contain {sorted(required)}")
+    input_row_count = len(rows)
+    excluded = {"tie": 0, "unresolved": 0}
+    training_rows = []
+    for row in rows:
+        status = row.get("vote_status", "preference") or "preference"
+        if status in excluded:
+            excluded[status] += 1
+            continue
+        if status not in {"preference", "majority", ""}:
+            raise ValueError(f"Unknown vote_status {status!r}; refusing ambiguous training data")
+        training_rows.append(row)
+    if not training_rows:
+        raise ValueError("No unambiguous preference rows remain after excluding ties and unresolved comparisons")
+    rows = training_rows
     synthetic_flags = {"SYNTHETIC" in row.get("data_status", "") for row in rows}
     if len(synthetic_flags) > 1:
         raise ValueError("Do not mix synthetic and human preference rows in a split run")
@@ -82,7 +96,12 @@ def create_splits(input_path: Path, output_path: Path, summary_path: Path, *,
         counts[chosen] += len(component)
     if any(not any(split == name for split in assigned.values()) for name in split_names):
         raise ValueError("A split is empty; reduce grouping connectivity or use more independent audio identities")
-    output_rows = [{**row, "split": assigned[i]} for i, row in enumerate(rows)]
+    # Confidence remains in response artifacts for analysis, but is deliberately
+    # removed from the model-facing split manifest.
+    output_fields = [field for field in fields
+                     if field not in {"confidence", "confidence_normalized", "confidence_status"}]
+    output_rows = [{key: value for key, value in row.items() if key in output_fields} |
+                   {"split": assigned[i]} for i, row in enumerate(rows)]
     split_audio = {name: set() for name in split_names}
     split_anchors = {name: set() for name in split_names}
     split_participants = {name: set() for name in split_names}
@@ -102,7 +121,7 @@ def create_splits(input_path: Path, output_path: Path, summary_path: Path, *,
                 raise AssertionError(f"Audio identity leakage between {left}/{right}: {len(overlap)}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", newline="", encoding="utf-8-sig") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fields + ["split"])
+        writer = csv.DictWriter(handle, fieldnames=output_fields + ["split"])
         writer.writeheader()
         writer.writerows(output_rows)
     summary = {

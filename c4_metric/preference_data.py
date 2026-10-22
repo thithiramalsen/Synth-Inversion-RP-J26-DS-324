@@ -141,13 +141,17 @@ def normalize_responses(input_path: Path, manifest_path: Path, output_dir: Path,
         duplicate_key = (participant, answer_key)
         if not reason and duplicate_key in seen:
             reason = "duplicate_participant_presentation"
+        confidence_status = "missing"
         if confidence_text:
             try:
                 confidence = int(confidence_text)
             except ValueError:
-                reason = reason or "confidence_not_integer_1_to_5"
+                confidence_status = "invalid"
             if confidence is not None and confidence not in range(1, 6):
-                reason = reason or "confidence_not_integer_1_to_5"
+                confidence = None
+                confidence_status = "invalid"
+            elif confidence is not None:
+                confidence_status = "valid"
         if not reason:
             route = choice_values.get(choice)
             if choice in {candidate_a.casefold(), candidate_b.casefold()}:
@@ -196,6 +200,7 @@ def normalize_responses(input_path: Path, manifest_path: Path, output_dir: Path,
             "candidate_b_id": candidate_b,
             "selected_candidate_id": "" if uncertainty else selected,
             "confidence_normalized": "" if confidence is None else confidence,
+            "confidence_status": confidence_status,
             "uncertain": str(uncertainty).lower(),
             "data_status_normalized": SYNTHETIC_MARK if synthetic else "human_response",
         }
@@ -236,6 +241,7 @@ def normalize_responses(input_path: Path, manifest_path: Path, output_dir: Path,
         else:
             item["votes_second"] += 1
     aggregates = []
+    vote_status_by_pair: dict[tuple[str, str, str], dict[str, Any]] = {}
     for item in grouped.values():
         decisive = item["votes_first"] + item["votes_second"]
         agreement = max(item["votes_first"], item["votes_second"]) / decisive if decisive else ""
@@ -243,45 +249,108 @@ def normalize_responses(input_path: Path, manifest_path: Path, output_dir: Path,
             winner = "tie" if decisive else "no_decisive_votes"
         else:
             winner = item["first_candidate_id"] if item["votes_first"] > item["votes_second"] else item["second_candidate_id"]
+        vote_status = ("unresolved" if not decisive else
+                       "tie" if item["votes_first"] == item["votes_second"] else "preference")
+        pair_key = (item["anchor_id"], item["first_candidate_id"], item["second_candidate_id"])
+        vote_status_by_pair[pair_key] = {
+            "vote_status": vote_status, "votes_first": item["votes_first"],
+            "votes_second": item["votes_second"], "uncertain_count": item["uncertain_count"],
+        }
         aggregates.append({
             "data_status": item["data_status"], "anchor_id": item["anchor_id"],
             "first_candidate_id": item["first_candidate_id"], "second_candidate_id": item["second_candidate_id"],
             "votes_first": item["votes_first"], "votes_second": item["votes_second"],
             "uncertain_count": item["uncertain_count"], "agreement": agreement,
             "majority_winner": winner,
+            "vote_status": vote_status,
             "meets_minimum_agreement": bool(decisive and agreement != "" and agreement >= minimum_agreement),
             "participant_count": len(item["participants"]),
             "comparison_ids": "|".join(sorted(item["comparison_ids"])),
+        })
+    for preference in preferences:
+        pair = sorted((preference["positive_id"], preference["negative_id"]))
+        preference.update(vote_status_by_pair[(preference["anchor_id"], pair[0], pair[1])])
+    for response in cleaned:
+        pair = sorted((response["candidate_a_id"], response["candidate_b_id"]))
+        response.update(vote_status_by_pair[(response["anchor_id"], pair[0], pair[1])])
+    aggregate_triplets = []
+    for aggregate in aggregates:
+        if aggregate["vote_status"] != "preference":
+            continue
+        winner = aggregate["majority_winner"]
+        loser = (aggregate["second_candidate_id"] if winner == aggregate["first_candidate_id"]
+                 else aggregate["first_candidate_id"])
+        aggregate_triplets.append({
+            "data_status": aggregate["data_status"],
+            "comparison_ids": aggregate["comparison_ids"],
+            "anchor_id": aggregate["anchor_id"],
+            "positive_id": winner,
+            "negative_id": loser,
+            "votes_first": aggregate["votes_first"],
+            "votes_second": aggregate["votes_second"],
+            "agreement": aggregate["agreement"],
+            "participant_count": aggregate["participant_count"],
+            "vote_status": aggregate["vote_status"],
         })
     output_dir.mkdir(parents=True, exist_ok=True)
     clean_fields = list(dict.fromkeys(columns + [
         "normalized_participant_id", "comparison_id", "presentation_id", "anchor_id",
         "candidate_a_id", "candidate_b_id", "selected_candidate_id", "confidence_normalized",
+        "confidence_status", "vote_status", "votes_first", "votes_second", "uncertain_count",
         "uncertain", "data_status_normalized",
     ]))
     preference_fields = ["data_status", "participant_id", "comparison_id", "presentation_id",
-                         "anchor_id", "positive_id", "negative_id", "confidence"]
+                         "anchor_id", "positive_id", "negative_id", "confidence",
+                         "vote_status", "votes_first", "votes_second", "uncertain_count"]
     preference_fields.extend(key for key in ("case_type", "comparison_type", "hard_case_type",
                                               "metric_disagreement", "near_tie",
                                               "parameter_far_audio_close", "locally_sensitive")
                              if any(key in row for row in preferences))
     aggregate_fields = ["data_status", "anchor_id", "first_candidate_id", "second_candidate_id",
                         "votes_first", "votes_second", "uncertain_count", "agreement", "majority_winner",
-                        "meets_minimum_agreement", "participant_count", "comparison_ids"]
+                        "vote_status", "meets_minimum_agreement", "participant_count", "comparison_ids"]
     write_csv(output_dir / "cleaned_responses.csv", cleaned, clean_fields)
     write_csv(output_dir / "rejected_responses.csv", rejected, ["source_row", "reason", "raw_row_json"])
     write_csv(output_dir / "preference_triplets.csv", preferences, preference_fields)
     write_csv(output_dir / "aggregate_preferences.csv", aggregates, aggregate_fields)
+    aggregate_triplet_fields = ["data_status", "comparison_ids", "anchor_id", "positive_id",
+                                "negative_id", "votes_first", "votes_second", "agreement",
+                                "participant_count", "vote_status"]
+    write_csv(output_dir / "aggregate_preference_triplets.csv", aggregate_triplets,
+              aggregate_triplet_fields)
     synthetic = any(r["data_status_normalized"] == SYNTHETIC_MARK for r in cleaned)
+    vote_status_counts = {status: sum(row["vote_status"] == status for row in aggregates)
+                          for status in ("preference", "tie", "unresolved")}
+    candidate_wins = {"first": 0, "second": 0}
+    vote_totals = {"first": 0, "second": 0}
+    for aggregate in aggregates:
+        vote_totals["first"] += aggregate["votes_first"]
+        vote_totals["second"] += aggregate["votes_second"]
+        if aggregate["vote_status"] == "preference":
+            winner = "first" if aggregate["votes_first"] > aggregate["votes_second"] else "second"
+            candidate_wins[winner] += 1
     summary = {
         "data_status": SYNTHETIC_MARK if synthetic else "human_response_or_empty",
         "input_file": str(input_path), "manifest": str(manifest_path),
         "input_rows": len(raw_rows), "valid_rows": len(cleaned), "rejected_rows": len(rejected),
         "preference_triplets": len(preferences), "uncertain_rows": sum(r["uncertain"] == "true" for r in cleaned),
-        "aggregate_comparisons": len(aggregates), "ties_preserved": sum(r["majority_winner"] == "tie" for r in aggregates),
+        "trainable_preference_rows": sum(row["vote_status"] == "preference" for row in preferences),
+        "tied_preference_rows_excluded": sum(row["vote_status"] == "tie" for row in preferences),
+        "aggregate_triplets": len(aggregate_triplets),
+        "aggregate_comparisons": len(aggregates), "vote_status_counts": vote_status_counts,
+        "candidate_vote_totals": vote_totals,
+        "majority_winner_counts": candidate_wins,
+        "ties_preserved": vote_status_counts["tie"],
+        "excluded_from_triplet_training": {"ties": vote_status_counts["tie"],
+                                             "unresolved": vote_status_counts["unresolved"]},
+        "confidence_counts": {
+            "valid": sum(row["confidence_status"] == "valid" for row in cleaned),
+            "missing": sum(row["confidence_status"] == "missing" for row in cleaned),
+            "invalid": sum(row["confidence_status"] == "invalid" for row in cleaned),
+        },
         "minimum_agreement": minimum_agreement,
         "analysis_include": False if synthetic else True,
-        "note": "Individual disagreement is preserved; aggregate ties and uncertainty are not forced into labels.",
+        "note": "Individual choices and confidence are preserved; aggregate ties and unresolved outcomes are not forced into labels or triplet training.",
     }
     (output_dir / "quality_summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     return summary

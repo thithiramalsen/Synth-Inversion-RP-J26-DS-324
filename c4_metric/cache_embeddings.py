@@ -16,6 +16,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from c4_metric.similarity import prepare_audio
 
+PILOT_MARK = "REHEARSAL_PILOT_DO_NOT_USE_AS_VALIDATED_HUMAN_STUDY_RESULTS"
+SYNTHETIC_MARK = "SYNTHETIC_DO_NOT_USE_AS_HUMAN_EVIDENCE"
+
 
 def file_hash(path: Path) -> str:
     h = hashlib.sha256()
@@ -33,12 +36,23 @@ def rows(path: Path):
 def extract(triplets_path: Path, manifest_path: Path, output: Path, *,
             model_id: str = "laion/clap-htsat-unfused",
             revision: str | None = "8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a",
-            batch_size: int = 16, local_files_only: bool = True) -> dict:
+            batch_size: int = 16, local_files_only: bool = True,
+            allow_pilot_rehearsal: bool = False) -> dict:
     if batch_size < 1:
         raise ValueError("batch_size must be positive")
     triplets = rows(triplets_path)
     if not triplets:
         raise ValueError("Triplet file is empty")
+    statuses = {row.get("data_status", "").strip() for row in triplets
+                if row.get("data_status", "").strip()}
+    if len(statuses) > 1:
+        raise ValueError("Triplets contain mixed data_status values")
+    source_status = next(iter(statuses), "")
+    pilot_rehearsal = source_status == PILOT_MARK
+    if pilot_rehearsal and not allow_pilot_rehearsal:
+        raise ValueError("Rehearsal pilot embeddings require explicit --pilot-rehearsal")
+    if allow_pilot_rehearsal and not pilot_rehearsal:
+        raise ValueError("--pilot-rehearsal accepts only marked rehearsal pilot triplets")
     id_columns = ("anchor_id", "positive_id", "negative_id")
     if not set(id_columns).issubset(triplets[0]):
         # Permit either the survey export format or the CLAP bank format.
@@ -79,7 +93,7 @@ def extract(triplets_path: Path, manifest_path: Path, output: Path, *,
     model = ClapAudioModelWithProjection.from_pretrained(model_id, revision=revision,
                                                           local_files_only=local_files_only)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model.to(device).eval()
+    model.to(device).eval().requires_grad_(False)
     vectors = []
     for start in range(0, len(audio), batch_size):
         waveforms = [resample_poly(x, 160, 147).astype(np.float32)
@@ -88,16 +102,21 @@ def extract(triplets_path: Path, manifest_path: Path, output: Path, *,
         inputs = {key: value.to(device) for key, value in inputs.items()}
         with torch.inference_mode():
             values = model(**inputs).audio_embeds.detach().cpu().numpy().astype(np.float32)
+        if values.ndim != 2 or values.shape != (len(waveforms), 512):
+            raise ValueError(f"CLAP must return [{len(waveforms)}, 512] audio embeddings, got {values.shape}")
         norms = np.linalg.norm(values, axis=1, keepdims=True)
         if np.any(norms < 1e-12) or not np.isfinite(values).all():
             raise ValueError("CLAP returned invalid embeddings")
         vectors.append(values / norms)
         print(f"Encoded {min(start + len(waveforms), len(wanted))}/{len(wanted)} audio IDs")
     matrix = np.concatenate(vectors)
+    if matrix.shape != (len(wanted), 512) or matrix.dtype != np.float32 or not np.isfinite(matrix).all():
+        raise ValueError(f"Invalid CLAP embedding cache: shape={matrix.shape}, dtype={matrix.dtype}")
     output.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(output, sample_ids=np.asarray(wanted), embeddings=matrix)
     meta = {
-        "data_status": "frozen_encoder_embeddings",
+        "data_status": (PILOT_MARK if pilot_rehearsal else source_status or "frozen_encoder_embeddings"),
+        "pilot_rehearsal": pilot_rehearsal,
         "model": model_id, "revision": revision, "sample_rate_hz": 48_000,
         "canonical_input_rate_hz": 44_100, "preprocessing": "mono, DC high-pass, clip RMS match, resample_poly to 48 kHz",
         "manifest": str(manifest_path), "manifest_sha256": file_hash(manifest_path),
@@ -119,11 +138,14 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--allow-model-download", action="store_true",
                         help="Allow Transformers to download the pinned model when it is not cached locally")
+    parser.add_argument("--pilot-rehearsal", action="store_true",
+                        help="Explicitly cache embeddings for marked rehearsal-pilot preferences")
     args = parser.parse_args()
     print(json.dumps(extract(args.triplets, args.manifest, args.output,
                              model_id=args.model_id, revision=args.revision,
                              batch_size=args.batch_size,
-                             local_files_only=not args.allow_model_download), indent=2))
+                             local_files_only=not args.allow_model_download,
+                             allow_pilot_rehearsal=args.pilot_rehearsal), indent=2))
 
 
 if __name__ == "__main__":

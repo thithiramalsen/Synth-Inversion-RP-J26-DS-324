@@ -16,7 +16,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from c4_metric.c3_adapter import AdaptedScorer
+from c4_metric.c3_adapter import (AdaptedScorer, MFCCAdaptedScorer, MFCC_ENCODER_ID,
+                                  PILOT_MARK, SYNTHETIC_MARK)
 from c4_metric.score_pair import similarity_index_0_to_100
 from c4_metric.similarity import score_similarity
 
@@ -44,8 +45,11 @@ def load_audio(payload: str, label: str) -> tuple[np.ndarray, int]:
 
 
 class SimilarityHandler(BaseHTTPRequestHandler):
-    scorer: AdaptedScorer
+    scorer: AdaptedScorer | MFCCAdaptedScorer
     synthetic_checkpoint: bool
+    pilot_checkpoint: bool
+    research_status: str
+    checkpoint_kind: str
 
     def _send(self, status: int, body: bytes, content_type: str) -> None:
         self.send_response(status)
@@ -64,11 +68,13 @@ class SimilarityHandler(BaseHTTPRequestHandler):
             self._json(404, {"error": "Not found"})
             return
         try:
-            page = PAGE_PATH.read_bytes()
+            page = PAGE_PATH.read_text(encoding="utf-8")
         except OSError as error:
             self._json(500, {"error": f"Could not load the interface: {error}"})
             return
-        self._send(200, page, "text/html; charset=utf-8")
+        page = page.replace("{{RESEARCH_STATUS}}", self.research_status)
+        page = page.replace("{{CHECKPOINT_KIND}}", self.checkpoint_kind)
+        self._send(200, page.encode("utf-8"), "text/html; charset=utf-8")
 
     def do_POST(self) -> None:
         if self.path != "/score":
@@ -108,8 +114,9 @@ class SimilarityHandler(BaseHTTPRequestHandler):
                 "reference_name": str(payload.get("reference_name", "Reference audio")),
                 "candidate_name": str(payload.get("candidate_name", "Candidate audio")),
                 "note": (
-                    "The current C4 checkpoint uses synthetic preferences. This is a software "
-                    "demonstration, not a validated human-perceptual score."
+                    "This C4 checkpoint was trained on researcher rehearsal responses. Technical demo only; not validated human-study evidence."
+                    if method == "c4" and self.pilot_checkpoint else
+                    "The current C4 checkpoint uses synthetic preferences. This is a software demonstration, not a validated human-perceptual score."
                     if method == "c4" and self.synthetic_checkpoint else
                     "The 0-100 display is a rescaled model score, not a literal percentage of perceptual similarity."
                 ),
@@ -132,20 +139,39 @@ def main() -> None:
                         default=ROOT / "c4_metric/outputs/synthetic_training/best_model.pt")
     parser.add_argument("--allow-synthetic-checkpoint", action="store_true",
                         help="Allow the current synthetic-label checkpoint for software demonstration only")
+    parser.add_argument("--allow-pilot-checkpoint", action="store_true",
+                        help="Allow a marked rehearsal-pilot checkpoint for technical demonstration only")
     args = parser.parse_args()
 
-    scorer = AdaptedScorer(
+    import torch
+    state = torch.load(args.checkpoint, map_location="cpu", weights_only=True)
+    encoder = state.get("encoder_model")
+    scorer_type = MFCCAdaptedScorer if encoder == MFCC_ENCODER_ID else AdaptedScorer
+    scorer = scorer_type(
         args.checkpoint,
-        clap_local_files_only=True,
+        **({} if scorer_type is MFCCAdaptedScorer else {"clap_local_files_only": True}),
         allow_synthetic_checkpoint=args.allow_synthetic_checkpoint,
+        allow_pilot_checkpoint=args.allow_pilot_checkpoint,
     )
     SimilarityHandler.scorer = scorer
-    SimilarityHandler.synthetic_checkpoint = args.allow_synthetic_checkpoint
+    SimilarityHandler.synthetic_checkpoint = state.get("data_status") == SYNTHETIC_MARK
+    SimilarityHandler.pilot_checkpoint = state.get("data_status") == PILOT_MARK
+    SimilarityHandler.research_status = (
+        "This checkpoint uses researcher rehearsal responses for technical testing only. It is not validated human-study evidence."
+        if SimilarityHandler.pilot_checkpoint else
+        "The current C4 checkpoint uses synthetic preferences. Its score is a software demonstration, not a validated human-perceptual estimate."
+        if SimilarityHandler.synthetic_checkpoint else
+        "C4 scores depend on the checkpoint's training and validation data; the display is not a calibrated human-perception percentage."
+    )
+    SimilarityHandler.checkpoint_kind = "researcher rehearsal pilot · technical demo only" if SimilarityHandler.pilot_checkpoint else (
+        "synthetic demo checkpoint" if SimilarityHandler.synthetic_checkpoint else "adapted model")
     server = HTTPServer((args.host, args.port), SimilarityHandler)
     print(f"Audio similarity app listening at http://{args.host}:{args.port}")
     print("This server only listens locally. Press Ctrl+C to stop it.")
     if args.allow_synthetic_checkpoint:
         print("C4 uses synthetic labels here; scores are software demonstrations only.")
+    if SimilarityHandler.pilot_checkpoint:
+        print("C4 uses researcher rehearsal responses; technical demo only, not validated human-study evidence.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

@@ -47,7 +47,7 @@
     <h1>Compare two synth sounds</h1>
     <p class="intro">Drop in a reference and a candidate sound to get a similarity score. Audio files are read by this app on your computer and are not uploaded to a remote service.</p>
 
-    <div class="notice"><strong>Research status:</strong> The current C4 checkpoint was trained with synthetic preferences. Its score demonstrates that the software works; it is not a validated estimate of human-perceived similarity.</div>
+    <div class="notice"><strong>Research status:</strong> {{RESEARCH_STATUS}}</div>
 
     <section class="drop-grid" aria-label="Audio files">
       <div class="drop-card" id="referenceDrop">
@@ -69,7 +69,7 @@
     <div class="controls">
       <label class="method-box">Scoring method
         <select id="method">
-          <option value="c4">C4 adapted model (synthetic demo checkpoint)</option>
+          <option value="c4">C4 adapted model ({{CHECKPOINT_KIND}})</option>
           <option value="clap">Pretrained CLAP</option>
           <option value="mfcc">MFCC baseline</option>
           <option value="stft">STFT baseline</option>

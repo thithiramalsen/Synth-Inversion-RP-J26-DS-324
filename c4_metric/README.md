@@ -106,15 +106,52 @@ Use `config/response_mapping.json` for the current C4 export or `config/response
 .\venv\Scripts\python.exe c4_metric\preference_data.py path\to\approved_c4_responses.csv --manifest data\raw\corpus_v4\manifest.csv --mapping c4_metric\config\response_mapping.json --output-dir c4_metric\outputs\human_responses
 ```
 
-The processor validates required IDs against the manifest, checks missing/malformed rows, choices, confidence and duplicate presentations, and writes:
+The processor validates required IDs against the manifest, checks missing/malformed rows, choices and duplicate presentations, and writes:
 
 - `cleaned_responses.csv`: original fields plus normalized fields; every listener answer is retained.
 - `rejected_responses.csv`: source row and validation reason.
-- `preference_triplets.csv`: one A/P/N row per decisive individual answer; disagreement is not collapsed.
-- `aggregate_preferences.csv`: votes, agreement, uncertainty counts and explicit ties for repeated comparisons.
-- `quality_summary.json`: input, accepted, rejected, uncertain and aggregate counts.
+- `preference_triplets.csv`: one A/P/N row per decisive individual answer, with confidence metadata and the aggregate vote status.
+- `aggregate_preference_triplets.csv`: one training triplet per unambiguous aggregated comparison; ties and unresolved outcomes are absent and counted in the quality summary.
+- `aggregate_preferences.csv`: comparison IDs, first/second candidate vote counts, agreement, uncertainty counts, and `preference`, `tie`, or `unresolved` status.
+- `quality_summary.json`: input, accepted, rejected, confidence-validity, vote-status, and excluded-comparison counts.
 
-Uncertainty is not converted into a preference. Confidence is preserved but does not weight triplet loss. Ties remain ties. The default 0.67 agreement threshold only marks aggregate rows; individual judgments remain. Synthetic and human rows cannot be combined. The current hosted review export has `analysis_include=false` and is excluded. A real study needs its own approved, versioned protocol and eligible export.
+Uncertainty is not converted into a preference. Invalid or missing confidence does not invalidate an otherwise valid judgment; original values remain in the response CSV and normalized confidence is blank with a status. Confidence never changes labels, triplet selection, weights, or loss. Tied and unresolved aggregates are retained in the response artifacts and excluded by `splits.py` and defensively by `train.py`. Individual responses remain distinguishable from aggregate outcomes. The default 0.67 agreement threshold only marks aggregate rows. Synthetic and human rows cannot be combined. The current hosted review export has `analysis_include=false` and is excluded. A real study needs its own approved, versioned protocol and eligible export.
+
+Run the independent descriptive confidence report after response normalization:
+
+```powershell
+.\venv\Scripts\python.exe c4_metric\analyze_confidence.py c4_metric\outputs\human_responses\cleaned_responses.csv --output c4_metric\outputs\human_responses\confidence_analysis.json
+```
+
+It reports counts and percentages for ratings 1–5, mean/median, confidence by aggregate comparison status, and within-participant consistency on repeated anchor/candidate sets when available. It does not modify training artifacts or infer correctness from confidence.
+
+### C4 representation and C3 adapter
+
+The default C4 representation is the frozen **CLAP audio encoder** `laion/clap-htsat-unfused`, pinned to revision `8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a`. Audio is loaded as mono float32, conditioned and level-matched at 44.1 kHz, resampled to 48 kHz for the CLAP processor, then encoded as finite, L2-normalized float32 vectors of shape `[samples, 512]`. The trainable C4 projection head consumes those vectors; the CLAP encoder remains frozen. Cache metadata records the model, revision, preprocessing, dimensions, and input hashes. Training checks the metadata and vector dimensions before optimizing.
+
+The separate `cache_mfcc_embeddings.py` and MFCC26 adapter remain available as an experimental/recoverable implementation. They are not the default C4 path and do not alter C3's own candidate database or recommendation pipeline. `logmel_stats` is not used by either path.
+
+Run this after exporting and normalizing the completed survey. The aggregation step creates only majority-winner triplets for training; confidence remains in the response artifacts for its separate report. CLAP model files must be cached locally unless `--allow-model-download` is supplied.
+
+```powershell
+.\venv\Scripts\python.exe c4_metric\preference_data.py path\to\completed_c4_responses.csv --manifest data\raw\corpus_v4\manifest.csv --mapping c4_metric\config\response_mapping.json --output-dir c4_metric\outputs\human_responses
+.\venv\Scripts\python.exe c4_metric\splits.py c4_metric\outputs\human_responses\aggregate_preference_triplets.csv --output c4_metric\outputs\human_splits\split_manifest.csv --summary c4_metric\outputs\human_splits\split_summary.json
+.\venv\Scripts\python.exe c4_metric\cache_embeddings.py c4_metric\outputs\human_responses\aggregate_preference_triplets.csv --manifest data\raw\corpus_v4\manifest.csv --output c4_metric\outputs\human_embeddings\clap_embeddings.npz
+.\venv\Scripts\python.exe c4_metric\train.py --triplets c4_metric\outputs\human_splits\split_manifest.csv --embeddings c4_metric\outputs\human_embeddings\clap_embeddings.npz --output-dir c4_metric\outputs\human_training
+.\venv\Scripts\python.exe c4_metric\evaluate.py c4_metric\outputs\human_splits\split_manifest.csv --manifest data\raw\corpus_v4\manifest.csv --checkpoint c4_metric\outputs\human_training\best_model.pt --embeddings c4_metric\outputs\human_embeddings\clap_embeddings.npz --output-dir c4_metric\outputs\human_evaluation --methods clap,mfcc,ms_stft,c4
+```
+
+`cache_embeddings.py` is a post-survey/offline step. It resolves and loads each referenced audio file, runs the pinned frozen CLAP encoder, and writes the normalized 512D cache. The C4 evaluator accepts the cache corresponding to the checkpoint's encoder. For aggregate triplets it reports comparison-level accuracy and audio-component bootstrap intervals rather than treating aggregate comparisons as individual participants. The C4 input loader is `train.load_arrays`; the scorer adapter uses the same pinned CLAP encoder:
+
+```python
+from c4_metric.c3_adapter import AdaptedScorer, score_reference_against_candidates
+
+scorer = AdaptedScorer("c4_metric/outputs/human_training/best_model.pt")
+ranked = score_reference_against_candidates(reference_audio, candidate_audios,
+                                             method="c4", scorer=scorer)
+```
+
+The adapter requires a checkpoint trained from the pinned 512D CLAP cache; it rejects incompatible checkpoints rather than reshaping another feature type. It returns `SimilarityResult` scores (higher is closer). This adapter can be used by callers that already use the C4 adapter interface; the standalone C3 pipeline remains unchanged.
 
 ## Leakage-safe splits and model
 
@@ -135,14 +172,14 @@ The paired sign test treats participants as independent clusters. Confidence int
 
 ### Run the human benchmark
 
-After the approved survey export is normalized, create grouped splits, cache frozen CLAP vectors for every survey sound, train on train/validation, and evaluate the held-out test once:
+After the approved survey export is normalized, split the aggregate majority-vote triplets, cache frozen CLAP embeddings, train on train/validation, and evaluate the held-out comparisons once:
 
 ```powershell
 .\venv\Scripts\python.exe c4_metric\preference_data.py C:\path\to\approved_human_responses.csv --manifest data\raw\corpus_v4\manifest.csv --mapping c4_metric\config\response_mapping.json --output-dir c4_metric\outputs\human_responses
-.\venv\Scripts\python.exe c4_metric\splits.py c4_metric\outputs\human_responses\preference_triplets.csv --output c4_metric\outputs\human_splits\split_manifest.csv --summary c4_metric\outputs\human_splits\split_summary.json
-.\venv\Scripts\python.exe c4_metric\cache_embeddings.py c4_metric\outputs\human_responses\preference_triplets.csv --manifest data\raw\corpus_v4\manifest.csv --output c4_metric\outputs\human_embeddings\clap_human_audio.npz
-.\venv\Scripts\python.exe c4_metric\train.py --triplets c4_metric\outputs\human_splits\split_manifest.csv --embeddings c4_metric\outputs\human_embeddings\clap_human_audio.npz --output-dir c4_metric\outputs\human_training
-.\venv\Scripts\python.exe c4_metric\evaluate.py c4_metric\outputs\human_splits\split_manifest.csv --manifest data\raw\corpus_v4\manifest.csv --checkpoint c4_metric\outputs\human_training\best_model.pt --embeddings c4_metric\outputs\human_embeddings\clap_human_audio.npz --output-dir c4_metric\outputs\human_evaluation
+.\venv\Scripts\python.exe c4_metric\splits.py c4_metric\outputs\human_responses\aggregate_preference_triplets.csv --output c4_metric\outputs\human_splits\split_manifest.csv --summary c4_metric\outputs\human_splits\split_summary.json
+.\venv\Scripts\python.exe c4_metric\cache_embeddings.py c4_metric\outputs\human_responses\aggregate_preference_triplets.csv --manifest data\raw\corpus_v4\manifest.csv --output c4_metric\outputs\human_embeddings\clap_embeddings.npz
+.\venv\Scripts\python.exe c4_metric\train.py --triplets c4_metric\outputs\human_splits\split_manifest.csv --embeddings c4_metric\outputs\human_embeddings\clap_embeddings.npz --output-dir c4_metric\outputs\human_training
+.\venv\Scripts\python.exe c4_metric\evaluate.py c4_metric\outputs\human_splits\split_manifest.csv --manifest data\raw\corpus_v4\manifest.csv --checkpoint c4_metric\outputs\human_training\best_model.pt --embeddings c4_metric\outputs\human_embeddings\clap_embeddings.npz --output-dir c4_metric\outputs\human_evaluation --methods clap,mfcc,ms_stft,c4
 ```
 
 The evaluator writes validation/test comparison scores and `benchmark_config.json`, which records input hashes, available methods, split checks, validation baseline selection, test metrics, paired tests, confidence intervals and hard-case counts. The frozen CLAP scorer and adapted C4 use the same pinned CLAP representation when the validated cache covers both samples. Frozen test embeddings can be cached because no human test labels enter training or model selection. If CDPAM is installed and loads its pretrained weights, the evaluator includes it on those same rows; otherwise the report gives its failure reason. The published [CDPAM implementation](https://github.com/pranaymanocha/PerceptualAudio/tree/master/cdpam) documents installation with `pip install cdpam` and its runtime requirements; see the [paper](https://arxiv.org/abs/2102.05109). This environment currently has no CDPAM package. Synthetic labels and synthetic checkpoints remain software-only and are not evidence of human perceptual similarity.
