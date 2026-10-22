@@ -1,12 +1,12 @@
 """Saved-viewer selection and playback checks, without corpus/test reads."""
 from pathlib import Path
-import tempfile
 import unittest
 import numpy as np
 import pandas as pd
 import soundfile as sf
 from c2_estimation.v4.build_viewer import select_examples, save_playback
 from c2_estimation.v4.data import ROOT
+from c2_estimation.tests.scratch import temporary_directory
 
 
 class ViewerTests(unittest.TestCase):
@@ -21,7 +21,7 @@ class ViewerTests(unittest.TestCase):
                 select_examples(wrong, 2)
 
     def test_playback_keeps_gain_and_rejects_clipping(self):
-        with tempfile.TemporaryDirectory(prefix="c2-viewer-test-", dir=ROOT / "data/processed") as folder:
+        with temporary_directory(prefix="c2-viewer-test-") as folder:
             path = Path(folder) / "audio.wav"
             audio = (.2*np.sin(np.arange(132300)*.01)).astype(np.float32)
             metadata = save_playback(path, audio)

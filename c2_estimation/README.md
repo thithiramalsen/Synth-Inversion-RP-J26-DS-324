@@ -1,11 +1,22 @@
 # C2 - Deterministic synthesizer parameter estimation
 
+## Open a C2-focused workspace
+
+In VS Code use **File > Open Workspace from File** and select
+[`C2.code-workspace`](../C2.code-workspace). This hides other components only in
+that workspace. Current models, protocol and study runtimes stay at their original
+paths; verification records are grouped in `data/processed/c2_v4/checks/`, and old
+development/test-fixture outputs in `data/processed/c2_v4/archive/`. Legacy paths
+remain compatibility junctions, not duplicate data. See the
+[layout and safety notes](tools/README.md). The detailed learning guide remains
+outside the repository.
+
 ## Current research implementation: 13-control v4
 
 For a plain-language explanation with exact code excerpts, start with
-[COMPONENT_STUDY_GUIDE.md](COMPONENT_STUDY_GUIDE.md). Use
-[DEMONSTRATION_WALKTHROUGH.md](DEMONSTRATION_WALKTHROUGH.md) for VS Code/browser
-walkthroughs, and [METRICS_REFERENCE.md](METRICS_REFERENCE.md) for formulas and
+[COMPONENT_STUDY_GUIDE.md](notes/COMPONENT_STUDY_GUIDE.md). Use
+[DEMONSTRATION_WALKTHROUGH.md](notes/DEMONSTRATION_WALKTHROUGH.md) for VS Code/browser
+walkthroughs, and [METRICS_REFERENCE.md](notes/METRICS_REFERENCE.md) for formulas and
 complete measured tables.
 
 The current C2 research dataset is the completed **131,072-sound, 13-control v4

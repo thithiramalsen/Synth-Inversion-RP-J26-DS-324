@@ -1,6 +1,5 @@
 """Synthetic tests only; no held-out corpus reads or fitting to test labels."""
 import json
-import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -14,6 +13,7 @@ from c2_estimation.v4.data import NAMES,ROOT
 from c2_estimation.v4.diagnostic_batch import measure
 from c2_estimation.v4.evidence import read_predictions
 from c2_estimation.v4.predict_subsets import select
+from c2_estimation.tests.scratch import temporary_directory
 
 
 class CalibrationTests(unittest.TestCase):
@@ -80,7 +80,7 @@ class CalibrationTests(unittest.TestCase):
             self.assertFalse((select(frame,partition).split == "test").any())
         with self.assertRaises(ValueError):
             select(frame,"test")
-        with tempfile.TemporaryDirectory(prefix="c2-reliability-test-",dir=ROOT/"data/processed") as folder:
+        with temporary_directory(prefix="c2-reliability-test-") as folder:
             root = Path(folder)
             (root/"summary.json").write_text(json.dumps({"status":"complete","partition":"test",
                                                        "test_evaluated":True,"predictions_unchanged":True}),encoding="utf-8")
@@ -106,7 +106,7 @@ class CalibrationTests(unittest.TestCase):
         cal,val = fixture(64,"calibration","c"),fixture(32,"validation","v")
         config = {"protocol_sha256":"p","ensemble_config_sha256":"e","member_checkpoints":["m"],
                   "delta_z":.02,"distance_config":{"name":"fake"}}
-        with tempfile.TemporaryDirectory(prefix="c2-calibration-integration-",dir=ROOT/"data/processed") as folder:
+        with temporary_directory(prefix="c2-calibration-integration-") as folder:
             root = Path(folder)
             for name in ("calibration","validation"):
                 (root/name).mkdir()
