@@ -2,6 +2,8 @@
 
 Usage (repository root):
     python -B -m c3_recommendation.human_study.manage export --output data/processed/c3_v4/human_study_rehearsal_v2_export_v1
+    python -B -m c3_recommendation.human_study.manage analyze --output data/processed/c3_v4/human_study_rehearsal_v2_analysis_v1
+    python -B -m c3_recommendation.human_study.manage analyze --simulate 12 --effect 0 --output data/processed/c3_v4/human_study_simulated_check_v1
     python -B -m c3_recommendation.human_study.manage withdraw --code C3-R-EXACTCODE
 """
 from __future__ import annotations
@@ -15,19 +17,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from statistics import mean
 
+from .analysis import analyze, chosen_method, simulate_sessions
 from .design import N_SCORED, SEED, SET_QUESTIONS
-from .server import DEFAULT_DB
+from .server import DEFAULT_BUNDLE, DEFAULT_DB
 
 BOOTSTRAP_DRAWS = 2000
-
-
-def chosen_method(answer: str, set_a: str) -> str:
-    """Map a Set A / Set B answer back to the method shown under that label."""
-    if answer == "A":
-        return set_a
-    if answer == "B":
-        return "mmr" if set_a == "topk" else "topk"
-    return answer  # no_difference / cannot_judge
 
 
 def bootstrap(values: list[float]):
@@ -134,14 +128,37 @@ def withdraw(database: Path, code: str) -> None:
           "Update any prior exports/backups separately.")
 
 
+def run_analysis(database: Path, bundle_dir: Path, output: Path, simulate: int | None, effect: float) -> None:
+    """Perceptual closeness evaluation on rehearsal responses, or on simulated sessions."""
+    bundle = json.loads((Path(bundle_dir) / "bundle.json").read_text(encoding="utf-8"))
+    if simulate:
+        sessions, mode = simulate_sessions(bundle, simulate, effect), "simulated"
+    else:
+        sessions, mode = read_sessions(database), "rehearsal"
+        if any(s["mode"] != "rehearsal" for s in sessions):
+            raise ValueError("This analysis accepts rehearsal data only while research collection is disabled")
+    result = analyze(sessions, bundle, output, mode)
+    p = result["primary"]
+    print(f"[{mode.upper()}] {result['completed_participants']} participants; C3-only minus top-k-only "
+          f"closeness = {p['mean'] if p['mean'] is None else round(p['mean'], 3)} CI {p['ci95']} -> {p['decision']}")
+    print(f"Report: {Path(output) / 'REPORT.md'}" + ("  (simulated: not a result)" if simulate else ""))
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--database", type=Path, default=DEFAULT_DB)
+    parser.add_argument("--bundle", type=Path, default=DEFAULT_BUNDLE)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("export").add_argument("--output", type=Path, required=True)
+    analyze_args = commands.add_parser("analyze")
+    analyze_args.add_argument("--output", type=Path, required=True)
+    analyze_args.add_argument("--simulate", type=int, default=None, help="number of simulated participants (software check)")
+    analyze_args.add_argument("--effect", type=float, default=0.0, help="simulated C3-only rating shift in points")
     commands.add_parser("withdraw").add_argument("--code", required=True)
     args = parser.parse_args()
     if args.command == "export":
         export(args.database, args.output)
+    elif args.command == "analyze":
+        run_analysis(args.database, args.bundle, args.output, args.simulate, args.effect)
     else:
         withdraw(args.database, args.code)

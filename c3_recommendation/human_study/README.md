@@ -122,21 +122,32 @@ End: usefulness of the knob bars (1–5 or Cannot judge), session length, option
 Allow about 30–35 minutes (v2 has about 8 sounds per case); rehearse and time it, and shorten
 the session if rehearsals run long.
 
-## 6. Analysis plan — freeze before recruitment
+## 6. Analysis plan — frozen before any response (D-020)
 
-Unit of analysis: the participant.
+Unit of analysis: the participant. Run it with:
 
-- **Set preference (per question):** each participant's share of decisive answers (Set A/B
-  mapped back to the method) that chose the C3 set; 0.5 = no preference. "No difference" and
-  "Cannot judge" counts are reported, not dropped.
-- **Closeness:** each participant's mean rating for sounds only in the C3 set minus sounds only
-  in the top-5 set (shared sounds reported separately). Cannot judge is not a zero.
-- Exploratory participant bootstrap intervals: 2,000 draws, seed 20261022; omitted with fewer
-  than two eligible participants. Small-N intervals are unstable; also inspect distributions
-  and the free-text reasons.
+```powershell
+python -B -m c3_recommendation.human_study.manage analyze --output data/processed/c3_v4/human_study_rehearsal_v2_analysis_v1
+```
+
+It writes `REPORT.md`, `analysis.json`, `ratings_long.csv`, `participant_closeness.csv`,
+`per_case.csv`, `closeness_by_group.png` and `primary_outcome.png` to a fresh folder.
+
+- **Primary outcome — are C3's picks heard as close as the top-k?** Per participant: mean
+  closeness of C3-only sounds minus top-k-only sounds (Cannot judge excluded). 95% participant
+  bootstrap CI (10,000 draws, seed 20261022). **Heard as close if the CI lower bound > −0.5.**
+- **Are the suggestions close at all?** Mean rating and share rated 4–5 for top-k-only, C3-only
+  and shared sounds.
+- **Does the model agree with ears?** Within-participant Spearman correlation of model
+  relevance (and shortlist rank) with ratings.
+- **Set choices:** each participant's share of decisive Set A/B answers that chose the C3 set,
+  for the three questions; 0.5 = no preference. "No difference" and "Cannot judge" are counted.
 
 The "more different by ear" question checks whether variety in knob settings is audible; it is
-not the C3 success criterion, which concerns editing usefulness.
+not the C3 success criterion, which concerns closeness and editing usefulness.
+
+**Software check without participants:** `--simulate 12 --effect 0` analyses fake sessions. The
+simulator assumes people track MFCC relevance steeply, so its numbers are never a prediction.
 
 ## 7. Exports and withdrawal
 
