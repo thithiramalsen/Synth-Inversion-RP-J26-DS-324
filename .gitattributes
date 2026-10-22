@@ -7,3 +7,5 @@ survey/deploy/study/c1_researcher_rehearsal_v2.json text eol=lf
 survey/config/c1_researcher_rehearsal_v2.json text eol=lf
 # The frozen C2 manifest hashes bytes, including its original Windows newlines.
 survey/deploy/study/c2_rehearsal_v1/** -text whitespace=cr-at-eol
+# C3's frozen manifest was hashed with Windows newlines. Preserve those bytes on Render too.
+survey/deploy/study/c3_rehearsal_v2/*.json text eol=crlf

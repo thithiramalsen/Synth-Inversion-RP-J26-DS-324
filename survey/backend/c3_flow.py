@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import secrets
 from contextlib import contextmanager
@@ -20,7 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, Header, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from c3_design import (
@@ -39,6 +40,10 @@ PRACTICE_SET_A = "topk"
 EXPERIENCE = {"under_1", "1_to_3", "over_3"}
 SELF_REVIEW_LIMIT = 48
 TABLES = {"metadata": "c3_v2_metadata", "sessions": "c3_v2_sessions"}
+
+
+def researcher_only():
+    return os.environ.get("SURVEY_C3_RESEARCHER_ONLY") == "1"
 
 
 def now():
@@ -180,6 +185,8 @@ def create_app(bundle_path=DEFAULT_BUNDLE):
         if not row:
             fail("No saved session in this browser", 401)
         state = json.loads(row[0])
+        if researcher_only() and state["purpose"] != "researcher_self_review":
+            fail("Use researcher self-review on this deployment", 403)
         if state["purpose"] == "researcher_self_review" and signed_in(request) != state["researcher"]:
             fail("This self-review belongs to another researcher", 403)
         return key, state
@@ -257,6 +264,8 @@ def create_app(bundle_path=DEFAULT_BUNDLE):
     # ------------------------------------------------------------------ pages
     @app.get("/")
     def index(request: Request, view: str = "participant"):
+        if researcher_only() and view != "researcher":
+            return RedirectResponse("/c3/?view=researcher")
         if view == "researcher":
             researcher(request)
         html = (ASSETS / "index.html").read_text(encoding="utf-8")
@@ -279,13 +288,16 @@ def create_app(bundle_path=DEFAULT_BUNDLE):
     @app.get("/api/info")
     def info():
         return {"mode": "rehearsal", "version": VERSION, "protocol": PROTOCOL, "target": TARGET, "cap": CAP,
-                "research_collection_enabled": False, "operating_point": OPERATING_POINT["status"]}
+                "research_collection_enabled": False, "researcher_only": researcher_only(),
+                "operating_point": OPERATING_POINT["status"]}
 
     @app.post("/api/start")
     def start(body: Start, request: Request, authorization: str | None = Header(default=None)):
         if body.purpose not in {"participant_preview", "researcher_self_review"}:
             fail("Unknown C3 view")
         actor = researcher(request) if body.purpose == "researcher_self_review" else None
+        if researcher_only() and actor is None:
+            fail("Use researcher self-review on this deployment", 403)
         if set(body.consent) != set(CONSENT) or not all(body.consent.values()):
             fail("All eligibility and consent statements must be confirmed; otherwise please stop.")
         if body.experience not in EXPERIENCE:
@@ -442,6 +454,8 @@ def create_app(bundle_path=DEFAULT_BUNDLE):
     @app.post("/api/admin/invitations")
     def invitations(request: Request):
         actor = researcher(request)
+        if researcher_only():
+            fail("Start self-review on the researcher service; no preview invitations are issued here", 409)
         with store.connect() as db:
             occupied = {r[0] for r in db.execute("SELECT slot FROM c3_v2_invites").fetchall()}
             for slot in range(TARGET):

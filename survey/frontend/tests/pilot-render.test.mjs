@@ -69,8 +69,21 @@ test('C2 pages render with shared navigation and no claim that research collecti
     const html = renderToString(React.createElement(Component))
     assert.match(html, /COMPONENT 1/)
     assert.match(html, /COMPONENT 2/)
+    assert.match(html, /COMPONENT 3/)
     assert.match(html, /COMPONENT 4/)
   }
+})
+
+test('C3 is reachable from study and researcher navigation with rehearsal-only wording', () => {
+  const study = renderToString(React.createElement(SiteHome))
+  assert.match(study, /href="\/c3\/"/)
+  assert.match(study, /Open C3 preview/)
+  assert.match(study, /All saved runs are excluded from research analysis/)
+  const researcher = renderToString(React.createElement(ResearcherHome))
+  assert.match(researcher, /href="\/c3\/admin"/)
+  assert.match(researcher, /Manage C3/)
+  assert.match(researcher, /href="\/c3\/\?view=researcher"/)
+  assert.match(researcher, /C2 and C3 are currently rehearsal-only/)
 })
 
 after(async () => {

@@ -27,6 +27,7 @@ class HostedC3Tests(unittest.TestCase):
         self.root = Path(self.enterContext(tempfile.TemporaryDirectory()))
         self.enterContext(patch.object(database, 'DATABASE_PATH', self.root / 'participant.db'))
         self.enterContext(patch.dict(os.environ, SURVEY_DATABASE_URL='', SURVEY_ADMIN_TOKEN=ADMIN, SURVEY_REMOTE_MODE='1',
+                                     SURVEY_C3_RESEARCHER_ONLY='0',
                                      SURVEY_RESEARCHER_USERNAME='c3tester',
                                      SURVEY_RESEARCHER_PASSWORD_HASH=security.password_hash(PASSWORD)))
         self.client = self.enterContext(TestClient(main.app))

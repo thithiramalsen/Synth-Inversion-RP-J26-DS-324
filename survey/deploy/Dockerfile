@@ -4,6 +4,7 @@ COPY survey/frontend/package.json survey/frontend/package-lock.json ./
 RUN npm ci
 COPY survey/frontend/ ./
 COPY survey/config/ /build/survey/config/
+COPY survey/backend/c3_web/ /build/survey/backend/c3_web/
 RUN npm test && npm run build
 
 FROM python:3.12-slim-bookworm
