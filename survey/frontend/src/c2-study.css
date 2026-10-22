@@ -1,0 +1,15 @@
+/* C2-specific layout only. Colours, typography, cards and controls are pilot.css. */
+.c2-study .c2-five-ratings{clear:both;grid-template-columns:repeat(5,minmax(0,1fr))}
+.c2-study .c2-audio-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+.c2-study .c2-audio-pair .p-player{position:static;display:block;margin:0;padding:18px;box-shadow:none}
+.c2-study .c2-audio-pair .p-listen-icon{display:none}
+.c2-study .p-table table{width:100%;font-variant-numeric:tabular-nums}
+.c2-study .p-table caption{text-align:left;font-size:13px;margin-bottom:12px;color:var(--muted)}
+.c2-study .p-table th[scope=row]{font-weight:500}
+.c2-study .c2-reliability-note{background:#edf3eb;color:var(--ink);border-color:var(--line)}
+.c2-study .c2-reliability-note p{margin-bottom:0}
+.c2-study .c2-replay summary{cursor:pointer;color:var(--accent);font-size:14px}
+.c2-study .c2-new-run{display:flex;margin-top:24px}
+.c2-study .p-error a{color:inherit;text-decoration:underline}
+.c2-study .p-main .p-scale legend{letter-spacing:normal}
+@media(max-width:600px){.c2-study .c2-audio-pair{grid-template-columns:1fr}.c2-study .p-session-bar{align-items:flex-start;flex-wrap:wrap}.c2-study .p-facts{flex-wrap:wrap}}

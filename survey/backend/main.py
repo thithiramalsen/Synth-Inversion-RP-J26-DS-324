@@ -22,7 +22,7 @@ from security import (SESSION_COOKIE, SESSION_SECONDS, initialize_researcher_dat
                       issue_researcher_invite, login, logout, require_admin, signup)
 from c1_pilot import router as c1_router, initialize_pilot_database
 from c4_pilot import router as c4_router, initialize_pilot_database as initialize_c4_database
-from c2_pilot import router as c2_router, flow as c2_flow, initialize_c2_database
+from c2_pilot import router as c2_router, flow as c2_flow, flow_v2 as c2_flow_v2, initialize_c2_database
 from models import (
     C4AudioPlayCounts,
     C4TripletAnswers,
@@ -65,6 +65,7 @@ app.include_router(c1_router)
 app.include_router(c4_router)
 app.include_router(c2_router)
 app.mount("/c2-flow", c2_flow)
+app.mount("/c2-flow-v2", c2_flow_v2)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[s.strip() for s in os.environ.get("SURVEY_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",") if s.strip()],
@@ -564,6 +565,7 @@ if (DIST / "assets").is_dir():
 @app.get("/c4/admin")
 @app.get("/c2")
 @app.get("/c2/admin")
+@app.get("/c2/rehearsal-v2")
 def pilot_page():
     if not (DIST / "index.html").is_file():
         raise HTTPException(503, "Build the survey frontend first")
