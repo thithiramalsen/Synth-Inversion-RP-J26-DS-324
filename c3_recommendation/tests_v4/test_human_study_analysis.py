@@ -81,3 +81,13 @@ def test_analyze_writes_report_and_guards(tmp_path, bundle):
         analyze(simulate_sessions(bundle, 2), bundle, out, "simulated")
     with pytest.raises(ValueError, match="disabled"):
         analyze(simulate_sessions(bundle, 2), bundle, tmp_path / "other", "research")
+
+
+def test_skipped_setup_check_excluded_except_in_demo(tmp_path, bundle):
+    sessions = simulate_sessions(bundle, 4, c3_effect=0.0)
+    sessions[0]["screen_skipped"] = True
+    rehearsal = analyze(sessions, bundle, tmp_path / "rehearsal", "rehearsal")
+    assert rehearsal["completed_participants"] == 3 and rehearsal["excluded_screen_skipped"] == 1
+    demo = analyze(sessions, bundle, tmp_path / "demo", "demo")
+    assert demo["completed_participants"] == 4
+    assert "DEMO DATA" in (tmp_path / "demo" / "REPORT.md").read_text(encoding="utf-8")

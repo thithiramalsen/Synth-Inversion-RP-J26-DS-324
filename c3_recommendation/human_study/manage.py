@@ -101,10 +101,12 @@ def export(database: Path, output: Path) -> None:
     completed = [s for s in sessions if s["phase"] == "complete"]
     fields = ("code", "mode", "fingerprint", "consent_version", "slot", "assignment", "experience",
               "created", "completed", "responses", "feedback", "playback", "excluded_from_research")
+    optional = ("demo", "screen_skipped", "screen_history")
     reasons = [{"code": s["code"], "case_id": r["case_id"], "position": r["position"], "reason": r["answers"]["reason"]}
                for s in completed for r in s["responses"] if r["answers"]["reason"].strip()]
     output.mkdir(parents=True)
-    for name, payload in (("completed_rehearsals.json", [{k: s[k] for k in fields} for s in completed]),
+    rows = [{**{k: s[k] for k in fields}, **{k: s[k] for k in optional if k in s}} for s in completed]
+    for name, payload in (("completed_rehearsals.json", rows),
                           ("summary.json", summarize(sessions)),
                           ("free_text_reasons.json", reasons)):
         (output / name).write_text(json.dumps(payload, indent=2, allow_nan=False) + "\n", encoding="utf-8")
@@ -134,9 +136,13 @@ def run_analysis(database: Path, bundle_dir: Path, output: Path, simulate: int |
     if simulate:
         sessions, mode = simulate_sessions(bundle, simulate, effect), "simulated"
     else:
-        sessions, mode = read_sessions(database), "rehearsal"
+        sessions = read_sessions(database)
         if any(s["mode"] != "rehearsal" for s in sessions):
             raise ValueError("This analysis accepts rehearsal data only while research collection is disabled")
+        demo = {bool(s.get("demo")) for s in sessions}
+        if len(demo) > 1:
+            raise ValueError("Demo and rehearsal sessions are mixed in one database; analyse them separately")
+        mode = "demo" if demo == {True} else "rehearsal"
     result = analyze(sessions, bundle, output, mode)
     p = result["primary"]
     print(f"[{mode.upper()}] {result['completed_participants']} participants; C3-only minus top-k-only "

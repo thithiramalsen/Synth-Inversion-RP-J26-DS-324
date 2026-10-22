@@ -226,12 +226,14 @@ def _ci(ci):
 def write_report(path: Path, result: dict) -> None:
     p, levels, agree, choices = result["primary"], result["closeness_levels"], result["model_agreement"], result["set_choices"]
     banner = {"simulated": "SIMULATED DATA — software check only. These numbers are not results.",
+              "demo": "DEMO DATA — presentation run; the headphone check may have been skipped. Not results.",
               "rehearsal": "REHEARSAL DATA — excluded from research. These numbers are not findings."}.get(result["mode"], "")
     lines = [f"# C3 perceptual closeness evaluation — {result['mode']}", "",
              f"> {banner}" if banner else "", "",
              f"Generated {result['generated_utc']} · study {result['study_version']} · "
              f"{result['completed_participants']} completed participants · {result['rated_sounds']} sound ratings "
-             f"({result['cannot_judge']} Cannot judge).", "",
+             f"({result['cannot_judge']} Cannot judge). Sessions excluded because the setup check was skipped: "
+             f"{result['excluded_screen_skipped']}.", "",
              "## 1. Primary outcome: are C3's picks heard as close as the top-k?", "",
              f"Per participant, mean closeness of sounds only in the C3 set minus sounds only in the top-k set "
              f"(1–5 scale). Margin: {p['margin']:g} points.", "",
@@ -270,8 +272,12 @@ def write_report(path: Path, result: dict) -> None:
 
 
 def analyze(sessions: list[dict], bundle: dict, out_dir: Path, mode: str) -> dict:
-    if mode not in {"simulated", "rehearsal"}:
-        raise ValueError("Research collection is disabled; only simulated or rehearsal data can be analysed")
+    if mode not in {"simulated", "rehearsal", "demo"}:
+        raise ValueError("Research collection is disabled; only simulated, rehearsal or demo data can be analysed")
+    # A skipped headphone check (demo mode) invalidates closeness ratings outside a demo report.
+    skipped = [s for s in sessions if s.get("screen_skipped")]
+    if mode != "demo":
+        sessions = [s for s in sessions if not s.get("screen_skipped")]
     out_dir = Path(out_dir)
     if out_dir.exists():
         raise ValueError("Use a fresh output folder; preserve previous analyses")
@@ -283,7 +289,9 @@ def analyze(sessions: list[dict], bundle: dict, out_dir: Path, mode: str) -> dic
     levels = closeness_levels(people)
     result = {"mode": mode, "study_version": bundle["version"], "generated_utc": datetime.now(timezone.utc).isoformat(),
               "completed_participants": int(people.shape[0]), "rated_sounds": int(ratings["rating"].notna().sum()),
-              "cannot_judge": int(ratings["cannot_judge"].sum()), "primary": primary, "closeness_levels": levels,
+              "cannot_judge": int(ratings["cannot_judge"].sum()),
+              "excluded_screen_skipped": 0 if mode == "demo" else len(skipped),
+              "primary": primary, "closeness_levels": levels,
               "model_agreement": model_agreement(ratings), "set_choices": set_choices(sessions),
               "analysis_plan": "D-020", "not_research_findings": True}
     out_dir.mkdir(parents=True)
