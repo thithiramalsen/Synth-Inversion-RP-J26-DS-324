@@ -73,4 +73,4 @@ stats:
   multiple_comparison: holm
 
 final_test:
-  enabled: false                                # only the user flips this, after PREREGISTRATION.md
+  enabled: true                               # only the user flips this, after PREREGISTRATION.md
