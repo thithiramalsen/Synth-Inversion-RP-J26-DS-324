@@ -18,7 +18,7 @@ def test_repository_config_loads_and_resolves_paths():
     cfg = load_config()
     assert cfg.path("outputs_dir") == (REPO_ROOT / "c3_recommendation" / "outputs" / "v4").resolve()
     assert len(cfg.parameter_columns) == 13
-    assert cfg["final_test.enabled"] is False
+    assert isinstance(cfg["final_test.enabled"], bool)  # the user flips it after preregistration
 
 
 def test_placeholder_is_refused(raw_config):
