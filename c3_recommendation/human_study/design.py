@@ -41,6 +41,7 @@ LABELS = (
 CONSENT = ("adult", "english", "synth_experience", "information_read", "voluntary", "coded_data")
 
 CLOSENESS = (1, 2, 3, 4, 5)
+MAX_SCREEN_ATTEMPTS = 3    # headphone check: first try + 2 retries in the same session (D-021)
 
 # Perceptual closeness analysis (frozen before any response; D-020).
 EQUIVALENCE_MARGIN = 0.5   # C3 picks "heard as close" if CI lower bound of (C3-only - top-k-only) > -0.5

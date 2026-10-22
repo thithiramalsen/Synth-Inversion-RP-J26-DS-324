@@ -24,7 +24,8 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from .design import (
-    CAP, CLOSENESS, CONSENT, N_SCORED, OPERATING_POINT, SET_CHOICES, SET_QUESTIONS, TARGET, VERSION, assignment,
+    CAP, CLOSENESS, CONSENT, MAX_SCREEN_ATTEMPTS, N_SCORED, OPERATING_POINT, SET_CHOICES, SET_QUESTIONS, TARGET,
+    VERSION, assignment,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -94,11 +95,16 @@ class Store:
             db.close()
 
 
+def screen_attempt(state):
+    """1-based number of the current (or last) headphone-check attempt."""
+    return len(state.get("screen_history", [])) + 1
+
+
 def protocol():
     """The participant-facing study rules from design.py, as values (not file bytes)."""
     return {"version": VERSION, "target": TARGET, "cap": CAP, "n_scored": N_SCORED, "consent": list(CONSENT),
             "closeness": list(CLOSENESS), "set_choices": list(SET_CHOICES), "set_questions": list(SET_QUESTIONS),
-            "operating_point": OPERATING_POINT, "assignments": [assignment(i) for i in range(TARGET)]}
+            "operating_point": OPERATING_POINT, "max_screen_attempts": MAX_SCREEN_ATTEMPTS, "assignments": [assignment(i) for i in range(TARGET)]}
 
 
 def membership(case):
@@ -198,6 +204,8 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
                       audio_ids=list(allowed_audio(state)), parameter_labels=bundle["parameter_labels"])
         if state["phase"] == "headphones":
             result["screen_number"] = len(state["headphone_answers"]) + 1
+        result["screen_attempt"] = screen_attempt(state)
+        result["screen_attempts_left"] = MAX_SCREEN_ATTEMPTS - screen_attempt(state)
         if state["phase"] in {"practice", "task"}:
             case_id, set_a = current(state)
             case = cases[case_id]
@@ -264,7 +272,9 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
             sessions = [json.loads(r[0]) for r in db.execute("SELECT state FROM sessions")]
             if len(sessions) >= CAP:
                 fail(f"This rehearsal has reached its {CAP}-enrolment cap. Start a new rehearsal database.", 409)
-            occupied = {s["slot"] for s in sessions if s["phase"] not in {"withdrawn", "screen_failed"}}
+            # A failed setup check keeps its slot while it may still retry.
+            occupied = {s["slot"] for s in sessions if s["phase"] != "withdrawn"
+                        and not (s["phase"] == "screen_failed" and screen_attempt(s) >= MAX_SCREEN_ATTEMPTS)}
             slots = [i for i in range(TARGET) if i not in occupied]
             if not slots:
                 fail(f"All {TARGET} assignment slots are in use", 409)
@@ -318,7 +328,8 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
                 # Remove linked answers from active storage; keep only a minimal consent/withdrawal audit.
                 for field in ("experience", "practice_response", "feedback"):
                     state.pop(field, None)
-                state.update(phase="withdrawn", withdrawn=now(), responses=[], headphone_answers=[], playback={})
+                state.update(phase="withdrawn", withdrawn=now(), responses=[], headphone_answers=[], playback={},
+                             screen_history=[])
             elif body.op == "volume" and phase == "volume":
                 if answers != {"headphones": True, "quiet": True, "comfortable": True}:
                     fail("Confirm headphones, a quiet place and comfortable volume")
@@ -334,6 +345,13 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
                 if len(state["headphone_answers"]) == 6:
                     passed = sum(a["correct"] for a in state["headphone_answers"]) >= 5
                     state["phase"] = "practice" if passed else "screen_failed"
+            elif body.op == "retry_screen" and phase == "screen_failed" and not answers:
+                if screen_attempt(state) >= MAX_SCREEN_ATTEMPTS:
+                    fail(f"The setup check can be tried at most {MAX_SCREEN_ATTEMPTS} times", 409)
+                # Keep the failed attempt for the record; replay is required again from the volume step.
+                state.setdefault("screen_history", []).append(
+                    {"attempt": screen_attempt(state), "answers": state["headphone_answers"], "ended": now()})
+                state.update(phase="volume", headphone_answers=[], playback={})
             elif body.op == "response" and phase in {"practice", "task"}:
                 listened(state)
                 case_id, set_a = current(state)

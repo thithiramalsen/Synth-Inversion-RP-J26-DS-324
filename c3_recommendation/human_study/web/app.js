@@ -137,7 +137,11 @@ async function render() {
   } else if (phase === 'withdrawn') {
     content.innerHTML = '<h1>Your answers have been removed.</h1><p>The linked answers were removed from active local storage. A minimal consent/withdrawal record remains. This does not promise removal from any separately made copies or backups.</p><p>You can close this tab.</p>'; clearDrafts();
   } else if (phase === 'screen_failed') {
-    content.innerHTML = '<h1>We’ll stop here.</h1><p>This setup check did not pass. That is not a diagnosis or a hearing test result. Don’t increase the volume or keep retrying to pass. Your session is incomplete and will not be treated as a completed study.</p><p>You can withdraw the saved setup answers below, or close this tab.</p>';
+    const left = state.screen_attempts_left;
+    content.innerHTML = left > 0
+      ? `<span class="eyebrow">Setup check / attempt ${state.screen_attempt} did not pass</span><h1>Let’s check your headphones.</h1><p>This setup check did not pass. That is not a diagnosis or a hearing test result. It usually means the sound is coming through speakers, or the headphones are not fully on.</p><div class="note"><p>Put on proper headphones (both sides), keep a comfortable volume — don’t turn it up to pass — and try again. You have <strong>${left}</strong> ${left === 1 ? 'attempt' : 'attempts'} left.</p></div><div class="actions"><button type="button" id="retry">Try the setup check again</button></div><p class="muted">Or withdraw the saved setup answers below, or close this tab.</p>`
+      : '<h1>We’ll stop here.</h1><p>The setup check did not pass after the maximum number of attempts. That is not a diagnosis or a hearing test result. Your session is incomplete and will not be treated as a completed study.</p><p>You can withdraw the saved setup answers below, or close this tab.</p>';
+    if (left > 0) $('#retry').onclick = () => send('retry_screen').catch(showError);
   }
   await loadAudio();
 }

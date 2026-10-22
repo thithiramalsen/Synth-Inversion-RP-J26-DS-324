@@ -201,3 +201,51 @@ def test_analysis_code_changes_do_not_lock_the_database(study, monkeypatch):
     monkeypatch.setattr(server, "CAP", server.CAP + 1)
     with pytest.raises(ValueError, match="changed"):
         create_app(bundle, before)
+
+
+def fail_screen(s):
+    s.listen()
+    assert s.action("volume", {"headphones": True, "quiet": True, "comfortable": True}).status_code == 200
+    for i in range(6):
+        s.listen()
+        s.action("headphone", {"interval": (i + 1) % 3 + 1})  # always wrong
+    assert s.state()["phase"] == "screen_failed"
+
+
+def test_setup_check_retry_then_pass(study):
+    app, client, *_ = study
+    s = Session(client)
+    s.start()
+    fail_screen(s)
+    assert s.state()["screen_attempts_left"] == 2
+    assert s.action("retry_screen").status_code == 200
+    state = s.state()
+    assert state["phase"] == "volume" and state["screen_attempt"] == 2
+    # Earlier playback does not count: the volume step must be replayed.
+    assert s.action("volume", {"headphones": True, "quiet": True, "comfortable": True}).status_code == 400
+    s.listen()
+    s.action("volume", {"headphones": True, "quiet": True, "comfortable": True})
+    for i in range(6):
+        s.listen()
+        s.action("headphone", {"interval": i % 3 + 1})  # all correct
+    assert s.state()["phase"] == "practice"
+    saved = stored(app)[0]
+    assert len(saved["screen_history"]) == 1 and len(saved["screen_history"][0]["answers"]) == 6
+
+
+def test_setup_check_attempts_are_limited_and_slot_released_after_last(study):
+    app, client, *_ = study
+    s = Session(client)
+    s.start()
+    for attempt in range(1, 4):
+        fail_screen(s)
+        if attempt < 3:
+            # Still able to retry: the slot stays reserved for this session.
+            other = Session(client, {"Authorization": "Bearer " + hashlib.sha256(f"probe{attempt}".encode()).hexdigest()})
+            assert other.start().status_code == 200 and stored(app)[-1]["slot"] != stored(app)[0]["slot"]
+            other.action("withdraw")
+            assert s.action("retry_screen").status_code == 200
+    assert s.state()["screen_attempts_left"] == 0
+    assert s.action("retry_screen").status_code == 409
+    late = Session(client, {"Authorization": "Bearer " + "e" * 64})
+    assert late.start().status_code == 200 and stored(app)[-1]["slot"] == stored(app)[0]["slot"]
