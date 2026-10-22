@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import random
 
-VERSION = "c3-human-v1"
+VERSION = "c3-human-v2"  # v1 used a provisional operating point (lambda 0.8); v2 uses the Phase 7 result
 SEED = 20261022
 TARGET = 12          # completed participants planned (formative, not a power claim)
 CAP = 16             # maximum enrolments, including withdrawals and failed setup checks
@@ -17,16 +17,15 @@ N_SCORED = 8
 CANDIDATE_POOL = 40  # seeded validation targets screened, in order, for eligibility
 METHODS = ("topk", "mmr")
 
-# Placeholder operating point until Phase 7 selects lambda*, N* and the primary representation.
-# The bundle records these values; rebuild a new bundle version with the tuned values before
-# any real participant takes part.
-PROVISIONAL = {
+# Operating point selected on validation data in Phase 7 (D-018). It must equal the values in
+# docs/PREREGISTRATION.md; if the preregistration changes them, build a new study version.
+OPERATING_POINT = {
     "representation": "mfcc26",
     "pool_size": 100,
     "k": 5,
-    "lam": 0.8,
+    "lam": 0.5,
     "relevance_scaling": "none",
-    "status": "provisional - replace with the Phase 7 preregistered operating point",
+    "status": "Phase 7 validation-selected (D-018); must match PREREGISTRATION.md",
 }
 
 NAMES = (

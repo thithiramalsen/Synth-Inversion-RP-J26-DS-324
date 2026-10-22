@@ -29,8 +29,8 @@ from .design import (
 
 ROOT = Path(__file__).resolve().parents[2]
 ASSETS = Path(__file__).with_name("web")
-DEFAULT_BUNDLE = ROOT / "data/processed/c3_v4/human_study_bundle_v1"
-DEFAULT_DB = ROOT / "data/processed/c3_v4/human_study_rehearsal_v1/responses.sqlite3"
+DEFAULT_BUNDLE = ROOT / "data/processed/c3_v4/human_study_bundle_v2"
+DEFAULT_DB = ROOT / "data/processed/c3_v4/human_study_rehearsal_v2/responses.sqlite3"
 PRACTICE_SET_A = "topk"
 EXPERIENCE = {"under_1", "1_to_3", "over_3"}
 
@@ -237,7 +237,7 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
     @app.get("/api/info")
     def info():
         return {"mode": "rehearsal", "version": VERSION, "target": TARGET, "cap": CAP,
-                "research_collection_enabled": False, "provisional": bundle["provisional"]["status"],
+                "research_collection_enabled": False, "operating_point": bundle["operating_point"]["status"],
                 "fingerprint": fingerprint}
 
     @app.post("/api/start")

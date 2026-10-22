@@ -9,7 +9,7 @@ Never serve the bundle folder: bundle.json holds sample IDs, which set is which,
 headphone answer keys.
 
 Usage (repository root):
-    python -m c3_recommendation.human_study.build [--output data/processed/c3_v4/human_study_bundle_v2]
+    python -m c3_recommendation.human_study.build [--output data/processed/c3_v4/human_study_bundle_v3]
 """
 from __future__ import annotations
 
@@ -36,11 +36,11 @@ from c3.selection import mmr_indices  # noqa: E402
 from c3.splits import BANK, VAL, Splits, load_manifest  # noqa: E402
 
 from .design import (  # noqa: E402
-    CANDIDATE_POOL, LABELS, N_SCORED, NAMES, PROVISIONAL, SEED, TARGET, VERSION, assignment,
+    CANDIDATE_POOL, LABELS, N_SCORED, NAMES, OPERATING_POINT, SEED, TARGET, VERSION, assignment,
     display_order, eligible,
 )
 
-DEFAULT_BUNDLE = ROOT / "data/processed/c3_v4/human_study_bundle_v1"
+DEFAULT_BUNDLE = ROOT / "data/processed/c3_v4/human_study_bundle_v2"
 SCREEN_DIR = ROOT / "survey/deploy/study"
 SILENCE_DBFS = -60.0
 
@@ -90,7 +90,7 @@ def build(output: Path) -> None:
     if set(screened) & set(bank_ids):
         raise ValueError("A study target is in the candidate bank")
 
-    p = PROVISIONAL
+    p = OPERATING_POINT
     features_dir = cfg.path("outputs_dir") / "features"
     relevance = FeatureCosineRelevance.from_cache(features_dir, p["representation"])
     relevance.fit(list(bank_ids))
@@ -163,7 +163,7 @@ def build(output: Path) -> None:
         shutil.copyfile(path, output / "audio" / path.name)
 
     payload = {
-        "version": VERSION, "seed": SEED, "test_evaluated": False, "provisional": PROVISIONAL,
+        "version": VERSION, "seed": SEED, "test_evaluated": False, "operating_point": OPERATING_POINT,
         "parameter_names": list(NAMES), "parameter_labels": list(LABELS),
         "cases": cases, "headphones": screen["headphones"], "volume": screen["calibration"],
         "selection": (f"Seeded sample of {CANDIDATE_POOL} validation targets (seed {SEED}) screened in order; "

@@ -1,7 +1,7 @@
 """Local researcher export and withdrawal for the C3 rehearsal; no public admin endpoints.
 
 Usage (repository root):
-    python -B -m c3_recommendation.human_study.manage export --output data/processed/c3_v4/human_study_rehearsal_export_v1
+    python -B -m c3_recommendation.human_study.manage export --output data/processed/c3_v4/human_study_rehearsal_v2_export_v1
     python -B -m c3_recommendation.human_study.manage withdraw --code C3-R-EXACTCODE
 """
 from __future__ import annotations
@@ -82,7 +82,7 @@ def summarize(sessions: list[dict]) -> dict:
         "status_counts": dict(Counter(s["phase"] for s in sessions)),
         "scored_case_observations": sum(len(s["responses"]) for s in completed),
         "analysis_unit": "participant; cases and sounds are repeated observations, not independent participants",
-        "interpretation": (f"Formative only; conditional on {N_SCORED} fixed validation cases and a provisional operating "
+        "interpretation": (f"Formative only; conditional on {N_SCORED} fixed validation cases and the Phase 7 operating "
                            "point. Rehearsal responses must never enter the research analysis."),
         "set_preference": preference,
         "closeness": {"participants": closeness_rows, "n_paired_participants": len(differences),
