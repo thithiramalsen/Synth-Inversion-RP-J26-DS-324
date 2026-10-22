@@ -1,0 +1,149 @@
+{
+  "snapshot_date_local": "2026-10-15",
+  "timezone": "Asia/Colombo",
+  "documentation_checks": {
+    "exact_source_excerpts_verified": 19,
+    "local_file_links_checked": 181,
+    "powershell_blocks_parsed": 12,
+    "evidence_fingerprints_checked": 30,
+    "feature_shape_command": "passed: shard (512,64,259), clip (64,259), float32",
+    "checkpoint_metadata_command": "passed: best epoch 53, output count 13",
+    "windows_pcm16_wav_load": "passed without playback",
+    "status": "passed"
+  },
+  "scope": "Documentation of saved non-test C2 development outputs; no audio rendering, model fitting or test evaluation.",
+  "parameter_counts": {
+    "single_cnn": 23181,
+    "gaussian_member": 24026
+  },
+  "example_id": "restricted_bend_sustain_v4_63764",
+  "source_excerpts": {
+    "sobol": {
+      "path": "generation/scripts/05_generate_pilot_dataset.py",
+      "start": 206,
+      "end": 233
+    },
+    "set_labels": {
+      "path": "generation/scripts/05_generate_pilot_dataset.py",
+      "start": 354,
+      "end": 403
+    },
+    "dc": {
+      "path": "generation/audio_processing.py",
+      "start": 30,
+      "end": 36
+    },
+    "audio_loader": {
+      "path": "generation/corpus_audio.py",
+      "start": 48,
+      "end": 63
+    },
+    "coordinates": {
+      "path": "c2_estimation/v4/data.py",
+      "start": 56,
+      "end": 62
+    },
+    "split": {
+      "path": "c2_estimation/v4/data.py",
+      "start": 72,
+      "end": 105
+    },
+    "mel": {
+      "path": "c2_estimation/pipeline.py",
+      "start": 323,
+      "end": 339
+    },
+    "normalization": {
+      "path": "c2_estimation/v4/features.py",
+      "start": 117,
+      "end": 130
+    },
+    "cnn": {
+      "path": "c2_estimation/pipeline.py",
+      "start": 82,
+      "end": 113
+    },
+    "gaussian": {
+      "path": "c2_estimation/v4/ensemble.py",
+      "start": 29,
+      "end": 48
+    },
+    "nll": {
+      "path": "c2_estimation/v4/ensemble.py",
+      "start": 51,
+      "end": 52
+    },
+    "combine": {
+      "path": "c2_estimation/v4/ensemble.py",
+      "start": 55,
+      "end": 65
+    },
+    "select": {
+      "path": "c2_estimation/v4/predict_subsets.py",
+      "start": 27,
+      "end": 39
+    },
+    "perturb": {
+      "path": "c2_estimation/v4/diagnostics.py",
+      "start": 62,
+      "end": 79
+    },
+    "distance": {
+      "path": "c2_estimation/v4/diagnostics.py",
+      "start": 44,
+      "end": 55
+    },
+    "labels": {
+      "path": "c2_estimation/v4/calibration.py",
+      "start": 39,
+      "end": 43
+    },
+    "logistic": {
+      "path": "c2_estimation/v4/calibration.py",
+      "start": 46,
+      "end": 75
+    },
+    "probability": {
+      "path": "c2_estimation/v4/calibration.py",
+      "start": 111,
+      "end": 128
+    },
+    "bootstrap": {
+      "path": "c2_estimation/v4/calibration.py",
+      "start": 149,
+      "end": 162
+    }
+  },
+  "inputs_sha256": {
+    "data/processed/c2_v4/protocol_v1/protocol.json": "dafd8b8f33b8168cd078dfa72fdf7572ae5733fd0e2934cbe58ff444d9402676",
+    "data/processed/c2_v4/baseline_full_v1/summary.json": "6249e0f29cbf61967f829cb80aad16f7a6837067e7c3132cd3fc564b6e8c9051",
+    "data/processed/c2_v4/ensemble_full_v1/summary.json": "b473d78afbf47f468a136a69abf3c7d1f1f3fe0ec0709997a6197a5ef62f7502",
+    "data/processed/c2_v4/results_audit_v1/summary.json": "67d618dda3d515594e230d2edc3f6ed1357dc8d3005b899762b9142184218749",
+    "data/processed/c2_v4/step_stability_v1/summary.json": "2606ebb40d94b58102f4d73a6833127c246931750f0a87228b493ba953a02581",
+    "data/processed/c2_v4/development_uncertainty_v1/status.json": "a123918e473e51bf8fe4fd52bc15312758208464c4636adaef4eb0204cbfea33",
+    "data/processed/c2_v4/viewer_v1/data.json": "123204352ce6f08df7bc48a9fbe9b476f5ac669b60fe3a0505a1dcbd76810e51",
+    "data/processed/c2_v4/baseline_full_v1/validation_metrics.csv": "756ee74451c86096cdc4bf748cad5a2dfde7105968675d78391b18b5d01ea610",
+    "data/processed/c2_v4/ensemble_full_v1/parameter_metrics.csv": "bd53d73f5827e5b179f610d9e2e60e43f7fe8d2110c9854751c27bf8a4cb9cc4",
+    "data/processed/c2_v4/results_audit_v1/per_parameter_audit.csv": "1bea2745160d52614220b8e84483c7e1303ea383e6891ef94f0069d704a0414e",
+    "data/processed/c2_v4/results_audit_v1/macro_scores.csv": "1403718f1f4ac7b5a56fa8a3d2e151377df2348295ce6f8ec35e618528689780",
+    "data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/raw_uncertainty_ranking.csv": "7bbe01fbd1a108717fe728b5293472429958a1ec4a224626779e7e9426a7ba83",
+    "data/processed/c2_v4/step_stability_v1/step_size_agreement.csv": "b463a2d36841e078ffeb10eb91892daeaff3265df64014b9e003b0279c7ef5c5",
+    "data/processed/c2_v4/verification_validation_viewer_v1/verification.json": "e287f8f2916ec655a24d67327b772d5ceed8da05d912ae1317f982730731a239",
+    "data/processed/team_handoff_v4_131072/verification.json": "4a6a5688441f7a4e8c575a9c91f8dc65ded4739208e5a3c850988ba1350e41bc",
+    "data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.025/summary.json": "233e1074f8f6f43fad950f37f13bec121bb991b536f730978075540efc75916a",
+    "data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.05/summary.json": "845ec106121fe5ab4cd7c44a977c886464cd3a193a872d6ee1d23c72247412c4",
+    "data/processed/c2_v4/development_uncertainty_v1/calibration_tau_0.1/summary.json": "3de4bc5bdb5e51840e722b12eb27947499212d4624fd092de1bf1c3959d658db",
+    "data/processed/c2_v4/development_uncertainty_v1/diagnostics_calibration/diagnostics.parquet": "42dcb4cb81c39cf04182fb5d1b464a8cb98924cd64193fb45e4b0247cf704443",
+    "data/processed/c2_v4/development_uncertainty_v1/diagnostics_reliability-validation/diagnostics.parquet": "47aa9ef863c2cde50103afca4b26eb552e2520ed342dd0cbf820e7ab3da66901",
+    "generation/scripts/05_generate_pilot_dataset.py": "9191aa6ba2c5291f05f730e87d0509e6b58cf00a03a64cf78474a6318143c55e",
+    "generation/audio_processing.py": "c26effb4db3f116c5ba99b63852d0768884146d119f6f4640002b1d97a3d32c7",
+    "generation/corpus_audio.py": "8a3bc966a0b20eba35835a233fcd3e9905768e30bb62c4a5baf15e6cf6699a8b",
+    "c2_estimation/v4/data.py": "5ef85dc111c0415706354bacab36ea2666796a709dbd67302484ca4c5e2c9907",
+    "c2_estimation/pipeline.py": "67fa012411ca5f22673834e4dc122f04235baeef74e76a57e06302f7e370b00f",
+    "c2_estimation/v4/features.py": "a70c1b2da5ae6f995afcf4a1128b53947a6b3eecb2a128a357ead0ec4ee70bb2",
+    "c2_estimation/v4/ensemble.py": "252d43ce1a89473d42bdfb943f09ecd2e1deedd6837f61d4230f14fef92a0416",
+    "c2_estimation/v4/predict_subsets.py": "03695c419ed56a197f1333e8d5c6c92b7845ddbb85affd75a8cc885fe95b4875",
+    "c2_estimation/v4/diagnostics.py": "c38000fac854c8aa9c9de4ea90fed77041aa51be668f15a78d63dbe833c1ec25",
+    "c2_estimation/v4/calibration.py": "4bf63ae958a3e99b7ffe29fad7ce850367de069812de39ef8ae67476e8348f86"
+  }
+}

@@ -1,0 +1,1416 @@
+{
+  "assignments": [
+    [
+      {
+        "case_id": "case_02",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "without"
+      }
+    ],
+    [
+      {
+        "case_id": "case_02",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "with"
+      }
+    ],
+    [
+      {
+        "case_id": "case_07",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "without"
+      }
+    ],
+    [
+      {
+        "case_id": "case_07",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "with"
+      }
+    ],
+    [
+      {
+        "case_id": "case_05",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "without"
+      }
+    ],
+    [
+      {
+        "case_id": "case_05",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "with"
+      }
+    ],
+    [
+      {
+        "case_id": "case_06",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "without"
+      }
+    ],
+    [
+      {
+        "case_id": "case_06",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "with"
+      }
+    ],
+    [
+      {
+        "case_id": "case_08",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "without"
+      }
+    ],
+    [
+      {
+        "case_id": "case_08",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_01",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "with"
+      }
+    ],
+    [
+      {
+        "case_id": "case_01",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "without"
+      }
+    ],
+    [
+      {
+        "case_id": "case_01",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_03",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_04",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_02",
+        "condition": "without"
+      },
+      {
+        "case_id": "case_07",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_05",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_06",
+        "condition": "with"
+      },
+      {
+        "case_id": "case_08",
+        "condition": "with"
+      }
+    ]
+  ],
+  "cases": [
+    {
+      "audio": {
+        "predicted": {
+          "canonical_float32_sha256": "d3f0c7c8de9c6b51268a393c2deefdce8428ff6f40838b7e0b821c695bd2334b",
+          "file": "case_01_predicted.wav",
+          "peak": 0.23033089935779572,
+          "playback_file_sha256": "e02851b969ec50af513acc64debb4ad387565710a48e583d59d72606a566e96d"
+        },
+        "target": {
+          "canonical_float32_sha256": "1c694626412edfef1c83d9fb8dce4546e6ed8769160519d8d7cb8ab07a0a380d",
+          "file": "case_01_target.wav",
+          "peak": 0.25159159302711487,
+          "playback_file_sha256": "98a833b8b88834036195f5a42ae362b2e7944c3c376cadb13614cdb6b83ce930"
+        }
+      },
+      "case_id": "case_01",
+      "parameters": [
+        {
+          "label": "Wave shape",
+          "name": "wave_frame",
+          "predicted_z": 0.8204349875450134,
+          "q": 0.8995504412051794
+        },
+        {
+          "label": "Wave bend",
+          "name": "bend_amount",
+          "predicted_z": 0.5723085999488831,
+          "q": 0.07873561078022095
+        },
+        {
+          "label": "Filter cutoff",
+          "name": "filter_cutoff",
+          "predicted_z": 0.371036430199941,
+          "q": 0.893668695535833
+        },
+        {
+          "label": "Filter resonance",
+          "name": "filter_resonance",
+          "predicted_z": 0.28532348076502484,
+          "q": 0.17351685029327837
+        },
+        {
+          "label": "Filter drive",
+          "name": "filter_drive",
+          "predicted_z": 0.5551836093266805,
+          "q": 0.13177361948151198
+        },
+        {
+          "label": "Volume attack",
+          "name": "amp_attack",
+          "predicted_z": 0.7589387694994608,
+          "q": 0.997186778380897
+        },
+        {
+          "label": "Volume decay",
+          "name": "amp_decay",
+          "predicted_z": 0.44783005118370056,
+          "q": 0.8067062083897075
+        },
+        {
+          "label": "Volume sustain",
+          "name": "amp_sustain",
+          "predicted_z": 0.5989956657091776,
+          "q": 0.9554960902669445
+        },
+        {
+          "label": "Volume release",
+          "name": "amp_release",
+          "predicted_z": 0.7378572026888529,
+          "q": 0.9996176104548915
+        },
+        {
+          "label": "Filter-envelope amount",
+          "name": "filter_env_amount",
+          "predicted_z": 0.6298903425534567,
+          "q": 0.2006001480295287
+        },
+        {
+          "label": "Filter-envelope attack",
+          "name": "filter_env_attack",
+          "predicted_z": 0.38665908575057983,
+          "q": 0.19315143666481993
+        },
+        {
+          "label": "Filter-envelope decay",
+          "name": "filter_env_decay",
+          "predicted_z": 0.4908975660800934,
+          "q": 0.10902578762059961
+        },
+        {
+          "label": "Filter-envelope sustain",
+          "name": "filter_env_sustain",
+          "predicted_z": 0.6054581006368002,
+          "q": 0.2967641911291528
+        }
+      ]
+    },
+    {
+      "audio": {
+        "predicted": {
+          "canonical_float32_sha256": "cdda7591929b251b77147d8919c19cb46bad0accc9ee6d0618737cd3cdd1cadc",
+          "file": "case_02_predicted.wav",
+          "peak": 0.21103516221046448,
+          "playback_file_sha256": "43c2aca9fad5eaeb5c065f556394a1f370517cb544eeb1f03cd26143b938bca4"
+        },
+        "target": {
+          "canonical_float32_sha256": "14a3872c0895b1f39621f7adf219d1fd384b2a24b9c3ef88e3c0aea9a1b35d06",
+          "file": "case_02_target.wav",
+          "peak": 0.15813730657100677,
+          "playback_file_sha256": "4ee0f8e43f8376db34ac80ddf5cc25b946fda39895e9e7853e13952e025e4d15"
+        }
+      },
+      "case_id": "case_02",
+      "parameters": [
+        {
+          "label": "Wave shape",
+          "name": "wave_frame",
+          "predicted_z": 0.5409512718518575,
+          "q": 0.07866131245728154
+        },
+        {
+          "label": "Wave bend",
+          "name": "bend_amount",
+          "predicted_z": 0.5044203698635101,
+          "q": 0.019321952819765422
+        },
+        {
+          "label": "Filter cutoff",
+          "name": "filter_cutoff",
+          "predicted_z": 0.35444375872612,
+          "q": 0.6846168194286667
+        },
+        {
+          "label": "Filter resonance",
+          "name": "filter_resonance",
+          "predicted_z": 0.5621202488740286,
+          "q": 0.15051725832776874
+        },
+        {
+          "label": "Filter drive",
+          "name": "filter_drive",
+          "predicted_z": 0.41285841663678485,
+          "q": 0.10513698743773325
+        },
+        {
+          "label": "Volume attack",
+          "name": "amp_attack",
+          "predicted_z": 0.2915063699086507,
+          "q": 0.9853395008131832
+        },
+        {
+          "label": "Volume decay",
+          "name": "amp_decay",
+          "predicted_z": 0.6728128989537557,
+          "q": 0.8818599292029975
+        },
+        {
+          "label": "Volume sustain",
+          "name": "amp_sustain",
+          "predicted_z": 0.2882126271724701,
+          "q": 0.9313824169052064
+        },
+        {
+          "label": "Volume release",
+          "name": "amp_release",
+          "predicted_z": 0.5915696819623312,
+          "q": 0.999823002185853
+        },
+        {
+          "label": "Filter-envelope amount",
+          "name": "filter_env_amount",
+          "predicted_z": 0.32067400217056274,
+          "q": 0.1965914132381398
+        },
+        {
+          "label": "Filter-envelope attack",
+          "name": "filter_env_attack",
+          "predicted_z": 0.4483335018157959,
+          "q": 0.15300007282534872
+        },
+        {
+          "label": "Filter-envelope decay",
+          "name": "filter_env_decay",
+          "predicted_z": 0.49533294637997943,
+          "q": 0.09881505581353771
+        },
+        {
+          "label": "Filter-envelope sustain",
+          "name": "filter_env_sustain",
+          "predicted_z": 0.44267067313194275,
+          "q": 0.12630165704148816
+        }
+      ]
+    },
+    {
+      "audio": {
+        "predicted": {
+          "canonical_float32_sha256": "1e1d51b27382561b977e7d0c1338bbe113eb09cf49558adf59c2b1499f7555e9",
+          "file": "case_03_predicted.wav",
+          "peak": 0.1372528076171875,
+          "playback_file_sha256": "5e7fd1cd061b6b37bf7d9fff92eabda8e12d03bafa946a834a742522fe161b2d"
+        },
+        "target": {
+          "canonical_float32_sha256": "9962fcf47b8547f8f919e9b6935ed7b371e5170367b3b1d103568d0fd7ed5dbf",
+          "file": "case_03_target.wav",
+          "peak": 0.1288672238588333,
+          "playback_file_sha256": "80d2d3b49cc6eb71c7d62c61bf98f7de04c9c4b21ac1930ecf8bce4efe38db05"
+        }
+      },
+      "case_id": "case_03",
+      "parameters": [
+        {
+          "label": "Wave shape",
+          "name": "wave_frame",
+          "predicted_z": 0.7299072543780009,
+          "q": 0.3417299066249474
+        },
+        {
+          "label": "Wave bend",
+          "name": "bend_amount",
+          "predicted_z": 0.5789071321487427,
+          "q": 0.08500394650224391
+        },
+        {
+          "label": "Filter cutoff",
+          "name": "filter_cutoff",
+          "predicted_z": 0.13268673171599707,
+          "q": 0.6544873646658227
+        },
+        {
+          "label": "Filter resonance",
+          "name": "filter_resonance",
+          "predicted_z": 0.493312140305837,
+          "q": 0.10204985657727789
+        },
+        {
+          "label": "Filter drive",
+          "name": "filter_drive",
+          "predicted_z": 0.45688270529111225,
+          "q": 0.14317945528125597
+        },
+        {
+          "label": "Volume attack",
+          "name": "amp_attack",
+          "predicted_z": 0.7429003715515137,
+          "q": 0.9916675558278115
+        },
+        {
+          "label": "Volume decay",
+          "name": "amp_decay",
+          "predicted_z": 0.2037227600812912,
+          "q": 0.4400429298648959
+        },
+        {
+          "label": "Volume sustain",
+          "name": "amp_sustain",
+          "predicted_z": 0.6621241370836893,
+          "q": 0.3734346346388552
+        },
+        {
+          "label": "Volume release",
+          "name": "amp_release",
+          "predicted_z": 0.07768593728542328,
+          "q": 0.9993774194036495
+        },
+        {
+          "label": "Filter-envelope amount",
+          "name": "filter_env_amount",
+          "predicted_z": 0.3926880657672882,
+          "q": 0.11348735108501301
+        },
+        {
+          "label": "Filter-envelope attack",
+          "name": "filter_env_attack",
+          "predicted_z": 0.5168447295824686,
+          "q": 0.11969258302570424
+        },
+        {
+          "label": "Filter-envelope decay",
+          "name": "filter_env_decay",
+          "predicted_z": 0.4495650033156077,
+          "q": 0.10936174445575941
+        },
+        {
+          "label": "Filter-envelope sustain",
+          "name": "filter_env_sustain",
+          "predicted_z": 0.5105257829030355,
+          "q": 0.1235328023131988
+        }
+      ]
+    },
+    {
+      "audio": {
+        "predicted": {
+          "canonical_float32_sha256": "7b2c8f6655f0db8b9307faf0561ed623b2a2d57344f882cc846ad92ad8390b8f",
+          "file": "case_04_predicted.wav",
+          "peak": 0.2176017314195633,
+          "playback_file_sha256": "5a1d52c59f1b38cd1516e79bec51deb0e737dd5e7ed9e8b8939cc908a1d78066"
+        },
+        "target": {
+          "canonical_float32_sha256": "9b9bc714e1788113fb39739402f5320aa74e681d126a6ec1350868ba02891f40",
+          "file": "case_04_target.wav",
+          "peak": 0.21256116032600403,
+          "playback_file_sha256": "c07d096ec0715c44123fab25a18772abc80408b6dc6a4c73e05c64d21637bb9f"
+        }
+      },
+      "case_id": "case_04",
+      "parameters": [
+        {
+          "label": "Wave shape",
+          "name": "wave_frame",
+          "predicted_z": 0.5396265983581543,
+          "q": 0.246111745645451
+        },
+        {
+          "label": "Wave bend",
+          "name": "bend_amount",
+          "predicted_z": 0.5072232286135355,
+          "q": 0.026660535402558475
+        },
+        {
+          "label": "Filter cutoff",
+          "name": "filter_cutoff",
+          "predicted_z": 0.22452359894911447,
+          "q": 0.7744489543555878
+        },
+        {
+          "label": "Filter resonance",
+          "name": "filter_resonance",
+          "predicted_z": 0.3906276524066925,
+          "q": 0.09175602450545739
+        },
+        {
+          "label": "Filter drive",
+          "name": "filter_drive",
+          "predicted_z": 0.5654157797495524,
+          "q": 0.1064693870181069
+        },
+        {
+          "label": "Volume attack",
+          "name": "amp_attack",
+          "predicted_z": 0.6108007232348124,
+          "q": 0.9927198698377778
+        },
+        {
+          "label": "Volume decay",
+          "name": "amp_decay",
+          "predicted_z": 0.8711894551912943,
+          "q": 0.509233264266077
+        },
+        {
+          "label": "Volume sustain",
+          "name": "amp_sustain",
+          "predicted_z": 0.665567417939504,
+          "q": 0.813710952046742
+        },
+        {
+          "label": "Volume release",
+          "name": "amp_release",
+          "predicted_z": 0.8219980398813883,
+          "q": 0.9997135478991598
+        },
+        {
+          "label": "Filter-envelope amount",
+          "name": "filter_env_amount",
+          "predicted_z": 0.5585165023803711,
+          "q": 0.20270918105997615
+        },
+        {
+          "label": "Filter-envelope attack",
+          "name": "filter_env_attack",
+          "predicted_z": 0.7050648331642151,
+          "q": 0.16642456434294847
+        },
+        {
+          "label": "Filter-envelope decay",
+          "name": "filter_env_decay",
+          "predicted_z": 0.5728754798571268,
+          "q": 0.10723425497434479
+        },
+        {
+          "label": "Filter-envelope sustain",
+          "name": "filter_env_sustain",
+          "predicted_z": 0.3375431299209595,
+          "q": 0.24644069517202885
+        }
+      ]
+    },
+    {
+      "audio": {
+        "predicted": {
+          "canonical_float32_sha256": "89663e90c5fbb4c8a0ccceb223988da7e40f1a439340bd0647ea139cfa540415",
+          "file": "case_05_predicted.wav",
+          "peak": 0.17773108184337616,
+          "playback_file_sha256": "0d71bd955e309b0cac930694baa775f6c947e2b5827875b0e58cf859c963b912"
+        },
+        "target": {
+          "canonical_float32_sha256": "c6b5fffd30be21f3745f5535a7dd05c4fb86c3c64895a752ee55690cb5d59323",
+          "file": "case_05_target.wav",
+          "peak": 0.16393111646175385,
+          "playback_file_sha256": "74017a0f38c17f4493302d391dc2a22b30db4958d215155ef9f4e6b0a20948ee"
+        }
+      },
+      "case_id": "case_05",
+      "parameters": [
+        {
+          "label": "Wave shape",
+          "name": "wave_frame",
+          "predicted_z": 0.29146070778369904,
+          "q": 0.3991897432967363
+        },
+        {
+          "label": "Wave bend",
+          "name": "bend_amount",
+          "predicted_z": 0.5221155981222788,
+          "q": 0.03087199439520295
+        },
+        {
+          "label": "Filter cutoff",
+          "name": "filter_cutoff",
+          "predicted_z": 0.1721638341744741,
+          "q": 0.6842911691307616
+        },
+        {
+          "label": "Filter resonance",
+          "name": "filter_resonance",
+          "predicted_z": 0.6591394941012064,
+          "q": 0.10405923478424933
+        },
+        {
+          "label": "Filter drive",
+          "name": "filter_drive",
+          "predicted_z": 0.4255462388197581,
+          "q": 0.14127561478085637
+        },
+        {
+          "label": "Volume attack",
+          "name": "amp_attack",
+          "predicted_z": 0.8966984351476034,
+          "q": 0.9821672114876374
+        },
+        {
+          "label": "Volume decay",
+          "name": "amp_decay",
+          "predicted_z": 0.44640393058458966,
+          "q": 0.2828055023858075
+        },
+        {
+          "label": "Volume sustain",
+          "name": "amp_sustain",
+          "predicted_z": 0.7914028763771057,
+          "q": 0.7523042548254091
+        },
+        {
+          "label": "Volume release",
+          "name": "amp_release",
+          "predicted_z": 0.739955723285675,
+          "q": 0.9997128201587259
+        },
+        {
+          "label": "Filter-envelope amount",
+          "name": "filter_env_amount",
+          "predicted_z": 0.7320405840873718,
+          "q": 0.19456543083560127
+        },
+        {
+          "label": "Filter-envelope attack",
+          "name": "filter_env_attack",
+          "predicted_z": 0.6377248962720236,
+          "q": 0.15436124141275664
+        },
+        {
+          "label": "Filter-envelope decay",
+          "name": "filter_env_decay",
+          "predicted_z": 0.4465460379918416,
+          "q": 0.10419829784023481
+        },
+        {
+          "label": "Filter-envelope sustain",
+          "name": "filter_env_sustain",
+          "predicted_z": 0.8513553738594055,
+          "q": 0.36606180968072527
+        }
+      ]
+    },
+    {
+      "audio": {
+        "predicted": {
+          "canonical_float32_sha256": "90eed3a3d23770458d2c55f3aa40aa9dc7422046205dea1a3da80ffb58386d7e",
+          "file": "case_06_predicted.wav",
+          "peak": 0.23477433621883392,
+          "playback_file_sha256": "0a5c279c4bb60e5007cdd22ba1ab7343f7f3c7fdbadb249bf39d5048a07e1046"
+        },
+        "target": {
+          "canonical_float32_sha256": "e9711c75a6c57ab899ab1843fd2774e379f74437bc549ecc8bc832b89a0c1839",
+          "file": "case_06_target.wav",
+          "peak": 0.16643355786800385,
+          "playback_file_sha256": "92cde9c31a8c4e75da6f3fd107cfecdcdf5d65cbf0cf8813e4cb416026680b51"
+        }
+      },
+      "case_id": "case_06",
+      "parameters": [
+        {
+          "label": "Wave shape",
+          "name": "wave_frame",
+          "predicted_z": 0.7319607535998026,
+          "q": 0.39515945375196787
+        },
+        {
+          "label": "Wave bend",
+          "name": "bend_amount",
+          "predicted_z": 0.5208797752857208,
+          "q": 0.025633043904881605
+        },
+        {
+          "label": "Filter cutoff",
+          "name": "filter_cutoff",
+          "predicted_z": 0.29043325781822205,
+          "q": 0.6822298423727869
+        },
+        {
+          "label": "Filter resonance",
+          "name": "filter_resonance",
+          "predicted_z": 0.9036621252695719,
+          "q": 0.4344513556428395
+        },
+        {
+          "label": "Filter drive",
+          "name": "filter_drive",
+          "predicted_z": 0.3636658589045207,
+          "q": 0.13512128930788847
+        },
+        {
+          "label": "Volume attack",
+          "name": "amp_attack",
+          "predicted_z": 0.8256529172261556,
+          "q": 0.9973101122130666
+        },
+        {
+          "label": "Volume decay",
+          "name": "amp_decay",
+          "predicted_z": 0.38884055614471436,
+          "q": 0.8433842541933223
+        },
+        {
+          "label": "Volume sustain",
+          "name": "amp_sustain",
+          "predicted_z": 0.06277363871534665,
+          "q": 0.9679609192045247
+        },
+        {
+          "label": "Volume release",
+          "name": "amp_release",
+          "predicted_z": 0.7289720773696899,
+          "q": 0.9990280898092252
+        },
+        {
+          "label": "Filter-envelope amount",
+          "name": "filter_env_amount",
+          "predicted_z": 0.7401110728581747,
+          "q": 0.18963455620947733
+        },
+        {
+          "label": "Filter-envelope attack",
+          "name": "filter_env_attack",
+          "predicted_z": 0.29142408072948456,
+          "q": 0.16678319504992264
+        },
+        {
+          "label": "Filter-envelope decay",
+          "name": "filter_env_decay",
+          "predicted_z": 0.527517298857371,
+          "q": 0.11207990077074184
+        },
+        {
+          "label": "Filter-envelope sustain",
+          "name": "filter_env_sustain",
+          "predicted_z": 0.6861748099327087,
+          "q": 0.21064602035542804
+        }
+      ]
+    },
+    {
+      "audio": {
+        "predicted": {
+          "canonical_float32_sha256": "4d3c84baa8a86dbcc8dd7b252626e910f30addb4c422e848e0e6d14c14fb8a44",
+          "file": "case_07_predicted.wav",
+          "peak": 0.10552719235420227,
+          "playback_file_sha256": "3ac114d2c0c6a06a2936cea60625a11c18f5c4061cd909f79325bfbba7d92f15"
+        },
+        "target": {
+          "canonical_float32_sha256": "01361ece0cd57fb7febf56e84803d4efb8b3f87e055dc348114e02ff03c7c85e",
+          "file": "case_07_target.wav",
+          "peak": 0.11141815781593323,
+          "playback_file_sha256": "c8fdbccc122beadd8d3cda089df071895cd2538182069f1e739261b8f3d63bd9"
+        }
+      },
+      "case_id": "case_07",
+      "parameters": [
+        {
+          "label": "Wave shape",
+          "name": "wave_frame",
+          "predicted_z": 0.8921393354733785,
+          "q": 0.631866380990297
+        },
+        {
+          "label": "Wave bend",
+          "name": "bend_amount",
+          "predicted_z": 0.5021974146366119,
+          "q": 0.035808977647775006
+        },
+        {
+          "label": "Filter cutoff",
+          "name": "filter_cutoff",
+          "predicted_z": 0.6278576652208964,
+          "q": 0.8746987436689473
+        },
+        {
+          "label": "Filter resonance",
+          "name": "filter_resonance",
+          "predicted_z": 0.8952574729919434,
+          "q": 0.6290814455644115
+        },
+        {
+          "label": "Filter drive",
+          "name": "filter_drive",
+          "predicted_z": 0.32422929008801776,
+          "q": 0.11009262672138388
+        },
+        {
+          "label": "Volume attack",
+          "name": "amp_attack",
+          "predicted_z": 0.17876452207565308,
+          "q": 0.5417591586078601
+        },
+        {
+          "label": "Volume decay",
+          "name": "amp_decay",
+          "predicted_z": 0.1178366666038831,
+          "q": 0.8150393893663263
+        },
+        {
+          "label": "Volume sustain",
+          "name": "amp_sustain",
+          "predicted_z": 0.09403682500123978,
+          "q": 0.9216749395495546
+        },
+        {
+          "label": "Volume release",
+          "name": "amp_release",
+          "predicted_z": 0.6048491994539896,
+          "q": 0.9992728500806204
+        },
+        {
+          "label": "Filter-envelope amount",
+          "name": "filter_env_amount",
+          "predicted_z": 0.21195150911808014,
+          "q": 0.11635892499284269
+        },
+        {
+          "label": "Filter-envelope attack",
+          "name": "filter_env_attack",
+          "predicted_z": 0.6197740038235983,
+          "q": 0.11522334032989642
+        },
+        {
+          "label": "Filter-envelope decay",
+          "name": "filter_env_decay",
+          "predicted_z": 0.39785151680310565,
+          "q": 0.10685218842899426
+        },
+        {
+          "label": "Filter-envelope sustain",
+          "name": "filter_env_sustain",
+          "predicted_z": 0.5535033345222473,
+          "q": 0.11695925404533816
+        }
+      ]
+    },
+    {
+      "audio": {
+        "predicted": {
+          "canonical_float32_sha256": "f5c0955c5dd3f6c497b001fccdcdd5aa88e9c4e3e1a666d56f6c72f0d2539fd9",
+          "file": "case_08_predicted.wav",
+          "peak": 0.189869686961174,
+          "playback_file_sha256": "f907a412bbb2000c5c75ee312752d7ed1dd27790cf541e92a9f8902d52f4485a"
+        },
+        "target": {
+          "canonical_float32_sha256": "c2b7024ec5a55857b2cbc494ffd18deca9e4b6cc52fbcda43a4f8d8c15c532b5",
+          "file": "case_08_target.wav",
+          "peak": 0.19807131588459015,
+          "playback_file_sha256": "85302fa2de041ea84034f0f27571545605414975ae0479f260e3ec6216ffc008"
+        }
+      },
+      "case_id": "case_08",
+      "parameters": [
+        {
+          "label": "Wave shape",
+          "name": "wave_frame",
+          "predicted_z": 0.3985693156719208,
+          "q": 0.48275483002230124
+        },
+        {
+          "label": "Wave bend",
+          "name": "bend_amount",
+          "predicted_z": 0.5523087779680887,
+          "q": 0.037002823548114024
+        },
+        {
+          "label": "Filter cutoff",
+          "name": "filter_cutoff",
+          "predicted_z": 0.3064011136690776,
+          "q": 0.5346252174097962
+        },
+        {
+          "label": "Filter resonance",
+          "name": "filter_resonance",
+          "predicted_z": 0.6751735409100851,
+          "q": 0.134623965401768
+        },
+        {
+          "label": "Filter drive",
+          "name": "filter_drive",
+          "predicted_z": 0.31149937709172565,
+          "q": 0.17979545100804786
+        },
+        {
+          "label": "Volume attack",
+          "name": "amp_attack",
+          "predicted_z": 0.9327407876650492,
+          "q": 0.9873402329830153
+        },
+        {
+          "label": "Volume decay",
+          "name": "amp_decay",
+          "predicted_z": 0.8597749074300131,
+          "q": 0.7744353242701132
+        },
+        {
+          "label": "Volume sustain",
+          "name": "amp_sustain",
+          "predicted_z": 0.08739151308933894,
+          "q": 0.9758938287398055
+        },
+        {
+          "label": "Volume release",
+          "name": "amp_release",
+          "predicted_z": 0.2103282411893209,
+          "q": 0.9994001577723478
+        },
+        {
+          "label": "Filter-envelope amount",
+          "name": "filter_env_amount",
+          "predicted_z": 0.3530470132827759,
+          "q": 0.08984721276209882
+        },
+        {
+          "label": "Filter-envelope attack",
+          "name": "filter_env_attack",
+          "predicted_z": 0.4110038181145986,
+          "q": 0.08255711311681883
+        },
+        {
+          "label": "Filter-envelope decay",
+          "name": "filter_env_decay",
+          "predicted_z": 0.4502207636833191,
+          "q": 0.10432330706222562
+        },
+        {
+          "label": "Filter-envelope sustain",
+          "name": "filter_env_sustain",
+          "predicted_z": 0.6710484623908997,
+          "q": 0.0847481984014681
+        }
+      ]
+    },
+    {
+      "audio": {
+        "predicted": {
+          "canonical_float32_sha256": "368023419e08ae77922a697dd49c93d5b563c639f49e4041ace4bb97f0b96e98",
+          "file": "practice_predicted.wav",
+          "peak": 0.21047785878181458,
+          "playback_file_sha256": "94805b912fc4abc391b611ff24a4047307bbe7abd99eed12066fc8c806ef90f2"
+        },
+        "target": {
+          "canonical_float32_sha256": "e555a8dee307a765cda8b774e14a392539772da3e7b069ed33ef1094438f78ec",
+          "file": "practice_target.wav",
+          "peak": 0.18301720917224884,
+          "playback_file_sha256": "84e5d8b7d53045fe089a3f60a508256da4d072a67cb6b0880bef641ed257e11d"
+        }
+      },
+      "case_id": "practice",
+      "parameters": [
+        {
+          "label": "Wave shape",
+          "name": "wave_frame",
+          "predicted_z": 0.133755532403787,
+          "q": 0.35439095014174454
+        },
+        {
+          "label": "Wave bend",
+          "name": "bend_amount",
+          "predicted_z": 0.51524418592453,
+          "q": 0.042415490348575474
+        },
+        {
+          "label": "Filter cutoff",
+          "name": "filter_cutoff",
+          "predicted_z": 0.2934357821941376,
+          "q": 0.5684923685015157
+        },
+        {
+          "label": "Filter resonance",
+          "name": "filter_resonance",
+          "predicted_z": 0.5201931099096934,
+          "q": 0.11289658840246701
+        },
+        {
+          "label": "Filter drive",
+          "name": "filter_drive",
+          "predicted_z": 0.39350806673367816,
+          "q": 0.1407786156924488
+        },
+        {
+          "label": "Volume attack",
+          "name": "amp_attack",
+          "predicted_z": 0.949316143989563,
+          "q": 0.9297672008340248
+        },
+        {
+          "label": "Volume decay",
+          "name": "amp_decay",
+          "predicted_z": 0.8658163746198019,
+          "q": 0.6532270066298043
+        },
+        {
+          "label": "Volume sustain",
+          "name": "amp_sustain",
+          "predicted_z": 0.45669140418370563,
+          "q": 0.8810814236176518
+        },
+        {
+          "label": "Volume release",
+          "name": "amp_release",
+          "predicted_z": 0.13414645195007324,
+          "q": 0.9996267348847201
+        },
+        {
+          "label": "Filter-envelope amount",
+          "name": "filter_env_amount",
+          "predicted_z": 0.36446983615557355,
+          "q": 0.1033207697863943
+        },
+        {
+          "label": "Filter-envelope attack",
+          "name": "filter_env_attack",
+          "predicted_z": 0.5071444908777872,
+          "q": 0.06604627648849068
+        },
+        {
+          "label": "Filter-envelope decay",
+          "name": "filter_env_decay",
+          "predicted_z": 0.4837447504202525,
+          "q": 0.10099373341304002
+        },
+        {
+          "label": "Filter-envelope sustain",
+          "name": "filter_env_sustain",
+          "predicted_z": 0.5704508225123087,
+          "q": 0.0871863086032141
+        }
+      ]
+    }
+  ],
+  "headphones": [
+    {
+      "correct_interval": 1,
+      "path": "headphones_01.wav",
+      "screen_id": "headphones_01",
+      "sha256": "b86135a99f3ae6bb2c353a54068f065f22eb13f2b21421243dd8e887faf535b3"
+    },
+    {
+      "correct_interval": 2,
+      "path": "headphones_02.wav",
+      "screen_id": "headphones_02",
+      "sha256": "e19fa8fbe2dbe5be293279cff803e63e441f2d7fd9d9d6e8bd50c101f179b07b"
+    },
+    {
+      "correct_interval": 3,
+      "path": "headphones_03.wav",
+      "screen_id": "headphones_03",
+      "sha256": "2d790dc070d8f18f7775a016cd9b3a57a42e6383723b6cf131f3628b16465fe4"
+    },
+    {
+      "correct_interval": 2,
+      "path": "headphones_04.wav",
+      "screen_id": "headphones_04",
+      "sha256": "c64e0098605dc073d08095f3d2e383303a4a128426ce69d196c9d4cd3b8f58e2"
+    },
+    {
+      "correct_interval": 1,
+      "path": "headphones_05.wav",
+      "screen_id": "headphones_05",
+      "sha256": "6ddc2c4f848025a58cd8f935b93930dc6a09536580229102e9c74e26768f6bb8"
+    },
+    {
+      "correct_interval": 3,
+      "path": "headphones_06.wav",
+      "screen_id": "headphones_06",
+      "sha256": "698271ecf6a8078ea4db9bfa72d1d0d7f9e3550bf51972b798ece0423f231b8d"
+    }
+  ],
+  "provenance": [
+    {
+      "case_id": "case_01",
+      "diagnostic_case_sha256": "f49bf99b246639716257e5579e207c631dee129c1e70a7bd4a999c9823a4a067",
+      "diagnostic_rank": 0,
+      "sample_id": "restricted_bend_sustain_v4_63764",
+      "split": "validation",
+      "validation_role": "reliability"
+    },
+    {
+      "case_id": "case_02",
+      "diagnostic_case_sha256": "11adc768cc58c3b5393d45abe802f6456fd3b7315448f597edc4842381a96d9d",
+      "diagnostic_rank": 1,
+      "sample_id": "restricted_bend_sustain_v4_68474",
+      "split": "validation",
+      "validation_role": "reliability"
+    },
+    {
+      "case_id": "case_03",
+      "diagnostic_case_sha256": "09a0d54976ca86bfd358ba266d6e975395b483ff5933def22e0ec9b89955b2d8",
+      "diagnostic_rank": 2,
+      "sample_id": "restricted_bend_sustain_v4_49083",
+      "split": "validation",
+      "validation_role": "reliability"
+    },
+    {
+      "case_id": "case_04",
+      "diagnostic_case_sha256": "383b78c0cecb161a39c40a2011bac786e0a95bf54d2cf22c64b95cc52c041be8",
+      "diagnostic_rank": 3,
+      "sample_id": "restricted_bend_sustain_v4_67496",
+      "split": "validation",
+      "validation_role": "reliability"
+    },
+    {
+      "case_id": "case_05",
+      "diagnostic_case_sha256": "2bffaef6a37db2be509f01e7f93ff13210320026414f5a4cd7acd2fc21a1d4d5",
+      "diagnostic_rank": 4,
+      "sample_id": "restricted_bend_sustain_v4_47749",
+      "split": "validation",
+      "validation_role": "reliability"
+    },
+    {
+      "case_id": "case_06",
+      "diagnostic_case_sha256": "c35da8b34740e4b76c9112ee8aa56d0222667d83671883e539a6d704fc96e2cc",
+      "diagnostic_rank": 5,
+      "sample_id": "restricted_bend_sustain_v4_107418",
+      "split": "validation",
+      "validation_role": "reliability"
+    },
+    {
+      "case_id": "case_07",
+      "diagnostic_case_sha256": "e531088e16f0c78ad21c89d0d562db148f6a9c8ada64fa91bde4f8568c6d1e59",
+      "diagnostic_rank": 6,
+      "sample_id": "restricted_bend_sustain_v4_118035",
+      "split": "validation",
+      "validation_role": "reliability"
+    },
+    {
+      "case_id": "case_08",
+      "diagnostic_case_sha256": "55354d1928aaa574c2d66adaf25371993fa491ee4d4fb7f04415e5b4011f492d",
+      "diagnostic_rank": 7,
+      "sample_id": "restricted_bend_sustain_v4_82801",
+      "split": "validation",
+      "validation_role": "reliability"
+    },
+    {
+      "case_id": "practice",
+      "diagnostic_case_sha256": "9b0785caf857ec2a4d6269a513ad6206c83b9f040ad2b747005eab0a667d281c",
+      "diagnostic_rank": 8,
+      "sample_id": "restricted_bend_sustain_v4_29514",
+      "split": "validation",
+      "validation_role": "reliability"
+    }
+  ],
+  "q_variant": "g(U,S,R)",
+  "seed": 20261018,
+  "selection": "Fixed diagnostic ranks 0\u20137 scored; rank 8 practice; no outcome-based filtering",
+  "sources": {
+    "builder": "60534a56695d007801564b254f94ebfa0059f7c3d9235ea36a54e8d5a2f0c9d7",
+    "calibrators": "e57c82729ad6137768d8c27f1cc78ac4d24fe9e239dcda45e9fb8c73ce5bb5c3",
+    "design": "b9ab5c57f66bfe77f54c9868c0ba42840133ee5487cd61621a85d2665978e069",
+    "probabilities": "3f5b9b57b53a80d60550e0c404d65bc6641af3ee2e563fe5f0844b7a27449781",
+    "protocol": "dafd8b8f33b8168cd078dfa72fdf7572ae5733fd0e2934cbe58ff444d9402676"
+  },
+  "tau_z": 0.05,
+  "test_evaluated": false,
+  "version": "c2-human-v1",
+  "volume": {
+    "path": "volume_reference.wav",
+    "sha256": "0e2b88a79aee2a26da064bfdedb7f8b0070f2c0a14a7f894e803df1e2806d0d8"
+  }
+}

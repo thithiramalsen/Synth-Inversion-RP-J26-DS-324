@@ -2,6 +2,12 @@
 
 ## Current research implementation: 13-control v4
 
+For a plain-language explanation with exact code excerpts, start with
+[COMPONENT_STUDY_GUIDE.md](COMPONENT_STUDY_GUIDE.md). Use
+[DEMONSTRATION_WALKTHROUGH.md](DEMONSTRATION_WALKTHROUGH.md) for VS Code/browser
+walkthroughs, and [METRICS_REFERENCE.md](METRICS_REFERENCE.md) for formulas and
+complete measured tables.
+
 The current C2 research dataset is the completed **131,072-sound, 13-control v4
 corpus**. Start with [V4_README.md](V4_README.md) for commands, verified status,
 split protections, and remaining work. [RESEARCH_DESIGN.md](RESEARCH_DESIGN.md)
@@ -12,12 +18,18 @@ The full deterministic model is now trained; measured results are in
 [RESEARCH_EVIDENCE.md](RESEARCH_EVIDENCE.md) indexes the saved EDA figures, tables,
 audits and statistical safeguards, and distinguishes running experiments from results.
 
-The v4 data/split, deterministic baseline, diagnostic example and research EDA pack
-are saved. The Gaussian ensemble, frozen-subset diagnostic pipeline and development
-calibration/ablation workflow are implemented and tested; the full ensemble fit is
-running. Completed trained/calibrated results and the final test study must not be
-claimed until their output status confirms completion. No C3 code or frozen
-generation code was changed.
+The deterministic baseline, three-member ensemble, EDA and development calibration
+are complete. Diagnostics cover 128 smoke, 2,048 calibration and 512
+reliability-validation clips. The per-control results audit and a fixed 256-clip
+calibration-only perturbation-step study are also complete; see
+[VALIDATION_RESULTS.md](VALIDATION_RESULTS.md) for measured findings and limits.
+
+Use [DEMO.md](DEMO.md) to launch the local saved-results viewer: six predetermined
+examples with target/reconstruction audio, 13 predicted controls, correctness
+probabilities, perturbations and research figures. This is not live inference.
+The final test set remains untouched, the final method is not locked, and no human
+study has been run. No C3 code or frozen generation code was changed. Checkpoint
+locations are in the [runbook](V4_README.md#live-progress-and-saved-models).
 
 ## Historical eight-control pilot
 

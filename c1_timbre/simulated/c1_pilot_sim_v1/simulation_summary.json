@@ -1,0 +1,60 @@
+{
+  "WARNING": "SIMULATED DATA. No human ratings. Engineering fixture only; not perceptual evidence. Never merge with approved human responses or count as participants.",
+  "label_source": "simulated",
+  "generator_version": "c1_pilot_sim_v1",
+  "seed": 20261014,
+  "study_id": "c1_pilot_SIMULATED_v1",
+  "created_utc": "2026-10-14T07:41:58+00:00",
+  "protocol_version": "c1_pilot_2026-10-09_20unique_v1",
+  "bundle": "survey\\deploy\\study\\bundle.json",
+  "bundle_sha256": "256df943ed0daa3bf5af82dd34fdce550f95ace69097966480a72279731eeda5",
+  "protocol": "survey\\config\\c1_pilot_20_v1.json",
+  "protocol_sha256": "e2bfd4c36a5a7b327bfbf6a4fe68ab1c4c6f2c8a362c91910cd8319bc906caaf",
+  "completed_sessions": 16,
+  "excluded_sessions": {
+    "SIM_S004": "abandoned",
+    "SIM_S010": "withdrawn"
+  },
+  "included_study_evaluations": 320,
+  "unique_study_sounds": 64,
+  "listeners_per_sound": [
+    5
+  ],
+  "unclear_fraction": {
+    "brightness": 0.0094,
+    "roughness": 0.0844,
+    "percussiveness": 0.025,
+    "sustainedness": 0.0281
+  },
+  "corrections": 12,
+  "rule": {
+    "brightness": "energy-weighted log2 spectral centroid (gated frames, -60 dB bin floor)",
+    "roughness": "log 15-150 Hz amplitude-modulation index of the 0.2-1.45 s body",
+    "percussiveness": "0.5*z(-log attack time) + 0.5*z(peak-to-body level drop)",
+    "sustainedness": "0.7*z(-peak-to-body drop) + 0.3*z(1.6-2.4 s tail level)",
+    "mapping": "mean = 4 + 1.25*z, plus per-sound effect sd 0.4, clipped",
+    "listener": {
+      "bias_sd": 0.45,
+      "scale_use_log_sd": 0.15,
+      "noise_sd": {
+        "brightness": 0.75,
+        "roughness": 1.05,
+        "percussiveness": 0.7,
+        "sustainedness": 0.85
+      },
+      "halo_sd": 0.25,
+      "fatigue_per_trial": 0.015,
+      "unclear_rate": {
+        "brightness": 0.015,
+        "roughness": 0.06,
+        "percussiveness": 0.02,
+        "sustainedness": 0.035
+      },
+      "p_rough_confuses_bright": 0.2,
+      "p_sustain_as_opposite": 0.25,
+      "correction_rate": 0.03
+    },
+    "rating": "round(4 + scale_use*(mean + bias - 4) + halo + noise), clipped to 1-7"
+  },
+  "audio_source": "PCM16 playback files (what participants would hear); hashes checked against the bundle"
+}
