@@ -15,13 +15,13 @@
   <main>
     <section class="intro">
       <p class="eyebrow">SYNTHESIZER PARAMETER ESTIMATION</p>
-      <h1>Hear it. Find the settings.</h1>
-      <p class="lead">Give C2 an isolated synth note. Compare its reconstruction, inspect the 13 predicted controls, and take the patch into Vital.</p>
-      <p class="scope">Development prototype for the restricted Vital v4 sound family. Reliability on other synths, notes or recordings has not been established.</p>
+      <h1>Estimate synth settings</h1>
+      <p class="lead">Upload a synth WAV. Get 13 predicted controls, compare the audio and download a Vital patch.</p>
+      <p class="scope">Trained on a restricted Vital v4 sound family. Not validated for other synths, notes or recordings.</p>
     </section>
 
     <section id="workspace" aria-labelledby="input-title">
-      <div class="section-heading"><h2 id="input-title">Start with a sound</h2><span class="muted">Everything runs on this computer</span></div>
+      <div class="section-heading"><h2 id="input-title">Upload audio</h2><span class="muted">Runs locally</span></div>
       <div class="input-layout">
         <form id="upload-form">
           <label class="drop" id="drop" for="audio-file">
@@ -30,28 +30,28 @@
             <span>3 seconds · mono · 44.1 kHz · up to 2 MB</span>
             <input id="audio-file" type="file" accept=".wav,audio/wav" aria-describedby="input-help">
           </label>
-          <p id="input-help" class="small">Use the original, unprocessed clip. No trimming or loudness adjustment is applied. Training used MIDI note 60, velocity 0.8 and a 1.5-second held note, followed by its release.</p>
+          <p id="input-help" class="small">Use the original, unprocessed clip. No trimming or loudness adjustment. Training used MIDI note 60, velocity 0.8 and a 1.5-second held note followed by release.</p>
           <button type="submit" id="analyse" disabled>Find the settings</button>
         </form>
         <div class="examples">
-          <h3>Or try a development example</h3>
-          <p>Each example runs through the models now. These are the first three preassigned validation cases, chosen before looking at their results.</p>
+          <h3>Try an example</h3>
+          <p>Runs a new prediction. These are the first three preassigned validation clips, fixed before results were reviewed.</p>
           <div id="example-buttons"></div>
-          <p class="small">A file can meet the format requirements and still be outside the model’s sound family.</p>
+          <p class="small">A valid WAV may still be outside the trained sound family.</p>
         </div>
       </div>
       <p id="message" role="alert" hidden></p>
       <div id="progress-panel" hidden aria-live="polite">
-        <div class="section-heading"><h3 id="progress-title">Processing your clip</h3><button id="cancel" class="secondary">Cancel</button></div>
+        <div class="section-heading"><h3 id="progress-title">Processing audio</h3><button id="cancel" class="secondary">Cancel</button></div>
         <p id="progress-detail"></p>
         <progress id="progress" max="20" value="0"></progress>
-        <p class="small">Sensitivity checks render small changes to all 13 controls. The predicted patch stays fixed.</p>
+        <p class="small">Checking small changes to each control. The predicted patch stays fixed.</p>
       </div>
-      <div id="recent" hidden><h3>Recent results on this browser</h3><div id="recent-links"></div></div>
+      <div id="recent" hidden><h3>Recent results</h3><div id="recent-links"></div></div>
     </section>
 
     <section id="result" hidden aria-labelledby="result-title">
-      <div class="section-heading"><div><p class="eyebrow">YOUR RESULT</p><h2 id="result-title">The estimated patch</h2></div><span id="elapsed" class="muted"></span></div>
+      <div class="section-heading"><div><p class="eyebrow">RESULT</p><h2 id="result-title">Predicted patch</h2></div><span id="elapsed" class="muted"></span></div>
       <p id="result-file" class="small"></p>
       <div class="audio-pair">
         <div><h3>Target</h3><audio id="target-player" controls preload="none"></audio></div>
@@ -59,11 +59,11 @@
       </div>
       <div class="downloads">
         <a id="patch-download" class="button" download>Download Vital patch</a>
-        <a id="wav-download" class="button secondary" download>Download WAV</a>
+        <a id="wav-download" class="button secondary" download>Download reconstruction WAV</a>
         <a id="report-download" class="text-link" download>Download result JSON</a>
       </div>
       <p id="patch-check" class="small"></p>
-      <p class="small">The exported patch contains the synth settings. The playback comparison also applies the fixed 10 Hz DC filter used in the research pipeline.</p>
+      <p class="small">The patch stores the synth settings. Audio playback uses the same 10 Hz DC filter as the research pipeline.</p>
       <details><summary>Compare spectrograms</summary><img id="spectrograms" alt="Target and reconstructed audio log-mel spectrograms, on the same fixed decibel scale"></details>
       <div class="section-heading controls-heading"><h3>Predicted controls</h3>
         <label>Reliability model <select id="variant">
@@ -71,44 +71,44 @@
           <option value="g(U,S)">U + S</option><option value="g(U,R)">U + R</option>
         </select></label>
       </div>
-      <p id="q-note">Reliability estimates the chance that a control is within ±5% of its research range of the generating setting. It is not a sound-similarity score.</p>
-      <p class="small">Positions below use the research range (0–100%), not the full travel of a Vital knob. Select a row to see Vital’s own value and listen to small changes.</p>
+      <p id="q-note">Reliability (q) estimates the chance that the original setting is within ±0.05 of the prediction on the 0–1 research scale. It is not sound similarity.</p>
+      <p class="small">0–100% covers each control’s research range, not Vital’s full knob range. Select a control to see its Vital value and hear two nearby settings.</p>
       <div class="control-layout">
-        <div class="table-scroll"><table id="controls"><thead><tr><th>Control</th><th>Research position</th><th>Estimated reliability</th></tr></thead><tbody></tbody></table></div>
+        <div class="table-scroll"><table id="controls"><thead><tr><th>Control</th><th>Research position</th><th>Reliability q</th></tr></thead><tbody></tbody></table></div>
         <aside id="inspector" aria-live="polite">
-          <p class="eyebrow">CONTROL INSPECTOR</p><h3 id="control-name"></h3>
+          <p class="eyebrow">SELECTED CONTROL</p><h3 id="control-name"></h3>
           <dl id="control-details"></dl>
-          <h4>Listen to a small change</h4>
+          <h4>Hear nearby settings</h4>
           <label>Lower setting<audio id="minus-player" controls preload="none"></audio></label>
           <label>Higher setting<audio id="plus-player" controls preload="none"></audio></label>
           <p id="step-note" class="small"></p>
         </aside>
       </div>
       <p id="residual"></p>
-      <p class="small">Lower reconstruction distance means closer under the chosen STFT metric. There is no validated “good enough” cutoff. Changing the reliability model only changes the displayed estimates.</p>
+      <p class="small">Lower R means closer under the STFT metric; no match threshold has been validated. Switching reliability models does not change the patch.</p>
     </section>
 
     <section id="evidence">
-      <p class="eyebrow">DEVELOPMENT EVIDENCE</p><h2>How the method performed</h2>
-      <p>These measurements come from the saved development runs. They do not score the clip you just uploaded. Final independent test evaluation and human validation are still pending.</p>
+      <p class="eyebrow">EVALUATION</p><h2>Development results</h2>
+      <p>Saved development results, not scores for this upload. Final test evaluation and human validation are pending.</p>
       <div class="table-scroll"><table id="brier-table"><caption>Reliability on 512 development validation clips. Lower Brier score is better.</caption><thead><tr><th>Model</th><th>Macro Brier score</th></tr></thead><tbody></tbody></table></div>
-      <p class="small">These validation cases also selected calibrator regularization. The comparison does not establish extra benefit from sensitivity (S) beyond uncertainty and reconstruction error (U + R).</p>
+      <p class="small">These clips also helped select calibrator regularization. An added benefit from sensitivity (S) over U + R has not been established.</p>
       <details><summary>Parameter recovery on 4,096 inverse-validation clips</summary>
-        <p class="small">MAE and RMSE use research coordinates from 0 to 1. R² compares recovery with a constant mean prediction; it can be negative. Ground-truth settings are required for these metrics.</p>
+        <p class="small">MAE and RMSE use the 0–1 research scale. R² compares predictions with a constant mean and can be negative. These metrics require known original settings.</p>
         <div class="table-scroll"><table id="regression-table"><thead><tr><th>Control</th><th>MAE</th><th>RMSE</th><th>R²</th></tr></thead><tbody></tbody></table></div>
       </details>
     </section>
     <section id="method">
-      <p class="eyebrow">THE C2 METHOD</p><h2>What happens to your clip</h2>
+      <p class="eyebrow">METHOD</p><h2>How it works</h2>
       <ol class="method-list">
-        <li><strong>Prepare the sound.</strong> Apply the fixed DC rule once, extract the 64-band log-mel spectrogram and use the normalization learned from training data.</li>
-        <li><strong>Estimate the settings.</strong> Three trained CNNs predict the controls. Their average gives the patch; their variances and disagreement give uncertainty U.</li>
-        <li><strong>Render and inspect.</strong> Vital renders the predicted patch. R measures its difference from the target. Small, separate changes to each control measure local sensitivity S.</li>
-        <li><strong>Estimate reliability.</strong> The frozen development calibrator combines U, S and R to estimate correctness within the declared tolerance. It does not adjust the patch.</li>
-        <li><strong>Verify the export.</strong> Reload the saved preset through Vita and check its controls and rendered audio against the delivered prediction.</li>
+        <li><strong>Preprocess.</strong> Apply the DC filter once, extract a 64-band log-mel spectrogram and scale it using training statistics.</li>
+        <li><strong>Predict.</strong> Three CNNs estimate the controls. Their average gives the patch; their predicted variances and disagreement give uncertainty U.</li>
+        <li><strong>Render.</strong> Vital plays the patch. R measures its distance from the target. Changing one control at a time measures local sensitivity S.</li>
+        <li><strong>Score reliability.</strong> A saved calibrator maps U, S and R to q. It does not adjust the patch.</li>
+        <li><strong>Check the patch.</strong> Reload it through Vita and verify the controls and rendered audio.</li>
       </ol>
-      <p>Similar sounds can come from different settings. A useful reconstruction does not prove that every original control has been recovered.</p>
-      <p class="small">Uploads and outputs stay in this app’s local results folder. Completed runs can be reopened after a server restart. This app does not collect study responses.</p>
+      <p>Different settings can produce similar sounds. A close match does not prove the original controls were recovered.</p>
+      <p class="small">Files stay in the local results folder. Completed runs can be reopened after a restart. No study responses are collected here.</p>
     </section>
   </main>
   <footer>C2 · Acoustic-identifiability-aware reliability calibration <span>Research prototype</span></footer>

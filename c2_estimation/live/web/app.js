@@ -13,7 +13,7 @@ function message(text) {
 async function api(path, options = {}) {
   const response = await fetch(path, options);
   const data = await response.json();
-  if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "The request could not be processed.");
+  if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Request failed. Try again.");
   return data;
 }
 function setBusy(value) {
@@ -103,13 +103,13 @@ function inspectControl() {
   const details = $("control-details"); details.replaceChildren();
   for (const [name, value] of [
     ["Vital value", p.vital_display], ["Vital normalized setting", fmt(p.vital_normalized, 6)],
-    ["Estimated reliability", pct(p.q[$("variant").value])],
+    ["Reliability q", pct(p.q[$("variant").value])],
     ["Uncertainty U (research range²)", Number(p.U).toPrecision(5)],
     ["Local sensitivity S", Number(p.S).toPrecision(5)],
   ]) { details.append(cell(name, "dt"), cell(value, "dd")); }
   $("minus-player").src = filesUrl(`${p.name}_minus.wav`);
   $("plus-player").src = filesUrl(`${p.name}_plus.wav`);
-  $("step-note").textContent = `Research positions ${pct(p.minus_z)} and ${pct(p.plus_z)}. ${p.perturbation_mode === "central" ? "Both sides of the estimate were measured." : "A one-sided check was used near the range boundary."} All other controls stayed fixed.`;
+  $("step-note").textContent = `Research positions: ${pct(p.minus_z)} and ${pct(p.plus_z)}. ${p.perturbation_mode === "central" ? "Both sides measured." : "One-sided check near the range limit."} Other controls unchanged.`;
 }
 async function openResult(job) {
   message("");
@@ -124,7 +124,7 @@ async function openResult(job) {
   $("patch-download").href = filesUrl("predicted.vital", true);
   $("wav-download").href = filesUrl("reconstruction_float.wav", true);
   $("report-download").href = filesUrl("result.json", true);
-  $("patch-check").textContent = "Export checked: reloading this patch through Vita reproduced the control values and reconstruction exactly.";
+  $("patch-check").textContent = "Patch verified: reloading it through Vita reproduced the controls and audio exactly.";
   $("residual").textContent = `Reconstruction distance R: ${fmt(loaded.R, 5)} (multi-resolution STFT).`;
   renderControls(); inspectControl(); remember(job, loaded.filename);
   window.history.replaceState(null, "", `/?job=${job}#result`);
@@ -155,7 +155,7 @@ async function poll() {
     }
     pollTimer = setTimeout(poll, 800);
   } catch (error) {
-    message(`Connection interrupted. This page will check again. ${error.message}`);
+    message(`Connection lost. Retrying… ${error.message}`);
     pollTimer = setTimeout(poll, 3000);
   }
 }
@@ -215,4 +215,4 @@ async function boot() {
     else message(status.detail);
   }
 }
-boot().catch(error => message(`Could not connect to C2. ${error.message}`));
+boot().catch(error => message(`C2 is unavailable. Check that the local server is running. ${error.message}`));
