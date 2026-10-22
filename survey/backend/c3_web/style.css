@@ -1,0 +1,67 @@
+/* Two sets side by side under one target; knob bars are inline SVG (CSP forbids inline styles). */
+:root{font-family:"Segoe UI",system-ui,Arial,sans-serif;color:#20303f;background:#f3f5f8;line-height:1.55;font-size:16px;
+  --accent:#1d5a86;--accent-soft:#e3edf6;--muted:#5a6876;--line:#d6dde6;--panel:#ffffff;--set-a:#1d5a86;--set-b:#8a4b0f;--warn:#7c3e2d}
+*{box-sizing:border-box}body{margin:0}
+.rehearsal{text-align:center;background:#f0dfb8;color:#59451a;padding:8px 15px;font-size:.78rem;font-weight:700;letter-spacing:.07em}
+header,main,footer{max-width:1120px;margin:auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px max(18px,2vw);border-bottom:1px solid var(--line)}
+.brand{color:inherit;text-decoration:none;font-size:1.2rem;font-weight:800}.brand span{font-weight:400;color:var(--muted)}
+#session-code{font-size:.82rem;font-family:Consolas,monospace}
+main{padding:26px max(18px,2vw) 40px}
+footer{padding:18px max(18px,2vw) 30px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line)}
+h1{font-size:clamp(1.7rem,4vw,2.4rem);line-height:1.15;letter-spacing:-.03em;margin:12px 0;text-wrap:balance}
+h2{font-size:1.2rem;margin:28px 0 10px}h3{font-size:1rem;margin:0 0 8px}
+p{max-width:78ch}small,.muted{color:var(--muted)}
+.eyebrow{text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;font-weight:750;color:var(--accent)}
+.lead{font-size:1.08rem}
+.note{padding:14px 18px;background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:3px;margin:20px 0}.note p{margin:0}
+.card{padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0}.cards h2{margin:0 0 8px}
+audio{width:100%;margin:8px 0 0;height:38px}
+.target{max-width:560px}
+.sets{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0}
+.set{display:flex;flex-direction:column;gap:10px;min-width:0}
+.set h2{margin:0;display:flex;align-items:baseline;gap:10px}
+.set.a h2{color:var(--set-a)}.set.b h2{color:var(--set-b)}
+.sound{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:4px 14px;align-items:center;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+.sound-head{grid-column:1/-1;display:flex;gap:10px;align-items:baseline}
+.tag{font-size:.75rem;font-weight:650;padding:0 7px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+.knobs{width:150px;height:46px;display:block}
+.knobs .track{fill:#e9edf2}.knobs .fill{fill:var(--set-a)}.set.b .knobs .fill{fill:var(--set-b)}
+.legend{font-size:.82rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 14px;margin:6px 0 0}
+.legend b{color:#20303f}
+fieldset{border:0;padding:0;margin:20px 0}legend{font-weight:650;margin-bottom:8px}
+label.choice{display:flex;gap:10px;align-items:flex-start;padding:7px 0;cursor:pointer}
+input[type=checkbox],input[type=radio]{accent-color:var(--accent);width:18px;height:18px;flex-shrink:0;margin-top:3px}
+input:focus-visible,button:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #b58a2f;outline-offset:3px}
+button{font:inherit;font-weight:650;color:white;background:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:11px 18px;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}button.secondary{color:var(--accent);background:transparent}
+button.text-button{color:var(--warn);border-color:transparent;background:transparent;font-size:.9rem}
+.actions,.session-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px}
+.session-actions{padding-top:20px;border-top:1px solid var(--line);margin-top:40px}
+.privacy{font-size:.8rem;color:var(--muted);margin-top:28px}
+textarea,select{font:inherit;width:100%;padding:9px;border:1px solid #9aa9b8;background:var(--panel);border-radius:7px;color:inherit}
+textarea{min-height:90px;resize:vertical}select{max-width:420px}
+label.block{display:block;margin:22px 0 8px;font-weight:650}
+.ratings-table{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px 18px;margin:12px 0}
+.ratings-table label{display:block;font-weight:600;margin-bottom:4px}
+.compare{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.compare fieldset{margin:8px 0;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.compare legend{float:left;width:100%;margin-bottom:6px}.compare .choice{clear:both}
+.inline-options{display:flex;gap:6px 22px;flex-wrap:wrap}
+#error{padding:16px;background:#f8e7de;color:#7c3526;border:1px solid #d0a291;border-radius:8px;margin:15px 0}
+#progress{font-size:.82rem;color:var(--muted);margin-bottom:18px}
+#progress progress{display:block;width:100%;height:6px;margin-top:8px;accent-color:var(--accent)}
+.code{font:700 1.25rem Consolas,monospace;padding:15px 20px;background:var(--accent-soft);display:inline-block;border-radius:8px}
+.pause-panel{max-width:650px}details{margin:16px 0}summary{cursor:pointer;font-weight:650}
+@media(max-width:860px){.sets,.compare{grid-template-columns:1fr}}
+@media(max-width:700px){header{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr}
+  .rehearsal{font-size:.69rem}.session-actions{align-items:stretch;flex-direction:column}}
+@media(max-width:440px){.sound{grid-template-columns:1fr}.knobs{width:100%}}
+[hidden]{display:none!important}
+/* Researcher area */
+.invites{display:grid;gap:8px;margin-top:12px}.invite label{display:block;font-size:.85rem;color:var(--muted)}
+.invite input,#login input{font:inherit;width:100%;max-width:520px;padding:9px;border:1px solid #9aa9b8;border-radius:7px;background:var(--panel);color:inherit}
+.table-wrap{overflow-x:auto;margin-top:10px}table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+.button-link{display:inline-block;font-weight:650;color:white;background:var(--accent);border-radius:8px;padding:11px 18px;text-decoration:none}
+.card + .card{margin-top:18px}footer a{color:var(--accent)}
