@@ -1,0 +1,30 @@
+{
+  "pilot_responses": "c1_timbre\\pilot_data\\genuine_v1\\c1_pilot_responses.csv",
+  "include_rehearsal": false,
+  "plan_version": "c1_main_v1_humanpilot",
+  "pilot_sounds": 64,
+  "sounds": 131,
+  "origin_counts": {
+    "pilot_ridge_prediction_plus_sound_effect": 115,
+    "observed_pilot_mean": 16
+  },
+  "models": {
+    "brightness": {
+      "cv_residual_sd": 0.5375318439740734,
+      "alpha": 5.623413251903491
+    },
+    "roughness": {
+      "cv_residual_sd": 0.7020313291595953,
+      "alpha": 5.623413251903491
+    },
+    "percussiveness": {
+      "cv_residual_sd": 0.7084912467775171,
+      "alpha": 5.623413251903491
+    },
+    "sustainedness": {
+      "cv_residual_sd": 0.5725048494052482,
+      "alpha": 31.622776601683793
+    }
+  },
+  "note": "Truth for SIMULATED main-study ratings, derived from human pilot means."
+}

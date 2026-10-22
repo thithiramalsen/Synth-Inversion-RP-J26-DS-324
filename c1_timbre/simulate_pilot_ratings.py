@@ -26,6 +26,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import soundfile as sf
 from scipy import signal
 
@@ -66,9 +67,18 @@ def parse_args():
     p.add_argument("--file-prefix", default="c1_pilot", help="responses file name prefix")
     p.add_argument("--truth-reference", type=Path, default=None,
                    help="simulation_ground_truth.csv of an earlier simulation; shared sounds keep their truth")
+    p.add_argument("--truth-means", type=Path, default=None,
+                   help="CSV with source_sample_id and <descriptor>_true_mean columns; overrides the proxy rule "
+                        "for those sounds (e.g. truth derived from a human pilot)")
+    p.add_argument("--noise-sd", type=float, nargs=4, default=None, metavar=("B", "R", "P", "S"),
+                   help="per-descriptor rating noise SD (calibrate to a human pilot)")
+    p.add_argument("--bias-sd", type=float, default=None, help="listener offset SD")
+    p.add_argument("--unclear-scale", type=float, default=None, help="multiplier on 'cannot judge' rates (0 = none)")
+    p.add_argument("--no-confusions", action="store_true",
+                   help="disable the rough~bright and sustained~non-percussive mixing (already in human-derived truth)")
     p.add_argument("--overwrite", action="store_true")
     args = p.parse_args()
-    for name in ("bundle", "config", "output_dir", "truth_reference"):
+    for name in ("bundle", "config", "output_dir", "truth_reference", "truth_means"):
         if getattr(args, name) is not None:
             setattr(args, name, getattr(args, name).resolve())
     return args
@@ -339,6 +349,16 @@ def main():
         raise FileExistsError(f"{out} is not empty; pass --overwrite or choose another --output-dir")
     out.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(args.seed)
+    global BIAS_SD, P_ROUGH_CONFUSES_BRIGHT, P_SUSTAIN_AS_OPPOSITE
+    if args.noise_sd:
+        NOISE_SD.update(zip(TRAITS, args.noise_sd))
+    if args.bias_sd is not None:
+        BIAS_SD = args.bias_sd
+    if args.unclear_scale is not None:
+        for t in TRAITS:
+            UNCLEAR_RATE[t] *= args.unclear_scale
+    if args.no_confusions:
+        P_ROUGH_CONFUSES_BRIGHT = P_SUSTAIN_AS_OPPOSITE = 0.0
 
     bundle = json.loads(args.bundle.read_text(encoding="utf-8"))
     cfg = json.loads(args.config.read_text(encoding="utf-8"))
@@ -365,6 +385,12 @@ def main():
             reference = list(csv.DictReader(f))
     sources = {s: samples[s]["source_sample_id"] for s in samples}
     latent = latent_means(features, study_ids, rng, sources, reference)
+    if args.truth_means:
+        given = pd.read_csv(args.truth_means).set_index("source_sample_id")
+        for sid in latent:
+            if sources[sid] in given.index:
+                for t in TRAITS:
+                    latent[sid][f"{t}_true_mean"] = float(given.loc[sources[sid], f"{t}_true_mean"])
     mus = {s: {t: latent[s][f"{t}_true_mean"] for t in TRAITS} for s in latent}
 
     # Completed sessions use blocks in issue order; optional failures use the next blocks.
@@ -463,7 +489,11 @@ def main():
         excluded_sessions={s["session_id"]: s["fate"] for s in sessions if s["fate"] != "complete"},
         included_study_evaluations=len(primary), included_hidden_repeats=len(included) - len(primary),
         repeat_abs_difference=_repeat_summary(included),
-        truth_reference=str(args.truth_reference.relative_to(ROOT)) if args.truth_reference else None, unique_study_sounds=len(counts),
+        truth_reference=str(args.truth_reference.relative_to(ROOT)) if args.truth_reference else None,
+        truth_means=str(args.truth_means.relative_to(ROOT)) if args.truth_means else None,
+        listener_model=dict(noise_sd=dict(NOISE_SD), bias_sd=BIAS_SD, unclear_rate=dict(UNCLEAR_RATE),
+                            p_rough_confuses_bright=P_ROUGH_CONFUSES_BRIGHT, p_sustain_as_opposite=P_SUSTAIN_AS_OPPOSITE),
+        unique_study_sounds=len(counts),
         listeners_per_sound=sorted(set(counts.values())),
         unclear_fraction={t: round(sum(r[t] == "unclear" for r in included) / len(included), 4) for t in TRAITS},
         corrections=len(corrections),

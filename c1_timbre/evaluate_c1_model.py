@@ -114,7 +114,7 @@ def main():
     ratings = raw[(raw.analysis_include == "True") & (raw.kind == "primary")].copy()
     for t in TRAITS:
         ratings[t] = pd.to_numeric(ratings[t].where(ratings[t] != "unclear"), errors="coerce")
-    truth_path = ROOT / "c1_timbre/simulated/c1_main_sim_v1/simulation_ground_truth.csv"
+    truth_path = (ROOT / meta["responses"]).parent / "simulation_ground_truth.csv"  # the simulation this run used
     truth = pd.read_csv(truth_path).set_index("sample_id") if meta["simulated"] and truth_path.exists() else None
 
     result = dict(run=run.name, label_source=meta["label_source"], simulated=meta["simulated"],
