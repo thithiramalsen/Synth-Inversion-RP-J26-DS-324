@@ -3,7 +3,8 @@
 ILLUSTRATION ONLY - validation targets, lambda not yet tuned, not an evaluation result.
 
 Writes to ``<outputs_dir>/demo/`` (git-ignored):
-  demo_mfcc26.html, demo_logmel_stats.html   open by double-click, no server or internet needed
+  demo_<representation>.html                 open by double-click, no server or internet needed
+                                             (default: mfcc26 only; --reps mfcc26 logmel_stats for both)
   clips/<sample_id>.wav                      16-bit PCM copies of the processed corpus audio
   demo_data_<representation>.json            the exact selections shown on each page
 
@@ -113,8 +114,8 @@ footer { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: 
       <h1>Recommendation demo <small>fingerprint: __LABEL__</small></h1>
     </div>
     <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap">
-      <span class="flag">Illustration · validation sounds · λ not tuned yet</span>
-      <span class="switch">Switch to <a href="__OTHER_PAGE__">__OTHER_LABEL__</a></span>
+      <span class="flag">__FLAG__</span>
+      __SWITCH__
     </div>
   </header>
 
@@ -152,7 +153,7 @@ footer { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: 
   var data = JSON.parse(document.getElementById('data').textContent);
   var names = data.parameter_names;
   var lambdas = data.lambdas;
-  var state = { t: 0, l: Math.max(0, lambdas.indexOf('0.9')) };
+  var state = { t: 0, l: Math.max(0, lambdas.indexOf(data.default_lam || '0.9')) };
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); };
 
@@ -230,6 +231,8 @@ def main() -> None:
     parser.add_argument("--n-targets", type=int, default=8)
     parser.add_argument("--k", type=int, default=5)
     parser.add_argument("--pool-size", type=int, default=100)
+    parser.add_argument("--reps", nargs="+", choices=REPRESENTATIONS, default=["mfcc26"],
+                        help="representations to build pages for (default: mfcc26 only)")
     args = parser.parse_args()
 
     cfg = load_config(args.config)
@@ -247,15 +250,26 @@ def main() -> None:
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     all_clips: set[str] = set()
-    for rep in REPRESENTATIONS:
+    for rep in args.reps:
         relevance = FeatureCosineRelevance.from_cache(cfg.path("outputs_dir") / "features", rep)
         data = build_demo_data(relevance, targets, bank_ids, unit, distance, DEMO_LAMBDAS, args.k,
                                args.pool_size, cfg["selection.relevance_scaling"])
-        data.update({"representation": rep, "illustration_only": True, "built_utc": built})
+        selection_path = cfg.path("outputs_dir") / "val" / rep / "selection.json"
+        tuned = None
+        if selection_path.exists():
+            chosen = json.loads(selection_path.read_text(encoding="utf-8"))["operating_point"]["chosen"]
+            if f"{chosen['lam']:g}" in data["lambdas"] and chosen["N"] == args.pool_size:
+                tuned = f"{chosen['lam']:g}"
+        data.update({"representation": rep, "illustration_only": True, "built_utc": built,
+                     "default_lam": tuned or "0.9", "tuned_lambda": tuned})
+        flag = (f"Illustration · validation sounds · dial starts at λ* = {tuned} (Phase 7)" if tuned
+                else "Illustration · validation sounds · λ not tuned yet")
+        others = [r for r in args.reps if r != rep]
+        switch = (f'<span class="switch">Switch to <a href="{PAGE.format(rep=others[0])}">{LABELS[others[0]]}</a></span>'
+                  if others else "")
         (out_dir / f"demo_data_{rep}.json").write_text(json.dumps(data, indent=1), encoding="utf-8")
-        other = next(r for r in REPRESENTATIONS if r != rep)
-        html = (TEMPLATE.replace("__LABEL__", LABELS[rep]).replace("__OTHER_LABEL__", LABELS[other])
-                .replace("__OTHER_PAGE__", PAGE.format(rep=other)).replace("__POOL__", str(args.pool_size))
+        html = (TEMPLATE.replace("__LABEL__", LABELS[rep]).replace("__FLAG__", flag).replace("__SWITCH__", switch)
+                .replace("__POOL__", str(args.pool_size))
                 .replace("__BANK__", f"{len(bank_ids):,}").replace("__BUILT__", built)
                 .replace("__DATA__", json.dumps(data).replace("</", "<\\/")))
         (out_dir / PAGE.format(rep=rep)).write_text(html, encoding="utf-8")
@@ -272,8 +286,8 @@ def main() -> None:
             written += 1
     size_mb = sum(p.stat().st_size for p in clip_dir.glob("*.wav")) / 1e6
     print(f"Clips: {len(all_clips)} needed, {written} newly written, folder {size_mb:.1f} MB")
-    print(f"Open: {out_dir / PAGE.format(rep='mfcc26')}")
-    print(f"      {out_dir / PAGE.format(rep='logmel_stats')}")
+    for rep in args.reps:
+        print(f"Open: {out_dir / PAGE.format(rep=rep)}")
 
 
 if __name__ == "__main__":
