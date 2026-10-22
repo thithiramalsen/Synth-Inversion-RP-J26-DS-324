@@ -1,5 +1,5 @@
 /* Local rehearsal only. No third-party scripts, trackers, or audio uploads. */
-const TOKEN_KEY = 'c3-human-v1-rehearsal-token';
+const TOKEN_KEY = 'c3-human-v2-rehearsal-token';
 const DRAFT_PREFIX = 'c3-rehearsal-draft-';
 const CONSENT = ['adult', 'english', 'synth_experience', 'information_read', 'voluntary', 'coded_data'];
 const SET_QUESTIONS = [
@@ -86,7 +86,7 @@ function welcome() {
   content.innerHTML = `<span class="eyebrow">Rehearsal / Not a participant invitation</span><h1>Which set of sounds would you start from?</h1>
     <p class="lead">You’ll hear a short synthesizer sound and two sets of five suggested patches. Each set tries to sound like the target. Tell us how close each sound is and which set you’d rather start editing from.</p>
     <div class="note"><p>This is a local test of the study. Research collection is disabled. Don’t recruit participants with this version. Every saved response is marked as rehearsal data.</p></div>
-    <div class="cards"><div class="card"><h3>What you’ll do</h3><p>Set a comfortable volume, check your headphones, try one practice case, then compare sets for eight target sounds. There’s a break halfway.</p><p>Allow about 25–30 minutes; please stop by 35 minutes. You can pause or stop sooner.</p></div>
+    <div class="cards"><div class="card"><h3>What you’ll do</h3><p>Set a comfortable volume, check your headphones, try one practice case, then compare sets for eight target sounds. There’s a break halfway.</p><p>Allow about 30–35 minutes; please stop by 40 minutes. You can pause or stop sooner.</p></div>
     <div class="card"><h3>What gets saved</h3><p>Your consent choices, experience range, ratings, set choices, comments, playback counts and step timestamps. No recordings or names.</p><p>Responses use a random code and stay in a separate local rehearsal database. They are excluded from research analysis.</p></div></div>
     <details><summary>Read before taking part</summary><p>Participation is voluntary and unpaid. There are no marks, course credits or employment benefits. You can decline without giving a reason. Use headphones in a quiet place and start at a low volume. Stop if anything feels uncomfortable; never turn the volume up to pass the check.</p><p>This is not a hearing test and does not ask for hearing or health information. You won’t edit a real patch. There are no right or wrong answers, and “Cannot judge” is always a valid answer.</p><p>You can remove your linked rehearsal answers with the withdrawal button, including after completion, on this browser. Keep your code if you want to ask the researcher about your session. A minimal consent/withdrawal record remains. Closing the browser pauses; it does not withdraw.</p><p>Browser storage keeps a secret resume key and unfinished answers on this device. Avoid shared devices. Data are coded, not guaranteed anonymous. Public hosting, researcher/PI contacts, independent complaints contact, ethics approval, retention and withdrawal policy must be finalized before a research version is enabled.</p></details>
     <form id="consent-form"><h2>Eligibility and consent</h2>

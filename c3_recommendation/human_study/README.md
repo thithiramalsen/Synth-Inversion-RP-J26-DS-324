@@ -9,9 +9,10 @@ halfway break, feedback, same-browser resume, withdrawal and researcher exports.
 disabled in code; there is no flag to turn it on. Do not expose this server publicly or recruit
 participants with it.
 
-The operating point is **provisional** (mfcc26, shortlist N = 100, k = 5, λ = 0.8). Before any
-real participant, Phase 7 must choose λ*, N* and the primary representation, and a new bundle
-version must be built with those values (section 3).
+**Version 2** (`c3-human-v2`) uses the operating point selected on validation data in Phase 7
+(D-018): mfcc26, shortlist N = 100, k = 5, **λ = 0.5**. It must equal the values in
+`docs/PREREGISTRATION.md`; if the preregistration changes them, build a new study version.
+Version 1 (provisional λ = 0.8) is kept on disk unchanged and is no longer served.
 
 Nothing in `survey/`, C1, C2, C4, their databases or deployments is changed. C3 uses port
 **8767** and its own SQLite file. The headphone-check audio is a hash-verified copy of the
@@ -33,11 +34,11 @@ python -B -m c3_recommendation.human_study.server
 Open <http://127.0.0.1:8767/>. Stop the server with Ctrl+C in its terminal.
 
 The rehearsal database is created at
-`data/processed/c3_v4/human_study_rehearsal_v1/responses.sqlite3`. The study source and bundle
+`data/processed/c3_v4/human_study_rehearsal_v2/responses.sqlite3`. The study source and bundle
 hashes are bound to that database: after changing the study, use a fresh database, e.g.
 
 ```powershell
-python -B -m c3_recommendation.human_study.server --database data/processed/c3_v4/human_study_rehearsal_v2/responses.sqlite3
+python -B -m c3_recommendation.human_study.server --database data/processed/c3_v4/human_study_rehearsal_v2b/responses.sqlite3
 ```
 
 A browser keeps a random secret resume key and unfinished answers. Submitted answers stay on
@@ -60,18 +61,20 @@ Selection (`build.py`, seed **20261022**): a seeded sample of 40 **validation** 
 screened in order. A target is skipped only if both sets are identical (nothing to compare) or
 an audio file fails a technical check (non-finite, clipped, below −60 dBFS). The first 8
 eligible targets are scored; the 9th is the practice case. No human response, set metric or
-listening judgement is used to select cases. Bundle v1 skipped 1 target (identical sets).
+listening judgement is used to select cases. Bundle v1 (λ = 0.8) skipped 1 target with identical
+sets; bundle v2 (λ = 0.5) skipped none, so its cases are screened ranks 0–8 and differ from v1's
+from case 2 onwards. Each v2 case has 6–9 distinct sounds to rate (8 on average).
 
 Playback files are mono 44.1 kHz, three-second 16-bit copies of the processed corpus audio
 (10 Hz DC policy applied once, no loudness normalisation).
 
-The private bundle `data/processed/c3_v4/human_study_bundle_v1/` holds `bundle.json`
+The private bundle `data/processed/c3_v4/human_study_bundle_v2/` holds `bundle.json`
 (sample IDs, which set is which, set metrics, headphone answer keys) and `manifest.json`
 (SHA-256 of every file). **Never serve that folder with a generic static server.** The server
 verifies every hash at start-up and only sends the current step's allowlisted fields.
 
-**This is a formative study on validation cases**, conditional on eight targets and a
-provisional operating point. No test-split sound is used.
+**This is a formative study on validation cases**, conditional on eight targets and the
+Phase 7 operating point. No test-split sound is used.
 
 ## 4. Participants and counterbalancing
 
@@ -116,7 +119,8 @@ For each case:
 - Optional reason, at most 1,000 characters, no personal details.
 
 End: usefulness of the knob bars (1–5 or Cannot judge), session length, optional comment.
-Allow about 25–30 minutes; rehearse and time it.
+Allow about 30–35 minutes (v2 has about 8 sounds per case); rehearse and time it, and shorten
+the session if rehearsals run long.
 
 ## 6. Analysis plan — freeze before recruitment
 
@@ -137,7 +141,7 @@ not the C3 success criterion, which concerns editing usefulness.
 ## 7. Exports and withdrawal
 
 ```powershell
-python -B -m c3_recommendation.human_study.manage export --output data/processed/c3_v4/human_study_rehearsal_export_v1
+python -B -m c3_recommendation.human_study.manage export --output data/processed/c3_v4/human_study_rehearsal_v2_export_v1
 python -B -m c3_recommendation.human_study.manage withdraw --code C3-R-EXACTCODE
 ```
 
@@ -150,7 +154,7 @@ a minimal consent/withdrawal record; earlier exports or backups must be handled 
 
 | File in `c3_recommendation/human_study/` | Purpose |
 |---|---|
-| `design.py` | Version, seed, sample size, provisional settings, eligibility, counterbalancing, sound numbering |
+| `design.py` | Version, seed, sample size, operating point, eligibility, counterbalancing, sound numbering |
 | `build.py` | Frozen private bundle from validation targets with the tested C3 code; audio QA; provenance |
 | `server.py` | Loopback-only FastAPI + SQLite server: phases, listen gates, blinding, withdrawal |
 | `web/index.html`, `web/style.css`, `web/app.js` | Participant page: playback, knob bars, drafts, resume |
@@ -168,8 +172,8 @@ python -m pytest c3_recommendation/tests_v4 -q
 
 ## 10. Before a real study
 
-- Finish Phase 7 and the pre-registration; rebuild the bundle as a new version with λ*, N* and
-  the chosen representation; start a fresh database.
+- Phase 7 is done and bundle v2 uses its values. Confirm they match PREREGISTRATION.md; if the
+  preregistration changes them, build a new study version and start a fresh database.
 - Obtain written ethics approval and any required permissions; finalise information sheet,
   consent wording, contacts, retention and withdrawal policy in line with the shared ethics pack.
 - Rehearse with 2–3 people to check timing, clarity of the three questions and the knob bars.
