@@ -32,6 +32,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ASSETS = Path(__file__).with_name("web")
 DEFAULT_BUNDLE = ROOT / "data/processed/c3_v4/human_study_bundle_v2"
 DEFAULT_DB = ROOT / "data/processed/c3_v4/human_study_rehearsal_v2/responses.sqlite3"
+DEMO_DB = ROOT / "data/processed/c3_v4/human_study_demo_v2/responses.sqlite3"
 PRACTICE_SET_A = "topk"
 EXPERIENCE = {"under_1", "1_to_3", "over_3"}
 
@@ -114,7 +115,8 @@ def membership(case):
             else ("topk_only" if s["number"] in top else "mmr_only") for s in case["sounds"]}
 
 
-def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
+def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB, demo=False):
+    """``demo=True`` adds a skip for the headphone check (presentations only); sessions are marked."""
     bundle_path = Path(bundle_path).resolve()
     manifest = json.loads((bundle_path / "manifest.json").read_text(encoding="utf-8"))
     for name, checksum in manifest["files"].items():
@@ -134,7 +136,7 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
     source_hashes = {"server.py": digest(__file__)}
     source_hashes.update({p.name: digest(p) for p in sorted(ASSETS.glob("*")) if p.is_file()})
     fingerprint = hashlib.sha256(json.dumps({"bundle": digest(bundle_path / "manifest.json"),
-                                             "source": source_hashes, "protocol": protocol()},
+                                             "source": source_hashes, "protocol": protocol(), "demo": bool(demo)},
                                             sort_keys=True).encode()).hexdigest()
     store = Store(database, fingerprint)
     app = FastAPI(title="C3 study rehearsal", docs_url=None, redoc_url=None, openapi_url=None)
@@ -204,6 +206,7 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
                       audio_ids=list(allowed_audio(state)), parameter_labels=bundle["parameter_labels"])
         if state["phase"] == "headphones":
             result["screen_number"] = len(state["headphone_answers"]) + 1
+        result["demo"] = bool(demo)
         result["screen_attempt"] = screen_attempt(state)
         result["screen_attempts_left"] = MAX_SCREEN_ATTEMPTS - screen_attempt(state)
         if state["phase"] in {"practice", "task"}:
@@ -255,7 +258,7 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
     @app.get("/api/info")
     def info():
         return {"mode": "rehearsal", "version": VERSION, "target": TARGET, "cap": CAP,
-                "research_collection_enabled": False, "operating_point": bundle["operating_point"]["status"],
+                "research_collection_enabled": False, "demo": bool(demo), "operating_point": bundle["operating_point"]["status"],
                 "fingerprint": fingerprint}
 
     @app.post("/api/start")
@@ -279,7 +282,7 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
             if not slots:
                 fail(f"All {TARGET} assignment slots are in use", 409)
             slot = slots[0]
-            state = {"code": "C3-R-" + secrets.token_hex(5).upper(), "created": now(), "updated": now(),
+            state = {"code": ("C3-D-" if demo else "C3-R-") + secrets.token_hex(5).upper(), "demo": bool(demo), "created": now(), "updated": now(),
                      "consent_version": VERSION, "consent": body.consent, "experience": body.experience,
                      "mode": "rehearsal", "fingerprint": fingerprint, "slot": slot, "assignment": assignment(slot),
                      "phase": "volume", "revision": 0, "responses": [], "headphone_answers": [], "playback": {},
@@ -352,6 +355,14 @@ def create_app(bundle_path=DEFAULT_BUNDLE, database=DEFAULT_DB):
                 state.setdefault("screen_history", []).append(
                     {"attempt": screen_attempt(state), "answers": state["headphone_answers"], "ended": now()})
                 state.update(phase="volume", headphone_answers=[], playback={})
+            elif body.op == "skip_screen" and not answers:
+                # Demo mode only: lets a presenter skip the setup check. Such sessions are marked
+                # and excluded from rehearsal/research analysis.
+                if not demo:
+                    fail("Skipping the setup check is only available in demo mode", 403)
+                if phase not in {"volume", "headphones", "screen_failed"}:
+                    fail("This action is not available at this stage", 409)
+                state.update(phase="practice", screen_skipped=True, playback={})
             elif body.op == "response" and phase in {"practice", "task"}:
                 listened(state)
                 case_id, set_a = current(state)
@@ -389,9 +400,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--bundle", type=Path, default=DEFAULT_BUNDLE)
     parser.add_argument("--database", type=Path, default=DEFAULT_DB)
-    parser.add_argument("--port", type=int, default=8767)
+    parser.add_argument("--port", type=int, default=None, help="default 8767, or 8768 with --demo")
+    parser.add_argument("--demo", action="store_true", help="presentation demo: allows skipping the setup check")
     args = parser.parse_args()
+    if args.demo and args.database == DEFAULT_DB:
+        args.database = DEMO_DB
+    args.port = args.port or (8768 if args.demo else 8767)
     import uvicorn
     print("C3 REHEARSAL ONLY. Research collection is disabled. Existing studies are not connected.", flush=True)
     print(f"Open http://127.0.0.1:{args.port}/  (Ctrl+C to stop)", flush=True)
-    uvicorn.run(create_app(args.bundle, args.database), host="127.0.0.1", port=args.port, access_log=False)
+    if args.demo:
+        print("DEMO MODE: the headphone check can be skipped; demo sessions are kept separate.", flush=True)
+    uvicorn.run(create_app(args.bundle, args.database, demo=args.demo), host="127.0.0.1", port=args.port,
+                access_log=False)

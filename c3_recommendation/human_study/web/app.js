@@ -143,6 +143,10 @@ async function render() {
       : '<h1>We’ll stop here.</h1><p>The setup check did not pass after the maximum number of attempts. That is not a diagnosis or a hearing test result. Your session is incomplete and will not be treated as a completed study.</p><p>You can withdraw the saved setup answers below, or close this tab.</p>';
     if (left > 0) $('#retry').onclick = () => send('retry_screen').catch(showError);
   }
+  if (state.demo && ['volume', 'headphones', 'screen_failed'].includes(phase)) {
+    content.insertAdjacentHTML('beforeend', '<div class="note demo-skip"><p><strong>Demo mode.</strong> You can skip the headphone setup check for a demonstration. Sessions that skip it are marked and never counted as study results.</p><div class="actions"><button type="button" class="secondary" id="skip-screen">Skip the setup check (demo only)</button></div></div>');
+    $('#skip-screen').onclick = () => send('skip_screen').catch(showError);
+  }
   await loadAudio();
 }
 
@@ -179,7 +183,11 @@ $('#pause').onclick = () => { cleanup(); $('#session-actions').hidden = true; co
 $('#withdraw').onclick = () => { if (confirm('Withdraw this rehearsal and remove the linked answers from active local storage? A minimal consent/withdrawal record will remain.')) send('withdraw').catch(showError); };
 async function boot() {
   try {
-    await api('info');
+    const info = await api('info');
+    if (info.demo) {
+      document.querySelector('.rehearsal').textContent = 'DEMO MODE · Setup check can be skipped · Not research data';
+      document.querySelector('footer').textContent = 'C3 · Patch recommendation study · Demo mode · Phase 7 settings';
+    }
     if (token) { try { state = await api('session'); await render(); return; } catch (error) { if (error.status !== 401) throw error; token = null; localStorage.removeItem(TOKEN_KEY); } }
     welcome();
   } catch (error) { content.innerHTML = '<h1>The rehearsal is unavailable.</h1><p>Check that its local server is running, then reload. No new answers were saved.</p>'; showError(error); }

@@ -249,3 +249,28 @@ def test_setup_check_attempts_are_limited_and_slot_released_after_last(study):
     assert s.action("retry_screen").status_code == 409
     late = Session(client, {"Authorization": "Bearer " + "e" * 64})
     assert late.start().status_code == 200 and stored(app)[-1]["slot"] == stored(app)[0]["slot"]
+
+
+def test_skip_is_refused_outside_demo_mode(study):
+    app, client, *_ = study
+    s = Session(client)
+    s.start()
+    assert s.state()["demo"] is False
+    assert s.action("skip_screen").status_code == 403
+
+
+def test_demo_mode_can_skip_the_setup_check(tmp_path):
+    bundle = make_bundle(tmp_path)
+    app = create_app(bundle, tmp_path / "demo.sqlite3", demo=True)
+    with TestClient(app) as client:
+        assert client.get("/api/info").json()["demo"] is True
+        s = Session(client)
+        first = s.start().json()
+        assert first["code"].startswith("C3-D-") and first["demo"] is True
+        assert s.action("skip_screen").status_code == 200
+        assert s.state()["phase"] == "practice"
+        assert s.action("skip_screen").status_code == 409  # only during the setup steps
+        assert stored(app)[0]["screen_skipped"] is True
+    # A demo database cannot be reopened as a normal rehearsal database.
+    with pytest.raises(ValueError, match="changed"):
+        create_app(bundle, tmp_path / "demo.sqlite3", demo=False)
