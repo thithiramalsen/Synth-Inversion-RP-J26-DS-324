@@ -100,7 +100,8 @@ is rated once. A withdrawn or failed session frees its slot for the next starter
 
 1. Information, six unticked eligibility/consent statements, experience range.
 2. Volume reference; confirm headphones, quiet place, comfortable level.
-3. Six three-tone headphone checks; at least five correct, otherwise the session ends.
+3. Six three-tone headphone checks; at least five correct. A failed check can be retried within
+   the same session, at most 3 attempts in total (each attempt is recorded); after that the session ends.
 4. One practice case (not scored), then an explanation of Set A/B and the knob bars.
 5. Four cases, a break, four cases.
 6. Feedback and completion code.

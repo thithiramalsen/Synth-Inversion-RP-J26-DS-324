@@ -364,3 +364,19 @@ keep the headphone check. Implemented in `human_study/analysis.py`, run with
   is a software check, never a prediction or result.
 
 Status: confirmed by the user (margin, scope); plan details by Claude Code.
+
+## D-021 — Retry for a failed headphone check (2026-10-22)
+
+At the user's request a failed setup check offers "Try the setup check again":
+- Retries happen inside the same session (no new enrolment, consent unchanged), at most
+  `MAX_SCREEN_ATTEMPTS = 3` attempts in total. Each failed attempt's answers are kept in
+  `screen_history`; the retry restarts at the volume step and requires replaying every clip.
+- A failed session keeps its counterbalancing slot while it may still retry, and releases it
+  only after the final failed attempt.
+- Rationale: a first failure usually means speakers or loose headphones; a capped retry lets
+  people fix their setup without allowing unlimited guessing (one random attempt passes
+  ≥5/6 three-way trials with probability ≈ 0.0178, so three attempts ≈ 0.052).
+- Changing the page and protocol required a fresh rehearsal database; the previous one (one
+  failed rehearsal session) is kept as `superseded_2026-10-22b_responses.sqlite3`.
+
+Status: requested by the user; limit of 3 attempts proposed by Claude Code.
