@@ -1,0 +1,233 @@
+"""Phase 7 - validation tuning of lambda, N and epsilon (validation targets only).
+
+Runs top-k, MMR over the lambda grid and the random baseline for every N and k on
+``splits.n_val_targets_eval`` validation targets, then applies the rules fixed in D-017
+(``c3.tuning``). Writes to ``<outputs_dir>/val/<representation>/``:
+  run_config.json, per_target.parquet, recommendations.parquet, summary.csv, lambda_sweep.csv,
+  selection.json, epsilon_sensitivity.csv, tradeoff.png
+For the primary representation it also writes docs/PREREGISTRATION_TEMPLATE.md - a template for
+the USER to copy to PREREGISTRATION.md, edit and commit. This script never writes PREREGISTRATION.md.
+
+Usage (repo root):
+    python c3_recommendation/scripts/07_tune.py [--rep mfcc26|logmel_stats|clap]
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from c3.config import load_config  # noqa: E402
+from c3.data_sources import make_source  # noqa: E402
+from c3.evaluate import EvalSpec, evaluate  # noqa: E402
+from c3.metrics import dup_rate_key  # noqa: E402
+from c3.param_space import ParamDistance  # noqa: E402
+from c3.relevance import FeatureCosineRelevance  # noqa: E402
+from c3.runinfo import file_sha256, git_state, package_versions  # noqa: E402
+from c3.splits import BANK, VAL, Splits, load_manifest  # noqa: E402
+from c3.stats import add_paired_deltas, summarize  # noqa: E402
+from c3.tuning import choose_epsilon, epsilon_sensitivity, select_operating_point  # noqa: E402
+
+GROUP_COLS = ["policy", "lam", "N", "k"]
+
+
+def plot_tradeoff(summary, chosen, k, path):
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        return None
+    fig, ax = plt.subplots(figsize=(7, 4.2), dpi=150)
+    styles = {50: dict(color="#6b6b6b", linestyle=(0, (4, 2)), marker="o"), 100: dict(color="#1a1a1a", linestyle="-", marker="s")}
+    for n, group in summary[(summary.policy == "mmr") & (summary.k == k)].groupby("N"):
+        group = group.sort_values("lam", ascending=False)
+        ax.plot(group["mean_pair_dist_mean"], group["mean_rel_mean"], linewidth=1.4, markersize=4, **styles.get(n, {}))
+        last = group.iloc[-1]
+        ax.annotate(f"N = {n}", (last["mean_pair_dist_mean"], last["mean_rel_mean"]), xytext=(6, 0),
+                    textcoords="offset points", fontsize=8, va="center", color=styles.get(n, {}).get("color", "#000"))
+    pick = summary[(summary.policy == "mmr") & (summary.k == k) & (summary.N == chosen["N"]) & (summary.lam == chosen["lam"])].iloc[0]
+    ax.scatter([pick["mean_pair_dist_mean"]], [pick["mean_rel_mean"]], s=90, facecolors="none", edgecolors="#000", linewidths=1.6, zorder=5)
+    ax.annotate(f"chosen: N = {chosen['N']}, λ = {chosen['lam']:g}", (pick["mean_pair_dist_mean"], pick["mean_rel_mean"]),
+                xytext=(8, -14), textcoords="offset points", fontsize=8)
+    ax.set_xlabel("mean pairwise parameter distance in the set (higher = more varied)", fontsize=9)
+    ax.set_ylabel("mean relevance to target", fontsize=9)
+    ax.set_title(f"Validation trade-off, k = {k} (λ from 1.0 at left)", fontsize=10, loc="left")
+    ax.grid(color="#e6e6e6", linewidth=0.6)
+    ax.set_axisbelow(True)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+    ax.tick_params(labelsize=8)
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+    return path.name
+
+
+def write_template(path, cfg, rep, selection, eps_choice, split_dir, features_dir, feature_meta):
+    split = json.loads((split_dir / "split_summary.json").read_text(encoding="utf-8"))
+    c = selection["chosen"]
+    alpha = cfg["stats.alpha"]
+    if eps_choice["informative"]:
+        h1_lines = ["- **H1 (diversity):** MMR(λ*) vs top-k, paired by target, on",
+                    "  (a) mean pairwise parameter distance (higher), (b) minimum pairwise distance (higher),",
+                    "  (c) dup_rate@ε* (lower). H1 is supported if all three differ in the predicted direction",
+                    f"  with Holm-adjusted p < {alpha}."]
+    else:
+        h1_lines = ["- **H1 (diversity):** MMR(λ*) vs top-k, paired by target, on",
+                    "  (a) mean pairwise parameter distance (higher) and (b) minimum pairwise distance (higher).",
+                    f"  H1 is supported if both differ in the predicted direction with Holm-adjusted p < {alpha}.",
+                    "  dup_rate@ε* is reported descriptively only: on validation, top-k sets contained a",
+                    "  near-duplicate pair for fewer than 10% of targets at every ε (D-017 rule 3)."]
+    h1_text = "\n".join(h1_lines)
+    text = f"""# PREREGISTRATION — C3 final held-out test  (TEMPLATE — edit, then save as PREREGISTRATION.md)
+
+> Generated by `scripts/07_tune.py` on {datetime.now(timezone.utc).date()} from validation results only.
+> The researcher reviews every value below, edits anything that needs changing, saves the file as
+> `c3_recommendation/docs/PREREGISTRATION.md`, commits it **personally**, and only then sets
+> `final_test.enabled: true`. Claude Code does not create PREREGISTRATION.md.
+
+## 1. Researcher and date
+- Researcher: D.A.V.P. Waidyarathne (IT23208780), component C3, project J26-DS-324
+- Date of registration: <fill in>
+- Commit of the code used: <fill in after committing>
+
+## 2. Data and split (frozen)
+- Corpus: `corpus_v4`, 131,072 sounds, 13 continuous controls (unit scale, D-002)
+- Split seed {cfg.seed}; bank {split['counts']['bank']:,} / val {split['counts']['val']:,} / test {split['counts']['test']:,}
+- Test-ID SHA-256: `{split['sha256_sorted_ids']['test']}`
+- Test targets evaluated: **{cfg['splits.n_test_targets_eval']}**, sampled with seed {cfg.seed} (`Splits.get_targets`)
+
+## 3. Method under test (fixed operating point)
+- Relevance: **{rep}**, cosine similarity of bank-standardised features
+  (feature cache SHA-256: `{feature_meta}`)
+- Shortlist size N* = **{c['N']}**; set size k = **{selection['k']}**; MMR λ* = **{c['lam']:g}**; relevance scaling `none`
+- Parameter distance: euclid/√13 on unit-scale knob positions
+- Near-duplicate threshold ε* = **{eps_choice['epsilon']:g}** ({eps_choice['rule']}; informative = {eps_choice['informative']})
+- Baselines: plain top-k from the same shortlist; random-from-shortlist ({cfg['selection.random_baseline_draws']} draws per target)
+
+Validation reference values at this point (not test results): mean pairwise distance {c['mean_pair_dist']:.4f};
+relative relevance loss {c['rel_loss_mean']:.4%} (95% CI upper {c['rel_loss_ci_high']:.4%}).
+
+## 4. Hypotheses and decision rules
+{h1_text}
+- **H2 (relevance preservation):** per-target relative mean-relevance loss of MMR vs top-k;
+  supported if the upper bound of its 95% bootstrap CI is ≤ τ = **{cfg['tuning.tau']}**.
+
+## 5. Statistical tests
+- Paired per-target differences (MMR − top-k); 95% percentile bootstrap CI, {cfg['stats.bootstrap_resamples']:,} resamples, seed {cfg.seed}
+- Wilcoxon signed-rank test per H1 metric; effect size = matched-pairs rank-biserial correlation
+- Holm correction across the H1 metrics listed in section 4 (raw and adjusted p reported)
+- Paired t-test and Cohen's d_z reported only if Shapiro–Wilk does not reject normality of the differences
+
+## 6. Secondary analyses (descriptive; do not change the H1/H2 decision)
+- k = 3; secondary representations (logmel_stats, clap) at their own validation-selected points
+- MMR vs random-from-shortlist; results by quartile of target top-1 relevance
+- Count of targets whose top-k is already diverse (dup_rate@ε* = 0) — falsifiability check
+- Full λ curve on the test targets (descriptive only)
+
+## 7. What would count against C3 (reported plainly)
+- No significant H1 improvement, or H2 upper CI > τ
+- Top-k already diverse for most targets
+
+## 8. Deviations
+Any deviation from this plan will be recorded in `docs/DECISIONS.md` and in the final report.
+
+Sign-off: ______________________  Date: __________
+"""
+    path.write_text(text, encoding="utf-8")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--config", default=None)
+    parser.add_argument("--rep", default=None, help="representation (default: relevance.representation)")
+    parser.add_argument("--n-targets", type=int, default=None)
+    args = parser.parse_args()
+    started = time.time()
+
+    cfg = load_config(args.config)
+    rep = args.rep or cfg["relevance.representation"]
+    primary = rep == cfg["relevance.representation"]
+    out_dir = cfg.path("outputs_dir") / "val" / rep
+    out_dir.mkdir(parents=True, exist_ok=True)
+    source = make_source(cfg)
+    unit = source.params_unit()
+    split_dir = cfg.path("outputs_dir") / "splits"
+    splits = Splits.from_config(cfg, load_manifest(split_dir))
+    bank_ids = splits.ids(BANK)
+    n_targets = args.n_targets or int(cfg["splits.n_val_targets_eval"])
+    targets = splits.get_targets(VAL, n_targets, cfg.seed)
+    distance = ParamDistance.from_schema(source.schema, method=cfg["param_distance.method"])
+    spec = EvalSpec.from_config(cfg)
+    features_dir = cfg.path("outputs_dir") / "features"
+    relevance = FeatureCosineRelevance.from_cache(features_dir, rep)
+
+    print(f"Phase 7 [{rep}{' PRIMARY' if primary else ' secondary'}]: {n_targets} val targets, "
+          f"N {spec.pool_sizes}, k {spec.k_values}, {len(spec.lambda_grid)} lambdas", flush=True)
+    result = evaluate(relevance, targets, bank_ids, unit, distance, spec)
+    if result.lambda_one_mismatches:
+        raise SystemExit(f"lambda = 1 differed from top-k in {result.lambda_one_mismatches} sets")
+    per_target = add_paired_deltas(result.per_target)
+    metric_cols = ["mean_rel", "min_rel", "mean_pair_dist", "min_pair_dist",
+                   *[dup_rate_key(e) for e in spec.epsilon_grid], "max_audio_rank", "mean_audio_rank",
+                   "overlap_with_topk", "target_param_dist_min", "target_param_dist_mean",
+                   "rel_loss_vs_topk", "delta_mean_pair_dist_vs_topk", "delta_min_pair_dist_vs_topk"]
+    summary = summarize(per_target, GROUP_COLS, metric_cols, int(cfg["stats.bootstrap_resamples"]), cfg.seed,
+                        float(cfg["stats.alpha"]))
+    tau, k_primary = float(cfg["tuning.tau"]), int(cfg["tuning.primary_k"])
+    selections = {int(k): select_operating_point(summary, tau, int(k)) for k in spec.k_values}
+    chosen = selections[k_primary]["chosen"]
+    sensitivity = epsilon_sensitivity(per_target, chosen["N"], k_primary, chosen["lam"], spec.epsilon_grid,
+                                      int(cfg["stats.bootstrap_resamples"]), cfg.seed, float(cfg["stats.alpha"]))
+    eps_choice = choose_epsilon(sensitivity)
+
+    for frame in (per_target, result.recommendations):
+        frame.insert(0, "relevance_function", rep)
+    per_target.to_parquet(out_dir / "per_target.parquet", index=False)
+    result.recommendations.to_parquet(out_dir / "recommendations.parquet", index=False)
+    summary.to_csv(out_dir / "summary.csv", index=False, float_format="%.10g")
+    sweep_cols = [c for c in summary.columns if c in GROUP_COLS or c == "n_targets" or any(
+        c.startswith(m) for m in ("mean_rel_", "mean_pair_dist_", "min_pair_dist_", "rel_loss_vs_topk_"))]
+    summary[sweep_cols].sort_values(["N", "k", "policy", "lam"], ascending=[True, True, True, False],
+                                    na_position="first").to_csv(out_dir / "lambda_sweep.csv", index=False, float_format="%.10g")
+    sensitivity.to_csv(out_dir / "epsilon_sensitivity.csv", index=False, float_format="%.10g")
+    plot = plot_tradeoff(summary, chosen, k_primary, out_dir / "tradeoff.png")
+    selection = {"representation": rep, "primary": primary, "tau": tau, "primary_k": k_primary,
+                 "operating_point": selections[k_primary], "sensitivity_k": {k: v for k, v in selections.items() if k != k_primary},
+                 "epsilon": eps_choice, "n_targets": n_targets, "rules": "D-017"}
+    (out_dir / "selection.json").write_text(json.dumps(selection, indent=2, default=float), encoding="utf-8")
+    feature_meta = json.loads((features_dir / "features_meta.json").read_text(encoding="utf-8"))
+    run_config = {"phase": 7, "generated_utc": datetime.now(timezone.utc).isoformat(), "config": cfg.as_dict(),
+                  "git": git_state(), "packages": package_versions(), "representation": rep,
+                  "relevance_function": relevance.describe(), "distance": distance.describe(),
+                  "eval_spec": {k: (list(v) if isinstance(v, tuple) else v) for k, v in spec.__dict__.items()},
+                  "n_targets": n_targets, "target_split": VAL, "bank_size": len(bank_ids),
+                  "feature_file_sha256": feature_meta["representations"][rep]["sha256"],
+                  "seconds_per_target": round(result.seconds_per_target, 4),
+                  "total_runtime_seconds": round(time.time() - started, 1), "plot": plot}
+    (out_dir / "run_config.json").write_text(json.dumps(run_config, indent=2, default=str), encoding="utf-8")
+    if primary:
+        write_template(cfg.repo_root / "c3_recommendation" / "docs" / "PREREGISTRATION_TEMPLATE.md", cfg, rep,
+                       selections[k_primary], eps_choice, split_dir, features_dir,
+                       feature_meta["representations"][rep]["sha256"])
+
+    print(f"Done in {run_config['total_runtime_seconds']} s ({result.seconds_per_target * 1000:.0f} ms/target)")
+    for k, sel in sorted(selections.items(), key=lambda kv: kv[0] != k_primary):
+        c = sel["chosen"]
+        print(f"k={k}: {sel['outcome']} -> N={c['N']}, lambda={c['lam']:g}, mean pair dist {c['mean_pair_dist']:.4f}, "
+              f"rel loss {c['rel_loss_mean']:.4%} (CI upper {c['rel_loss_ci_high']:.4%}); best lambda per N {sel['per_N_best']}")
+    print(f"epsilon* = {eps_choice['epsilon']:g} ({eps_choice['rule']})")
+    print(sensitivity[["epsilon", "topk_dup_rate_mean", "mmr_dup_rate_mean", "share_targets_topk_has_near_duplicate"]]
+          .to_string(index=False, float_format=lambda v: f"{v:.4f}"))
+    print(f"Saved to {out_dir}" + (" and docs/PREREGISTRATION_TEMPLATE.md" if primary else ""))
+
+
+if __name__ == "__main__":
+    main()
