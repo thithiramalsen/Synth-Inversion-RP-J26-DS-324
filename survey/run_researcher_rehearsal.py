@@ -1,4 +1,4 @@
-"""Run C1 and C4 together in the separate researcher-only rehearsal service."""
+"""Run C1/C2/C3/C4 together in the separate researcher-only rehearsal service."""
 from pathlib import Path
 import sys
 

@@ -1,4 +1,4 @@
-"""Shared C1/C4 researcher rehearsal, separate from participant collection."""
+"""Shared C1/C2/C3/C4 researcher rehearsals, separate from participant collection."""
 import argparse
 from contextlib import asynccontextmanager
 import csv
@@ -80,6 +80,7 @@ def configure(state_dir=DEFAULT_STATE, use_postgres=False):
                       SURVEY_ADMIN_TOKEN=secret, SURVEY_INVITATION_SECRET='', SURVEY_REMOTE_MODE='1',
                       SURVEY_C1_OPEN='0', SURVEY_C4_OPEN='0', SURVEY_ALLOWED_ORIGINS='')
     os.environ['SURVEY_C2_RESEARCHER_ONLY'] = '1'
+    os.environ['SURVEY_C3_RESEARCHER_ONLY'] = '1'
     # The normal app captures this path at import time. Reset it explicitly for
     # tests; actual participant and rehearsal servers run in separate processes.
     import database
@@ -124,7 +125,7 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
             initialize_experience_profiles()
             yield
 
-    app = FastAPI(title='C1 and C4 researcher rehearsal', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title='Listening lab researcher rehearsals', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     app.router.routes.extend(shared.app.router.routes)
     app.include_router(experience_router)
 
@@ -138,16 +139,20 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
         component = next((key for key in STUDIES if path.startswith(f'/api/{key}-pilot/')), None)
         study = STUDIES.get(component)
         page = next((value['page'] for value in STUDIES.values() if path == value['page']), None)
+        c3 = path == '/c3' or path.startswith('/c3/')
+        c3_page = path in ('/c3', '/c3/')
+        c3_public = path == '/c3/admin' or path.startswith('/c3/assets/')
         allowed = (path.startswith('/assets/') or path.startswith('/api/researcher/')
                    or path.startswith('/api/c2-pilot/') or path.startswith('/c2-flow/') or path.startswith('/c2-flow-v2/')
                    or path in ('/c2', '/c2/admin', '/c2/rehearsal-v2')
-                   or study is not None or path in ('/', '/researcher', '/admin', '/pilot', '/pilot/admin', '/c4', '/c4/admin', '/api/health', '/favicon.ico'))
+                   or c3 or study is not None or path in ('/', '/researcher', '/admin', '/pilot', '/pilot/admin', '/c4', '/c4/admin', '/api/health', '/favicon.ico'))
         if not allowed:
-            return JSONResponse({'detail': 'This instance contains only the C1 and C4 researcher rehearsals'}, status_code=404)
+            return JSONResponse({'detail': 'This instance contains only researcher rehearsals'}, status_code=404)
         if path in ('/', '/admin'):
             return RedirectResponse('/researcher')
         cookie = request.cookies.get(REHEARSAL_COOKIE)
         protected = (page is not None or study is not None
+                     or (c3 and not c3_public)
                      or path.startswith('/c2-flow/') or path.startswith('/c2-flow-v2/') or path.startswith('/api/c2-pilot/'))
         researcher = None
         if protected:
@@ -156,6 +161,8 @@ def create_app(state_dir=DEFAULT_STATE, use_postgres=False):
             except HTTPException as error:
                 if page:
                     return RedirectResponse(page+'/admin')
+                if c3_page:
+                    return RedirectResponse('/c3/admin')
                 return JSONResponse({'detail': 'Sign in as a researcher to use this rehearsal'}, status_code=error.status_code,
                                     headers={'Cache-Control': 'private, no-store'})
         prefix = f'/api/{component}-pilot/sessions/'
@@ -221,7 +228,7 @@ def main():
     parser.add_argument('--postgres', action='store_true', help='Use a separate SURVEY_REHEARSAL_DATABASE_URL')
     args = parser.parse_args()
     app = create_app(use_postgres=args.postgres)
-    print(f'C1/C4 researcher rehearsal: http://{args.host}:{args.port}/researcher', flush=True)
+    print(f'C1/C2/C3/C4 researcher rehearsals: http://{args.host}:{args.port}/researcher', flush=True)
     if not args.postgres:
         print(f'Private local login: {DEFAULT_STATE / "private_access.json"}', flush=True)
     import uvicorn

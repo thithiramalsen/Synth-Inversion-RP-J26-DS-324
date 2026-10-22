@@ -1,0 +1,201 @@
+{
+  "n_sounds": 128,
+  "n_participants": 30,
+  "n_anchors": 16,
+  "hidden_repeats": 2,
+  "wording_review_recommended": false,
+  "descriptor_status": {
+    "brightness": {
+      "action": "retain_unchanged",
+      "flags": []
+    },
+    "roughness": {
+      "action": "retain_unchanged",
+      "flags": []
+    },
+    "percussiveness": {
+      "action": "retain_unchanged",
+      "flags": []
+    },
+    "sustainedness": {
+      "action": "retain_unchanged",
+      "flags": []
+    }
+  },
+  "redundant_pairs": [
+    "brightness~roughness"
+  ],
+  "session_options": [
+    {
+      "unique_per_person": 20,
+      "min_listeners": 4,
+      "predicted_median_min": 16.3,
+      "feasible": false
+    },
+    {
+      "unique_per_person": 21,
+      "min_listeners": 4,
+      "predicted_median_min": 16.6,
+      "feasible": false
+    },
+    {
+      "unique_per_person": 22,
+      "min_listeners": 5,
+      "predicted_median_min": 16.9,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 23,
+      "min_listeners": 5,
+      "predicted_median_min": 17.2,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 24,
+      "min_listeners": 5,
+      "predicted_median_min": 17.4,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 25,
+      "min_listeners": 5,
+      "predicted_median_min": 17.6,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 26,
+      "min_listeners": 6,
+      "predicted_median_min": 17.9,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 27,
+      "min_listeners": 6,
+      "predicted_median_min": 18.1,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 28,
+      "min_listeners": 6,
+      "predicted_median_min": 18.3,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 29,
+      "min_listeners": 6,
+      "predicted_median_min": 18.5,
+      "feasible": true
+    },
+    {
+      "unique_per_person": 30,
+      "min_listeners": 7,
+      "predicted_median_min": 18.7,
+      "feasible": true
+    }
+  ],
+  "unique_per_person": 30,
+  "min_listeners_per_sound": 7,
+  "total_primary_ratings": 900,
+  "sounds_with_extra_listener": 4,
+  "predicted_median_session_min": 18.7,
+  "break_after_rated": 16,
+  "presentations_per_person": 35,
+  "expected_reliability_of_sound_means": {
+    "brightness": {
+      "icc1": 0.6827820452673303,
+      "at_min_listeners": 0.9377600337968142,
+      "listeners_for_target": 2
+    },
+    "roughness": {
+      "icc1": 0.46397229105297483,
+      "at_min_listeners": 0.8583374046313087,
+      "listeners_for_target": 5
+    },
+    "percussiveness": {
+      "icc1": 0.3190063875493885,
+      "at_min_listeners": 0.766305883303247,
+      "listeners_for_target": 9
+    },
+    "sustainedness": {
+      "icc1": 0.2063067783432376,
+      "at_min_listeners": 0.6453307725273909,
+      "listeners_for_target": 16
+    }
+  },
+  "spare_blocks": 6,
+  "assignment_capacity": 36,
+  "pilot_label_source": [
+    "human_export",
+    "human_researcher_entered"
+  ],
+  "status": "draft from human pilot",
+  "prefix_coverage": {
+    "26": {
+      "6": 116,
+      "7": 12
+    },
+    "30": {
+      "7": 124,
+      "8": 4
+    },
+    "36": {
+      "8": 72,
+      "9": 56
+    }
+  },
+  "anchor_and_practice_playback_identical_to_pilot": "19/19",
+  "bundle": "data/processed/c1_main_v1_humanpilot/bundle.json",
+  "version": "c1_main_v1_humanpilot",
+  "created_utc": "2026-10-22T13:55:24Z",
+  "seed": 20261014,
+  "feature_version": "c1_features_v2",
+  "weak_support_threshold": 1.1557918125895654,
+  "rules": {
+    "MAX_MEDIAN_SESSION_MIN": 25.0,
+    "TERMS_UNCLEAR_FEEDBACK_LIMIT": 0.3,
+    "MIN_LISTENERS": 5,
+    "TOO_LONG_FEEDBACK_LIMIT": 0.3,
+    "UNCLEAR_REVISE": 0.15,
+    "ICC_REVISE": 0.15,
+    "REDUNDANT_R": 0.85,
+    "LOW_SPREAD_IQR": 1.0,
+    "TARGET_RELIABILITY": 0.8,
+    "QUOTAS": {
+      "descriptor_quintile": 18,
+      "parameter_quartile": 24,
+      "env_depth_near_zero": 6,
+      "env_sustain_near_one": 6,
+      "weak_support": 16
+    },
+    "WEAK_SUPPORT_QUANTILE": 0.95,
+    "WEAK_SUPPORT_BONUS": 0.0
+  },
+  "corpus_exclusions": {
+    "eligible": 130854,
+    "level_incompatible_with_pilot_target": 151,
+    "pilot_stimulus": 67
+  },
+  "eligible_candidates": 130854,
+  "selected_anchor_pilot_ids": [
+    "sound_046",
+    "sound_023",
+    "sound_034",
+    "sound_025",
+    "sound_035",
+    "sound_032",
+    "sound_024",
+    "sound_062",
+    "sound_027",
+    "sound_016",
+    "sound_042",
+    "sound_029",
+    "sound_019",
+    "sound_009",
+    "sound_048",
+    "sound_006"
+  ],
+  "selected_weak_support": 20,
+  "log": [
+    "quota-aware greedy: 0 forced picks; unmet constraints: none"
+  ]
+}

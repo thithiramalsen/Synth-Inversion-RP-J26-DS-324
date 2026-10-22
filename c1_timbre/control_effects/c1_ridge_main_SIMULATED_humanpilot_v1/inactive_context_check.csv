@@ -1,0 +1,6 @@
+context,control,n,max_abs_effect,typical_abs_effect_when_active
+env_depth_zero,filter_env_attack,11,0.0,0.0286419811276115
+env_depth_zero,filter_env_decay,10,0.0,0.00968474248919066
+env_depth_zero,filter_env_sustain,12,0.0,0.03287527451604157
+env_sustain_one,filter_env_decay,10,0.0,0.00968474248919066
+amp_sustain_one,amp_decay,12,4.440892098500626e-16,0.06962736636884431
