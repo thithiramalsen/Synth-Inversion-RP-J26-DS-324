@@ -380,3 +380,17 @@ At the user's request a failed setup check offers "Try the setup check again":
   failed rehearsal session) is kept as `superseded_2026-10-22b_responses.sqlite3`.
 
 Status: requested by the user; limit of 3 attempts proposed by Claude Code.
+
+## D-022 — Demo mode with a skippable headphone check, for presentations (2026-10-22)
+
+At the user's request (Progress Presentation 1), `server.py --demo` allows skipping the setup
+check. To keep the real evaluation valid:
+- Demo mode is a separate server instance (default port 8768) with its own database
+  `human_study_demo_v2/`; the demo flag is part of the database fingerprint, so demo and normal
+  sessions cannot share a database. Demo sessions are coded `C3-D-…` and show a DEMO banner.
+- Skipped sessions are marked `screen_skipped` and are excluded from rehearsal/research analysis
+  (`excluded_screen_skipped` is reported). `manage analyze` on a demo database produces a report
+  labelled DEMO DATA that keeps them, for demonstration only.
+- The normal study has no skip option; the headphone check stays as decided (D-021).
+
+Status: requested by the user.

@@ -44,6 +44,18 @@ python -B -m c3_recommendation.human_study.server --database data/processed/c3_v
 A browser keeps a random secret resume key and unfinished answers. Submitted answers stay on
 the server. Resume needs the same browser and device. Closing the tab pauses; it does not withdraw.
 
+### Demo mode for presentations
+
+```powershell
+python -B -m c3_recommendation.human_study.server --demo
+```
+
+Opens on <http://127.0.0.1:8768/> with its own database
+(`data/processed/c3_v4/human_study_demo_v2/`). A **Skip the setup check (demo only)** button
+appears on the setup pages and a DEMO banner is shown. Demo sessions are coded `C3-D-…`, marked
+`screen_skipped` when skipped, and excluded from any rehearsal or research analysis. The normal
+study (without `--demo`) has no skip option. A demo database cannot be reopened in normal mode.
+
 ## 3. What participants compare, and how cases are chosen
 
 H3 asks whether producers find C3's sets more useful than the plain "top 5 closest" list.
