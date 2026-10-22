@@ -326,3 +326,18 @@ Primary (mfcc26), k = 5 — top-k vs chosen MMR, means over targets:
   and committed by the user.
 
 Status: computed; awaiting the user's preregistration.
+
+## D-019 — Human study rebuilt as version 2 with the Phase 7 operating point (2026-10-22)
+
+At the user's request the study was rebuilt before the CLAP work:
+- `human_study/design.py`: `VERSION = "c3-human-v2"`; `OPERATING_POINT` = mfcc26, N = 100, k = 5,
+  λ = 0.5 (D-018), replacing the provisional λ = 0.8 of version 1.
+- New bundle `data/processed/c3_v4/human_study_bundle_v2/` and database
+  `human_study_rehearsal_v2/`. Version 1 bundle and database are kept on disk unchanged.
+- Same seeded validation screening (seed 20261022): v2 skipped no target (every target's sets
+  differ at λ = 0.5), so v2 uses screened ranks 0–8. 6–9 distinct sounds per case (8 on average,
+  v1: 6.6); the participant time estimate was raised to 30–35 minutes.
+- The values must match PREREGISTRATION.md; if the preregistration changes them, build a new
+  study version.
+
+Status: built at the user's request.
