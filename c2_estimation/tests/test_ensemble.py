@@ -1,6 +1,5 @@
 """Synthetic checks for uncertainty moments, bounded heads and checkpoint resume."""
 import argparse
-import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -11,6 +10,7 @@ import torch
 
 from c2_estimation.v4.data import NAMES, ROOT
 from c2_estimation.v4.ensemble import GaussianCNN, combine, gaussian_nll, train
+from c2_estimation.tests.scratch import temporary_directory
 
 
 class EnsembleTests(unittest.TestCase):
@@ -58,7 +58,7 @@ class EnsembleTests(unittest.TestCase):
         self.assertTrue(torch.isfinite(model.variance_head.weight.grad).all())
 
     def test_epoch_resume_reproduces_ensemble(self):
-        with tempfile.TemporaryDirectory(prefix="c2-ensemble-test-", dir=ROOT/"data/processed") as folder:
+        with temporary_directory(prefix="c2-ensemble-test-") as folder:
             root = Path(folder)
             prepared = root/"prepared"
             prepared.mkdir()

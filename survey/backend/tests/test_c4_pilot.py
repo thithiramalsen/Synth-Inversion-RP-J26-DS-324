@@ -41,6 +41,8 @@ class C4PilotTests(unittest.TestCase):
         self.bundle_path = root/'bundle.json'
         self.bundle_path.write_text(json.dumps(self.bundle))
         scope = patch.dict(os.environ, SURVEY_C4_BUNDLE=str(self.bundle_path),
+                           SURVEY_C4_CONFIG=str(ROOT/'survey/config/c4_review_v1.json'),
+                           SURVEY_C4_LEGACY_BUNDLES='',
                            SURVEY_DATABASE_URL=getattr(self, 'postgres_test_url', ''), SURVEY_ADMIN_TOKEN=ADMIN)
         scope.start(); self.addCleanup(scope.stop)
         self.client = self.enterContext(TestClient(main.app))
@@ -176,6 +178,85 @@ class C4PilotTests(unittest.TestCase):
             self.assertEqual(self.client.get('/api/c4-pilot/status').status_code,200)
             self.assertEqual(self.client.get('/api/studies').status_code,404)
 
+    def test_bulk_unused_download_protects_started_sessions_responses_and_c1(self):
+        endpoint = '/api/c4-pilot/admin/replace-unused-invitations'
+        body = dict(confirm_replace_unused=True)
+        self.assertEqual(self.client.post(endpoint, json=body).status_code, 401)
+        for invalid in ({}, {'confirm_replace_unused': False}):
+            self.assertEqual(self.client.post(endpoint, headers=self.admin, json=invalid).status_code, 422)
+        original = self.client.post('/api/c4-pilot/admin/invitations', headers=self.admin, json={}).json()['invitations']
+        for item, phase in zip(original[:4], ['rating', 'complete', 'withdrawn', 'screen_failed']):
+            session = self.start(invitation=item['invitation'])
+            if phase == 'rating':
+                self.setup_audio()
+                state = self.state()
+                self.expose(state)
+                self.assertEqual(self.post('ratings', self.body(state)).status_code, 200)
+            with database.get_connection() as db:
+                db.execute('UPDATE c4_sessions SET phase=? WHERE session_id=?', (phase, session['session_id']))
+        with database.get_connection() as db:
+            sessions = [dict(row) for row in db.execute('SELECT * FROM c4_sessions ORDER BY session_id').fetchall()]
+            protected = [dict(row) for row in db.execute('SELECT * FROM c4_invites WHERE session_id IS NOT NULL ORDER BY assignment_id').fetchall()]
+            ratings = [dict(row) for row in db.execute('SELECT * FROM c4_ratings').fetchall()]
+            self.assertEqual(len(ratings), 1)
+            db.execute('INSERT INTO c4_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)',
+                       ('other-bundle-hash', 'other-bundle', original[4]['assignment_id'], 'fixture'))
+            db.execute('INSERT INTO c1_invites(invite_hash,bundle_hash,assignment_id,issued_at) VALUES (?,?,?,?)',
+                       ('c1-test-hash', 'c1-test-bundle', 'block_01', 'fixture'))
+            c1_invites = [dict(row) for row in db.execute('SELECT * FROM c1_invites ORDER BY invite_hash').fetchall()]
+        response = self.client.post(endpoint, headers=self.admin, json=body)
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.headers['cache-control'], 'no-store')
+        result = response.json()
+        self.assertEqual(result['skipped_assignments'], [item['assignment_id'] for item in original[:4]])
+        self.assertEqual([item['assignment_id'] for item in result['invitations']], [item['assignment_id'] for item in original[4:]])
+        self.assertEqual(result['replaced_count'], len(original)-4)
+        self.assertEqual(result['created_count'], 0)
+        with database.get_connection() as db:
+            self.assertEqual(sessions, [dict(row) for row in db.execute('SELECT * FROM c4_sessions ORDER BY session_id').fetchall()])
+            self.assertEqual(protected, [dict(row) for row in db.execute('SELECT * FROM c4_invites WHERE session_id IS NOT NULL ORDER BY assignment_id').fetchall()])
+            self.assertEqual(ratings, [dict(row) for row in db.execute('SELECT * FROM c4_ratings').fetchall()])
+            self.assertEqual(c1_invites, [dict(row) for row in db.execute('SELECT * FROM c1_invites ORDER BY invite_hash').fetchall()])
+            self.assertIsNone(db.execute("SELECT retired_at FROM c4_invites WHERE bundle_hash='other-bundle'").fetchone()['retired_at'])
+        expired_entry = dict(self.entry, invitation=original[4]['invitation'])
+        self.assertEqual(self.client.post('/api/c4-pilot/sessions', json=expired_entry).status_code, 403)
+        fresh = result['invitations'][0]
+        session = self.start(invitation=fresh['invitation'])
+        with database.get_connection() as db:
+            actual = db.execute('SELECT assignment_id FROM c4_sessions WHERE session_id=?', (session['session_id'],)).fetchone()
+            self.assertEqual(actual['assignment_id'], fresh['assignment_id'])
+
+    def test_bulk_unused_download_creates_missing_codes_and_skips_all_claimed_slots(self):
+        endpoint = '/api/c4-pilot/admin/replace-unused-invitations'
+        body = dict(confirm_replace_unused=True)
+        response = self.client.post(endpoint, headers=self.admin, json=body)
+        self.assertEqual(response.status_code, 200, response.text)
+        result = response.json()
+        self.assertEqual(result['created_count'], len(self.bundle['assignments']))
+        self.assertEqual(result['replaced_count'], 0)
+        for item in result['invitations']:
+            self.start(invitation=item['invitation'])
+        with database.get_connection() as db:
+            before = [dict(row) for row in db.execute('SELECT * FROM c4_invites ORDER BY assignment_id').fetchall()]
+        result = self.client.post(endpoint, headers=self.admin, json=body).json()
+        self.assertEqual(result['invitations'], [])
+        self.assertEqual(result['created_count'], 0)
+        self.assertEqual(result['replaced_count'], 0)
+        self.assertEqual(len(result['skipped_assignments']), len(self.bundle['assignments']))
+        with database.get_connection() as db:
+            self.assertEqual(before, [dict(row) for row in db.execute('SELECT * FROM c4_invites ORDER BY assignment_id').fetchall()])
+
+    def test_bulk_unused_download_rolls_back_partial_failure(self):
+        self.client.post('/api/c4-pilot/admin/invitations', headers=self.admin, json={})
+        with database.get_connection() as db:
+            before = [dict(row) for row in db.execute('SELECT * FROM c4_invites ORDER BY assignment_id').fetchall()]
+        with patch.object(c4_pilot.secrets, 'token_urlsafe', side_effect=['test-code-only', RuntimeError('simulated failure')]):
+            with self.assertRaisesRegex(RuntimeError, 'simulated failure'):
+                self.client.post('/api/c4-pilot/admin/replace-unused-invitations', headers=self.admin,
+                                 json=dict(confirm_replace_unused=True))
+        with database.get_connection() as db:
+            self.assertEqual(before, [dict(row) for row in db.execute('SELECT * FROM c4_invites ORDER BY assignment_id').fetchall()])
+
     def test_complete_resume_export_withdraw_and_replacement(self):
         self.start(); self.setup_audio()
         for index in range(14):
@@ -230,6 +311,173 @@ class C4PilotTests(unittest.TestCase):
         self.bundle_path.write_text(json.dumps(self.bundle))
         self.assertFalse(self.client.get('/api/c4-pilot/status').json()['ready'])
         self.assertEqual(self.client.post('/api/c4-pilot/sessions',json=self.entry).status_code,403)
+
+    def test_tagged_entry_uses_same_catalogue_and_exports_choices(self):
+        cfg = self.client.get('/api/c4-pilot/status').json()['config']
+        self.assertEqual(cfg['experience_selection']['version'], 'experience_tags_v1')
+        self.assertEqual(cfg['protocol_version'], 'c4_review_2026-10-19_navigation_v3')
+        self.start()
+        code = self.client.post('/api/c4-pilot/admin/replace-unused-invitations', headers=self.admin,
+                                json=dict(confirm_replace_unused=True)).json()['invitations'][0]['invitation']
+        entry = dict(self.entry, invitation=code, tools='', example='', experience_selection=dict(
+            version='experience_tags_v1', tool_ids=['bass', 'singing'], example_ids=['sang_song'], tools_other='', example_other=''))
+        invalid = {**entry, 'experience_selection': {**entry['experience_selection'], 'tool_ids': ['unknown']}}
+        self.assertEqual(self.client.post('/api/c4-pilot/sessions', json=invalid).status_code, 422)
+        response = self.client.post('/api/c4-pilot/sessions', json=entry)
+        self.assertEqual(response.status_code, 200, response.text)
+        exported = list(csv.DictReader(io.StringIO(self.client.get('/api/c4-pilot/admin/sessions', headers=self.admin).text)))
+        saved = next(json.loads(row['entry_json']) for row in exported if row['session_id'] == response.json()['session_id'])
+        self.assertEqual(saved['experience_selection'], entry['experience_selection'])
+        self.assertEqual(saved['tools'], 'Bass guitar; Singing / vocals')
+        self.assertEqual(saved['example'], 'Practised, performed or recorded a song with my voice')
+
+    def test_previous_correction_preserves_original_and_exports_canonical_revisions(self):
+        self.start(); self.setup_audio()
+        first = self.state()
+        self.assertFalse(first['can_correct_previous'])
+        self.expose(first)
+        self.assertEqual(self.post('ratings', self.body(first)).status_code, 200)
+        current = self.state()
+        self.assertTrue(current['can_correct_previous'])
+        self.assertEqual(self.post('previous', {'current_index': current['current_index']}).status_code, 200)
+        correction = self.state()
+        self.assertEqual(correction['phase'], 'correction')
+        self.assertEqual(correction['presentation_id'], first['presentation_id'])
+        self.assertEqual(correction['saved_answers']['choice'], 'candidate_a')
+        self.assertEqual(self.state()['correction_token'], correction['correction_token'])
+        # Correction may replay only its own three sounds, never the next comparison.
+        self.expose(correction)
+        self.assertEqual(self.post('playback/'+current['presentation_id']+'/reference', {}).status_code, 409)
+        self.assertEqual(self.post('ratings', self.body(current)).status_code, 409)
+        revised = self.body(correction, 'candidate_b')
+        revised['correction_token'] = correction['correction_token']
+        revised['play_counts'] = dict.fromkeys(ROLES, 0)
+        revised['completed_counts'] = dict.fromkeys(ROLES, 0)
+        self.assertEqual(self.post('previous/save', revised).status_code, 200)
+        self.assertEqual(self.post('previous/save', revised).status_code, 409)
+        self.assertEqual(self.state()['presentation_id'], current['presentation_id'])
+        with database.get_connection() as db:
+            original = db.execute('SELECT * FROM c4_ratings WHERE presentation_id=?', (first['presentation_id'],)).fetchone()
+            self.assertEqual(json.loads(original['answers_json'])['choice'], 'candidate_a')
+            expected_id = json.loads(original['triplet_json'])['candidate_b']
+        rows = list(csv.DictReader(io.StringIO(self.client.get('/api/c4-pilot/admin/export', headers=self.admin).text)))
+        self.assertEqual(rows[0]['choice_first'], 'candidate_a')
+        self.assertEqual(rows[0]['choice'], 'candidate_b')
+        self.assertEqual(rows[0]['chosen_sample_id'], expected_id)
+        self.assertEqual(rows[0]['revision_count'], '1')
+        self.assertEqual(json.loads(json.loads(rows[0]['corrections_json'])[0]['answers_json'])['chosen_sample_id'], expected_id)
+        # Reopen the latest answer, then cancel without creating another revision.
+        self.assertEqual(self.post('previous', {'current_index': current['current_index']}).status_code, 200)
+        reopened = self.state()
+        self.assertEqual(reopened['saved_answers']['choice'], 'candidate_b')
+        self.assertEqual(self.post('previous/cancel', {'correction_token': 'wrong-token'}).status_code, 409)
+        self.assertEqual(self.post('previous/cancel', {'correction_token': reopened['correction_token']}).status_code, 200)
+        self.assertTrue(self.state()['can_correct_previous'])
+
+    def test_admin_response_viewer_omits_private_fields_and_tracks_corrections(self):
+        endpoint = '/api/c4-pilot/admin/responses'
+        self.assertEqual(self.client.get(endpoint).status_code, 401)
+        session = self.start(); self.setup_audio()
+        self.assertEqual(self.client.get(endpoint, headers=self.headers).status_code, 401)
+        first = self.state(); self.expose(first)
+        self.post('ratings', self.body(first))
+        self.post('previous', {'current_index':self.state()['current_index']})
+        correction = self.state()
+        revised = dict(self.body(correction, 'candidate_b'), correction_token=correction['correction_token'])
+        revised['answers']['comment'] = 'PRIVATE_COMMENT_NAME@example.invalid'
+        self.assertEqual(self.post('previous/save', revised).status_code, 200)
+        with database.get_connection() as db:
+            db.execute('UPDATE c4_sessions SET entry_json=?,feedback_json=? WHERE session_id=?',
+                       (json.dumps({'tools':'PRIVATE_ENTRY_NAME'}), json.dumps({'comment':'PRIVATE_FEEDBACK_NAME'}), session['session_id']))
+        response = self.client.get(endpoint+'?limit=1', headers=self.admin)
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.headers['cache-control'], 'private, no-store')
+        page = response.json(); row = page['responses'][0]
+        self.assertEqual(page['total'], 1)
+        self.assertEqual(row['participant_label'], 'Listener 001')
+        self.assertEqual(row['answer'], dict(choice='candidate_b', confidence=4))
+        self.assertEqual(row['first_answer'], dict(choice='candidate_a', confidence=4))
+        self.assertEqual(row['revision_count'], 1)
+        self.assertEqual(row['triplet_id'], self.bundle['assignments'][0]['trials'][0]['triplet_id'])
+        self.assertFalse(row['analysis_include'])
+        for value in ('PRIVATE_', 'session_id', 'participant_id', 'entry_json', 'feedback_json', 'comment', 'token',
+                      'screen_answers', 'protocol_snapshot', 'invite', session['session_id'], session['token']):
+            self.assertNotIn(value, response.text)
+        for query in ('offset=1', 'kind=repeat', 'phase=complete', 'listener_number=999'):
+            self.assertEqual(self.client.get(endpoint+'?'+query, headers=self.admin).json()['responses'], [], query)
+        self.assertEqual(self.client.get(endpoint+'?phase=in_progress&kind=practice&listener_number=1', headers=self.admin).json()['total'], 1)
+        for query in ('limit=101', 'offset=-1', 'listener_number=0', 'phase=unknown', 'kind=unknown'):
+            self.assertEqual(self.client.get(endpoint+'?'+query, headers=self.admin).status_code, 422)
+        self.assertEqual(self.post('withdraw', {}).status_code, 200)
+        withdrawn = self.client.get(endpoint+'?phase=withdrawn', headers=self.admin).json()
+        self.assertEqual(withdrawn['total'], 1)
+        self.assertFalse(withdrawn['responses'][0]['analysis_include'])
+        self.bundle_path.write_text(self.bundle_path.read_text()+' ')
+        self.assertEqual(self.client.get(endpoint, headers=self.admin).json()['total'], 0)
+
+    def test_previous_locks_on_any_next_clip_and_rejects_invalid_corrections(self):
+        self.start(); self.setup_audio()
+        first = self.state(); self.expose(first)
+        self.post('ratings', self.body(first))
+        current = self.state()
+        self.assertEqual(self.client.post(self.base+'/previous', json={'current_index': current['current_index']}).status_code, 401)
+        self.assertEqual(self.post('previous', {'current_index': 99}).status_code, 409)
+        self.assertEqual(self.post('previous', {'current_index': current['current_index']}).status_code, 200)
+        correction = self.state()
+        revised = dict(self.body(correction), correction_token=correction['correction_token'])
+        for update in ({'presentation_id': current['presentation_id']}, {'correction_token': 'wrong'}):
+            self.assertEqual(self.post('previous/save', {**revised, **update}).status_code, 409)
+        revised['answers']['confidence'] = None
+        self.assertEqual(self.post('previous/save', revised).status_code, 422)
+        revised = dict(self.body(correction, 'cannot_decide'), correction_token=correction['correction_token'],
+                       play_counts=dict.fromkeys(ROLES, 0), completed_counts=dict.fromkeys(ROLES, 0))
+        self.assertEqual(self.post('previous/save', revised).status_code, 200)
+        # A GET/prefetch does not claim audio. Any explicitly requested role locks Previous.
+        path = self.base+'/playback/'+current['presentation_id']+'/candidate_b'
+        self.assertEqual(self.client.get(path, headers=self.headers).status_code, 405)
+        self.assertTrue(self.state()['can_correct_previous'])
+        self.assertEqual(self.client.post(path, headers=self.headers).status_code, 200)
+        self.assertFalse(self.state()['can_correct_previous'])
+        self.assertFalse(self.state()['can_correct_previous'])
+        self.assertEqual(self.post('previous', {'current_index': current['current_index']}).status_code, 409)
+        self.assertEqual(self.post('playback/'+first['presentation_id']+'/reference', {}).status_code, 409)
+
+    def test_previous_at_break_feedback_and_old_protocol_boundaries(self):
+        self.start(); self.setup_audio()
+        for _ in range(14):
+            state = self.state()
+            if state['phase'] == 'break':
+                self.assertTrue(state['can_correct_previous'])
+                self.post('previous', {'current_index': state['current_index']})
+                correction = self.state()
+                self.assertEqual(self.post('continue', {}).status_code, 409)
+                self.post('previous/cancel', {'correction_token': correction['correction_token']})
+                self.post('continue', {})
+                state = self.state()
+            self.expose(state)
+            self.assertEqual(self.post('ratings', self.body(state)).status_code, 200)
+        state = self.state()
+        self.assertEqual(state['phase'], 'feedback')
+        self.assertTrue(state['can_correct_previous'])
+        self.post('previous', {'current_index': state['current_index']})
+        correction = self.state()
+        feedback = dict(clarity='Clear', length='About right')
+        self.assertEqual(self.post('feedback', feedback).status_code, 409)
+        revised = dict(self.body(correction), correction_token=correction['correction_token'])
+        self.assertEqual(self.post('previous/save', revised).status_code, 200)
+        self.assertEqual(self.post('feedback', feedback).status_code, 200)
+        self.assertFalse(self.state()['can_correct_previous'])
+        self.assertEqual(self.post('previous', {'current_index': state['current_index']}).status_code, 409)
+        # An older snapshot keeps forward-only navigation after deployment.
+        cfg = c4_pilot.config(); cfg.pop('navigation_policy')
+        code = self.client.post('/api/c4-pilot/admin/replace-unused-invitations', headers=self.admin,
+                                json=dict(confirm_replace_unused=True)).json()['invitations'][0]['invitation']
+        with patch.object(c4_pilot, 'config', return_value=cfg):
+            self.start(invitation=code)
+        self.setup_audio(); first = self.state(); self.expose(first)
+        self.post('ratings', self.body(first))
+        self.assertFalse(self.state()['can_correct_previous'])
+        self.assertEqual(self.post('previous', {'current_index': self.state()['current_index']}).status_code, 409)
 
 
 class C4DesignTests(unittest.TestCase):

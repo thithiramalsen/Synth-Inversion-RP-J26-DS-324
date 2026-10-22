@@ -1,0 +1,160 @@
+{
+  "title": "C2 Research Logbook",
+  "student_id": "IT23203280",
+  "period_start": "2026-08-03",
+  "period_end": "2026-10-20",
+  "compiled_on": "2026-10-20",
+  "weeks": [
+    {
+      "number": 1, "start": "2026-08-03", "end": "2026-08-09",
+      "focus": "Initial setup and audio generation",
+      "entries": [
+        ["03 Aug", "Set up the Python environment, repository and Vital/Vita rendering tools. Investigated the initial Vita compatibility issue.", "Established the first working route for generating synthesizer audio."],
+        ["04 Aug", "Generated and validated the initial 1,024-sample pilot. Checked mono output, file count, sample rate and duration.", "Saved an initial dataset and validation outputs for pipeline development."],
+        ["06-07 Aug", "Reviewed the first audio examples and the generation settings. Listed sound-quality issues to investigate.", "Made audio quality and consistent rendering the immediate priorities."]
+      ],
+      "outcome": "The initial generator and pilot were available for further technical checks.",
+      "next": "Check audio consistency and the relationship between recorded settings and sound."
+    },
+    {
+      "number": 2, "start": "2026-08-10", "end": "2026-08-16",
+      "focus": "Basic audio checks and parameter records",
+      "entries": [
+        ["10-11 Aug", "Reviewed WAV handling, mono conversion and note timing. Checked that each clip had a corresponding parameter record.", "Clarified the inputs and labels needed for later model training."],
+        ["13 Aug", "Reviewed possible clipping, quiet output and incomplete release tails in generated audio.", "Separated audio-generation concerns from later model-performance concerns."],
+        ["16 Aug", "Reviewed the first two weeks of setup and pilot work. Collected the main issues and settings in project notes.", "Kept a short list of diagnostics needed before expanding the pipeline."]
+      ],
+      "outcome": "The audio checks and parameter-record requirements were clearer.",
+      "next": "Make the rendering and validation process easier to repeat."
+    },
+    {
+      "number": 3, "start": "2026-08-17", "end": "2026-08-23",
+      "focus": "Rendering consistency and dataset organisation",
+      "entries": [
+        ["17-18 Aug", "Reviewed the eight pilot controls and their allowed ranges. Kept the note, velocity and recording duration fixed.", "Reduced avoidable variation between examples."],
+        ["20 Aug", "Reviewed file naming, sample identities and the manifest used to link audio with synthesizer settings.", "Established a consistent basis for selecting and loading examples."],
+        ["21-23 Aug", "Checked the first-version workflow and documented the remaining generation and storage issues.", "Prepared the pilot workflow for repeatable preprocessing and training."]
+      ],
+      "outcome": "The first version had a clearer generation recipe and dataset structure.",
+      "next": "Finish storage and progress tracking, then run the initial estimation baseline."
+    },
+    {
+      "number": 4, "start": "2026-08-24", "end": "2026-08-30",
+      "focus": "Pilot stabilisation and first estimation baseline",
+      "entries": [
+        ["24 Aug", "Updated pilot storage to PCM16 and set the generation checkpoint interval to 1,024 samples.", "Made the small pilot easier to store and resume."],
+        ["25 Aug", "Added generation progress reporting and checked the canonical pilot configuration.", "Made generation progress visible and kept the dataset settings recorded."],
+        ["26 Aug", "Ran the first C2 baseline using log-mel inputs and a small CNN for eight controls. Used 819 training, 102 validation and 103 test clips.", "Saved the model, spectrograms, learning curves and per-control MAE, RMSE and R squared."],
+        ["28-30 Aug", "Reviewed the pilot results and reproducibility checks. Attack and release were recovered better than resonance and drive.", "Recorded the weaknesses of the small-data baseline rather than relying only on its average score."]
+      ],
+      "outcome": "The first version connected validated pilot audio to a repeatable estimation baseline.",
+      "next": "Consolidate the first version and define the research work needed for C2."
+    },
+    {
+      "number": 5, "start": "2026-08-31", "end": "2026-09-06",
+      "focus": "First-version review and transition to C2",
+      "entries": [
+        ["31 Aug-01 Sep", "Consolidated notes on the pilot, audio checks and baseline outputs.", "Kept the first version as a reference for later changes."],
+        ["02-03 Sep", "Reviewed preprocessing, fixed splits and saved metrics from the initial pipeline.", "Completed the first-version review and identified its research limitations."],
+        ["05 Sep", "Shifted the main focus to C2. Defined the need to estimate synthesizer controls and explain when those estimates are reliable.", "Set parameter estimation and reliability calibration as the component's main tasks."],
+        ["06 Sep", "Outlined the C2 workflow from audio features to predicted controls, reconstruction and reliability assessment.", "Retained the small CNN as the starting baseline."]
+      ],
+      "outcome": "C2 became the main focus after the first-version setup and diagnostic work.",
+      "next": "Develop the uncertainty and acoustic-identifiability rationale."
+    },
+    {
+      "number": 6, "start": "2026-09-07", "end": "2026-09-13",
+      "focus": "C2 scope and uncertainty design",
+      "entries": [
+        ["07-08 Sep", "Examined why different synthesizer settings can produce similar sounds and why some controls may be difficult to recover.", "Defined parameter-recovery reliability separately from perceived sound similarity."],
+        ["10-11 Sep", "Reviewed the pilot model's stronger and weaker controls and the limits of reporting one overall error.", "Made per-control evaluation a requirement for the extended component."],
+        ["12-13 Sep", "Outlined the use of several independently trained models to estimate uncertainty.", "Planned an ensemble comparison while keeping the deterministic baseline for reference."]
+      ],
+      "outcome": "The component's uncertainty question was linked to observable weaknesses in parameter recovery.",
+      "next": "Define reliability metrics and the forward-rendering checks."
+    },
+    {
+      "number": 7, "start": "2026-09-14", "end": "2026-09-20",
+      "focus": "Evaluation planning and progress review",
+      "entries": [
+        ["14-15 Sep", "Consolidated the completed first-version work and the proposed C2 direction in the project progress report.", "Separated implemented results from the planned uncertainty work."],
+        ["17-18 Sep", "Reviewed probability-quality and calibration measures alongside MAE, RMSE and R squared.", "Identified Brier score, calibration plots and risk-coverage analysis for the reliability stage."],
+        ["20 Sep", "Reviewed the previous two weeks of C2 planning and the evidence needed to justify its claims.", "Kept acoustic ambiguity and the need for independent validation explicit."]
+      ],
+      "outcome": "The evaluation plan covered both point predictions and the quality of reliability estimates.",
+      "next": "Specify the uncertainty, sensitivity and reconstruction comparisons."
+    },
+    {
+      "number": 8, "start": "2026-09-21", "end": "2026-09-27",
+      "focus": "Forward diagnostics and reliability comparisons",
+      "entries": [
+        ["21-23 Sep", "Outlined local parameter perturbations around a predicted patch and comparison of the resulting audio.", "Planned sensitivity measurements without changing the delivered prediction."],
+        ["24-25 Sep", "Planned comparisons using uncertainty alone, uncertainty with sensitivity, uncertainty with reconstruction error, and all three together.", "Made the contribution of each reliability input testable."],
+        ["27 Sep", "Reviewed the proposed perturbation workload and the distinction between training data and diagnostic examples.", "Chose to investigate fixed subsets rather than perturb the entire corpus."]
+      ],
+      "outcome": "The C2 design had a concrete comparison strategy for its reliability inputs.",
+      "next": "Plan protected data partitions and the parameter-correctness event."
+    },
+    {
+      "number": 9, "start": "2026-09-28", "end": "2026-10-04",
+      "focus": "Validation protocol and research design review",
+      "entries": [
+        ["28-30 Sep", "Planned separate roles for training, calibration, model selection and final testing.", "Established the need to prevent reliability fitting and final evaluation from sharing examples."],
+        ["01-02 Oct", "Outlined reliability as the chance of recovering a control within a declared tolerance in its research range.", "Defined a measurable event for calibration rather than treating raw variance as a probability."],
+        ["04 Oct", "Reviewed two weeks of diagnostic and validation planning. Identified the need to revisit the synthesis domain before scaling the work.", "Set parameter-domain checks and a larger controlled corpus as the next dependencies."]
+      ],
+      "outcome": "The proposed protocol linked each metric and data subset to a specific research purpose.",
+      "next": "Confirm the control set and audio-processing policy."
+    },
+    {
+      "number": 10, "start": "2026-10-05", "end": "2026-10-11",
+      "focus": "Research domain and audio conditioning",
+      "entries": [
+        ["05-06 Oct", "Reviewed the expanded single-oscillator domain and the roles of the amplitude and filter envelopes.", "Moved beyond the initial eight-control engineering pilot."],
+        ["07 Oct", "Selected the final 13-control domain, retaining Bend and filter-envelope sustain. Investigated DC offset and compared mitigation options.", "Selected a fixed 10 Hz high-pass rule, preserving raw audio and recording the processing policy."],
+        ["08-09 Oct", "Reviewed storage precision and quiet spectral energy, together with generation and resume requirements.", "Kept FLOAT research masters and separate PCM16 playback copies."],
+        ["10-11 Oct", "Prepared the larger-corpus workflow, fixed parameter ranges and reproducibility requirements for C2.", "Defined the data and runtime checks needed before full model training."]
+      ],
+      "outcome": "C2 had a specified 13-control domain and a consistent audio-conditioning rule.",
+      "next": "Complete the corpus checks, freeze C2 partitions and train the full models."
+    },
+    {
+      "number": 11, "start": "2026-10-12", "end": "2026-10-18",
+      "focus": "Full C2 training and development validation",
+      "entries": [
+        ["12-13 Oct", "Completed checks for the 131,072-clip v4 corpus, including the FLOAT resume issue. Froze 98,304 training, 16,384 calibration, 8,192 validation and 8,192 test assignments.", "Split validation equally between inverse-model and reliability selection; kept the earlier 1,024 v4 clips in training."],
+        ["13 Oct", "Trained the deterministic 13-output CNN and saved data distributions, spectrograms, learning curves and per-control metrics.", "Measured inverse-validation macro z MAE of 0.126112 and retained the saved model and predictions."],
+        ["14 Oct", "Completed the three-member ensemble and diagnostics on 2,048 calibration and 512 reliability-validation clips.", "Ensemble MAE was 0.127991. Brier was 0.116267 for uncertainty alone and 0.115385 for all three inputs."],
+        ["14-15 Oct", "Audited the reliability comparisons and tested perturbation steps 0.01, 0.02 and 0.05 on 256 fixed calibration examples.", "Retained step 0.02. The audit did not establish an extra sensitivity benefit beyond uncertainty plus reconstruction error."],
+        ["15 Oct", "Built the saved-results viewer and organised the technical and demonstration guides.", "Made target/reconstruction audio, controls, reliability estimates and saved evidence easier to inspect."],
+        ["18 Oct", "Built and checked the separate C2 human-study rehearsal with one practice case, eight scored cases and counterbalanced reliability displays.", "Prepared a target of 12 completions with a 16-enrolment cap. Five automated tests passed; research collection remained disabled."]
+      ],
+      "outcome": "The development pipeline, reliability audit and study rehearsal were available. The 13-control final test remained reserved.",
+      "next": "Confirm the human-study materials and approvals, then lock the method before final testing."
+    },
+    {
+      "number": 12, "start": "2026-10-19", "end": "2026-10-20",
+      "focus": "Documentation and remaining validation work",
+      "entries": [
+        ["20 Oct", "Organised the C2 research record and prepared this logbook. Reviewed the saved outputs, study design and remaining validation tasks.", "Kept development results, study preparation and pending final evaluation clearly distinguished."]
+      ],
+      "outcome": "The C2 work was documented for review through 20 October 2026.",
+      "next": "Rehearse and time the study, finalise approved materials, and complete the remaining evaluation stages."
+    }
+  ],
+  "date_review_note": "The overall phase dates follow the researcher's account. Specific dates for unrecorded August and September review/planning activities are proposed allocations for the researcher to verify. Recorded milestones follow repository history and saved reports. Do not treat commit dates as proof of the exact day every activity occurred.",
+  "evidence": [
+    {"date": "2026-08-03", "source": "git 8adf7f2", "milestone": "Vita setup issue"},
+    {"date": "2026-08-04", "source": "git 65fe0f7", "milestone": "Initial 1024-sample pilot validation"},
+    {"date": "2026-08-24", "source": "git a8e2336 and 2a4509e", "milestone": "PCM16 pilot and 1024 checkpoint interval"},
+    {"date": "2026-08-25", "source": "git 85f540d", "milestone": "Generation progress reporting"},
+    {"date": "2026-08-26", "source": "git 1619409", "milestone": "Initial C2 eight-control baseline and saved outputs"},
+    {"date": "2026-09-15", "source": "git 369f848", "milestone": "Project progress report"},
+    {"date": "2026-10-07", "source": "generation/decisions/2026-10-07_bend_and_sustain.md and generation/characterization/dc_mitigation_v1/REPORT.md", "milestone": "13-control selection and DC mitigation"},
+    {"date": "2026-10-08", "source": "generation/characterization/pcm_precision_v1/REPORT.md", "milestone": "Storage precision audit"},
+    {"date": "2026-10-13", "source": "generation/characterization/corpus_resume_float_v1/REPORT.md and git ab0d6bf", "milestone": "Corpus resume correction and v4 C2 implementation"},
+    {"date": "2026-10-14", "source": "c2_estimation/RESEARCH_EVIDENCE.md and c2_estimation/VALIDATION_RESULTS.md", "milestone": "Completed ensemble, calibration and development audit"},
+    {"date": "2026-10-15", "source": "git 94c7ee0 and 39a6f1b", "milestone": "Viewer and guides"},
+    {"date": "2026-10-18", "source": "c2_estimation/human_study/VERIFICATION.md and git af2c2fc", "milestone": "C2 human-study rehearsal"}
+  ]
+}

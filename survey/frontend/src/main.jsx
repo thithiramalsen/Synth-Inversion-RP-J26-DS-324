@@ -1,5 +1,7 @@
 import SiteHome, { ResearcherHome } from './SiteNavigation'
 import C4App, { C4Admin } from './C4App.jsx'
+import C2App, { C2Admin } from './C2App.jsx'
+import C2StudyV2 from './C2StudyV2.jsx'
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import DemoApp from './DemoApp'
@@ -334,6 +336,6 @@ function RatingScale({ name, label, min, max, lowLabel, highLabel, value, onChan
 }
 
 const pathname = window.location.pathname.replace(/\/+$/, '') || '/'
-const RootApp = pathname === '/' ? SiteHome : ['/researcher', '/admin'].includes(pathname) ? ResearcherHome : pathname === '/c4/admin' ? C4Admin : pathname === '/c4' ? C4App : pathname === '/pilot/admin' ? PilotAdmin : pathname === '/pilot' ? PilotApp : pathname.startsWith('/demo') ? DemoApp : App
+const RootApp = pathname === '/c2/rehearsal-v2' ? C2StudyV2 : pathname === '/c2/admin' ? C2Admin : pathname === '/c2' ? C2App : pathname === '/' ? SiteHome : ['/researcher', '/admin'].includes(pathname) ? ResearcherHome : pathname === '/c4/admin' ? C4Admin : pathname === '/c4' ? C4App : pathname === '/pilot/admin' ? PilotAdmin : pathname === '/pilot' ? PilotApp : pathname.startsWith('/demo') ? DemoApp : App
 
 createRoot(document.getElementById('root')).render(<StrictMode><RootApp /></StrictMode>)

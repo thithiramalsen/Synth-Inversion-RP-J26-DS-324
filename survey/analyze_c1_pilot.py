@@ -41,6 +41,10 @@ def summarize(rows):
             if row.get(trait) not in ("unclear", *map(str, range(1, 8))):
                 raise ValueError(f"Missing or invalid {trait} answer in included export")
     counts = Counter(r["sample_id"] for r in primary)
+    coverage_targets = {int(row.get('target_ratings_per_sound') or 8) for row in included}
+    if len(coverage_targets) > 1 or any(target < 1 for target in coverage_targets):
+        raise ValueError('Mixed or invalid coverage targets: analyze separately')
+    coverage_target = next(iter(coverage_targets), None)
     traits = {}
     for trait in active_traits:
         values = [int(r[trait]) for r in primary if r[trait] != "unclear"]
@@ -66,7 +70,8 @@ def summarize(rows):
                             sound_medians={s:median(v) for s,v in by_sound.items()})
     return dict(completed_participants=len({r["participant_id"] for r in primary}),
                 unique_sounds=len(counts), independent_evaluations=len(primary),
-                listeners_per_sound=dict(counts), coverage_complete=len(counts)==64 and set(counts.values())=={8},
+                listeners_per_sound=dict(counts), target_ratings_per_sound=coverage_target,
+                coverage_complete=len(counts)==64 and coverage_target is not None and all(n >= coverage_target for n in counts.values()),
                 descriptor_ids=list(active_traits), traits=traits,
                 limitation="Descriptive only. Repeats are not independent listeners. Agreement estimates and uncertainty require a model that respects the assignment design.")
 

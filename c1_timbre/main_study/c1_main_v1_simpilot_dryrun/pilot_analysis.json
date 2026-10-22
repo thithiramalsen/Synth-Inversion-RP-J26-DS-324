@@ -1,0 +1,227 @@
+{
+  "label_source": [
+    "simulated"
+  ],
+  "responses": "c1_timbre/simulated/c1_pilot_sim_v1/c1_pilot_responses_SIMULATED.csv",
+  "responses_sha256": "5e87f2949beff03db85a606cbc0e2691d5137f2cd20a6c42d8656a041c9579e8",
+  "completed_participants": 16,
+  "sounds": 64,
+  "evaluations": 320,
+  "listeners_per_sound": [
+    5
+  ],
+  "descriptors": {
+    "brightness": {
+      "unclear_rate": 0.009375,
+      "icc1": 0.5053516292359538,
+      "icc1_mean_of_k": 0.8349877193788566,
+      "k0": 4.952981823644284,
+      "median_within_sound_sd": 1.0954451150103321,
+      "sound_mean_range": [
+        2.2,
+        6.8
+      ],
+      "sound_mean_iqr": 2.0,
+      "rating_histogram": {
+        "1": 18,
+        "2": 41,
+        "3": 55,
+        "4": 83,
+        "5": 59,
+        "6": 32,
+        "7": 29
+      }
+    },
+    "roughness": {
+      "unclear_rate": 0.084375,
+      "icc1": 0.38098474465438803,
+      "icc1_mean_of_k": 0.7379940416312262,
+      "k0": 4.576520938295682,
+      "median_within_sound_sd": 1.2909944487358056,
+      "sound_mean_range": [
+        1.4,
+        6.75
+      ],
+      "sound_mean_iqr": 1.75,
+      "rating_histogram": {
+        "1": 30,
+        "2": 36,
+        "3": 51,
+        "4": 59,
+        "5": 58,
+        "6": 30,
+        "7": 29
+      }
+    },
+    "percussiveness": {
+      "unclear_rate": 0.025,
+      "icc1": 0.587533635459036,
+      "icc1_mean_of_k": 0.8741130996910648,
+      "k0": 4.8746438746438745,
+      "median_within_sound_sd": 0.9259271493781269,
+      "sound_mean_range": [
+        1.4,
+        6.75
+      ],
+      "sound_mean_iqr": 2.0,
+      "rating_histogram": {
+        "1": 16,
+        "2": 50,
+        "3": 67,
+        "4": 65,
+        "5": 59,
+        "6": 35,
+        "7": 20
+      }
+    },
+    "sustainedness": {
+      "unclear_rate": 0.028125,
+      "icc1": 0.616821997315339,
+      "icc1_mean_of_k": 0.8866418076677187,
+      "k0": 4.858878170775276,
+      "median_within_sound_sd": 0.9574271077563381,
+      "sound_mean_range": [
+        1.2,
+        6.2
+      ],
+      "sound_mean_iqr": 2.6,
+      "rating_histogram": {
+        "1": 33,
+        "2": 32,
+        "3": 60,
+        "4": 56,
+        "5": 68,
+        "6": 41,
+        "7": 21
+      }
+    }
+  },
+  "sound_mean_correlations": {
+    "brightness~roughness": 0.1788661163738069,
+    "brightness~percussiveness": 0.056498150296857674,
+    "brightness~sustainedness": 0.055215355904743996,
+    "roughness~percussiveness": 0.032535410225024174,
+    "roughness~sustainedness": -0.161616489765889,
+    "percussiveness~sustainedness": -0.6011130062358055
+  },
+  "sessions": {
+    "started": 18,
+    "completed": 16,
+    "withdrawn": 1,
+    "incomplete": 1,
+    "non_completion_rate": 0.1111111111111111
+  },
+  "feedback": {
+    "n": 16,
+    "too_long": 0.125,
+    "terms_unclear": 0.5625
+  },
+  "timing": {
+    "median_study_trial_s": 38.0,
+    "median_practice_trial_s": 51.5,
+    "trial_seconds_slope_per_position": 0.14506578947368556,
+    "abs_residual_first_half": 0.799484256243214,
+    "abs_residual_second_half": 0.8438610662358643,
+    "median_session_min": 22.991666666666667,
+    "p90_session_min": 26.416666666666664,
+    "median_setup_min": 2.9833333333333334
+  },
+  "model": {
+    "brightness": {
+      "cv": {
+        "mae": 0.47349989223615485,
+        "baseline_mae": 1.1001116071428572,
+        "r2_vs_train_mean": 0.8018679817732592,
+        "spearman": 0.8867039300401198,
+        "predictions_outside_1_7": 0
+      },
+      "shuffled_target_cv": {
+        "mae": 1.1188281627252552,
+        "baseline_mae": 1.108872767857143,
+        "r2_vs_train_mean": -0.03308801120970739,
+        "spearman": -0.27413383281693465,
+        "predictions_outside_1_7": 0
+      },
+      "alpha": 10.0,
+      "top_weights": {
+        "log2_centroid": 0.426082395472473,
+        "lf_energy_fraction": -0.3027712339015248,
+        "log2_rolloff85": 0.27851579911138036,
+        "hf_energy_db": 0.15269282371254908,
+        "log_attack_s": 0.12516269558214274
+      }
+    },
+    "roughness": {
+      "cv": {
+        "mae": 0.6254539617664208,
+        "baseline_mae": 1.035732886904762,
+        "r2_vs_train_mean": 0.6658602930300954,
+        "spearman": 0.7752336188820647,
+        "predictions_outside_1_7": 1
+      },
+      "shuffled_target_cv": {
+        "mae": 1.038166410217476,
+        "baseline_mae": 1.0334728422619048,
+        "r2_vs_train_mean": -0.004177963369697224,
+        "spearman": -0.01516696680261036,
+        "predictions_outside_1_7": 0
+      },
+      "alpha": 3.981071705534973,
+      "top_weights": {
+        "log_am_rough_15_150": 0.8386272085337837,
+        "log_am_fluct_4_15": 0.3363078522579316,
+        "log2_rolloff85": 0.253688176413496,
+        "log2_centroid": -0.2517711401428648,
+        "tail_rel_db": -0.1552521051860418
+      }
+    },
+    "percussiveness": {
+      "cv": {
+        "mae": 0.5345852574948633,
+        "baseline_mae": 1.1538504464285713,
+        "r2_vs_train_mean": 0.7666414052743808,
+        "spearman": 0.855912335487057,
+        "predictions_outside_1_7": 0
+      },
+      "shuffled_target_cv": {
+        "mae": 1.1224623262474047,
+        "baseline_mae": 1.1418526785714287,
+        "r2_vs_train_mean": 0.012667546948595731,
+        "spearman": 0.1814535986182364,
+        "predictions_outside_1_7": 0
+      },
+      "alpha": 2.5118864315095824,
+      "top_weights": {
+        "log_peak_time_s": -0.6848716571972516,
+        "held_drop_db": 0.5441423764392361,
+        "temporal_centroid_s": -0.27545725335962223,
+        "release_time_s": -0.2571180609705071,
+        "log_attack_s": -0.23478689822727947
+      }
+    },
+    "sustainedness": {
+      "cv": {
+        "mae": 0.5539593882149481,
+        "baseline_mae": 1.2679408482142858,
+        "r2_vs_train_mean": 0.7863546721104119,
+        "spearman": 0.867618529751474,
+        "predictions_outside_1_7": 1
+      },
+      "shuffled_target_cv": {
+        "mae": 1.2835590395226908,
+        "baseline_mae": 1.2752325148809522,
+        "r2_vs_train_mean": -0.009828948970631579,
+        "spearman": -0.2950893203006572,
+        "predictions_outside_1_7": 0
+      },
+      "alpha": 2.5118864315095824,
+      "top_weights": {
+        "held_drop_db": -0.9418091916244333,
+        "tail_rel_db": 0.46366389045481254,
+        "log2_rolloff85": 0.41519071379072137,
+        "temporal_centroid_s": 0.3556969907270026,
+        "lf_energy_fraction": 0.23642976957749826
+      }
+    }
+  }
+}

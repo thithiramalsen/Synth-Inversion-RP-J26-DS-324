@@ -1,0 +1,5847 @@
+[
+ {
+  "assignment_id": "block_01",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_027",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_123",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_007",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_063",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_043",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_008",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_044",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_124",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_100",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_033",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_017",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_002",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_029",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_108",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_053",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_003",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_039",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_084",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_030",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_124",
+    "kind": "repeat",
+    "repeat_of": "rated_08"
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_041",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_100",
+    "kind": "repeat",
+    "repeat_of": "rated_09"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_089",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_052",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_02",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_099",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_069",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_088",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_062",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_010",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_070",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_015",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_028",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_079",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_037",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_004",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_038",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_071",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_059",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_112",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_028",
+    "kind": "repeat",
+    "repeat_of": "rated_08"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_014",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_114",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_088",
+    "kind": "repeat",
+    "repeat_of": "rated_03"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_076",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_116",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_078",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_091",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_022",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_03",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_016",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_127",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_005",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_104",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_126",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_036",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_066",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_102",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_083",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_046",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_055",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_081",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_045",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_021",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_119",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_126",
+    "kind": "repeat",
+    "repeat_of": "rated_05"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_001",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_096",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_072",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_082",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_068",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_104",
+    "kind": "repeat",
+    "repeat_of": "rated_04"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_121",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_013",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_04",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_026",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_050",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_011",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_075",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_012",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_025",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_095",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_128",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_080",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_018",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_120",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_086",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_073",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_106",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_040",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_095",
+    "kind": "repeat",
+    "repeat_of": "rated_07"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_074",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_110",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_049",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_109",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_115",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_031",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_011",
+    "kind": "repeat",
+    "repeat_of": "rated_03"
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_085",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_05",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_032",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_023",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_034",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_094",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_067",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_101",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_064",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_047",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_060",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_051",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_020",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_107",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_118",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_111",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_065",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_101",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_057",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_019",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_009",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_058",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_067",
+    "kind": "repeat",
+    "repeat_of": "rated_05"
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_042",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_105",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_122",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_06",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_035",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_116",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_120",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_092",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_097",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_033",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_117",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_067",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_048",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_061",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_103",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_125",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_093",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_113",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_024",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_056",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_098",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_116",
+    "kind": "repeat",
+    "repeat_of": "rated_02"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_054",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_077",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_006",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_087",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_090",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_035",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_07",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_012",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_112",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_080",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_054",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_077",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_043",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_109",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_013",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_058",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_108",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_111",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_055",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_092",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_041",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_064",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_050",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_071",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_012",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_089",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_046",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_097",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_016",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_109",
+    "kind": "repeat",
+    "repeat_of": "rated_07"
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_114",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_08",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_073",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_006",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_009",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_100",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_014",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_074",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_066",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_024",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_101",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_056",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_002",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_039",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_065",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_022",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_104",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_123",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_085",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_001",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_073",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_035",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_019",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_045",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_004",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_074",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_09",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_117",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_063",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_091",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_086",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_094",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_081",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_017",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_023",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_040",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_057",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_087",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_088",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_099",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_119",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_103",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_027",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_025",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_086",
+    "kind": "repeat",
+    "repeat_of": "rated_04"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_008",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_011",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_020",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_017",
+    "kind": "repeat",
+    "repeat_of": "rated_07"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_068",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_070",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_10",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_052",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_015",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_113",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_115",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_044",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_078",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_126",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_122",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_032",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_093",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_082",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_042",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_084",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_076",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_060",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_032",
+    "kind": "repeat",
+    "repeat_of": "rated_09"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_029",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_005",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_015",
+    "kind": "repeat",
+    "repeat_of": "rated_02"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_110",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_049",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_038",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_090",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_072",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_11",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_125",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_121",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_098",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_128",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_127",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_034",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_083",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_107",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_007",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_021",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_061",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_105",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_031",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_075",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_037",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_010",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_028",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_034",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_124",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_003",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_051",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_106",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_069",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_125",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_12",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_030",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_096",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_037",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_003",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_042",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_036",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_018",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_097",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_102",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_095",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_025",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_059",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_048",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_060",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_118",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_030",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_103",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_047",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_039",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_062",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_037",
+    "kind": "repeat",
+    "repeat_of": "rated_03"
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_053",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_079",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_026",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_13",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_018",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_078",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_120",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_113",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_084",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_027",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_119",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_007",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_053",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_069",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_111",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_009",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_071",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_055",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_057",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_125",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_046",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_018",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_095",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_026",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_051",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_027",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_001",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_056",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_14",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_088",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_023",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_124",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_116",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_030",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_085",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_045",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_031",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_109",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_093",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_102",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_063",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_104",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_090",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_067",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_094",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_010",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_064",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_045",
+    "kind": "repeat",
+    "repeat_of": "rated_07"
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_013",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_023",
+    "kind": "repeat",
+    "repeat_of": "rated_02"
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_059",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_106",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_052",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_15",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_070",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_098",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_008",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_083",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_079",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_118",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_004",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_016",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_050",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_105",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_002",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_048",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_049",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_112",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_066",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_083",
+    "kind": "repeat",
+    "repeat_of": "rated_04"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_040",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_115",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_096",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_032",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_050",
+    "kind": "repeat",
+    "repeat_of": "rated_09"
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_089",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_034",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_087",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_16",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_047",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_061",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_038",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_054",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_114",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_123",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_014",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_024",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_036",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_062",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_128",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_065",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_044",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_011",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_043",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_075",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_005",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_036",
+    "kind": "repeat",
+    "repeat_of": "rated_09"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_072",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_117",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_020",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_121",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_108",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_047",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_17",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_006",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_107",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_029",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_081",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_073",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_122",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_077",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_080",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_076",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_041",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_021",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_091",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_028",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_092",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_033",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_081",
+    "kind": "repeat",
+    "repeat_of": "rated_04"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_022",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_086",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_017",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_058",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_074",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_077",
+    "kind": "repeat",
+    "repeat_of": "rated_07"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_127",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_126",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_18",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_043",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_100",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_119",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_110",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_015",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_054",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_106",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_012",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_098",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_019",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_082",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_035",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_053",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_028",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_101",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_030",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_080",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_054",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_099",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_034",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_118",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_102",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_043",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_068",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_19",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_008",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_015",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_065",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_018",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_057",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_100",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_006",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_037",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_064",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_110",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_104",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_069",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_021",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_075",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_041",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_005",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_070",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_065",
+    "kind": "repeat",
+    "repeat_of": "rated_03"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_052",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_086",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_097",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_048",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_013",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_006",
+    "kind": "repeat",
+    "repeat_of": "rated_07"
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_20",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_117",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_084",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_093",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_046",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_081",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_059",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_060",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_019",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_101",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_010",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_068",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_036",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_112",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_003",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_123",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_060",
+    "kind": "repeat",
+    "repeat_of": "rated_07"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_107",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_012",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_007",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_077",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_049",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_046",
+    "kind": "repeat",
+    "repeat_of": "rated_04"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_040",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_022",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_21",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_128",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_002",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_035",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_045",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_031",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_124",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_062",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_108",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_025",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_058",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_009",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_076",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_027",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_082",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_092",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_099",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_002",
+    "kind": "repeat",
+    "repeat_of": "rated_02"
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_016",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_078",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_108",
+    "kind": "repeat",
+    "repeat_of": "rated_08"
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_087",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_042",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_120",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_096",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_22",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_063",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_103",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_115",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_023",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_032",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_085",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_024",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_079",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_051",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_127",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_033",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_126",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_001",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_017",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_105",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_061",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_089",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_095",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_051",
+    "kind": "repeat",
+    "repeat_of": "rated_09"
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_071",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_079",
+    "kind": "repeat",
+    "repeat_of": "rated_08"
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_114",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_038",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_109",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_23",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_091",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_014",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_121",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_029",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_111",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_073",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_116",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_122",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_090",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_125",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_039",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_055",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_083",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_050",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_026",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_044",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_014",
+    "kind": "repeat",
+    "repeat_of": "rated_02"
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_067",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_094",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_047",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_088",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_011",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_121",
+    "kind": "repeat",
+    "repeat_of": "rated_03"
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_066",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_24",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_023",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_056",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_107",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_004",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_099",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_026",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_063",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_122",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_074",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_012",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_109",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_113",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_016",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_083",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_037",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_021",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_097",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_072",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_030",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_020",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_026",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_076",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_123",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_063",
+    "kind": "repeat",
+    "repeat_of": "rated_07"
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_25",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_039",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_050",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_126",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_068",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_110",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_104",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_062",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_095",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_113",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_072",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_103",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_111",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_124",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_098",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_007",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_062",
+    "kind": "repeat",
+    "repeat_of": "rated_07"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_004",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_041",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_022",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_040",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_058",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_061",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_113",
+    "kind": "repeat",
+    "repeat_of": "rated_09"
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_094",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_26",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_114",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_069",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_047",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_082",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_055",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_049",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_092",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_029",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_057",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_118",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_093",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_106",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_074",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_033",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_010",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_089",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_020",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_014",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_069",
+    "kind": "repeat",
+    "repeat_of": "rated_02"
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_001",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_025",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_049",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_008",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_102",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_27",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_086",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_056",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_079",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_108",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_060",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_013",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_002",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_125",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_027",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_036",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_048",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_080",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_052",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_116",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_081",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_073",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_013",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_032",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_128",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_071",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_101",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_034",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_038",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_056",
+    "kind": "repeat",
+    "repeat_of": "rated_02"
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_28",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_064",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_075",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_084",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_044",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_096",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_053",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_017",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_085",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_015",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_127",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_066",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_018",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_059",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_105",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_117",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_035",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_009",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_112",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_054",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_084",
+    "kind": "repeat",
+    "repeat_of": "rated_03"
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_091",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_031",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_085",
+    "kind": "repeat",
+    "repeat_of": "rated_08"
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_090",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_29",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_051",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_121",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_024",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_003",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_120",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_115",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_005",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_042",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_067",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_006",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_011",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_088",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_046",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_119",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_028",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_070",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_024",
+    "kind": "repeat",
+    "repeat_of": "rated_03"
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_043",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_078",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_077",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_100",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_115",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_045",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_019",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_30",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_020",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_087",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_068",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_040",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_085",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_029",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_090",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_100",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_026",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_034",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_121",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_006",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_052",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_071",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_058",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_040",
+    "kind": "repeat",
+    "repeat_of": "rated_04"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_062",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_096",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_037",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_068",
+    "kind": "repeat",
+    "repeat_of": "rated_03"
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_065",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_033",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_012",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_046",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_31",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_065",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_011",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_082",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_051",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_093",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_107",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_015",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_014",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_013",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_106",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_004",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_120",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_087",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_066",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_108",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_041",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_060",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_095",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_030",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_112",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_082",
+    "kind": "repeat",
+    "repeat_of": "rated_03"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_127",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_093",
+    "kind": "repeat",
+    "repeat_of": "rated_05"
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_103",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_32",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_079",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_097",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_069",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_072",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_008",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_031",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_084",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_010",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_080",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_073",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_023",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_126",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_007",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_024",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_067",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_072",
+    "kind": "repeat",
+    "repeat_of": "rated_04"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_027",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_110",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_091",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_054",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_031",
+    "kind": "repeat",
+    "repeat_of": "rated_06"
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_047",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_016",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_019",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_33",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_092",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_055",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_036",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_063",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_018",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_017",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_105",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_043",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_123",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_088",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_005",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_028",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_025",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_098",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_104",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_113",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_059",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_101",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_125",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_076",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_123",
+    "kind": "repeat",
+    "repeat_of": "rated_09"
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_050",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_032",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_092",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_34",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_003",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_086",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_116",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_114",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_002",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_039",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_115",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_111",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_081",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_083",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_117",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_061",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_064",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_042",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_021",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_102",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_003",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_078",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_114",
+    "kind": "repeat",
+    "repeat_of": "rated_04"
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_049",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_099",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_074",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_053",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_009",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ },
+ {
+  "assignment_id": "block_35",
+  "trials": [
+   {
+    "presentation_id": "practice_01",
+    "sample_id": "sound_129",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_02",
+    "sample_id": "sound_130",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "practice_03",
+    "sample_id": "sound_131",
+    "kind": "practice",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_01",
+    "sample_id": "sound_059",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_02",
+    "sample_id": "sound_128",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_03",
+    "sample_id": "sound_075",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_04",
+    "sample_id": "sound_070",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_05",
+    "sample_id": "sound_122",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_06",
+    "sample_id": "sound_109",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_07",
+    "sample_id": "sound_038",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_08",
+    "sample_id": "sound_118",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_09",
+    "sample_id": "sound_124",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_10",
+    "sample_id": "sound_094",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_11",
+    "sample_id": "sound_119",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_12",
+    "sample_id": "sound_048",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_13",
+    "sample_id": "sound_044",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_14",
+    "sample_id": "sound_089",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_15",
+    "sample_id": "sound_035",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_01",
+    "sample_id": "sound_070",
+    "kind": "repeat",
+    "repeat_of": "rated_04"
+   },
+   {
+    "presentation_id": "rated_16",
+    "sample_id": "sound_001",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_17",
+    "sample_id": "sound_056",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_18",
+    "sample_id": "sound_057",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_19",
+    "sample_id": "sound_077",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "repeat_02",
+    "sample_id": "sound_059",
+    "kind": "repeat",
+    "repeat_of": "rated_01"
+   },
+   {
+    "presentation_id": "rated_20",
+    "sample_id": "sound_022",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_21",
+    "sample_id": "sound_012",
+    "kind": "primary",
+    "repeat_of": null
+   },
+   {
+    "presentation_id": "rated_22",
+    "sample_id": "sound_045",
+    "kind": "primary",
+    "repeat_of": null
+   }
+  ]
+ }
+]

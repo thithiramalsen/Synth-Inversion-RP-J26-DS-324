@@ -1,12 +1,24 @@
 # C4 — Human-aligned synthesizer audio similarity
 
 C4 asks whether a frozen pretrained audio representation can be adapted with human preferences from synthesizer-reconstruction comparisons. The deliverable is a scorer benchmarked against held-out listener choices; training a neural network by itself is not evidence of perceptual alignment.
+The participant release uses its own study ID and fresh invitations. See the
+[participant deployment guide](../survey/C4_PARTICIPANT_DEPLOYMENT.md) for the
+current collection settings and completed-response export rules.
+
+The current C4 survey is prepared with a **200-triplet real-audio CLAP bank**,
+20 unique comparisons plus two hidden repeats and two practices per listener,
+and 100 balanced assignments for a target of 50–100 completed listeners. See
+the [current protocol](../survey/C4_REVIEW_PROTOCOL.md). The bank lives in
+`synthetic_data/clap_triplets.csv`; the adjacent synthetic response/session CSVs
+are separate software fixtures and are never imported as participant answers.
+
+The MFCC instructions below describe the historical local development prototype.
 
 ## Current repository state
 
 - `data/raw/audio/pilot_v1/` contains 1,024 verified eight-control development renders. The current `restricted_bend_sustain_v4` corpus contains 131,072 raw FLOAT renders with 13 normalized Vital controls and sample metadata.
 - The proposal's 65,536-render set is a plan, not the corpus currently stored. Confirm the frozen dataset version with the supervisor before final study materials or claims.
-- The hosted C4 interface in `survey/` is a supervisor review protocol. Its records are excluded from research analysis. This offline pipeline does not authorize recruitment or convert review responses into research evidence.
+- The hosted C4 interface in `survey/` has separate participant and researcher rehearsal releases. Eligible completed participant responses are marked with `analysis_include=true`; rehearsal and review responses remain excluded. Use the [participant deployment guide](../survey/C4_PARTICIPANT_DEPLOYMENT.md) for the current collection settings and export rules.
 - The current survey export uses `reference`, `candidate_a`, `candidate_b`, and `choice`. The proposal describes target A and candidates B/C. Field and answer mappings are configurable.
 
 ## Similarity scoring
@@ -114,7 +126,7 @@ The processor validates required IDs against the manifest, checks missing/malfor
 - `aggregate_preferences.csv`: votes, agreement, uncertainty counts and explicit ties for repeated comparisons.
 - `quality_summary.json`: input, accepted, rejected, uncertain and aggregate counts.
 
-Uncertainty is not converted into a preference. Confidence is preserved but does not weight triplet loss. Ties remain ties. The default 0.67 agreement threshold only marks aggregate rows; individual judgments remain. Synthetic and human rows cannot be combined. The current hosted review export has `analysis_include=false` and is excluded. A real study needs its own approved, versioned protocol and eligible export.
+Uncertainty is not converted into a preference. Confidence is preserved but does not weight triplet loss. Ties remain ties. The default 0.67 agreement threshold only marks aggregate rows; individual judgments remain. Synthetic and human rows cannot be combined. Researcher rehearsal and historical review exports have `analysis_include=false` and remain excluded. Use eligible completed responses from the separate participant release for the human benchmark; practice and withdrawn responses stay excluded.
 
 ## Leakage-safe splits and model
 
@@ -163,3 +175,7 @@ Tests cover MFCC/STFT direction, stereo/duration handling, triplet-loss math, ze
 ## Research boundary
 
 The synthetic listeners, responses, consent/experience placeholders and labels are not participants. Do not combine these files with human exports or cite their scores as evidence. Only ethics-approved, held-out human preferences can establish whether C4 agrees better than the strongest validated baseline. If it does not, retain that baseline for C3.
+
+## Historical development instrument
+
+The separate [synthetic data guide](synthetic_data/README.md) documents the real CLAP sound bank and simulated answer fixtures. Synthetic answer rows are software tests, not participant research results. `development_triplets.csv` and `select_triplets.py` describe the earlier ten-triplet MFCC development instrument; the current participant survey uses the separately frozen 200-triplet bank.
