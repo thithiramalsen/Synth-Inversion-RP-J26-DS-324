@@ -1,0 +1,43 @@
+{
+  "exports": [
+    {
+      "file": "c1-responses (2).csv",
+      "sha256": "1f378522fe4ce295a2672de68413c65028b780512b6a0ba22c940c74d56ca6d2",
+      "rows": 270
+    },
+    {
+      "file": "c1-responses (3).csv",
+      "sha256": "62f47b81470a7250364bd9bd5d85b4b7a3bafabef31e4bf0717927ab23265b06",
+      "rows": 357
+    }
+  ],
+  "rows": 627,
+  "sessions": 32,
+  "complete_sessions": 28,
+  "rule": {
+    "complete_not_withdrawn": true,
+    "kind": "primary",
+    "min_leave_one_out_agreement": 0.3
+  },
+  "excluded_for_agreement": [
+    {
+      "session_id": "S_0deadc05e9bf395a1af7cd69",
+      "participant_label": "Listener 009",
+      "export": "c1-responses (2).csv",
+      "agreement": 0.171
+    }
+  ],
+  "included_sessions": 27,
+  "included_evaluations": 540,
+  "sounds": 64,
+  "listeners_per_sound": {
+    "min": 6,
+    "median": 8.0,
+    "max": 12
+  },
+  "label_source_counts": {
+    "human_researcher_entered": 340,
+    "human_export": 200
+  },
+  "note": "Human ratings only. Researcher-entered rows are ratings typed in by the researcher for a listener."
+}

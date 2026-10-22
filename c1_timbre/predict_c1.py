@@ -36,7 +36,7 @@ from c1_timbre.features_v2 import FEATURE_NAMES, FEATURE_VERSION, SR, extract
 
 ROOT = Path(__file__).resolve().parents[1]
 TRAITS = ("brightness", "roughness", "percussiveness", "sustainedness")
-DEFAULT_RUN = ROOT / "c1_timbre/models/c1_ridge_main_SIMULATED_v1"
+DEFAULT_RUN = ROOT / "c1_timbre/models/c1_ridge_main_SIMULATED_humanpilot_v1"
 CORPUS_FEATURES = ROOT / "data/processed/c1_features_v2/corpus_features.parquet"
 RENDER_FRAMES = 132300
 SUPPORT_QUANTILE = 0.95

@@ -146,14 +146,33 @@ def cross_validate(X, y, rng, folds=CV_FOLDS):
 
 
 # ------------------------------------------------------------------ pilot analysis
-def analyse_pilot(responses: Path, sessions: Path | None, bundle: dict, bundle_dir: Path, rng):
+def sessions_from_responses(raw: pd.DataFrame) -> pd.DataFrame:
+    """One row per session rebuilt from a responses export (no separate sessions file).
+
+    started_at is the first trial start, so setup time is unknown and left to the default.
+    """
+    g = raw.groupby("session_id", sort=False)
+    return pd.DataFrame(dict(session_id=list(g.groups), started_at=g.started_at.min().values,
+                             completed_at=g.completed_at.first().values, withdrawn_at=g.withdrawn_at.first().values,
+                             phase=g.phase.first().values, feedback_json=g.feedback_json.first().values))
+
+
+def analyse_pilot(responses: Path, sessions: Path | None, bundle: dict, bundle_dir: Path, rng,
+                  include_rehearsal: bool = False, sessions_from_export: bool = False, allow_mixed_versions: bool = False):
     raw = pd.read_csv(responses, dtype=str, keep_default_na=False)
     label_source = sorted(set(raw.get("label_source", pd.Series(["human_export"])).replace("", "human_export")))
+    if include_rehearsal:
+        # Team/researcher rehearsal exports mark every row analysis_include=False; accept completed,
+        # non-withdrawn primary/repeat rows on purpose and record it as a separate label source.
+        keep = (raw.phase == "complete") & (raw.withdrawn_at == "") & raw.kind.isin(["primary", "repeat"])
+        raw["analysis_include"] = np.where(keep, "True", "False")
+        label_source = sorted(set(raw.get("data_origin", pd.Series(["team_rehearsal"])).replace("", "team_rehearsal")))
     inc = raw[raw.analysis_include == "True"]
     primary = inc[inc.kind == "primary"].copy()
     if primary.duplicated(["participant_id", "sample_id"]).any():
         raise ValueError("A listener rated the same sound twice as primary")
-    if len(set(zip(inc.bundle_hash, inc.protocol_hash))) != 1:
+    versions = sorted(set(zip(inc.bundle_hash, inc.protocol_hash)))
+    if len(versions) != 1 and not allow_mixed_versions:
         raise ValueError("Mixed bundle/protocol versions in pilot export")
     for t in TRAITS:
         primary[t + "_v"] = pd.to_numeric(primary[t].where(primary[t] != "unclear"), errors="coerce")
@@ -161,6 +180,7 @@ def analyse_pilot(responses: Path, sessions: Path | None, bundle: dict, bundle_d
     means = primary.groupby("sample_id")[[t + "_v" for t in TRAITS]].mean()
     means.columns = list(TRAITS)
     out = dict(label_source=label_source, responses=rel(responses), responses_sha256=sha(responses),
+               bundle_protocol_versions=[dict(bundle_hash=b, protocol_hash=p) for b, p in versions],
                completed_participants=int(primary.participant_id.nunique()), sounds=len(sounds),
                evaluations=len(primary), listeners_per_sound=sorted(map(int, primary.sample_id.value_counts().unique())),
                descriptors={})
@@ -183,8 +203,14 @@ def analyse_pilot(responses: Path, sessions: Path | None, bundle: dict, bundle_d
     complete = raw[(raw.phase == "complete") & (raw.withdrawn_at == "")]
     practice = complete[complete.kind == "practice"]
     practice_s = (pd.to_datetime(practice.submitted_at, utc=True) - pd.to_datetime(practice.started_at, utc=True)).dt.total_seconds()
+    practice_note = None
+    if practice_s.empty:  # e.g. a no-practice rehearsal protocol: assume a practice trial takes a study trial's time
+        practice_s = pd.Series([float(primary.trial_s.median())])
+        practice_note = "no practice trials in export; practice time assumed equal to median study trial"
     primary["position"] = primary.groupby("session_id").trial_order.transform(lambda s: s.astype(int).rank())
-    slope = float(np.polyfit(primary.position, primary.trial_s, 1)[0])
+    # robust to occasional long pauses: fit the trend on the per-position median trial time
+    per_pos = primary.groupby("position").trial_s.median()
+    slope = float(np.polyfit(per_pos.index.to_numpy(float), per_pos.to_numpy(), 1)[0])
     resid = []
     for t in TRAITS:
         r = primary[t + "_v"] - primary.groupby("sample_id")[t + "_v"].transform("mean")
@@ -192,11 +218,12 @@ def analyse_pilot(responses: Path, sessions: Path | None, bundle: dict, bundle_d
     resid = pd.concat(resid)
     half = primary.position.max() / 2
     timing = dict(median_study_trial_s=float(primary.trial_s.median()), median_practice_trial_s=float(practice_s.median()),
+                  practice_note=practice_note,
                   trial_seconds_slope_per_position=slope,
                   abs_residual_first_half=float(resid[resid.position <= half].abs_resid.mean()),
                   abs_residual_second_half=float(resid[resid.position > half].abs_resid.mean()))
-    if sessions is not None:
-        s = pd.read_csv(sessions, dtype=str, keep_default_na=False)
+    if sessions is not None or sessions_from_export:
+        s = pd.read_csv(sessions, dtype=str, keep_default_na=False) if sessions is not None else sessions_from_responses(raw)
         s["fate"] = np.where(s.withdrawn_at != "", "withdrawn", np.where(s.phase == "complete", "complete", "incomplete"))
         done = s[s.fate == "complete"]
         dur = (pd.to_datetime(done.completed_at, utc=True) - pd.to_datetime(done.started_at, utc=True)).dt.total_seconds() / 60
@@ -204,8 +231,11 @@ def analyse_pilot(responses: Path, sessions: Path | None, bundle: dict, bundle_d
         start = pd.to_datetime(done.set_index("session_id").started_at, utc=True)
         setup = (first.reindex(start.index) - start).dt.total_seconds() / 60
         fb = [json.loads(f) for f in done.feedback_json if f]
-        timing.update(median_session_min=float(dur.median()), p90_session_min=float(dur.quantile(.9)),
-                      median_setup_min=float(setup.median()))
+        timing.update(median_session_min=float(dur.median()), p90_session_min=float(dur.quantile(.9)))
+        if sessions is not None:  # setup time is only known from a real sessions export
+            timing["median_setup_min"] = float(setup.median())
+        else:
+            timing["session_source"] = "rebuilt from responses (first trial start to completion); setup time unknown"
         out["sessions"] = dict(started=len(s), completed=int((s.fate == "complete").sum()),
                                withdrawn=int((s.fate == "withdrawn").sum()), incomplete=int((s.fate == "incomplete").sum()),
                                non_completion_rate=float((s.fate != "complete").mean()))
@@ -483,6 +513,12 @@ def main():
     ap.add_argument("--max-session-min", type=float, default=MAX_MEDIAN_SESSION_MIN)
     ap.add_argument("--skip-audio", action="store_true", help="plan and select without writing stimulus audio")
     ap.add_argument("--overwrite", action="store_true")
+    ap.add_argument("--include-rehearsal", action="store_true",
+                    help="accept completed rows of a team/researcher rehearsal export (marked analysis_include=False)")
+    ap.add_argument("--sessions-from-responses", action="store_true",
+                    help="rebuild session timing/feedback from the responses export when no sessions file exists")
+    ap.add_argument("--allow-mixed-versions", action="store_true",
+                    help="pool pilot rounds that used different bundle/protocol versions (same sound audio required)")
     args = ap.parse_args()
 
     out = ROOT / "c1_timbre/main_study" / args.version
@@ -502,15 +538,19 @@ def main():
 
     # 1-2. pilot
     pilot, means, pilot_X, pilot_sounds, models = analyse_pilot(
-        args.pilot_responses, args.pilot_sessions if args.pilot_sessions and args.pilot_sessions.exists() else None,
-        bundle, args.pilot_bundle.parent, rng)
-    simulated = any(s != "human_export" for s in pilot["label_source"])
+        args.pilot_responses,
+        None if args.sessions_from_responses else (args.pilot_sessions if args.pilot_sessions and args.pilot_sessions.exists() else None),
+        bundle, args.pilot_bundle.parent, rng, args.include_rehearsal, args.sessions_from_responses,
+        args.allow_mixed_versions)
+    simulated = any("simulated" in s for s in pilot["label_source"])
     (out / "pilot_analysis.json").write_text(json.dumps(pilot, indent=2), encoding="utf-8")
 
     # 3. decisions
     decisions = decide(pilot, args.max_session_min)
     decisions["pilot_label_source"] = pilot["label_source"]
-    decisions["status"] = "DRY RUN from simulated pilot - not a frozen stimulus set" if simulated else "draft from human pilot"
+    decisions["status"] = ("DRY RUN from simulated pilot - not a frozen stimulus set" if simulated else
+                           "draft from team-rehearsal pilot (research team members, not independent participants)"
+                           if args.include_rehearsal else "draft from human pilot")
 
     # 4. selection
     pilot_sources = {s["source_sample_id"] for s in bundle["samples"].values()}
@@ -603,7 +643,7 @@ def main():
         shutil.copy2(pilot_dir / "audio" / bundle["calibration"]["path"], adir / bundle["calibration"]["path"])
         level = dict(bundle["level_policy"], gains=[samples[s]["gain"] for s in samples],
                      note="Target RMS and peak ceiling inherited unchanged from the pilot bundle")
-        main_bundle = dict(study_id="c1_main_v1", schema_version=1, rehearsal=simulated, version=args.version,
+        main_bundle = dict(study_id="c1_main_v1", schema_version=1, rehearsal=simulated or args.include_rehearsal, version=args.version,
                            status=decisions["status"], dataset_name=recipe["dataset_name"],
                            source_manifest="data/raw/corpus_v4/manifest.parquet",
                            source_manifest_sha256=sha(ROOT / "data/raw/corpus_v4/manifest.parquet"),

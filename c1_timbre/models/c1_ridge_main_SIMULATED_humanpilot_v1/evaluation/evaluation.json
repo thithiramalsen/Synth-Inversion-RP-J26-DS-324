@@ -1,0 +1,453 @@
+{
+  "run": "c1_ridge_main_SIMULATED_humanpilot_v1",
+  "label_source": [
+    "simulated"
+  ],
+  "simulated": true,
+  "design": {
+    "sounds": 128,
+    "repeats": 20,
+    "folds": 5,
+    "permutations": 200,
+    "split_halves": 50,
+    "learning_curve_repeats": 10
+  },
+  "descriptors": {
+    "brightness": {
+      "repeated_cv": {
+        "mae": {
+          "mean": 0.5800486238726495,
+          "p2_5": 0.5516171213507398,
+          "p97_5": 0.6223982739879785
+        },
+        "baseline_mae": {
+          "mean": 1.3327524325491724,
+          "p2_5": 1.3212802226852514,
+          "p97_5": 1.3530069186920826
+        },
+        "r2": {
+          "mean": 0.7829937816249464,
+          "p2_5": 0.7461867112620861,
+          "p97_5": 0.8066735029949026
+        },
+        "spearman": {
+          "mean": 0.8618581812095973,
+          "p2_5": 0.8407611550333312,
+          "p97_5": 0.876061240900255
+        },
+        "share_beating_baseline": 1.0
+      },
+      "permutation": {
+        "null_mean_r2": -0.009189517315512463,
+        "null_p95_r2": 0.07809082697506115,
+        "p_value": 0.004975124378109453
+      },
+      "listeners": {
+        "split_half_r": 0.8442280364721982,
+        "reliability_of_full_mean": 0.9154538943772039,
+        "noise_ceiling_r": 0.9567935484613198,
+        "model_cv_r": 0.8827835576109575,
+        "model_share_of_ceiling": 0.9226478993620072,
+        "new_listeners": {
+          "model_trained_on_half_A_vs_half_B_r": 0.851783951995602,
+          "half_A_vs_half_B_r": 0.8442280364721982,
+          "note": "model >= human half means it predicts new listeners as well as other listeners do"
+        }
+      },
+      "feature_groups": {
+        "groups": {
+          "spectral": {
+            "only_this_group_r2": 0.7976829561931745,
+            "without_this_group_r2": -0.029504802808536068,
+            "drop": 0.8124985844334824
+          },
+          "temporal": {
+            "only_this_group_r2": -0.02432913286961145,
+            "without_this_group_r2": 0.7946406646060706,
+            "drop": -0.011646882981124262
+          },
+          "modulation": {
+            "only_this_group_r2": 0.0157039832406757,
+            "without_this_group_r2": 0.7752752334217842,
+            "drop": 0.007718548203162201
+          }
+        },
+        "strongest_group": "spectral",
+        "expected_group": "spectral",
+        "matches_expectation": true
+      },
+      "learning_curve": {
+        "points": {
+          "20": {
+            "r2_mean": 0.5605192276031606,
+            "r2_sd": 0.2752520128769685
+          },
+          "40": {
+            "r2_mean": 0.7334281229130553,
+            "r2_sd": 0.0904296373592267
+          },
+          "60": {
+            "r2_mean": 0.7601001878854547,
+            "r2_sd": 0.07084929236747696
+          },
+          "80": {
+            "r2_mean": 0.7732391814931049,
+            "r2_sd": 0.07385017339289449
+          },
+          "102": {
+            "r2_mean": 0.7799356437470867,
+            "r2_sd": 0.061476739906270395
+          }
+        },
+        "last_step_gain": 0.006696462253981794,
+        "still_improving": false
+      },
+      "median_targets": {
+        "mae": 0.7414419566914918,
+        "baseline_mae": 1.5068078657433848,
+        "r2": 0.735636604689335,
+        "spearman": 0.8359838061293312,
+        "pearson": 0.8532653976352177
+      },
+      "calibration": {
+        "observed_on_predicted_slope": 1.0331317255438157,
+        "note": "1 = well calibrated; >1 = predictions compressed toward the middle",
+        "mean_error_by_target_range": {
+          "low": 0.452023544308553,
+          "middle": -0.0923029181624335,
+          "high": -0.3711391583070248
+        }
+      },
+      "simulation_recovery": {
+        "cv_pred_vs_hidden_truth_spearman": 0.9315195533969499
+      }
+    },
+    "roughness": {
+      "repeated_cv": {
+        "mae": {
+          "mean": 0.718528753897591,
+          "p2_5": 0.6926452706537713,
+          "p97_5": 0.7633150661771063
+        },
+        "baseline_mae": {
+          "mean": 1.2931362722576893,
+          "p2_5": 1.2842651556412918,
+          "p97_5": 1.3032660645606848
+        },
+        "r2": {
+          "mean": 0.6673527850987514,
+          "p2_5": 0.6288655990496055,
+          "p97_5": 0.6878962813638301
+        },
+        "spearman": {
+          "mean": 0.8138375358125434,
+          "p2_5": 0.7879933555186002,
+          "p97_5": 0.8265826453449913
+        },
+        "share_beating_baseline": 1.0
+      },
+      "permutation": {
+        "null_mean_r2": -0.018891061339347873,
+        "null_p95_r2": 0.06072518628512171,
+        "p_value": 0.004975124378109453
+      },
+      "listeners": {
+        "split_half_r": 0.8084940824682204,
+        "reliability_of_full_mean": 0.8939798441892778,
+        "noise_ceiling_r": 0.9455050735925629,
+        "model_cv_r": 0.8137422022290763,
+        "model_share_of_ceiling": 0.8606428722134327,
+        "new_listeners": {
+          "model_trained_on_half_A_vs_half_B_r": 0.7796225947590237,
+          "half_A_vs_half_B_r": 0.8084940824682204,
+          "note": "model >= human half means it predicts new listeners as well as other listeners do"
+        }
+      },
+      "feature_groups": {
+        "groups": {
+          "spectral": {
+            "only_this_group_r2": 0.646853078661291,
+            "without_this_group_r2": -0.028950161462023095,
+            "drop": 0.6963029465607745
+          },
+          "temporal": {
+            "only_this_group_r2": -0.01742322592392411,
+            "without_this_group_r2": 0.6378390424735839,
+            "drop": 0.029513742625167483
+          },
+          "modulation": {
+            "only_this_group_r2": -0.00643499322648049,
+            "without_this_group_r2": 0.6763795521119682,
+            "drop": -0.009026767013216808
+          }
+        },
+        "strongest_group": "spectral",
+        "expected_group": "modulation",
+        "matches_expectation": false
+      },
+      "learning_curve": {
+        "points": {
+          "20": {
+            "r2_mean": 0.42899184057447465,
+            "r2_sd": 0.33194374515674224
+          },
+          "40": {
+            "r2_mean": 0.5499840665693234,
+            "r2_sd": 0.1423378867372755
+          },
+          "60": {
+            "r2_mean": 0.6128912242763713,
+            "r2_sd": 0.1148707451720438
+          },
+          "80": {
+            "r2_mean": 0.6308207921766817,
+            "r2_sd": 0.13259242716712694
+          },
+          "102": {
+            "r2_mean": 0.670702103757344,
+            "r2_sd": 0.08458749299650631
+          }
+        },
+        "last_step_gain": 0.039881311580662215,
+        "still_improving": true
+      },
+      "median_targets": {
+        "mae": 0.9002657305545727,
+        "baseline_mae": 1.4131344588806396,
+        "r2": 0.5681633135007476,
+        "spearman": 0.7598039688824889,
+        "pearson": 0.7487523638093719
+      },
+      "calibration": {
+        "observed_on_predicted_slope": 1.0119511491143487,
+        "note": "1 = well calibrated; >1 = predictions compressed toward the middle",
+        "mean_error_by_target_range": {
+          "low": 0.5616286694277811,
+          "middle": -0.08873983255314576,
+          "high": -0.5160831586280606
+        }
+      },
+      "simulation_recovery": {
+        "cv_pred_vs_hidden_truth_spearman": 0.8770348049358104
+      }
+    },
+    "percussiveness": {
+      "repeated_cv": {
+        "mae": {
+          "mean": 0.6962770055222895,
+          "p2_5": 0.6750049846118551,
+          "p97_5": 0.7290448355289073
+        },
+        "baseline_mae": {
+          "mean": 0.985224988622573,
+          "p2_5": 0.9771142633896702,
+          "p97_5": 1.0026677922192846
+        },
+        "r2": {
+          "mean": 0.48796553347817817,
+          "p2_5": 0.431347624428883,
+          "p97_5": 0.5252566835327901
+        },
+        "spearman": {
+          "mean": 0.6488017691267813,
+          "p2_5": 0.6133264218070158,
+          "p97_5": 0.6785959174973663
+        },
+        "share_beating_baseline": 1.0
+      },
+      "permutation": {
+        "null_mean_r2": -0.012420477879968162,
+        "null_p95_r2": 0.0632585920436352,
+        "p_value": 0.004975124378109453
+      },
+      "listeners": {
+        "split_half_r": 0.631509571681387,
+        "reliability_of_full_mean": 0.7734079960869341,
+        "noise_ceiling_r": 0.8794361807925201,
+        "model_cv_r": 0.6921073089106156,
+        "model_share_of_ceiling": 0.7869898055444005,
+        "new_listeners": {
+          "model_trained_on_half_A_vs_half_B_r": 0.6283043488117727,
+          "half_A_vs_half_B_r": 0.631509571681387,
+          "note": "model >= human half means it predicts new listeners as well as other listeners do"
+        }
+      },
+      "feature_groups": {
+        "groups": {
+          "spectral": {
+            "only_this_group_r2": 0.38706300187544534,
+            "without_this_group_r2": 0.33318748901565626,
+            "drop": 0.1547780444625219
+          },
+          "temporal": {
+            "only_this_group_r2": 0.33355677246703397,
+            "without_this_group_r2": 0.37868722464092847,
+            "drop": 0.1092783088372497
+          },
+          "modulation": {
+            "only_this_group_r2": 0.005839215727933356,
+            "without_this_group_r2": 0.4886645581307995,
+            "drop": -0.0006990246526213384
+          }
+        },
+        "strongest_group": "spectral",
+        "expected_group": "temporal",
+        "matches_expectation": false
+      },
+      "learning_curve": {
+        "points": {
+          "20": {
+            "r2_mean": 0.16266852770316226,
+            "r2_sd": 0.678390688153768
+          },
+          "40": {
+            "r2_mean": 0.38879197403284343,
+            "r2_sd": 0.14541074565214246
+          },
+          "60": {
+            "r2_mean": 0.42732713370955844,
+            "r2_sd": 0.11973383836216259
+          },
+          "80": {
+            "r2_mean": 0.45868121377579923,
+            "r2_sd": 0.10062941488711608
+          },
+          "102": {
+            "r2_mean": 0.47754336286915317,
+            "r2_sd": 0.14361711582114517
+          }
+        },
+        "last_step_gain": 0.01886214909335393,
+        "still_improving": false
+      },
+      "median_targets": {
+        "mae": 0.8162173959052907,
+        "baseline_mae": 1.0956187238244812,
+        "r2": 0.4543003197917248,
+        "spearman": 0.641055968864223,
+        "pearson": 0.6721602092438823
+      },
+      "calibration": {
+        "observed_on_predicted_slope": 0.9509149794726139,
+        "note": "1 = well calibrated; >1 = predictions compressed toward the middle",
+        "mean_error_by_target_range": {
+          "low": 0.8238733566974737,
+          "middle": -0.33661778419817706,
+          "high": -0.5489241564224634
+        }
+      },
+      "simulation_recovery": {
+        "cv_pred_vs_hidden_truth_spearman": 0.7948045928630633
+      }
+    },
+    "sustainedness": {
+      "repeated_cv": {
+        "mae": {
+          "mean": 0.6419048130825469,
+          "p2_5": 0.6276199782473857,
+          "p97_5": 0.654802304321357
+        },
+        "baseline_mae": {
+          "mean": 0.75600265914163,
+          "p2_5": 0.7500681941845305,
+          "p97_5": 0.7684142397477802
+        },
+        "r2": {
+          "mean": 0.2619009784694345,
+          "p2_5": 0.23919848067232904,
+          "p97_5": 0.28389876769098854
+        },
+        "spearman": {
+          "mean": 0.48092892731151576,
+          "p2_5": 0.4482472105409664,
+          "p97_5": 0.5113150903588028
+        },
+        "share_beating_baseline": 1.0
+      },
+      "permutation": {
+        "null_mean_r2": -0.01105907997405481,
+        "null_p95_r2": 0.06154808784239125,
+        "p_value": 0.004975124378109453
+      },
+      "listeners": {
+        "split_half_r": 0.4179271066894,
+        "reliability_of_full_mean": 0.5878371656555257,
+        "noise_ceiling_r": 0.7667053969130031,
+        "model_cv_r": 0.49847193818203034,
+        "model_share_of_ceiling": 0.6501479449460446,
+        "new_listeners": {
+          "model_trained_on_half_A_vs_half_B_r": 0.4237590507072029,
+          "half_A_vs_half_B_r": 0.4179271066894,
+          "note": "model >= human half means it predicts new listeners as well as other listeners do"
+        }
+      },
+      "feature_groups": {
+        "groups": {
+          "spectral": {
+            "only_this_group_r2": 0.007698932069184749,
+            "without_this_group_r2": 0.25401685782595346,
+            "drop": 0.00788412064348104
+          },
+          "temporal": {
+            "only_this_group_r2": 0.2401279490368152,
+            "without_this_group_r2": 0.0706847723582846,
+            "drop": 0.1912162061111499
+          },
+          "modulation": {
+            "only_this_group_r2": 0.027846429432689647,
+            "without_this_group_r2": 0.24865861190471628,
+            "drop": 0.013242366564718222
+          }
+        },
+        "strongest_group": "temporal",
+        "expected_group": "temporal",
+        "matches_expectation": true
+      },
+      "learning_curve": {
+        "points": {
+          "20": {
+            "r2_mean": 0.004918187456933869,
+            "r2_sd": 0.6146731855530065
+          },
+          "40": {
+            "r2_mean": 0.160009863849926,
+            "r2_sd": 0.1742836404207332
+          },
+          "60": {
+            "r2_mean": 0.2072850388665845,
+            "r2_sd": 0.13776781222673065
+          },
+          "80": {
+            "r2_mean": 0.24686233294075055,
+            "r2_sd": 0.0948811193661159
+          },
+          "102": {
+            "r2_mean": 0.24374515839817756,
+            "r2_sd": 0.14122497688590105
+          }
+        },
+        "last_step_gain": -0.003117174542572987,
+        "still_improving": false
+      },
+      "median_targets": {
+        "mae": 0.8976393045628788,
+        "baseline_mae": 0.9976129711593376,
+        "r2": 0.20670493498298192,
+        "spearman": 0.41655008354396605,
+        "pearson": 0.43620806650252203
+      },
+      "calibration": {
+        "observed_on_predicted_slope": 1.0308882181927077,
+        "note": "1 = well calibrated; >1 = predictions compressed toward the middle",
+        "mean_error_by_target_range": {
+          "low": 0.6578012181203132,
+          "middle": 0.0018512963931819667,
+          "high": -0.8369051264035756
+        }
+      },
+      "simulation_recovery": {
+        "cv_pred_vs_hidden_truth_spearman": 0.5883431782520359
+      }
+    }
+  }
+}
